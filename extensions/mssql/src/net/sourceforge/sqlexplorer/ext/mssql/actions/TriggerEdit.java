@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer.ext.mssql.actions;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.dbviewer.model.IDbModel;
 import net.sourceforge.sqlexplorer.ext.mssql.TriggerNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -70,7 +71,7 @@ public class TriggerEdit extends Action {
 			SQLEditorInput input = new SQLEditorInput("EDIT TRIGGER ("+tn.toString()+").sql");
 			input.setSessionNode(sessionNode);
 			IWorkbenchPage page=SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			SQLEditor editorPart= (SQLEditor) page.openEditor(input,"net.sf.jfacedbc.plugin.editors.SQLEditor");
+			SQLEditor editorPart= (SQLEditor) page.openEditor(input,IConstants.SQL_EDITOR_CLASS);
 			editorPart.setText(finalResult);
 		}catch(Throwable e){
 			SQLExplorerPlugin.error("Error creating sql editor",e);

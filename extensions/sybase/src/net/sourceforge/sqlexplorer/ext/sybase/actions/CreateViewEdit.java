@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.ext.sybase.actions;
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.dbviewer.model.TableObjectTypeNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
@@ -63,7 +64,7 @@ public class CreateViewEdit extends Action {
 			SQLEditorInput input = new SQLEditorInput("CREATE VIEW ("+SQLExplorerPlugin.getDefault().getNextElement()+").sql");
 			input.setSessionNode(sessionNode);
 			IWorkbenchPage page=SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			SQLEditor editorPart= (SQLEditor) page.openEditor(input,"net.sf.jfacedbc.plugin.editors.SQLEditor");
+			SQLEditor editorPart= (SQLEditor) page.openEditor(input,IConstants.SQL_EDITOR_CLASS);
 			editorPart.setText(txt);
 		}catch(Exception e){
 			SQLExplorerPlugin.error("Error creating sql editor",e);

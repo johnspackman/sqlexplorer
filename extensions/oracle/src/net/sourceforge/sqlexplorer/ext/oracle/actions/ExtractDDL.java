@@ -4,6 +4,7 @@ import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.dbviewer.model.IDbModel;
 import net.sourceforge.sqlexplorer.dbviewer.model.SchemaNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -57,7 +58,7 @@ public class ExtractDDL extends Action {
 			input.setSessionNode(sessionNode);
 			IWorkbenchPage page=SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
 			try{
-				SQLEditor editorPart= (SQLEditor) page.openEditor(input,"net.sf.jfacedbc.plugin.editors.SQLEditor");
+				SQLEditor editorPart= (SQLEditor) page.openEditor(input,IConstants.SQL_EDITOR_CLASS);
 				editorPart.setText(txt);
 			}catch(Throwable e){
 				SQLExplorerPlugin.error("Error creating sql editor for extract DDL",e);

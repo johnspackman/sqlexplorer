@@ -20,6 +20,7 @@ package net.sourceforge.sqlexplorer.ext.mssql.actions;
 
 
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.dbviewer.model.IDbModel;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
@@ -69,7 +70,7 @@ public class CreateFunctionEdit extends Action {
 			SQLEditorInput input = new SQLEditorInput("CREATE FUNCTION ("+SQLExplorerPlugin.getDefault().getNextElement()+").sql");
 			input.setSessionNode(sessionNode);
 			IWorkbenchPage page=SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			SQLEditor editorPart= (SQLEditor) page.openEditor(input,"net.sf.jfacedbc.plugin.editors.SQLEditor");
+			SQLEditor editorPart= (SQLEditor) page.openEditor(input,IConstants.SQL_EDITOR_CLASS);
 			editorPart.setText(txt);
 		}catch(Exception e){
 			SQLExplorerPlugin.error("Error creating sql editor",e);

@@ -1,5 +1,7 @@
 package net.sourceforge.sqlexplorer;
 
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
+
 /*
  * Copyright (C) 2002-2004 Andrea Mazzolini
  * andreamazzolini@users.sourceforge.net
@@ -28,4 +30,5 @@ public interface IConstants {
 	String PRE_ROW_COUNT="preRowCount"; //$NON-NLS-1$
 	String FONT="font"; //$NON-NLS-1$
 	String SQL_ASSIST="assist"; //$NON-NLS-1$
+	String SQL_EDITOR_CLASS = SQLEditor.class.getName();
 }
