@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="net.sourceforge.sqlexplorer"
+   name="SQLExplorer Plugin"
+   version="2.2.3"
+   provider-name="Alexandre L. Telles"
+   class="net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin">
+
+   <runtime>
+      <library name="sqlexplorer.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/squirrel.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/nanoxml.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/log4j.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/rowset.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/gef.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.core.runtime.compatibility"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.core.boot"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.swt"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.ui.workbench"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.jface"/>
+      <import plugin="org.eclipse.text"/>
+      <import plugin="org.eclipse.jface.text"/>
+   </requires>
+
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="SQLExplorer"
+            id="SQLExplorerPlugin">
+      </category>
+      <view
+            name="SQL Results"
+            icon="icons/app_obj.gif"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.SqlResultsView"
+            id="net.sourceforge.sqlexplorer.plugin.views.SqlResultsView">
+      </view>
+      <view
+            name="SQL History"
+            icon="icons/history_list.gif"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView"
+            id="net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView">
+      </view>
+      <view
+            name="Connection Info"
+            icon="icons/app_obj.gif"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.ConnectionInfo"
+            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionInfo">
+      </view>
+      <view
+            name="Connections"
+            icon="icons/showparents_mode.gif"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
+      </view>
+      <view
+            name="Database Structure View"
+            icon="icons/tree_mode.gif"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.DBView"
+            id="net.sourceforge.sqlexplorer.plugin.views.DBView">
+      </view>
+      <view
+            name="Drivers "
+            icon="icons/feature_obj.gif"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.DriverView"
+            id="net.sourceforge.sqlexplorer.plugin.views.DriverView">
+      </view>
+      <view
+            name="Aliases"
+            icon="icons/app_obj.gif"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.AliasView"
+            id="net.sourceforge.sqlexplorer.plugin.views.AliasView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="SQLExplorer"
+            icon="icons/perspective_icon.gif"
+            class="net.sourceforge.sqlexplorer.plugin.perspectives.SQLExplorerPluginPerspective"
+            id="net.sourceforge.sqlexplorer.plugin.perspectives.SQLExplorerPluginPerspective">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="SQLExplorer"
+            class="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage"
+            id="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="SQL Editor"
+            category="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage"
+            class="net.sourceforge.sqlexplorer.preferences.SQLPreferencePage"
+            id="net.sourceforge.sqlexplorer.preferences.SQLPreferencePage">
+      </page>
+   </extension>
+   <extension
+         id="editors"
+         point="org.eclipse.ui.editors">
+      <editor
+            default="true"
+            name="Sql Editor"
+            extensions="sql"
+            icon="icons/perspective_icon.gif"
+            class="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor"
+            contributorClass="net.sourceforge.sqlexplorer.plugin.editors.SQLEditorActionContributor"
+            id="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor">
+      </editor>
+      <editor
+            name="Schema Viewer"
+            extensions="sqls"
+            icon="icons/edittsk_tsk.gif"
+            class="net.sourceforge.sqlexplorer.gef.editors.SchemaEditor"
+            contributorClass="net.sourceforge.sqlexplorer.gef.editors.SchemaViewerActionBarContributor"
+            id="net.sourceforge.sqlexplorer.gef.editors.SchemaEditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.viewActions">     
+      <viewContribution
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.about">
+         <action
+               label="About"
+               icon="icons/view.gif"
+               class="net.sourceforge.sqlexplorer.sessiontree.actions.About"
+               tooltip="About"
+               enablesFor="*"
+               toolbarPath="additions"
+               id="net.sourceforge.sqlexplorer.actions.about">
+         </action>
+      </viewContribution>
+      <viewContribution
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.commit">
+         <action
+               label="Commit"
+               icon="icons/commit.gif"
+               class="net.sourceforge.sqlexplorer.sessiontree.actions.Commit"
+               tooltip="Commit"
+               enablesFor="1"
+               toolbarPath="additions"
+               id="net.sourceforge.sqlexplorer.actions.commit">
+         </action>
+      </viewContribution>
+      <viewContribution
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.rollback">
+         <action
+               label="Rollback"
+               icon="icons/rollback.gif"
+               class="net.sourceforge.sqlexplorer.sessiontree.actions.Rollback"
+               tooltip="Rollback"
+               enablesFor="1"
+               toolbarPath="additions"
+               id="net.sourceforge.sqlexplorer.actions.rollback">
+         </action>
+      </viewContribution>
+      <viewContribution
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.close">
+         <action
+               label="Close Connection"
+               icon="icons/remove_co.gif"
+               class="net.sourceforge.sqlexplorer.sessiontree.actions.CloseConnection"
+               tooltip="Close Connection"
+               enablesFor="1"
+               toolbarPath="additions"
+               id="net.sourceforge.sqlexplorer.actions.close">
+            <selection
+                  name="*"
+                  class="SessionTreeNode">
+            </selection>
+         </action>
+      </viewContribution>
+      <viewContribution
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.closeAll">
+         <action
+               label="Close All Connections"
+               icon="icons/removeAll_co.gif"
+               class="net.sourceforge.sqlexplorer.sessiontree.actions.CloseAllConnections"
+               tooltip="Close All Connections"
+               enablesFor="1"
+               toolbarPath="additions"
+               id="net.sourceforge.sqlexplorer.actions.closeAll">
+            <selection
+                  name="*"
+                  class="SessionTreeNode">
+            </selection>
+         </action>
+      </viewContribution>
+      <viewContribution
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.NewEditor">
+         <action
+               label="New SQL Editor"
+               icon="icons/edittsk_tsk.gif"
+               class="net.sourceforge.sqlexplorer.sessiontree.actions.NewSQLEditor"
+               tooltip="New SQL Editor"
+               enablesFor="*"
+               toolbarPath="additions"
+               id="net.sourceforge.sqlexplorer.actions.newEditor">
+         </action>
+      </viewContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            name="SQLExplorer"
+            id="net.sourceforge.sqlexplorer.new">
+      </category>
+      <wizard
+            name="SQLExplorer SQL Editor"
+            icon="icons/edittsk_tsk.gif"
+            category="net.sourceforge.sqlexplorer.new"
+            class="net.sourceforge.sqlexplorer.plugin.wizards.NewSQLEditorWizard"
+            id="net.sourceforge.sqlexplorer.plugin.wizards.sqleditor">
+         <description>
+            Create a new empty SQL file
+         </description>
+         <selection
+               class="org.eclipse.core.resources.IResource">
+         </selection>
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <activeKeyConfiguration
+            value="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </activeKeyConfiguration>
+      <command
+            name="Run SQL"
+            description="Run SQL"
+            category="org.eclipse.ui.category.edit"
+            id="net.sourceforge.sqlexplorer.sqlrun">
+      </command>
+      <keyBinding
+            string="Ctrl+F9"
+            scope="org.eclipse.ui.textEditorScope"
+            command="net.sourceforge.sqlexplorer.sqlrun"
+            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
+   </extension>
+</plugin>
