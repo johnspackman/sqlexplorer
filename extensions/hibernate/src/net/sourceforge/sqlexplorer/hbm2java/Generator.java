@@ -22,7 +22,7 @@ public class Generator {
 
      private Log log = LogFactory.getLog(Generator.class);
 
-     private String rendererClass = "hbm2java.BasicRenderer";
+     private String rendererClass = "net.sourceforge.sqlexplorer.hbm2java.BasicRenderer";
      private String baseDirName = "generated";
      private String packageName = null;
      private String suffix = StringHelper.EMPTY_STRING;
