@@ -263,16 +263,10 @@ public class SQLEditor extends TextEditor {
 		sqlTextViewer.getControl().setLayoutData(gid);
 		sqlTextViewer.getTextWidget().addVerifyKeyListener(new VerifyKeyListener (){
 			public void verifyKey(VerifyEvent event) {
-				
-				if(event.stateMask ==SWT.CTRL && event.character == '\n'){
+				if(event.stateMask == SWT.CTRL && event.keyCode == 13){
 					event.doit=false;
 					execSQLAction.run();
 				}
-				/*else if((event.stateMask==SWT.CTRL && ((int)event.character)==127) || (event.stateMask==SWT.CTRL && event.character==' ')){
-					event.doit=false;
-					
-					sqlTextViewer.showAssistance();
-				}*/
 			}
 		});
 		statusMgr=new StatusLineManager();
