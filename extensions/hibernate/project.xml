@@ -1,0 +1,21 @@
+<project>
+  <groupId>sqlexplorer</groupId>
+  <artifactId>hibernate</artifactId>
+  <currentVersion>1.0</currentVersion>
+  <name>Hibernate extension</name>
+  <dependencies>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.0</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+  </build>
+</project>
