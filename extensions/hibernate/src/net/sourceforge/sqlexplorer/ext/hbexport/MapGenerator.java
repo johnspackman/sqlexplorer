@@ -88,7 +88,7 @@ public class MapGenerator {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			docBuilder = dbf.newDocumentBuilder();
 			tFactory = TransformerFactory.newInstance();
-			jdomBuilder = new org.jdom.input.DOMBuilder(false);
+			jdomBuilder = new org.jdom.input.DOMBuilder();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e.getMessage());
