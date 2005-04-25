@@ -78,7 +78,6 @@ public class SqlTableModel {
 		}
 		allRetrieved=true;
 		bFinished=true;
-		rs.close();
 		
 	}
 	public void moreRows()throws java.lang.Exception{//Retrieves "limitRows" lines each time
@@ -91,7 +90,6 @@ public class SqlTableModel {
 			list.add(new SqlRowElement(obj,count,this));
 			if(list.size()>=maxRows){
 				bFinished=true;//We can't retrieve more than maxRows rows
-				rs.close();
 				
 				return;
 			}
@@ -119,7 +117,6 @@ public class SqlTableModel {
 			list.add(el);
 			if(list.size()>=maxRows){
 				bFinished=true;//We can't retrieve more than maxRows rows
-				rs.close();
 
 				return true;
 			}
@@ -130,7 +127,6 @@ public class SqlTableModel {
 		//We are here only if the resultset has no more elements;
 		bFinished=true;
 		allRetrieved=true;
-		rs.close();
 		return true;
 			
 	}
@@ -138,10 +134,11 @@ public class SqlTableModel {
     public Object[] getElements(){
     	return list.toArray();
     }
-    public void closeResultSet(){
+
+	// TODO remove this
+	public void closeResultSet(){
     	
     	if(!bFinished){
-			rs.close();
     	}
     		
     }

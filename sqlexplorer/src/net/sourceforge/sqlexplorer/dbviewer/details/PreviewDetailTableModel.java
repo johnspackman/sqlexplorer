@@ -50,12 +50,6 @@ class PreviewDetailTableModel {
 			SQLExplorerPlugin.error("Error getting preview data ",e); //$NON-NLS-1$
 			detailLog.setMessage(e.getMessage());
 		}
-		finally{
-			try{
-				reader.close();
-			} catch(Throwable e){
-			}
-		}
 	}
 	public Object[] getElements(){
     	return list.toArray();

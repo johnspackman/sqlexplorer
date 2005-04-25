@@ -41,11 +41,6 @@ class ColumnDetailTableModel {
 			SQLExplorerPlugin.error("Error adding column detail row ",e); //$NON-NLS-1$
 			detailLogDisplay.setMessage(e.getMessage());
 		}
-		finally{
-			try{
-				rs.close();
-			}catch(java.lang.Exception e){detailLogDisplay.setMessage(e.getMessage());}
-		}
 	}
 	public Object[] getElements(){
     	return list.toArray();

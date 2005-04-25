@@ -87,7 +87,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
 			alias.setUrl(urlField.getText().trim());
 			alias.setUserName(userField.getText().trim());
 			alias.setName(this.nameField.getText().trim());
-			alias.setActivate(btnActivate.getSelection());
+			alias.setConnectAtStartup(btnActivate.getSelection());
 			alias.setPassword(passwordField.getText().trim());
 			if((this.type==1)||(type==3)){
 				aliasModel.addAlias(alias);
@@ -287,7 +287,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
 		nameField.setText(alias.getName());
 		userField.setText(alias.getUserName());
 		passwordField.setText(alias.getPassword());
-		btnActivate.setSelection(alias.getActivate());
+		btnActivate.setSelection(alias.isConnectAtStartup());
 		if(type!=1){
 			ISQLDriver iSqlDriver=driverModel.getDriver(alias.getDriverIdentifier());
 			combo.setText(iSqlDriver.getName());

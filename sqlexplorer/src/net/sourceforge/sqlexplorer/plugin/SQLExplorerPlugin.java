@@ -154,7 +154,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 			Object [] aliases= (Object[]) aliasModel.getElements();
 			for(int i=0;i<aliases.length;i++){
 				final ISQLAlias alias=(ISQLAlias)aliases[i];
-				if(alias.getActivate()){
+				if(alias.isConnectAtStartup()){
 					try{
 						ISQLDriver dv=driverModel.getDriver(alias.getDriverIdentifier());
 						final SQLConnection conn=_driverMgr.getConnection(dv, alias,alias.getUserName(),alias.getPassword());

@@ -55,7 +55,6 @@ public class TableAdapter {
 			while((obj=reader.readRow())!=null){
 				columnList.add(new Column(obj));
 			}
-			reader.close();
 		}catch(Throwable e){
 		}
 		finally{
