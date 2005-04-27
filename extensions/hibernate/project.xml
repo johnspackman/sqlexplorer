@@ -1,7 +1,7 @@
 <project>
   <groupId>sqlexplorer</groupId>
   <artifactId>hibernate</artifactId>
-  <currentVersion>1.0</currentVersion>
+  <currentVersion>1.0-SNAPSHOT</currentVersion>
   <name>Hibernate extension</name>
   <dependencies>
     <dependency>
@@ -17,7 +17,7 @@
     <dependency>
       <groupId>sqlexplorer</groupId>
       <artifactId>sqlexplorer</artifactId>
-      <version>2.2.3</version>
+      <version>2.2.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>eclipse</groupId>
