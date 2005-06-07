@@ -31,7 +31,6 @@ import net.sourceforge.sqlexplorer.AliasModel;
 import net.sourceforge.sqlexplorer.DataCache;
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.URLUtil;
 import net.sourceforge.sqlexplorer.ext.PluginManager;
 import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModel;
@@ -41,7 +40,6 @@ import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverManager;
 
-import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -54,8 +52,6 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.ListenerList;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
-
-
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
@@ -131,7 +127,6 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 	public SQLExplorerPlugin(IPluginDescriptor descriptor) {
 		super(descriptor);
 		plugin = this;
-		PropertyConfigurator.configure(URLUtil.getResourceURL("log4j.properties"));//$NON-NLS-1$
 
 		//if(!earlyStarted){
 			try{

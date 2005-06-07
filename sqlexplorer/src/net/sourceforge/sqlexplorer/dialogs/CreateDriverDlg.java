@@ -361,25 +361,6 @@ public class CreateDriverDlg extends TitleAreaDialog {
          return   new  Point(600, 500);
     }
     
-	/*private void loadDriversCombo() {
-		combo.removeAll();
-			/*try{
-				java.net.URL url=new File(jarField.getText().trim()).toURL();
-				System.out.println(url.toString());
-				SQLDriverClassLoader cl = new SQLDriverClassLoader(url);
-				Class[] classes = cl.getDriverClasses(new Log4jLogger(this.getClass()));		
-				for(int i=0;i<classes.length;++i){
-					combo.add(classes[i].getName());
-					System.out.println(classes[i].getName());
-				}
-			}catch(MalformedURLException ex){
-			}catch (IOException ex) {
-				ex.printStackTrace();
-			//	displayErrorMessage(ex);				
-			}*/
-		//}
-	//}*/
-	
 	private void createJavaClassPathPanel(TabFolder tabFolder,TabItem tabItem){
 		Composite parent=new Composite(tabFolder,SWT.NULL);
 		parent.setLayout(new FillLayout());
@@ -434,7 +415,6 @@ public class CreateDriverDlg extends TitleAreaDialog {
 						//SQLDriverClassLoader cl = new SQLDriverClassLoader(file.toURL());
 						MyURLClassLoader cl= new MyURLClassLoader(file.toURL());
 						Class[] classes = cl.getAssignableClasses(Driver.class);
-//						Class[] classes = cl.getDriverClasses(new Log4jLogger(this.getClass()));
 						for (int i = 0; i < classes.length; ++i)
 						{
 							combo.add(classes[i].getName());
