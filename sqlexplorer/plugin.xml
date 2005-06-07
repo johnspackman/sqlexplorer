@@ -11,22 +11,22 @@
       <library name="sqlexplorer.jar">
          <export name="*"/>
       </library>
-      <library name="lib/squirrel.jar">
+      <library name="lib/commons-logging.jar">
          <export name="*"/>
       </library>
-      <library name="lib/nanoxml.jar">
-         <export name="*"/>
-      </library>
-      <library name="lib/log4j.jar">
-         <export name="*"/>
-      </library>
-      <library name="lib/rowset.jar">
+      <library name="lib/fw-1.2beta6.jar">
          <export name="*"/>
       </library>
       <library name="lib/gef.jar">
          <export name="*"/>
       </library>
-      <library name="lib/commons-logging.jar">
+      <library name="lib/log4j.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/nanoxml.jar">
+         <export name="*"/>
+      </library>
+      <library name="lib/rowset.jar">
          <export name="*"/>
       </library>
    </runtime>
