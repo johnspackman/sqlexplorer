@@ -3,8 +3,8 @@
 <plugin
    id="net.sourceforge.sqlexplorer"
    name="SQLExplorer Plugin"
-   version="2.2.3"
-   provider-name="Alexandre L. Telles"
+   version="2.2.4"
+   provider-name="Alexandre L Telles"
    class="net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin">
 
    <runtime>
@@ -15,9 +15,6 @@
          <export name="*"/>
       </library>
       <library name="lib/fw-1.2beta6.jar">
-         <export name="*"/>
-      </library>
-      <library name="lib/gef.jar">
          <export name="*"/>
       </library>
       <library name="lib/log4j.jar">
@@ -44,6 +41,7 @@
       <import plugin="org.eclipse.jface"/>
       <import plugin="org.eclipse.text"/>
       <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.gef"/>
    </requires>
 
 
