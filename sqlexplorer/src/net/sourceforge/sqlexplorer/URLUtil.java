@@ -29,14 +29,11 @@ public class URLUtil {
 		if(!initialized)
 			init();
 		URL url = null;
-		//if(plugged){
-			try {
-			  url = new URL(baseURL, s);
-			 } catch(Throwable e){
-			 }
-			 return url;
-		//}
-		//return ClassLoader.getSystemResource(s);
+		try {
+		  url = new URL(baseURL, s);
+		 } catch(Throwable e){
+		 }
+		 return url;
 	}
 	
 	static private boolean initialized=false;
@@ -50,13 +47,6 @@ public class URLUtil {
 		initialized=true;
 	}
 	private static URL baseURL;
-	
-	//private static boolean plugged=false;
-	//public static boolean isPlugged(){
-	//	if(!initialized)
-	//		init();
-	//	return plugged;
-	//}
 	
 	public static URL getPluggableFile(String file){
 		if(!initialized)
