@@ -70,10 +70,10 @@ public class TableFigure extends Figure {
 	
 	public String getConnectionAnchorName(ConnectionAnchor c){
 		//System.out.println("getConnectionAnchorName");
-		Enumeration enum = connectionAnchors.keys();
+		Enumeration enumeration = connectionAnchors.keys();
 		String key;
-		while (enum.hasMoreElements()){
-			key = (String)enum.nextElement();
+		while (enumeration.hasMoreElements()){
+			key = (String)enumeration.nextElement();
 			if (connectionAnchors.get(key).equals(c))
 				return key;
 		}

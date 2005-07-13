@@ -105,9 +105,9 @@ public class NewSQLEditorPage extends WizardNewFileCreationPage {
 		}
 	
 		final ISelection selection = new StructuredSelection(resource);
-		Iterator enum = parts.iterator();
-		while (enum.hasNext()) {
-			IWorkbenchPart part = (IWorkbenchPart) enum.next();
+		Iterator it = parts.iterator();
+		while (it.hasNext()) {
+			IWorkbenchPart part = (IWorkbenchPart) it.next();
 		
 			// get the part's ISetSelectionTarget implementation
 			ISetSelectionTarget target = null;
