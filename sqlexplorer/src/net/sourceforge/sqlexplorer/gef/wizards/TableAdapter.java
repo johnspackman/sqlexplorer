@@ -72,7 +72,6 @@ public class TableAdapter {
 			Pk previousPkRow=null;
 			while(rs.next()==true){
 				String colName=rs.getString("COLUMN_NAME"); //$NON-NLS-1$
-				short order=rs.getShort("KEY_SEQ"); //$NON-NLS-1$
 				String pkName=rs.getString("PK_NAME");  //$NON-NLS-1$
 				if((pkName!=null)&&(!pkName.equals(previousPKName))){
 					previousPkRow=new Pk(pkName);
@@ -80,7 +79,7 @@ public class TableAdapter {
 					pk=previousPkRow;//Actually we should have only one primary key
 				}
 				if(pkName!=null){
-					PkDetailSub subRow=new PkDetailSub(colName,order);
+					PkDetailSub subRow=new PkDetailSub(colName);
 					previousPkRow.addChild(subRow);
 				}
 			}

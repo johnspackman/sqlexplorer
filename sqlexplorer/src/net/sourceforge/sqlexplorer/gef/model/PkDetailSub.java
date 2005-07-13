@@ -26,14 +26,11 @@ public class PkDetailSub implements Serializable{
 	
 	
 	static final long serialVersionUID = 1;
-	private short order;
 
 	private String colName;
 
-	public PkDetailSub(String colName, short order) {
-		
+	public PkDetailSub(String colName) {
 		this.colName=colName;
-		this.order=order;
 	}
 
 	/**
