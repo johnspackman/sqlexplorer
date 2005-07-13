@@ -211,7 +211,6 @@ public class DataCache {
 			String[] fileNames = driver.getJarFileNames();
 			if (fileNames == null || fileNames.length == 0)
 			{
-				String fileName = null;
 				String fileNameArray[] = driver.getJarFileNames(); 
 				if (fileNameArray != null && fileNameArray.length > 0)
 				{
