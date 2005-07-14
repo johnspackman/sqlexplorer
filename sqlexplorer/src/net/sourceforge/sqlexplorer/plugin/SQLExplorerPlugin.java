@@ -19,10 +19,6 @@ package net.sourceforge.sqlexplorer.plugin;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.sql.DriverManager;*/
 import java.util.ArrayList;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -42,8 +38,6 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLDriverManager;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -53,6 +47,7 @@ import org.eclipse.jface.util.ListenerList;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -124,8 +119,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 	/**
 	 * The constructor.
 	 */
-	public SQLExplorerPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public SQLExplorerPlugin() {
 		plugin = this;
 
 		//if(!earlyStarted){
@@ -180,13 +174,15 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 			resourceBundle = null;
 		}
 	}
-	public void shutdown() throws CoreException{
+
+	/**
+	 * @see org.eclipse.core.runtime.Plugin#stop(org.osgi.framework.BundleContext)
+	 */
+	public void stop(BundleContext context) throws Exception {
 		_cache.save();
 		RootSessionTreeNode rstn=stm.getRoot();
 		rstn.closeAllConnections();
-		
-		super.shutdown();
-		
+		super.stop(context);
 	}
 
 	/**
