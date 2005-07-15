@@ -38,115 +38,118 @@ import net.sourceforge.sqlexplorer.sqlpanel.SQLTableSorter;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlTableModel;
 import net.sourceforge.squirrel_sql.fw.sql.ResultSetReader;
 
-
 public class Utils {
-	private Utils(){}
-	public static int decodeType(String dataType){
-		if(dataType.equalsIgnoreCase("VARCHAR2")|| dataType.equals("VARCHAR"))
-			return Types.VARCHAR;
-		if(dataType.equalsIgnoreCase("NUMBER"))
-			return Types.NUMERIC;
-		if(dataType.equalsIgnoreCase("CHAR"))
-			return Types.CHAR;
-		if(dataType.equalsIgnoreCase("LONG"))
-			return Types.LONGVARCHAR;
-		/*if(dataType.equalsIgnoreCase("OBJECT"))
-			return Types.JAVA_OBJECT;
-		if(dataType.equalsIgnoreCase("BINARY_INTEGER"))
-			return Types.INTEGER;
-		if(dataType.equalsIgnoreCase("DATE"))
-			return Types.DATE;*/
-		if(dataType.equalsIgnoreCase("REF CURSOR"))
-			return -10;
-		return -1;
-	}
-	public static void execute(SessionTreeNode session,String sql, ArrayList paramList, ArrayList textInputList) {
-		CallableStatement cs=null;
-		try{
-			cs=session.getConnection().getConnection().prepareCall(sql);
-			int k=0;
-			int outputParam=-1;
-			for(int i=0,s=paramList.size();i<s;i++){
-				ParamObj pObj=(ParamObj)paramList.get(i);
-				String dataType=pObj.dataType;
-				String inOut=pObj.inOut;
-				if(inOut.equalsIgnoreCase("IN")|| inOut.equals("IN/OUT")){
-					int tipo=Utils.decodeType(dataType);
-					if(tipo!=-10){
-						cs.setString(i+1,((Text)textInputList.get(k)).getText());		
-					}
-					k++;
-				}
-				if(inOut.equalsIgnoreCase("OUT")|| inOut.equals("IN/OUT")){
-					int tipo=Utils.decodeType(dataType);
-					if(tipo==-1)
-						throw new Exception("Data Type "+dataType+" not yet supported");
-					cs.registerOutParameter(i+1,tipo);
-					if(outputParam!=-1)
-						throw new Exception("More than one output paramater is not supported");
-					outputParam=i+1;
-				}
-						
-			}
-			cs.execute();
-			if(outputParam!=-1){
-				Object obj=cs.getObject(outputParam);
-				if(obj instanceof ResultSet){
-					ResultSet rs=(ResultSet)obj;
-					final ResultSetMetaData metaData=rs.getMetaData();
-					final int count=metaData.getColumnCount();
-								
-								
-								
-					final String[]ss=new String[count];
-					for(int i=0;i<count;i++){
-						ss[i]=metaData.getColumnName(i+1);
-					}
-					final SQLTableSorter sorter=new SQLTableSorter(count,metaData);
-					ResultSetReader reader=new ResultSetReader(rs);
-					final SqlTableModel mo=new SqlTableModel(reader,metaData,SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(IConstants.MAX_SQL_ROWS),session.getConnection(),ss,sorter);
-					final IWorkbenchPage page=SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-					if(page!=null){	
-						Display.getCurrent().asyncExec(new Runnable(){
-							public void run(){
-								try{
-									SqlResultsView resultsView=(SqlResultsView) page.showView("net.sf.jfacedbc.plugin.views.SqlResultsView");
-									resultsView.setData(new SqlTableModel[]{mo});
-												
-									long endTime=System.currentTimeMillis();
-									//String message=Messages.getString("Time__1")+" "+(int)(endTime-startTime)+Messages.getString("_ms");  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-									//txtComp.setMessage(message);
-								}catch(java.lang.Exception e){
-												
-									SQLExplorerPlugin.error("Error displaying data",e);
-									//txtComp.setMessage(e.getMessage());
-								}
-							};
-						});
-					}
-			
-				}
-				else{
-					if(obj!=null)
-						MessageDialog.openInformation(null,"Output",obj.toString());
-					else
-						MessageDialog.openInformation(null,"Output",null); 
-				}
-			}
-		}catch(Throwable e){
-			e.printStackTrace();
-			SQLExplorerPlugin.error("Error executing stored",e);
-			MessageDialog.openError(null,"Error","See the Eclipse error log view for more info.");
-		}
-		finally{
-			if(cs!=null){
-				try{
-					cs.close();
-				}catch(Throwable e){
-				}
-			}
-		}
+    private Utils() {
+    }
 
-	
-	}
+    public static int decodeType(String dataType) {
+        if (dataType.equalsIgnoreCase("VARCHAR2") || dataType.equals("VARCHAR"))
+            return Types.VARCHAR;
+        if (dataType.equalsIgnoreCase("NUMBER"))
+            return Types.NUMERIC;
+        if (dataType.equalsIgnoreCase("CHAR"))
+            return Types.CHAR;
+        if (dataType.equalsIgnoreCase("LONG"))
+            return Types.LONGVARCHAR;
+        if (dataType.equalsIgnoreCase("REF CURSOR"))
+            return -10;
+        return -1;
+    }
+
+    public static void execute(SessionTreeNode session, String sql,
+            ArrayList paramList, ArrayList textInputList) {
+        CallableStatement cs = null;
+        try {
+            cs = session.getConnection().getConnection().prepareCall(sql);
+            int k = 0;
+            int outputParam = -1;
+            for (int i = 0, s = paramList.size(); i < s; i++) {
+                ParamObj pObj = (ParamObj) paramList.get(i);
+                String dataType = pObj.dataType;
+                String inOut = pObj.inOut;
+                if (inOut.equalsIgnoreCase("IN") || inOut.equals("IN/OUT")) {
+                    int tipo = Utils.decodeType(dataType);
+                    if (tipo != -10) {
+                        cs.setString(i + 1, ((Text) textInputList.get(k))
+                                .getText());
+                    }
+                    k++;
+                }
+                if (inOut.equalsIgnoreCase("OUT") || inOut.equals("IN/OUT")) {
+                    int tipo = Utils.decodeType(dataType);
+                    if (tipo == -1)
+                        throw new Exception("Data Type " + dataType
+                                + " not yet supported");
+                    cs.registerOutParameter(i + 1, tipo);
+                    if (outputParam != -1)
+                        throw new Exception(
+                                "More than one output paramater is not supported");
+                    outputParam = i + 1;
+                }
+
+            }
+            cs.execute();
+            if (outputParam != -1) {
+                Object obj = cs.getObject(outputParam);
+                if (obj instanceof ResultSet) {
+                    ResultSet rs = (ResultSet) obj;
+                    final ResultSetMetaData metaData = rs.getMetaData();
+                    final int count = metaData.getColumnCount();
+
+                    final String[] ss = new String[count];
+                    for (int i = 0; i < count; i++) {
+                        ss[i] = metaData.getColumnName(i + 1);
+                    }
+                    final SQLTableSorter sorter = new SQLTableSorter(count,
+                            metaData);
+                    ResultSetReader reader = new ResultSetReader(rs);
+                    final SqlTableModel mo = new SqlTableModel(reader,
+                            metaData, SQLExplorerPlugin.getDefault()
+                                    .getPluginPreferences().getInt(
+                                            IConstants.MAX_SQL_ROWS), session
+                                    .getConnection(), ss, sorter);
+                    final IWorkbenchPage page = SQLExplorerPlugin.getDefault()
+                            .getWorkbench().getActiveWorkbenchWindow()
+                            .getActivePage();
+                    if (page != null) {
+                        Display.getCurrent().asyncExec(new Runnable() {
+                            public void run() {
+                                try {
+                                    SqlResultsView resultsView = (SqlResultsView) page
+                                            .showView("net.sf.jfacedbc.plugin.views.SqlResultsView");
+                                    resultsView
+                                            .setData(new SqlTableModel[] { mo });
+
+                                } catch (java.lang.Exception e) {
+
+                                    SQLExplorerPlugin.error(
+                                            "Error displaying data", e);
+                                }
+                            };
+                        });
+                    }
+
+                } else {
+                    if (obj != null)
+                        MessageDialog.openInformation(null, "Output", obj
+                                .toString());
+                    else
+                        MessageDialog.openInformation(null, "Output", null);
+                }
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+            SQLExplorerPlugin.error("Error executing stored", e);
+            MessageDialog.openError(null, "Error",
+                    "See the Eclipse error log view for more info.");
+        } finally {
+            if (cs != null) {
+                try {
+                    cs.close();
+                } catch (Throwable e) {
+                }
+            }
+        }
+
+    }
 }

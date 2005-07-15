@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
- 
+
 package net.sourceforge.sqlexplorer.ext.oracle;
 
 import java.util.ArrayList;
@@ -29,23 +29,35 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 import org.eclipse.swt.widgets.Composite;
 
 public class SecurityNode implements IDbModel {
-	public Composite getComposite(DetailManager detailManager){return null;};
-	public Object getParent(){return parent;}
-	public String toString(){return txt;}
-	public String getTitle(){return txt;}
-	private IDbModel parent;
-	private String txt;
-	private ArrayList list=new ArrayList(10);
-	private SQLConnection conn;
-	public SecurityNode(DatabaseNode root,String name,SQLConnection conn){
-		txt=name;
-		this.conn=conn;
-		parent=root;
-		list.add(new UsersNode(this,"Users",conn));
-		//list.add(new Jobs(this,"Jobs",conn));
-		//list.add(new TopSql(this,"Top SQL",conn));
-	}
-	public Object[] getChildren() {
-		return list.toArray();
-	};
+    private ArrayList list = new ArrayList(10);;
+
+    private IDbModel parent;
+
+    private String txt;
+
+    public SecurityNode(DatabaseNode root, String name, SQLConnection conn) {
+        txt = name;
+        parent = root;
+        list.add(new UsersNode(this, "Users", conn));
+    }
+
+    public Object[] getChildren() {
+        return list.toArray();
+    }
+
+    public Composite getComposite(DetailManager detailManager) {
+        return null;
+    }
+
+    public Object getParent() {
+        return parent;
+    }
+
+    public String getTitle() {
+        return txt;
+    }
+
+    public String toString() {
+        return txt;
+    };
 }

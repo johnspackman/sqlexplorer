@@ -30,25 +30,37 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 /**
  * @author mazzolini
  */
-public class InstanceNode implements IDbModel{
-	public Composite getComposite(DetailManager detailManager){return null;};
-	public Object getParent(){return parent;}
-	public String toString(){return txt;}
-	public String getTitle(){return txt;}
+public class InstanceNode implements IDbModel {
+    private ArrayList list = new ArrayList(10);;
 
-	private IDbModel parent;
-	private String txt;
-	private ArrayList list=new ArrayList(10);
-	private SQLConnection conn;
-	
-	public InstanceNode(DatabaseNode root,String name,SQLConnection conn){
-		txt=name;
-		this.conn=conn;
-		parent=root;
-		list.add(new SysParamsNode(this,"System Parameters",conn));
-		list.add(new TableSpacesNode(this,conn));
-	}
-	public Object[] getChildren() {
-		return list.toArray();
-	};
+    private IDbModel parent;
+
+    private String txt;
+
+    public InstanceNode(DatabaseNode root, String name, SQLConnection conn) {
+        txt = name;
+        parent = root;
+        list.add(new SysParamsNode(this, "System Parameters", conn));
+        list.add(new TableSpacesNode(this, conn));
+    }
+
+    public Object[] getChildren() {
+        return list.toArray();
+    }
+
+    public Composite getComposite(DetailManager detailManager) {
+        return null;
+    }
+
+    public Object getParent() {
+        return parent;
+    }
+
+    public String getTitle() {
+        return txt;
+    }
+
+    public String toString() {
+        return txt;
+    };
 }

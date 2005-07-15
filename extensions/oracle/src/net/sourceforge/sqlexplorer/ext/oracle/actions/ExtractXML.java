@@ -18,53 +18,55 @@ import org.eclipse.ui.IWorkbenchPage;
 
 /**
  * @author Mazzolini
- *
+ * 
  */
 public class ExtractXML extends Action {
-	SessionTreeNode sessionNode;
-	IDbModel nd;
-	public ExtractXML(SessionTreeNode sessionNode,IDbModel nd) {
-		this.sessionNode=sessionNode;
-		this.nd=nd;
-	}
-	public String getText(){
-		return "Extract XML"; //$NON-NLS-1$
-	}
-	public void run(){
-		final String sql="select DBMS_METADATA.GET_XML(?,?,?) FROM dual";
-		try{
-			SQLConnection conn=sessionNode.getConnection();
-			PreparedStatement stmt = conn.prepareStatement(sql);
-			IDbModel parent=(IDbModel) nd.getParent();
-			String object_type=parent.toString();
-			if(object_type.equalsIgnoreCase("PACKAGE BODY"))
-				object_type="PACKAGE_BODY";
-			stmt.setString(1, object_type);
-			stmt.setString(2, nd.toString());
-			String owner=((SchemaNode)(parent).getParent()).toString();
-			stmt.setString(3,owner);
-			StringBuffer result = new StringBuffer(1000);
-			ResultSet rs=stmt.executeQuery();
-			String txt=null;
-			if(rs.next())
-			{
-				Clob clob=rs.getClob(1);
-				txt = clob.getSubString(1, (int)clob.length());
-			}
-	
-			rs.close();
-			stmt.close();
-			SQLEditorInput input = new SQLEditorInput("EXTRACT XML ("+SQLExplorerPlugin.getDefault().getNextElement()+").sql");
-			input.setSessionNode(sessionNode);
-			IWorkbenchPage page=SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			try{
-				SQLEditor editorPart= (SQLEditor) page.openEditor(input,IConstants.SQL_EDITOR_CLASS);
-				editorPart.setText(txt);
-			}catch(Throwable e){
-				SQLExplorerPlugin.error("Error creating sql editor for extract XML",e);
-			}
-		}catch(Exception e){
-			SQLExplorerPlugin.error("Error extracting ddl",e);
-		}
-	}
+    IDbModel nd;
+
+    SessionTreeNode sessionNode;
+
+    public ExtractXML(SessionTreeNode sessionNode, IDbModel nd) {
+        this.sessionNode = sessionNode;
+        this.nd = nd;
+    }
+
+    public String getText() {
+        return "Extract XML"; //$NON-NLS-1$
+    }
+
+    public void run() {
+        final String sql = "select DBMS_METADATA.GET_XML(?,?,?) FROM dual";
+        try {
+            SQLConnection conn = sessionNode.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            IDbModel parent = (IDbModel) nd.getParent();
+            String object_type = parent.toString();
+            if (object_type.equalsIgnoreCase("PACKAGE BODY"))
+                object_type = "PACKAGE_BODY";
+            stmt.setString(1, object_type);
+            stmt.setString(2, nd.toString());
+            String owner = ((SchemaNode) (parent).getParent()).toString();
+            stmt.setString(3, owner);
+            ResultSet rs = stmt.executeQuery();
+            String txt = null;
+            if (rs.next()) {
+                Clob clob = rs.getClob(1);
+                txt = clob.getSubString(1, (int) clob.length());
+            }
+
+            rs.close();
+            stmt.close();
+            SQLEditorInput input = new SQLEditorInput("EXTRACT XML (" + SQLExplorerPlugin.getDefault().getNextElement() + ").sql");
+            input.setSessionNode(sessionNode);
+            IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+            try {
+                SQLEditor editorPart = (SQLEditor) page.openEditor(input, IConstants.SQL_EDITOR_CLASS);
+                editorPart.setText(txt);
+            } catch (Throwable e) {
+                SQLExplorerPlugin.error("Error creating sql editor for extract XML", e);
+            }
+        } catch (Exception e) {
+            SQLExplorerPlugin.error("Error extracting ddl", e);
+        }
+    }
 }

@@ -1,4 +1,5 @@
 package net.sourceforge.sqlexplorer.ext.oracle;
+
 /*
  * Copyright (C) 2002-2004 Andrea Mazzolini
  * andreamazzolini@users.sourceforge.net
@@ -28,6 +29,7 @@ import net.sourceforge.sqlexplorer.dbviewer.model.SchemaNode;
 import net.sourceforge.sqlexplorer.ext.oracle.utility.InfoBuilder;
 import net.sourceforge.sqlexplorer.sqlpanel.SQLTextViewer;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -42,265 +44,287 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
 public class ProcNode implements IDbModel {
-	static final Object[] keys={"Created","Last DDL Time","TimeStamp","Status"};
-	private TableViewer tvParams;
-	private Table tbDependentObjects;
+    static final Object[] keys = { "Created", "Last DDL Time", "TimeStamp", "Status" };
 
-	public Composite getComposite(DetailManager detailManager){
-		Composite comp=new Composite(detailManager.getComposite(),SWT.NULL);
-		comp.setLayout(new FillLayout());
-		TabFolder tabFolder=new TabFolder(comp,SWT.NULL);
+    private SQLConnection conn;
 
-		final TabItem tabItem1=new TabItem(tabFolder,SWT.NULL);
-		tabItem1.setText("Parameters");
-		tabItem1.setToolTipText("Parameters");
-		createParamsPanel(tabFolder);
-		tvParams.setLabelProvider(new ParamInfoLabelProvider());
-		tabItem1.setControl(tvParams.getControl());
-		
-		
-		final TabItem tabItem2=new TabItem(tabFolder,SWT.NULL);
-		tabItem2.setText("Source"); //$NON-NLS-1$
-		tabItem2.setToolTipText("Source");	 //$NON-NLS-1$
-		viewer = new SQLTextViewer(tabFolder,SWT.V_SCROLL|SWT.H_SCROLL|SWT.BORDER|SWT.FULL_SELECTION,detailManager.getStore(),null);
-		tabItem2.setControl(viewer.getControl());	
-		
-		
-		final TabItem tabItem3=new TabItem(tabFolder,SWT.NULL);	
-		tabItem3.setText("Info"); //$NON-NLS-1$
-		tabItem3.setToolTipText("Info");	 //$NON-NLS-1$
-		tv=InfoBuilder.createInfoViewer(tabFolder,tabItem3);
-		viewer.setDocument(new Document(getSource()));
-		viewer.refresh();
-		viewer.setEditable(false);
+    private ArrayList list = new ArrayList(1);
 
-		final TabItem tabItem4=new TabItem(tabFolder,SWT.NULL);	
-		tabItem4.setText("Dependent Objects"); //$NON-NLS-1$
-		tabItem4.setToolTipText("Dependent Objects");	 //$NON-NLS-1$
-		createDependentObjectsPanel(tabFolder);
-		tabItem4.setControl(tbDependentObjects);
-		fillDependentObjects();
-		
-		final HashMap map=this.getInfo();		
-		tv.setContentProvider(new IStructuredContentProvider(){
-			public Object[] getElements(Object input) {
-				return map.entrySet().toArray();
-			}
-			public void dispose() {}
-			public void inputChanged(Viewer viewer, Object arg1, Object arg2) {}
-		});
-		tv.setInput(this);
-		final ArrayList paramLs=this.getParamInfoList();
-		tvParams.setContentProvider(new IStructuredContentProvider(){
+    IDbModel parent;
 
-			public Object[] getElements(Object inputElement) {
-				return paramLs.toArray();
-			}
+    private Table tbDependentObjects;
 
-			public void dispose() {
-			}
+    private TableViewer tv;
 
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {	
-			}
-		});
-		tvParams.setInput(this);		
-		return comp;
-	}/**
-	 * @param tbDependentObjects
-	 */
-	private void fillDependentObjects() {
-		ArrayList paramLs=new ArrayList();
-		final String sql="select owner,type,name from sys.ALL_DEPENDENCIES where referenced_owner=? and referenced_name=? and referenced_type='PROCEDURE' order by owner,type,name";
-		ResultSet rs=null;
-		try{
-			PreparedStatement ps=conn.prepareStatement(sql);
-			String owner=getOwner();
-			ps.setString(1,owner);
-			ps.setString(2,txt);
-			rs=ps.executeQuery();
+    private TableViewer tvParams;
 
-			while(rs.next()){
-				TableItem ti=new TableItem(tbDependentObjects,SWT.NULL);
-				ti.setText(0,rs.getString(1));
-				ti.setText(1,rs.getString(2));
-				ti.setText(2,rs.getString(3));
-			}
-			rs.close();
-			ps.close();
-		}catch(Throwable e){
-			//e.printStackTrace();
-		}finally{
-			try{
-				rs.close();
-			}catch(Throwable e){
-			}	
-		}
-		for (int i = 0; i < tbDependentObjects.getColumnCount(); i++) {
-			tbDependentObjects.getColumn(i).pack();
-		}
-		tbDependentObjects.layout();
-	}
-		
-	private void createDependentObjectsPanel(Composite parent){
-		tbDependentObjects=new Table(parent,SWT.FULL_SELECTION|SWT.H_SCROLL|SWT.V_SCROLL);
-		tbDependentObjects.setLinesVisible(true);
-		tbDependentObjects.setHeaderVisible(true);
-		TableColumn tc=new TableColumn(tbDependentObjects,SWT.NULL);
-		tc.setText("Owner");
-		tc=new TableColumn(tbDependentObjects,SWT.NULL);
-		tc.setText("Type");		
-		tc=new TableColumn(tbDependentObjects,SWT.NULL);
-		tc.setText("Name");				
-		for (int i = 0; i < tbDependentObjects.getColumnCount(); i++) {
-			tbDependentObjects.getColumn(i).pack();
-		}
-	}
-	private void createParamsPanel(Composite parent) {
-		tvParams=new TableViewer(parent,SWT.FULL_SELECTION|SWT.H_SCROLL|SWT.V_SCROLL);
-		Table tb=tvParams.getTable();
-		tb.setLinesVisible(true);
-		tb.setHeaderVisible(true);
-		TableColumn tc=new TableColumn(tb,SWT.NULL);
-		tc.setText("Param Name");
-		tc=new TableColumn(tb,SWT.NULL);
-		tc.setText("Data Type");		
-		tc=new TableColumn(tb,SWT.NULL);
-		tc.setText("Data Length");		
-		tc=new TableColumn(tb,SWT.NULL);
-		tc.setText("Data Precision");		
-		tc=new TableColumn(tb,SWT.NULL);
-		tc.setText("In/Out");		
-		for (int i = 0; i < tb.getColumnCount(); i++) {
-			tb.getColumn(i).pack();
-		}
-	}
-	
-	private TableViewer tv;
-	IDbModel parent;
-	
-	private SQLTextViewer viewer;
-	
-	private String txt;
-	private ArrayList list=new ArrayList(1);
-	public Object getParent(){return parent;}
-	public Object []getChildren(){return list.toArray();}
-	public String toString(){return txt;}
-	private SQLConnection conn;
+    private String txt;
 
-	public ProcNode(IDbModel s,String name,SQLConnection conn){
-		this.conn=conn;
-		parent=s;
-		txt=name;
+    private SQLTextViewer viewer;
 
-	}
+    public ProcNode(IDbModel s, String name, SQLConnection conn) {
+        this.conn = conn;
+        parent = s;
+        txt = name;
 
-	public String getOwner(){
-		return ((SchemaNode)((ProcTypeNode)parent).getParent()).toString();
-	}
-	private String getSource(){
-		StringBuffer buf=new StringBuffer();
-		
-		final String sql="SELECT text FROM sys.all_source where owner=? and name=? and type='PROCEDURE' order by line";
-		String delimiter=viewer.getTextWidget().getLineDelimiter();
-		ResultSet rs=null;
-  		try{
-			PreparedStatement ps=conn.prepareStatement(sql);
-			String owner=((SchemaNode)((ProcTypeNode)parent).getParent()).toString();
-			ps.setString(1,owner);
-			ps.setString(2,txt);
-			rs=ps.executeQuery();
-			while(rs.next()){
-				String text=rs.getString(1);
-				//System.out.println(text);
-				if(text!=null && text.length()>0){
-					buf.append(text.substring(0,text.length()-1));
-				}
-				buf.append(delimiter);
-			}
-			ps.close();
-  		}catch(Throwable e){
-  			
-  		}finally{
-			try{
-				rs.close();
-			}catch(Throwable e){
-			}
-		}
-		return buf.toString();
-		
-	}
-	private HashMap getInfo(){
-		final String sql="SELECT  created,last_ddl_time, timestamp, status FROM sys.all_objects where owner=? and object_type='PROCEDURE' and object_name=?";
-		HashMap map=new HashMap();
-		ResultSet rs=null;
-  		try{
-			PreparedStatement ps=conn.prepareStatement(sql);
-			String owner=((IDbModel)parent).getParent().toString();
-			ps.setString(1,owner);
-			ps.setString(2,txt);
-			rs=ps.executeQuery();
-			
-			if(rs.next()){
-				map.put(keys[0],rs.getString(1));
-				map.put(keys[1],rs.getString(2));
-				map.put(keys[2],rs.getString(3));
-				map.put(keys[3],rs.getString(4));
-			}
-			ps.close();
-  		}catch(Throwable e){
-  		}finally{
-			try{
-				rs.close();
-			}catch(Throwable e){
-			}
-  		}
-  		return map;
+    }
 
-	}
-	public ArrayList getParamInfoList(){
-		ArrayList paramLs=new ArrayList();
-		final String sql="SELECT argument_name, DATA_TYPE, data_length, data_precision,in_out,sequence FROM SYS.ALL_ARGUMENTS WHERE OWNER = ? and data_level=0 and object_id=(SELECT OBJECT_ID FROM SYS.ALL_OBJECTS WHERE OWNER = ? AND OBJECT_NAME = ? AND OBJECT_TYPE='PROCEDURE')  and sequence>0 order by sequence asc";
-		//DEFAULT_VALUE
-		ResultSet rs=null;
-		try{
-			PreparedStatement ps=conn.prepareStatement(sql);
-			String owner=getOwner();
-			ps.setString(1,owner);
-			ps.setString(2,owner);
-			ps.setString(3,txt);
-			rs=ps.executeQuery();
+    private void createDependentObjectsPanel(Composite parent) {
+        tbDependentObjects = new Table(parent, SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
+        tbDependentObjects.setLinesVisible(true);
+        tbDependentObjects.setHeaderVisible(true);
+        TableColumn tc = new TableColumn(tbDependentObjects, SWT.NULL);
+        tc.setText("Owner");
+        tc = new TableColumn(tbDependentObjects, SWT.NULL);
+        tc.setText("Type");
+        tc = new TableColumn(tbDependentObjects, SWT.NULL);
+        tc.setText("Name");
+        for (int i = 0; i < tbDependentObjects.getColumnCount(); i++) {
+            tbDependentObjects.getColumn(i).pack();
+        }
+    }
 
-			while(rs.next()){
-				ParamObj pObj=new ParamObj();
-				pObj.argumentName=rs.getString(1);
-				pObj.dataType=rs.getString(2);
-				pObj.dataLength=rs.getInt(3);
-				if(rs.wasNull())
-					pObj.dataLength=-1;
-			
-				pObj.dataPrecision=rs.getInt(4);
-				if(rs.wasNull())
-					pObj.dataPrecision=-1;
-				pObj.inOut=rs.getString(5);
-				paramLs.add(pObj);
-			}
-			rs.close();
-			ps.close();
-		}catch(Throwable e){
-		}finally{
-			try{
-				rs.close();
-			}catch(Throwable e){
-			}	
-		}
-		return paramLs;
-	}
-	public boolean isValid(){
-		try{
-			return getInfo().get(keys[3]).equals("VALID")?true:false;
-		}catch(Exception e){
-		}
-		return false;
-	
-	}
+    private void createParamsPanel(Composite parent) {
+        tvParams = new TableViewer(parent, SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL);
+        Table tb = tvParams.getTable();
+        tb.setLinesVisible(true);
+        tb.setHeaderVisible(true);
+        TableColumn tc = new TableColumn(tb, SWT.NULL);
+        tc.setText("Param Name");
+        tc = new TableColumn(tb, SWT.NULL);
+        tc.setText("Data Type");
+        tc = new TableColumn(tb, SWT.NULL);
+        tc.setText("Data Length");
+        tc = new TableColumn(tb, SWT.NULL);
+        tc.setText("Data Precision");
+        tc = new TableColumn(tb, SWT.NULL);
+        tc.setText("In/Out");
+        for (int i = 0; i < tb.getColumnCount(); i++) {
+            tb.getColumn(i).pack();
+        }
+    }
+
+    /**
+     * @param tbDependentObjects
+     */
+    private void fillDependentObjects() {
+        final String sql = "select owner,type,name from sys.ALL_DEPENDENCIES where referenced_owner=? and referenced_name=? and referenced_type='PROCEDURE' order by owner,type,name";
+        ResultSet rs = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            String owner = getOwner();
+            ps.setString(1, owner);
+            ps.setString(2, txt);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                TableItem ti = new TableItem(tbDependentObjects, SWT.NULL);
+                ti.setText(0, rs.getString(1));
+                ti.setText(1, rs.getString(2));
+                ti.setText(2, rs.getString(3));
+            }
+            rs.close();
+            ps.close();
+        } catch (Throwable e) {
+            // e.printStackTrace();
+        } finally {
+            try {
+                rs.close();
+            } catch (Throwable e) {
+            }
+        }
+        for (int i = 0; i < tbDependentObjects.getColumnCount(); i++) {
+            tbDependentObjects.getColumn(i).pack();
+        }
+        tbDependentObjects.layout();
+    }
+
+    public Object[] getChildren() {
+        return list.toArray();
+    }
+
+    public Composite getComposite(DetailManager detailManager) {
+        Composite comp = new Composite(detailManager.getComposite(), SWT.NULL);
+        comp.setLayout(new FillLayout());
+        TabFolder tabFolder = new TabFolder(comp, SWT.NULL);
+
+        final TabItem tabItem1 = new TabItem(tabFolder, SWT.NULL);
+        tabItem1.setText("Parameters");
+        tabItem1.setToolTipText("Parameters");
+        createParamsPanel(tabFolder);
+        tvParams.setLabelProvider(new ParamInfoLabelProvider());
+        tabItem1.setControl(tvParams.getControl());
+
+        final TabItem tabItem2 = new TabItem(tabFolder, SWT.NULL);
+        tabItem2.setText("Source"); //$NON-NLS-1$
+        tabItem2.setToolTipText("Source"); //$NON-NLS-1$
+        viewer = new SQLTextViewer(tabFolder, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER | SWT.FULL_SELECTION, detailManager.getStore(), null);
+        tabItem2.setControl(viewer.getControl());
+
+        final TabItem tabItem3 = new TabItem(tabFolder, SWT.NULL);
+        tabItem3.setText("Info"); //$NON-NLS-1$
+        tabItem3.setToolTipText("Info"); //$NON-NLS-1$
+        tv = InfoBuilder.createInfoViewer(tabFolder, tabItem3);
+        viewer.setDocument(new Document(getSource()));
+        viewer.refresh();
+        viewer.setEditable(false);
+
+        final TabItem tabItem4 = new TabItem(tabFolder, SWT.NULL);
+        tabItem4.setText("Dependent Objects"); //$NON-NLS-1$
+        tabItem4.setToolTipText("Dependent Objects"); //$NON-NLS-1$
+        createDependentObjectsPanel(tabFolder);
+        tabItem4.setControl(tbDependentObjects);
+        fillDependentObjects();
+
+        final HashMap map = this.getInfo();
+        tv.setContentProvider(new IStructuredContentProvider() {
+            public void dispose() {
+            }
+
+            public Object[] getElements(Object input) {
+                return map.entrySet().toArray();
+            }
+
+            public void inputChanged(Viewer viewer, Object arg1, Object arg2) {
+            }
+        });
+        tv.setInput(this);
+        final ArrayList paramLs = this.getParamInfoList();
+        tvParams.setContentProvider(new IStructuredContentProvider() {
+
+            public void dispose() {
+            }
+
+            public Object[] getElements(Object inputElement) {
+                return paramLs.toArray();
+            }
+
+            public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+            }
+        });
+        tvParams.setInput(this);
+        return comp;
+    }
+
+    private HashMap getInfo() {
+        final String sql = "SELECT  created,last_ddl_time, timestamp, status FROM sys.all_objects where owner=? and object_type='PROCEDURE' and object_name=?";
+        HashMap map = new HashMap();
+        ResultSet rs = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            String owner = ((IDbModel) parent).getParent().toString();
+            ps.setString(1, owner);
+            ps.setString(2, txt);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                map.put(keys[0], rs.getString(1));
+                map.put(keys[1], rs.getString(2));
+                map.put(keys[2], rs.getString(3));
+                map.put(keys[3], rs.getString(4));
+            }
+            ps.close();
+        } catch (Throwable e) {
+        } finally {
+            try {
+                rs.close();
+            } catch (Throwable e) {
+            }
+        }
+        return map;
+
+    }
+
+    public String getOwner() {
+        return ((SchemaNode) ((ProcTypeNode) parent).getParent()).toString();
+    }
+
+    public ArrayList getParamInfoList() {
+        ArrayList paramLs = new ArrayList();
+        final String sql = "SELECT argument_name, DATA_TYPE, data_length, data_precision,in_out,sequence FROM SYS.ALL_ARGUMENTS WHERE OWNER = ? and data_level=0 and object_id=(SELECT OBJECT_ID FROM SYS.ALL_OBJECTS WHERE OWNER = ? AND OBJECT_NAME = ? AND OBJECT_TYPE='PROCEDURE')  and sequence>0 order by sequence asc";
+        // DEFAULT_VALUE
+        ResultSet rs = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            String owner = getOwner();
+            ps.setString(1, owner);
+            ps.setString(2, owner);
+            ps.setString(3, txt);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ParamObj pObj = new ParamObj();
+                pObj.argumentName = rs.getString(1);
+                pObj.dataType = rs.getString(2);
+                pObj.dataLength = rs.getInt(3);
+                if (rs.wasNull())
+                    pObj.dataLength = -1;
+
+                pObj.dataPrecision = rs.getInt(4);
+                if (rs.wasNull())
+                    pObj.dataPrecision = -1;
+                pObj.inOut = rs.getString(5);
+                paramLs.add(pObj);
+            }
+            rs.close();
+            ps.close();
+        } catch (Throwable e) {
+        } finally {
+            try {
+                rs.close();
+            } catch (Throwable e) {
+            }
+        }
+        return paramLs;
+    }
+
+    public Object getParent() {
+        return parent;
+    }
+
+    private String getSource() {
+        StringBuffer buf = new StringBuffer();
+
+        final String sql = "SELECT text FROM sys.all_source where owner=? and name=? and type='PROCEDURE' order by line";
+        String delimiter = viewer.getTextWidget().getLineDelimiter();
+        ResultSet rs = null;
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            String owner = ((SchemaNode) ((ProcTypeNode) parent).getParent()).toString();
+            ps.setString(1, owner);
+            ps.setString(2, txt);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                String text = rs.getString(1);
+                // System.out.println(text);
+                if (text != null && text.length() > 0) {
+                    buf.append(text.substring(0, text.length() - 1));
+                }
+                buf.append(delimiter);
+            }
+            ps.close();
+        } catch (Throwable e) {
+
+        } finally {
+            try {
+                rs.close();
+            } catch (Throwable e) {
+            }
+        }
+        return buf.toString();
+
+    }
+
+    public boolean isValid() {
+        try {
+            return getInfo().get(keys[3]).equals("VALID") ? true : false;
+        } catch (Exception e) {
+        }
+        return false;
+
+    }
+
+    public String toString() {
+        return txt;
+    }
 }
