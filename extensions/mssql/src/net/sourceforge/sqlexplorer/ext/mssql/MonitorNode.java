@@ -37,8 +37,6 @@ public class MonitorNode implements IDbModel {
 
     private ArrayList list = new ArrayList(10);
 
-    private SQLConnection conn;
-
     public Composite getComposite(DetailManager detailManager) {
         return null;
     };
@@ -57,7 +55,6 @@ public class MonitorNode implements IDbModel {
 
     public MonitorNode(DatabaseNode root, String name, SQLConnection conn) {
         txt = name;
-        this.conn = conn;
         parent = root;
         list.add(new SessionsNode(this, "Sessions", conn));
     }
