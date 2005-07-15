@@ -257,22 +257,4 @@
          </selection>
       </wizard>
    </extension>
-   <extension
-         point="org.eclipse.ui.commands">
-      <activeKeyConfiguration
-            value="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </activeKeyConfiguration>
-      <command
-            name="Run SQL"
-            description="Run SQL"
-            category="org.eclipse.ui.category.edit"
-            id="net.sourceforge.sqlexplorer.sqlrun">
-      </command>
-      <keyBinding
-            string="Ctrl+F9"
-            scope="org.eclipse.ui.textEditorScope"
-            command="net.sourceforge.sqlexplorer.sqlrun"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
-   </extension>
 </plugin>
