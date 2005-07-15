@@ -24,7 +24,7 @@ import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;
-import org.eclipse.jface.text.rules.DefaultPartitioner;
+import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -147,7 +147,7 @@ public class SQLTextTools {
                 ISQLColorConstants.SQL_SINGLE_LINE_COMMENT,
                 ISQLColorConstants.SQL_STRING };
 
-        return new DefaultPartitioner(getPartitionScanner(), types);
+        return new FastPartitioner(getPartitionScanner(), types);
     }
 
     /**
