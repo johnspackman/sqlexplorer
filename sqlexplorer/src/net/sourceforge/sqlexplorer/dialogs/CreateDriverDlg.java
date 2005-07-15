@@ -156,7 +156,6 @@ public class CreateDriverDlg extends TitleAreaDialog {
         driverClassName = (driverClassName != null ? driverClassName.trim()
                 : "");//$NON-NLS-1$
         String url = exampleUrlField.getText().trim();
-        String[] tab = { IDialogConstants.OK_LABEL };
         if (name.equals("")) {//$NON-NLS-1$
             MessageDialog.openError(this.getShell(), Messages
                     .getString("Error..._2"), "Name is empty");//$NON-NLS-1$ //$NON-NLS-2$
