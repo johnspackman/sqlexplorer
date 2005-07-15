@@ -411,7 +411,7 @@ public class SQLPreferencePage extends PreferencePage implements
         });
         fFontEditor.setPreferenceStore(fOverlayStore);
         fFontEditor.setPreferenceName("font"); //$NON-NLS-1$
-        fFontEditor.setPreferencePage(this);
+        fFontEditor.setPage(this);
         fFontEditor.load();
         FontData[] fData = PreferenceConverter.getFontDataArray(fOverlayStore,
                 IConstants.FONT); //$NON-NLS-1$
@@ -482,7 +482,7 @@ public class SQLPreferencePage extends PreferencePage implements
          */
         if (fFontEditor != null) {
             fFontEditor.setPreferenceStore(null);
-            fFontEditor.setPreferencePage(null);
+            fFontEditor.setPage(null);
         }
         this.setPreferenceStore(null);
         super.dispose();

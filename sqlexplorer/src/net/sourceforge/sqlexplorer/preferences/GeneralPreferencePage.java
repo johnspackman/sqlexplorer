@@ -145,12 +145,12 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
 	private void initialize(){
 		fMaxSqlRowEditor.setPreferenceStore(fOverlayStore);
 		fMaxSqlRowEditor.setPreferenceName(IConstants.MAX_SQL_ROWS); //$NON-NLS-1$
-		fMaxSqlRowEditor.setPreferencePage(this);
+		fMaxSqlRowEditor.setPage(this);
 		fMaxSqlRowEditor.load();
 		
 		fPreviewRowCountEditor.setPreferenceStore(fOverlayStore);
 		fPreviewRowCountEditor.setPreferenceName(IConstants.PRE_ROW_COUNT); //$NON-NLS-1$
-		fPreviewRowCountEditor.setPreferencePage(this);
+		fPreviewRowCountEditor.setPage(this);
 		fPreviewRowCountEditor.load();
 		
 		fAutoCommitBox.getDisplay().asyncExec(new Runnable() {
@@ -179,11 +179,11 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
 		}*/
 		if(fPreviewRowCountEditor!=null){
 			fPreviewRowCountEditor.setPreferenceStore(null);
-			fPreviewRowCountEditor.setPreferencePage(null);
+			fPreviewRowCountEditor.setPage(null);
 		}
 		if(fMaxSqlRowEditor!=null){
 			fMaxSqlRowEditor.setPreferenceStore(null);
-			fMaxSqlRowEditor.setPreferencePage(null);
+			fMaxSqlRowEditor.setPage(null);
 		}
 		
 		super.dispose();
