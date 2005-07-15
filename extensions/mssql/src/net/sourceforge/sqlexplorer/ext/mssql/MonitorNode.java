@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package net.sourceforge.sqlexplorer.ext.mssql;
+
 import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Composite;
@@ -29,23 +30,39 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 /**
  * @author mazzolini
  */
-public class MonitorNode implements IDbModel{
-	public Composite getComposite(DetailManager detailManager){return null;};
-	public Object getParent(){return parent;}
-	public String toString(){return txt;}
-	public String getTitle(){return txt;}
-	
-	private IDbModel parent;
-	private String txt;
-	private ArrayList list=new ArrayList(10);
-	private SQLConnection conn;
-	public MonitorNode(DatabaseNode root,String name,SQLConnection conn){
-		txt=name;
-		this.conn=conn;
-		parent=root;
-		list.add(new SessionsNode(this,"Sessions",conn));
-	}
-	public Object[] getChildren() {
-		return list.toArray();
-	};
+public class MonitorNode implements IDbModel {
+    private IDbModel parent;
+
+    private String txt;
+
+    private ArrayList list = new ArrayList(10);
+
+    private SQLConnection conn;
+
+    public Composite getComposite(DetailManager detailManager) {
+        return null;
+    };
+
+    public Object getParent() {
+        return parent;
+    }
+
+    public String toString() {
+        return txt;
+    }
+
+    public String getTitle() {
+        return txt;
+    }
+
+    public MonitorNode(DatabaseNode root, String name, SQLConnection conn) {
+        txt = name;
+        this.conn = conn;
+        parent = root;
+        list.add(new SessionsNode(this, "Sessions", conn));
+    }
+
+    public Object[] getChildren() {
+        return list.toArray();
+    };
 }

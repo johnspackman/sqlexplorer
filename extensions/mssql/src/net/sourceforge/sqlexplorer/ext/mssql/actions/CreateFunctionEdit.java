@@ -18,8 +18,6 @@
  */
 package net.sourceforge.sqlexplorer.ext.mssql.actions;
 
-
-
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.dbviewer.model.IDbModel;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -32,49 +30,51 @@ import org.eclipse.ui.IWorkbenchPage;
 
 /**
  * @author cjp0tter
- *
+ * 
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class CreateFunctionEdit extends Action {
 
-	SessionTreeNode sessionNode;
-	IDbModel node;
-	public CreateFunctionEdit(SessionTreeNode sessionTreeNode, IDbModel node) {
-		
-		this.sessionNode=sessionTreeNode;
-		this.node=node;
-	}
+    SessionTreeNode sessionNode;
 
-	public String getText(){
-		return "Create a new Function...";
-	}
-	public void run(){
-		try{
-			String owner=sessionNode.getSQLConnection().getSQLMetaData().getUserName();
-			String separator= System.getProperty("line.separator");
+    IDbModel node;
 
-			String txt="CREATE FUNCTION <function>"+separator
-							+ " ( @parameter1  varchar(30) )"+separator
-							+ " RETURNS /* some type */ "+separator
-							+ "AS"+separator
-							+ "--"+separator
-							+ "-- NAME        : "+separator
-							+ "-- DESCRIPTION : "+separator
-							+ "-- AUTHOR      "+separator+separator
-							+"BEGIN "+separator
-							+" /* do something */"+separator
-							+" RETURN /* something of some type */"+separator
-							+ "END"+separator;
-							
-			SQLEditorInput input = new SQLEditorInput("CREATE FUNCTION ("+SQLExplorerPlugin.getDefault().getNextElement()+").sql");
-			input.setSessionNode(sessionNode);
-			IWorkbenchPage page=SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			SQLEditor editorPart= (SQLEditor) page.openEditor(input,IConstants.SQL_EDITOR_CLASS);
-			editorPart.setText(txt);
-		}catch(Exception e){
-			SQLExplorerPlugin.error("Error creating sql editor",e);
-		}
-	}
+    public CreateFunctionEdit(SessionTreeNode sessionTreeNode, IDbModel node) {
+
+        this.sessionNode = sessionTreeNode;
+        this.node = node;
+    }
+
+    public String getText() {
+        return "Create a new Function...";
+    }
+
+    public void run() {
+        try {
+            String separator = System.getProperty("line.separator");
+
+            String txt = "CREATE FUNCTION <function>" + separator
+                    + " ( @parameter1  varchar(30) )" + separator
+                    + " RETURNS /* some type */ " + separator + "AS"
+                    + separator + "--" + separator + "-- NAME        : "
+                    + separator + "-- DESCRIPTION : " + separator
+                    + "-- AUTHOR      " + separator + separator + "BEGIN "
+                    + separator + " /* do something */" + separator
+                    + " RETURN /* something of some type */" + separator
+                    + "END" + separator;
+
+            SQLEditorInput input = new SQLEditorInput("CREATE FUNCTION ("
+                    + SQLExplorerPlugin.getDefault().getNextElement() + ").sql");
+            input.setSessionNode(sessionNode);
+            IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench()
+                    .getActiveWorkbenchWindow().getActivePage();
+            SQLEditor editorPart = (SQLEditor) page.openEditor(input,
+                    IConstants.SQL_EDITOR_CLASS);
+            editorPart.setText(txt);
+        } catch (Exception e) {
+            SQLExplorerPlugin.error("Error creating sql editor", e);
+        }
+    }
 
 }
