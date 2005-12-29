@@ -82,37 +82,36 @@ public class SessionViewer extends TreeViewer{
 					//actGroup.updateActionBars();
 					if(sel.getFirstElement() instanceof SessionTreeNode){
 						SessionTreeNode node=(SessionTreeNode)sel.getFirstElement();
-						
+
 						try{
-							ConnectionInfo connInfo=(ConnectionInfo)SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("net.sourceforge.sqlexplorer.plugin.views.ConnectionInfo");
+							ConnectionInfo connInfo=(ConnectionInfo)SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().findView("net.sourceforge.sqlexplorer.plugin.views.ConnectionInfo");
 							if(connInfo!=null)
 								connInfo.setInput(node);
 						}catch(Throwable e){
 							SQLExplorerPlugin.error("Error opening connection info view",e);
 						}
 						try {
-							DBView dbView=(DBView)SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("net.sourceforge.sqlexplorer.plugin.views.DBView");
+							DBView dbView=(DBView)SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().findView("net.sourceforge.sqlexplorer.plugin.views.DBView");
 							if(dbView!=null)
 								dbView.setInput(node);
 	
 						} catch (Throwable e) {
 							SQLExplorerPlugin.error("Error opening db view",e);
-						}
-						
+						}						
 					}else if (sel.getFirstElement() instanceof RootSessionTreeNode){
+
 						try {
-							DBView dbView=(DBView)SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("net.sourceforge.sqlexplorer.plugin.views.DBView");
+							DBView dbView=(DBView)SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().findView("net.sourceforge.sqlexplorer.plugin.views.DBView");
 							dbView.setInput(null);
 						}catch(Throwable e){
 						}
 						try{
-							ConnectionInfo connInfo=(ConnectionInfo)SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("net.sourceforge.sqlexplorer.plugin.views.ConnectionInfo");
+							ConnectionInfo connInfo=(ConnectionInfo)SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().findView("net.sourceforge.sqlexplorer.plugin.views.ConnectionInfo");
 							if(connInfo!=null)
 								connInfo.setInput(null);
 						}catch(Throwable e){
 							SQLExplorerPlugin.error("Error opening connection info view",e);
 						}
-						
 					}
 					
 				}
