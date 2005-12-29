@@ -46,6 +46,8 @@ public class ApplicationFiles {
 	/** Flle to log execution information to. */
 	public static final String EXECUTION_LOG_FILE = USER_SETTINGS_FOLDER + File.separator + "jfacedbc-sql.log"; //$NON-NLS-1$
 
+	/** File used to persist sql history */
+	public static final String SQLHISTORY_FILE_NAME = USER_SETTINGS_FOLDER + File.separator + "SQLHistory.txt"; //$NON-NLS-1$
 
 	private String	jfacedbcPluginsDir = JFACEDBC_FOLDER + File.separator + "plugins"; //$NON-NLS-1$
 

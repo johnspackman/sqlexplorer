@@ -19,11 +19,19 @@ package net.sourceforge.sqlexplorer.plugin;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import net.sourceforge.sqlexplorer.AliasModel;
+import net.sourceforge.sqlexplorer.ApplicationFiles;
 import net.sourceforge.sqlexplorer.DataCache;
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IConstants;
@@ -79,6 +87,10 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 
     private ArrayList sqlHistory = new ArrayList();
 
+    private static final String NEWLINE_SEPARATOR = System.getProperty("line.separator");
+    
+    private static final String NEWLINE_REPLACEMENT = "#LF#";
+    
     public ArrayList getSQLHistory() {
         return sqlHistory;
     }
@@ -102,19 +114,25 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         }
     }
 
+    /**
+     * Add a query string to the sql history.
+     * New queries are added to the start of the list, so that
+     * the most recent entry is always located on the top of
+     * the history list
+     * 
+     * @param newSql sql query string
+     */
     public void addSQLtoHistory(String newSql) {
-        boolean found = false;
+
         for (int i = 0; i < sqlHistory.size(); i++) {
             String sql = (String) sqlHistory.get(i);
             if (sql.equals(newSql)) {
-                found = true;
+                sqlHistory.remove(i);
                 break;
             }
         }
-        if (!found) {
-            sqlHistory.add(newSql);
-            sqlHistoryChanged();
-        }
+        sqlHistory.add(0, newSql);
+        sqlHistoryChanged();
     }
 
     public SQLDriverManager getSQLDriverManager() {
@@ -180,6 +198,9 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         } catch (MissingResourceException x) {
             resourceBundle = null;
         }
+        
+        // load SQL History from previous sessions
+        loadSQLHistoryFromFile();
     }
 
     public void shutdown() throws CoreException {
@@ -187,6 +208,9 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         RootSessionTreeNode rstn = stm.getRoot();
         rstn.closeAllConnections();
 
+        // save SQL History for next session
+        saveSQLHistoryToFile();
+        
         super.shutdown();
 
     }
@@ -257,4 +281,76 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, String.valueOf(message), t));
     }
 
+    
+    /**
+     * Load the sql history from previous sessions.
+     */
+    private void loadSQLHistoryFromFile() {
+    	   	
+    	try {
+    	
+    		File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME);
+    		
+    		if (!file.exists()) {
+    			return;
+    		}
+    		
+    		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+    		
+    		String currentLine = reader.readLine();    		
+    		while (currentLine != null) {
+    			if (currentLine.trim().length() != 0) {
+    				currentLine = currentLine.replaceAll(SQLExplorerPlugin.NEWLINE_REPLACEMENT, SQLExplorerPlugin.NEWLINE_SEPARATOR);
+    				sqlHistory.add(currentLine);
+    			}
+    			currentLine = reader.readLine();
+    		}
+    		
+    		reader.close();
+    		
+    	} catch (Exception e) {
+    		error("Couldn't load sql history.", e);
+    	}
+    	
+    }
+    
+    /**
+     * Save all the used queries into a file, so that we
+     * can reuse them next time.
+     */
+    private void saveSQLHistoryToFile() {
+    	
+    	try {
+        	
+    		File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME);
+    		    		
+    		if (file.exists()) {
+    			// clear old history
+    			file.delete();    			
+    		}
+    		
+    		if (sqlHistory.size() == 0) {
+    			// nothing to save
+    			return;
+    		}
+    		    		
+    		file.createNewFile();
+    		
+    		BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+    		
+    		Iterator it = sqlHistory.iterator();
+    		while (it.hasNext()) {
+    			String qry = (String) it.next();
+    			qry = qry.replaceAll(SQLExplorerPlugin.NEWLINE_SEPARATOR, SQLExplorerPlugin.NEWLINE_REPLACEMENT);
+    			writer.write(qry, 0, qry.length());
+    			writer.newLine();
+    		}
+    		
+    		writer.close();
+    		
+    	} catch (Exception e) {
+    		error("Couldn't save sql history.", e);
+    	}
+    	
+    }
 }

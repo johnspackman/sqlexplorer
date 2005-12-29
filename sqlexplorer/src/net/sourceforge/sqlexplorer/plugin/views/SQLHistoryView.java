@@ -131,6 +131,25 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 				}
 			}
 		});
+		
+		menuMgr.add(new Action() {
+			
+			public String getText() {
+				return "Clear history";
+			}
+					
+			public void run() {
+			
+				try {
+							
+					SQLExplorerPlugin.getDefault().getSQLHistory().clear();
+					changed();
+				} catch (Throwable e) {
+					SQLExplorerPlugin.error("Error clearing sql history", e);
+				}
+			}
+		});
+					
 		menuMgr.add(new Action(){
 			public String getText(){
 				return "Copy to Clipboard";
