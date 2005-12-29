@@ -68,8 +68,8 @@ public class AliasModel {
 		sl.add(as);
 
 	}
-	public ISQLAlias createAlias(IIdentifier id){
-		return cache.createAlias(id);
+	public SQLAlias createAlias(IIdentifier id){
+		return (SQLAlias) cache.createAlias(id);
 	}
 	private static class IISQLAliasComparator implements Comparator
 	{

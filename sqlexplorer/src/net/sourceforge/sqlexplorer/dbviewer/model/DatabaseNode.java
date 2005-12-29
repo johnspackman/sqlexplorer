@@ -19,7 +19,7 @@ package net.sourceforge.sqlexplorer.dbviewer.model;
  */
 
 import java.util.ArrayList;
-
+import java.util.Iterator;
 
 import net.sourceforge.sqlexplorer.dbviewer.DetailManager;
 
@@ -27,22 +27,78 @@ import org.eclipse.swt.widgets.Composite;
 
 public class DatabaseNode implements IDbModel{
 	
+	private String _metaFilterExpression;
+	
+	String txt;
+	
+	
 	public Composite getComposite(DetailManager detailManager){return null;};
 	ArrayList children = new ArrayList(10);
+	
+	
 	public void add(IDbModel e){
 		children.add(e);
 	}
+	
 	public DatabaseNode(String txt){
 		this.txt=txt;
 	}
+	
+	/**
+	 * Returns all or a subset of schemas/databases depending on whether
+	 * a comma separated list of regular expression filters has been set. 
+	 */
 	public Object[] getChildren(){
+			
+		if (_metaFilterExpression == null || _metaFilterExpression.length() == 0) {
+			return children.toArray();
+		}
+		
+		String[] filterExpressions = _metaFilterExpression.split(",");
+		
+		if (filterExpressions != null && filterExpressions.length > 0) {
+			
+			ArrayList restrictedChildren = new ArrayList();
+		
+			Iterator it = children.iterator();
+			while (it.hasNext()) {
+				
+				Object schema = it.next();
+				if (schema != null) {
+					
+					String name = schema.toString();					
+					for (int j = 0; j < filterExpressions.length; j++) {
+						
+						String regex = filterExpressions[j].trim();
+						regex = regex.replace("?", ".");
+						regex = regex.replace("*", ".*");
+						if (regex.length() == 0 || name.matches(regex)) {
+							// we have a match, include node..
+							restrictedChildren.add(schema);
+							break;
+						}						
+					}						
+				}
+				
+			}
+
+			
+			if (restrictedChildren.size() > 0) {
+				return restrictedChildren.toArray();
+			} 
+		}
+		
 		return children.toArray();
 	}
-	String txt;
-	public Object getParent(){return null;};
-	public String toString(){return txt;}
-	/* (non-Javadoc)
-	 * @see net.sourceforge.sqlexplorer.dbviewer.model.IDbModel#activate(net.sourceforge.sqlexplorer.dbviewer.DetailManager)
-	 */
 	
+	
+	
+	public Object getParent(){return null;};
+
+	public String toString(){return txt;}
+
+	public void setMetaFilterExpression(String expression) {
+		_metaFilterExpression = expression;
+	}
+		
 }

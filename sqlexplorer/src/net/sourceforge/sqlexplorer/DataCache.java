@@ -30,7 +30,6 @@ import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
 import net.sourceforge.squirrel_sql.fw.persist.ValidationException;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
-import net.sourceforge.squirrel_sql.fw.sql.SQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriver;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverManager;
 import net.sourceforge.squirrel_sql.fw.util.DuplicateObjectException;
@@ -53,6 +52,7 @@ import net.sourceforge.squirrel_sql.fw.xml.XMLObjectCache;
 public class DataCache {
 	
 	private final static Class SQL_ALIAS_IMPL = SQLAlias.class;
+	private final static Class OLD_SQL_ALIAS_IMPL = net.sourceforge.squirrel_sql.fw.sql.SQLAlias.class;	
 	private final static Class SQL_DRIVER_IMPL = SQLDriver.class;
          // private Logger _logger;
           private SQLDriverManager _driverMgr;
@@ -83,6 +83,8 @@ public class DataCache {
 
 		loadDrivers();
 		loadAliases();
+		
+		migrateAliases();
 	}
 
 	/**
@@ -270,5 +272,30 @@ public class DataCache {
 		} catch (DuplicateObjectException ex) {
 			SQLExplorerPlugin.error("Error loading aliases file ",ex); //$NON-NLS-1$
 		}
+	}
+	
+	/**
+	 * Convert old style aliases to the new explorer Aliases.
+	 */
+	private void migrateAliases() {
+		
+		try {
+		
+			Iterator it = _cache.getAllForClass(OLD_SQL_ALIAS_IMPL);
+			while (it.hasNext()) {
+				ISQLAlias oldAlias = (ISQLAlias) it.next();
+				if (oldAlias != null) {
+					SQLAlias newAlias = new SQLAlias(oldAlias.getIdentifier());
+					newAlias.assignFrom(oldAlias);
+//					_cache.remove(OLD_SQL_ALIAS_IMPL, oldAlias.getIdentifier());
+					_cache.add(newAlias);
+				}
+			}
+			_cache.saveAllForClass(ApplicationFiles.USER_ALIAS_FILE_NAME, SQL_ALIAS_IMPL);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			SQLExplorerPlugin.error("Error migrating aliases.", e);
+		}
+				
 	}
 }

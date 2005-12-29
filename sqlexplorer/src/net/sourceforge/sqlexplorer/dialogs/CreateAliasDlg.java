@@ -23,9 +23,9 @@ import net.sourceforge.sqlexplorer.AliasModel;
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IdentifierFactory;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.SQLAlias;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.squirrel_sql.fw.persist.ValidationException;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 import net.sourceforge.squirrel_sql.fw.util.DuplicateObjectException;
 
@@ -35,7 +35,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -46,22 +45,31 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * Modified by Davy Vanherbergen to include metadata filter expression.
+ *
+ */
 public class CreateAliasDlg extends TitleAreaDialog {
 	protected void setShellStyle(int newShellStyle) {
 		super.setShellStyle(newShellStyle|SWT.RESIZE);//Make the dialog resizable
 	}
 	DriverModel driverModel;
 	private static final int SIZING_TEXT_FIELD_WIDTH = 250;
-	private ISQLAlias alias;
+	private SQLAlias alias;
+	
 	Text nameField;
 	Text userField;
 	Text urlField;
 	Text passwordField;
+	Text _metaFilterExpressionField;
+	
 	Button btnActivate;
+	Button _btnAutoLogon;
+	
 	Combo combo;
 	int type;
 	private AliasModel aliasModel;
-	public CreateAliasDlg(Shell parentShell,DriverModel dm,int type,ISQLAlias al,AliasModel am) {
+	public CreateAliasDlg(Shell parentShell,DriverModel dm,int type,SQLAlias al,AliasModel am) {
 		super(parentShell);
 		driverModel=dm;
 		alias=al;
@@ -87,8 +95,10 @@ public class CreateAliasDlg extends TitleAreaDialog {
 			alias.setUrl(urlField.getText().trim());
 			alias.setUserName(userField.getText().trim());
 			alias.setName(this.nameField.getText().trim());
+			alias.setMetaFilterExpression(_metaFilterExpressionField.getText().trim());
 			alias.setConnectAtStartup(btnActivate.getSelection());
 			alias.setPassword(passwordField.getText().trim());
+			alias.setAutoLogon(_btnAutoLogon.getSelection());
 			if((this.type==1)||(type==3)){
 				aliasModel.addAlias(alias);
 			}
@@ -241,23 +251,41 @@ public class CreateAliasDlg extends TitleAreaDialog {
 		data.widthHint = SIZING_TEXT_FIELD_WIDTH;
 		passwordField.setLayoutData(data);
 		
-		
 		Label label6= new Label(nameGroup, SWT.WRAP);
-		label6.setText("Open on Eclipse Startup"); //$NON-NLS-1$
+		label6.setText(Messages.getString("AliasDialog.MetaFilterExpression"));
+		label6.setToolTipText(Messages.getString("AliasDialog.MetaFilterExpressionToolTip"));
+		_metaFilterExpressionField = new Text(nameGroup,SWT.BORDER);
+		data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
+		data.horizontalSpan=2;
+		data.widthHint = SIZING_TEXT_FIELD_WIDTH;
+		_metaFilterExpressionField.setLayoutData(data);
+		
+		_metaFilterExpressionField.addKeyListener(new KeyListener(){
+			public void keyPressed(org.eclipse.swt.events.KeyEvent e){
+				CreateAliasDlg.this.validate();
+			};			
+			public void keyReleased(org.eclipse.swt.events.KeyEvent e){
+				CreateAliasDlg.this.validate();
+			};
+		});
+		
+		
+		Label label7= new Label(nameGroup, SWT.WRAP);
+		label7.setText("Open on Eclipse Startup"); //$NON-NLS-1$
 		btnActivate = new Button(nameGroup,SWT.CHECK);
 		data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
 		data.horizontalSpan=2;
 		data.widthHint = SIZING_TEXT_FIELD_WIDTH;
 		btnActivate.setLayoutData(data);
 	
-			/*userField.addKeyListener(new KeyListener(){
-				public void keyPressed(org.eclipse.swt.events.KeyEvent e){
-					CreateAliasDlg.this.validate();
-				};			
-				public void keyReleased(org.eclipse.swt.events.KeyEvent e){
-					CreateAliasDlg.this.validate();
-				};
-		});*/
+		Label label8= new Label(nameGroup, SWT.WRAP);
+		label8.setText(Messages.getString("AliasDialog.AutoLogon"));
+		label8.setToolTipText(Messages.getString("AliasDialog.AutoLogonToolTip"));
+		_btnAutoLogon = new Button(nameGroup,SWT.CHECK);
+		data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
+		data.horizontalSpan=2;
+		data.widthHint = SIZING_TEXT_FIELD_WIDTH;
+		_btnAutoLogon.setLayoutData(data);
 		
 		combo.addSelectionListener(new org.eclipse.swt.events.SelectionListener(){
 			public void widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent e){}
@@ -286,8 +314,11 @@ public class CreateAliasDlg extends TitleAreaDialog {
 	private void loadData(){
 		nameField.setText(alias.getName());
 		userField.setText(alias.getUserName());
+		_metaFilterExpressionField.setText(alias.getMetaFilterExpression());
 		passwordField.setText(alias.getPassword());
 		btnActivate.setSelection(alias.isConnectAtStartup());
+		_btnAutoLogon.setSelection(alias.isAutoLogon());
+		
 		if(type!=1){
 			ISQLDriver iSqlDriver=driverModel.getDriver(alias.getDriverIdentifier());
 			combo.setText(iSqlDriver.getName());

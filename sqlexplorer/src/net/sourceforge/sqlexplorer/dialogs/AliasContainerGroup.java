@@ -22,6 +22,7 @@ import net.sourceforge.sqlexplorer.AliasModel;
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IdentifierFactory;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.SQLAlias;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.actions.OpenPasswordConnectDialogAction;
@@ -88,7 +89,7 @@ public class AliasContainerGroup extends Composite {
 			};
 			public void run(){
 				IdentifierFactory factory = IdentifierFactory.getInstance();
-				ISQLAlias alias = model.createAlias(factory.createIdentifier());
+				SQLAlias alias = model.createAlias(factory.createIdentifier());
 				CreateAliasDlg dlg = new CreateAliasDlg(AliasContainerGroup.this.getShell(),driverModel,1,alias,model);
 				dlg.open();
 				tableViewer.refresh();
@@ -111,7 +112,7 @@ public class AliasContainerGroup extends Composite {
 			};
 			public void run(){
 				StructuredSelection sel=(StructuredSelection)tableViewer.getSelection();
-				ISQLAlias al=(ISQLAlias)sel.getFirstElement();
+				SQLAlias al=(SQLAlias)sel.getFirstElement();
 				if(al!=null){
 					CreateAliasDlg dlg = new CreateAliasDlg(AliasContainerGroup.this.getShell(),driverModel,2,al,model);
 					dlg.open();
@@ -137,9 +138,9 @@ public class AliasContainerGroup extends Composite {
 			};
 			public void run(){
 				StructuredSelection sel=(StructuredSelection)tableViewer.getSelection();
-				ISQLAlias al=(ISQLAlias)sel.getFirstElement();
+				SQLAlias al=(SQLAlias)sel.getFirstElement();
 				IdentifierFactory factory = IdentifierFactory.getInstance();
-				ISQLAlias alias = model.createAlias(factory.createIdentifier());
+				SQLAlias alias = model.createAlias(factory.createIdentifier());
 				if(al!=null){
 					try{
 						alias.assignFrom(al);
@@ -167,7 +168,7 @@ public class AliasContainerGroup extends Composite {
 			};
 			public void run(){
 				StructuredSelection sel=(StructuredSelection)tableViewer.getSelection();
-				ISQLAlias al=(ISQLAlias)sel.getFirstElement();
+				SQLAlias al=(SQLAlias)sel.getFirstElement();
 				if(al!=null){
 					model.removeAlias(al);
 					tableViewer.refresh();
@@ -233,7 +234,7 @@ public class AliasContainerGroup extends Composite {
 			public void doubleClick(DoubleClickEvent event) {
 				IStructuredSelection selection = (IStructuredSelection)event.getSelection();
 				if(selection!=null){
-					ISQLAlias al=(ISQLAlias)selection.getFirstElement();
+					SQLAlias al=(SQLAlias)selection.getFirstElement();
 					OpenPasswordConnectDialogAction openDlgAction=
 						new OpenPasswordConnectDialogAction(tableViewer.getTable().getShell(),al,driverModel,SQLExplorerPlugin.getDefault().getPreferenceStore(),SQLExplorerPlugin.getDefault().getSQLDriverManager());
 					openDlgAction.run();

@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer.sessiontree.actions;
  
 
 import net.sourceforge.sqlexplorer.DriverModel;
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.LoggingProgress;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.RetrievingTableDataProgress;
@@ -56,33 +57,48 @@ public class OpenPasswordConnectDialogAction extends Action {
 		
 	}
 	public void run(){
-		PasswordConnDlg dlg=new PasswordConnDlg(shell,alias,driverModel,store);
-		if(dlg.open()==Window.OK){
-			String pswd=dlg.getPassword();
-			String user=dlg.getUser();
-			ISQLDriver dv=driverModel.getDriver(alias.getDriverIdentifier());
-			try{
-				LoggingProgress lp=new LoggingProgress(dmgr,dv,alias,user,pswd);
-				ProgressMonitorDialog pg=new ProgressMonitorDialog(shell);
-				pg.run(true, false, lp);
-				if(lp.isOk()){
-					SQLConnection conn=lp.getConn();
-					boolean autoCommit=dlg.getAutoCommit();
-					conn.setAutoCommit(autoCommit);
-					if(autoCommit==false){
-						conn.setCommitOnClose(dlg.getCommitOnClose());
-					}
-					RetrievingTableDataProgress rtdp=new RetrievingTableDataProgress(conn,alias,SQLExplorerPlugin.getDefault().stm,pswd);
-					ProgressMonitorDialog pg2=new ProgressMonitorDialog(shell);
-					pg2.run(true,true,rtdp);
-				}else{
-					MessageDialog.openError(shell,Messages.getString("Error..._4"),lp.getError());
-				}
-
-			}catch(java.lang.Exception e){
-				SQLExplorerPlugin.error("Error Logging ",e); //$NON-NLS-1$
+		
+		String user = alias.getUserName();
+		String pswd = alias.getPassword();
+		boolean autoCommit = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.AUTO_COMMIT);
+		boolean commitOnClose = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.COMMIT_ON_CLOSE);		
+				
+		if (!alias.isAutoLogon()) {
+			
+			PasswordConnDlg dlg = new PasswordConnDlg(shell, alias, driverModel, store);
+			if (dlg.open() == Window.OK){
+				pswd = dlg.getPassword();
+				user = dlg.getUser();
+				autoCommit = dlg.getAutoCommit();
+				commitOnClose = dlg.getCommitOnClose();
+			} else {
+				return;
 			}
 		}
+			
+		ISQLDriver dv=driverModel.getDriver(alias.getDriverIdentifier());
+		try{
+			LoggingProgress lp=new LoggingProgress(dmgr,dv,alias,user,pswd);
+			ProgressMonitorDialog pg=new ProgressMonitorDialog(shell);
+			pg.run(true, false, lp);
+			if(lp.isOk()){
+				SQLConnection conn=lp.getConn();
+				
+				conn.setAutoCommit(autoCommit);
+				if(autoCommit==false){
+					conn.setCommitOnClose(commitOnClose);
+				}
+				RetrievingTableDataProgress rtdp=new RetrievingTableDataProgress(conn,alias,SQLExplorerPlugin.getDefault().stm,pswd);
+				ProgressMonitorDialog pg2=new ProgressMonitorDialog(shell);
+				pg2.run(true,true,rtdp);
+			}else{
+				MessageDialog.openError(shell,Messages.getString("Error..._4"),lp.getError());
+			}
+
+		}catch(java.lang.Exception e){
+			SQLExplorerPlugin.error("Error Logging ",e); //$NON-NLS-1$
+		}
+		
 
 	}
 }
