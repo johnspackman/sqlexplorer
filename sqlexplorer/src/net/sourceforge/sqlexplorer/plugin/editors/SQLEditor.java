@@ -136,6 +136,17 @@ public class SQLEditor extends TextEditor {
 	{
 		return getSourceViewer();
 	}
+	
+	/**
+	 * Override method to always return false, since we do not want
+	 * to save our sql editor and avoid unnecessary save prompts.
+	 * 
+	 * @see org.eclipse.ui.ISaveablePart#isSaveOnCloseNeeded()
+	 */
+	public boolean isSaveOnCloseNeeded() {		
+		return false;
+	}
+	
 	protected ISourceViewer createSourceViewer(Composite parent,  IVerticalRuler ruler, int style){
 											  		
 		parent.setLayout(new FillLayout());	
