@@ -117,7 +117,7 @@ public class TableConstructor {
 				tc.addSelectionListener(headerListener);
 			}
 			viewer.setColumnProperties(ss);
-			stm=new SqlTableModel(reader,metaData,1000,conn,ss,sorter);
+			stm=new SqlTableModel(reader,metaData,1000,conn,ss,sorter, sql);
 			SqlTableLabelProvider slp=new SqlTableLabelProvider(stm);
 			viewer.setLabelProvider(slp);	
 			viewer.setInput(stm);

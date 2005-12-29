@@ -99,7 +99,7 @@ public class Utils {
                     final SQLTableSorter sorter = new SQLTableSorter(count, metaData);
                     ResultSetReader reader = new ResultSetReader(rs);
                     final SqlTableModel mo = new SqlTableModel(reader, metaData, SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(
-                            IConstants.MAX_SQL_ROWS), session.getConnection(), ss, sorter);
+                            IConstants.MAX_SQL_ROWS), session.getConnection(), ss, sorter, sql);
                     final IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
                     if (page != null) {
                         Display.getCurrent().asyncExec(new Runnable() {
