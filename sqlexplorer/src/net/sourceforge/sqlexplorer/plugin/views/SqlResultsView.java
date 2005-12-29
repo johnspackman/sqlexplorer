@@ -154,13 +154,15 @@ public class SqlResultsView extends ViewPart {
 			
 			TabItem ti=new TabItem(tabFolder,SWT.NULL);
 			ti.setText(""+(tabItemNumber+i+1));
+			ti.setToolTipText(mo[i].getSQLStatement());
+			
 			//if(cmp!=null &&  !cmp.isDisposed())
 			//	cmp.dispose();
 			cmp[i]=new CompositeSQLResultsViewer(this,tabFolder,SWT.NULL,i, ti);
 			ti.setControl(cmp[i]);
-		}
-		
+		}		
 		refresh();
+		tabFolder.setSelection(tabFolder.getItemCount() - 1);
 		
 	}
 	private void refresh()throws Exception{

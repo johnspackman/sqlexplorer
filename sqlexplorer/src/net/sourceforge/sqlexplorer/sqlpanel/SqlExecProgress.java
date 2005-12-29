@@ -171,7 +171,7 @@ public class SqlExecProgress implements IRunnableWithProgress {
 					}
 					final SQLTableSorter sorter=new SQLTableSorter(count,metaData);
 					ResultSetReader reader=new ResultSetReader(rs);
-					SqlTableModel md= new SqlTableModel(reader,metaData,maxRows,sessionTreeNode.getConnection(),ss,sorter);
+					SqlTableModel md= new SqlTableModel(reader,metaData,maxRows,sessionTreeNode.getConnection(),ss,sorter, sql);
 					lt.endMonitor();
 					return md;
 				}

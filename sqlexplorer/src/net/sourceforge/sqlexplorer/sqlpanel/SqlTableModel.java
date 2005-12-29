@@ -40,6 +40,9 @@ public class SqlTableModel {
 	ResultSetMetaData metaData;
 	String []columnNames;
 	SQLConnection conn;
+	
+	private String _sqlStatement;
+	
 	public int getColumnIndex(String property){
 		Integer ind=(Integer)columnMap.get(property);
 		int i=-1;
@@ -52,13 +55,15 @@ public class SqlTableModel {
 	public String ss[];
 	public SQLTableSorter sorter;
 	
-	public SqlTableModel(ResultSetReader rs,ResultSetMetaData metaData, int maxRows, SQLConnection conn, String[]ss,SQLTableSorter sorter)throws java.lang.Exception{
+	public SqlTableModel(ResultSetReader rs,ResultSetMetaData metaData, int maxRows, SQLConnection conn, String[]ss,SQLTableSorter sorter, String sql)throws java.lang.Exception{
 		this.sorter=sorter;
 		this.ss=ss;
 		this.conn=conn;
 		this.rs=rs;
 		this.maxRows=maxRows;
 		this.metaData=metaData;
+		_sqlStatement = sql;
+		
 		count=metaData.getColumnCount();
 		columnNames=new String[count];
 		for(int i=0;i<count;i++){
@@ -161,6 +166,16 @@ public class SqlTableModel {
 	public String[] getColumns()throws SQLException {
 		return columnNames;
 		
+	}
+	
+	/**
+	 * Returns the SQL Statement that was used to get the results
+	 * for this tableModel.
+	 * 
+	 * @return SQLStatement SQL query string
+	 */
+	public String getSQLStatement() {
+		return _sqlStatement;
 	}
 
 }

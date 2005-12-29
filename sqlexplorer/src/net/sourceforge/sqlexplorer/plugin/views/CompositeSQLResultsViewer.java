@@ -78,7 +78,13 @@ public class CompositeSQLResultsViewer extends Composite {
 		layout.verticalSpacing = 0;
 		myParent.setLayout(layout);
 		//CoolBar coolBar = new CoolBar(this, SWT.FLAT);
-		    
+		    		
+		// Add the sql statement to the results tab & tooltip
+		Label label = new Label(myParent, SWT.WRAP);		
+		String sqlStatement = sqlResultsView.mo[ii].getSQLStatement();
+		label.setText(sqlStatement);
+		label.setToolTipText(sqlStatement);	
+		
 		ToolBarManager toolBarMgr = new ToolBarManager(SWT.FLAT);
 		//ToolBar toolBar = 
 		toolBarMgr.createControl(myParent);
@@ -98,17 +104,13 @@ public class CompositeSQLResultsViewer extends Composite {
 		GridData gid = new GridData();
 		gid.horizontalAlignment = GridData.FILL;
 		gid.verticalAlignment = GridData.BEGINNING;
-		toolBarMgr.getControl().setLayoutData(gid);
-				
-				
-				
+		toolBarMgr.getControl().setLayoutData(gid);				
 				
 		gid = new GridData();
 		gid.grabExcessHorizontalSpace = gid.grabExcessVerticalSpace = true;
 		gid.horizontalAlignment = gid.verticalAlignment = GridData.FILL;
 
-		Label label = new Label(myParent, SWT.NULL);
-		label.setText("QQ coisa");
+
 		
 		tableViewer=new TableViewer(myParent,SWT.V_SCROLL | SWT.H_SCROLL|SWT.FULL_SELECTION); 
 		tableViewer.getTable().setHeaderVisible(true);
