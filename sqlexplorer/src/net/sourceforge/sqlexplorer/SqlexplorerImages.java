@@ -59,6 +59,10 @@ public class SqlexplorerImages {
 		return URLUtil.getResourceURL("icons/copy_edit.gif"); //$NON-NLS-1$
 	}
 	
+    public static final URL getRestoreDriver(){
+        return URLUtil.getResourceURL("icons/copycont_l_co.gif"); //$NON-NLS-1$
+    }
+    
 	public static final URL getDeleteDriver(){
 		return URLUtil.getResourceURL("icons/delete_edit.gif"); //$NON-NLS-1$
 	}
@@ -84,6 +88,10 @@ public class SqlexplorerImages {
 		return URLUtil.getResourceURL("icons/tree_mode.gif"); //$NON-NLS-1$
 	}
 	
+    public static final URL getFilterIcon() {
+        return URLUtil.getResourceURL("icons/filter_history.gif");
+    }
+    
 	public static final URL getAllRowsIcon(){
 		return URLUtil.getResourceURL("icons/nextall.gif"); //$NON-NLS-1$
 	}

@@ -1,4 +1,5 @@
 package net.sourceforge.sqlexplorer;
+
 /*
  * Copyright (C) 2002-2004 Andrea Mazzolini
  * andreamazzolini@users.sourceforge.net
@@ -25,72 +26,93 @@ import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 import net.sourceforge.squirrel_sql.fw.util.DuplicateObjectException;
 
-
 public class DriverModel {
-	//private int count=0;
-	//private ArrayList ls=new ArrayList();
-	private SortedList sl;
-	private DataCache cache;
-	
 
-	public DriverModel(DataCache c){
-		cache=c;
-		
-		sl = new SortedList(iSQLDriverComparator);
-		sl.addAll(c.drivers());
+    private SortedList sl;
 
-	};
-	//private DataCache cache;
-	public int size(){
-		return sl.size();
-	
-	}
-	
-	public ISQLDriver getElement(int i){
-		
-		return (ISQLDriver)sl.get(i);
+    private DataCache cache;
 
-	}
-	public Object[] getElements(){
-		return sl.toArray();
-	}
-	public void removeDriver(ISQLDriver dv){
-		cache.removeDriver(dv);
 
-		sl.remove(dv);
+    public DriverModel(DataCache c) {
 
-		
-	}
-	
-	public ISQLDriver getDriver(IIdentifier id){
-		return cache.getDriver(id);
-	}
-	public ISQLDriver createDriver(IIdentifier id){
-		return cache.createDriver(id);
-	}
-	public void addDriver(ISQLDriver dv)throws DuplicateObjectException,
-												ClassNotFoundException,
-												java.lang.IllegalAccessException,
-												java.lang.InstantiationException,
-												MalformedURLException{
-		cache.addDriver(dv);
-		sl.add(dv);
+        cache = c;
+        sl = new SortedList(iSQLDriverComparator);
+        sl.addAll(c.drivers());
 
-	}
+    };
 
-	
-	private static ISQLDriverComparator iSQLDriverComparator = new ISQLDriverComparator();
-	private static class ISQLDriverComparator implements Comparator
-	{
-		
-		/**
-		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-		 */
-		public int compare(Object o1, Object o2)
-		{
-			return ((ISQLDriver)o1).getName().compareToIgnoreCase(((ISQLDriver)o2).getName());
- 		}
 
-	}
+    public int size() {
+
+        return sl.size();
+
+    }
+
+
+    public ISQLDriver getElement(int i) {
+
+        return (ISQLDriver) sl.get(i);
+
+    }
+
+
+    public Object[] getElements() {
+
+        return sl.toArray();
+    }
+
+
+    public void removeDriver(ISQLDriver dv) {
+
+        cache.removeDriver(dv);
+
+        sl.remove(dv);
+
+    }
+
+
+    public ISQLDriver getDriver(IIdentifier id) {
+
+        return cache.getDriver(id);
+    }
+
+
+    public ISQLDriver createDriver(IIdentifier id) {
+
+        return cache.createDriver(id);
+    }
+
+
+    public void addDriver(ISQLDriver dv) throws DuplicateObjectException, ClassNotFoundException,
+            java.lang.IllegalAccessException, java.lang.InstantiationException, MalformedURLException {
+
+        cache.addDriver(dv);
+        sl.add(dv);
+
+    }
+
+    private static ISQLDriverComparator iSQLDriverComparator = new ISQLDriverComparator();
+
+    private static class ISQLDriverComparator implements Comparator {
+
+        /**
+         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+         */
+        public int compare(Object o1, Object o2) {
+
+            return ((ISQLDriver) o1).getName().compareToIgnoreCase(((ISQLDriver) o2).getName());
+        }
+
+    }
+
+
+    /**
+     * Restore all default drivers.
+     */
+    public void restoreDrivers() {
+
+        cache.restoreDefaultDrivers();
+        sl = new SortedList(iSQLDriverComparator);
+        sl.addAll(cache.drivers());
+    }
 }
-
