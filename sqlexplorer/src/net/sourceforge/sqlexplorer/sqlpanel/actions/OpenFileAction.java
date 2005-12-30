@@ -31,22 +31,29 @@ import org.eclipse.swt.widgets.FileDialog;
 
 
 public class OpenFileAction extends Action {
-	private SQLEditor txtComposite;
-    private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getOpenFileIcon()); 
+	
+    private SQLEditor _txtComposite;
+    
+    private ImageDescriptor img = ImageDescriptor.createFromURL(SqlexplorerImages.getOpenFileIcon()); 
     
 	public OpenFileAction(SQLEditor txtComposite){
-		this.txtComposite=txtComposite;
+		_txtComposite=txtComposite;
 	}
+    
 	public  String getText() {
          return Messages.getString("Open_1");   //$NON-NLS-1$
     }
 
     public void run() {
-    	FileDialog dlg=new FileDialog(txtComposite.getSite().getShell(),SWT.OPEN);
-		dlg.setFilterExtensions(new String[]{"*.sql;*.txt"}); //$NON-NLS-1$
-		String str=dlg.open();
-		if(str!=null){
-			txtComposite.loadFile(str);
+    	
+        FileDialog dlg = new FileDialog(_txtComposite.getSite().getShell(), SWT.OPEN | SWT.MULTI);
+		
+        dlg.setFilterExtensions(new String[]{"*.sql;*.txt"});
+        
+		String path = dlg.open();
+		if(path != null) {
+            String[] files = dlg.getFileNames();            
+			_txtComposite.loadFiles(files, dlg.getFilterPath());
 		}
 				
     }
