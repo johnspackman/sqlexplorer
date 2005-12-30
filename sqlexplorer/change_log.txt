@@ -1,0 +1,31 @@
+2005.12.30 Enhancement to SQL Editor
+===========================================================
+- file open dialog now allows loading of multiple files into editor
+
+2005.12.30 Enhancements to driver view  -  Davy Vanherbergen
+===========================================================
+- doubleclick on driver opens 'modify driver' dialog
+- filter to show only loaded drivers
+- option to restore the default drivers
+
+2005.12.27 Bug fix 1391442  -  Davy Vanherbergen
+===========================================================
+- Fixed a focus problem when the connection info and connections view are in the same view pane.
+
+2005.12.16 Implemented Request 1246961  -  Davy Vanherbergen
+===========================================================
+- added filtering of database metadata information.
+- added autologon setting in alias
+
+2005.12.16 Implemented Request 1382429  -  Davy Vanherbergen
+===========================================================
+- sql history remains available between sessions
+
+2005.12.16 Implemented Request 1237618  -  Davy Vanherbergen
+===========================================================
+- removed save prompt when sql editor is closed
+
+2005.12.16 Impemented Request 1277760 / Fixed Bug 1233626  -  Davy Vanherbergen
+===========================================================
+- SQL statement is displayed when hovering over the different result tabs
+- after an SQL is executed, the results pane now automatically focusses on the last results.
