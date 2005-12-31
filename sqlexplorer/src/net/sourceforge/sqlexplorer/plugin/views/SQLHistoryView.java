@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.plugin.views;
 
+import net.sourceforge.sqlexplorer.MultiLineString;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.SqlHistoryChangedListener;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
@@ -106,7 +107,10 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 					if(page==null)
 						return;
 					SQLEditor editorPart= (SQLEditor) page.openEditor((IEditorInput) input,"net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
-					editorPart.setText(ti[0].getText());
+					
+                    Object data = ti[0].getData();
+                    MultiLineString mls = (MultiLineString) data;
+                    editorPart.setText(mls.getOriginalText());
 
 				}catch(Throwable e){
 					SQLExplorerPlugin.error("Error creating sql editor",e);
@@ -161,7 +165,11 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 						return;
 					Clipboard cb=new Clipboard(Display.getCurrent());
 					TextTransfer textTransfer = TextTransfer.getInstance();
-					cb.setContents(new Object[]{ti[0].getText()}, new Transfer[]{textTransfer});			
+                    
+                    Object data = ti[0].getData();
+                    MultiLineString mls = (MultiLineString) data;
+                    
+					cb.setContents(new Object[]{mls.getOriginalText()}, new Transfer[]{textTransfer});			
 			
 				}catch(Throwable e){
 					SQLExplorerPlugin.error("Error copying to clipboard",e);

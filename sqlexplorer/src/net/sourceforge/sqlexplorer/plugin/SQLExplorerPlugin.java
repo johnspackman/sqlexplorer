@@ -35,6 +35,7 @@ import net.sourceforge.sqlexplorer.ApplicationFiles;
 import net.sourceforge.sqlexplorer.DataCache;
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.MultiLineString;
 import net.sourceforge.sqlexplorer.ext.PluginManager;
 import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModel;
@@ -122,10 +123,10 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
      * 
      * @param newSql sql query string
      */
-    public void addSQLtoHistory(String newSql) {
+    public void addSQLtoHistory(MultiLineString newSql) {
 
         for (int i = 0; i < sqlHistory.size(); i++) {
-            String sql = (String) sqlHistory.get(i);
+            MultiLineString sql = (MultiLineString) sqlHistory.get(i);
             if (sql.equals(newSql)) {
                 sqlHistory.remove(i);
                 break;
@@ -301,7 +302,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     		while (currentLine != null) {
     			if (currentLine.trim().length() != 0) {
     				currentLine = currentLine.replaceAll(SQLExplorerPlugin.NEWLINE_REPLACEMENT, SQLExplorerPlugin.NEWLINE_SEPARATOR);
-    				sqlHistory.add(currentLine);
+    				sqlHistory.add(new MultiLineString(currentLine));
     			}
     			currentLine = reader.readLine();
     		}
@@ -340,7 +341,9 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     		
     		Iterator it = sqlHistory.iterator();
     		while (it.hasNext()) {
-    			String qry = (String) it.next();
+    			
+                MultiLineString tmp = (MultiLineString) it.next();
+                String qry = tmp.getOriginalText();
     			qry = qry.replaceAll(SQLExplorerPlugin.NEWLINE_SEPARATOR, SQLExplorerPlugin.NEWLINE_REPLACEMENT);
     			writer.write(qry, 0, qry.length());
     			writer.newLine();

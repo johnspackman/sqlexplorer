@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.plugin.views;
 
+import net.sourceforge.sqlexplorer.MultiLineString;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlRowElement;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlTableContentProvider;
@@ -81,9 +82,9 @@ public class CompositeSQLResultsViewer extends Composite {
 		    		
 		// Add the sql statement to the results tab & tooltip
 		Label label = new Label(myParent, SWT.WRAP);		
-		String sqlStatement = sqlResultsView.mo[ii].getSQLStatement();
-		label.setText(sqlStatement);
-		label.setToolTipText(sqlStatement);	
+		MultiLineString sqlStatement = sqlResultsView.mo[ii].getSQLStatement();
+		label.setText(sqlStatement.getSingleLineText());
+		label.setToolTipText(sqlStatement.getMultiLineText(MultiLineString.DEFAULT_WRAPLENGTH));	
 		
 		ToolBarManager toolBarMgr = new ToolBarManager(SWT.FLAT);
 		//ToolBar toolBar = 

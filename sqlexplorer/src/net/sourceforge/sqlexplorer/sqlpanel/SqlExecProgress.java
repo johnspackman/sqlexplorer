@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.MultiLineString;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
@@ -93,7 +94,7 @@ public class SqlExecProgress implements IRunnableWithProgress {
 				{
 					rsLis.add(sqlTbModel);
 				}
-				SQLExplorerPlugin.getDefault().addSQLtoHistory(querySql);
+				SQLExplorerPlugin.getDefault().addSQLtoHistory(new MultiLineString(querySql));
 			}
 		}
 				
@@ -171,7 +172,7 @@ public class SqlExecProgress implements IRunnableWithProgress {
 					}
 					final SQLTableSorter sorter=new SQLTableSorter(count,metaData);
 					ResultSetReader reader=new ResultSetReader(rs);
-					SqlTableModel md= new SqlTableModel(reader,metaData,maxRows,sessionTreeNode.getConnection(),ss,sorter, sql);
+					SqlTableModel md= new SqlTableModel(reader,metaData,maxRows,sessionTreeNode.getConnection(),ss,sorter, new MultiLineString(sql));
 					lt.endMonitor();
 					return md;
 				}

@@ -19,27 +19,24 @@
 package net.sourceforge.sqlexplorer.plugin.views;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.MultiLineString;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.sqlpanel.SQLTableSorter;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlTableLabelProvider;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlTableModel;
 
-
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
-
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyEvent;
-
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -71,14 +68,7 @@ public class SqlResultsView extends ViewPart {
 	 * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	public void createPartControl(Composite parent) {
-		this.parent=parent;
-		//cmp=new CompositeSQLResultsViewer(this,parent,SWT.NULL);
-		/*try{
-			refresh();
-		}catch(Exception e){
-			JFaceDbcPlugin.error("Error displaying sql result data",e);
-		}*/
-		
+		this.parent=parent;		
 	}
 
 	/* (non-Javadoc)
@@ -130,11 +120,7 @@ public class SqlResultsView extends ViewPart {
 			}
 			
 		}
-/*
-		if(tabFolder!=null && !tabFolder.isDisposed())
-			tabFolder.dispose();
-		tabFolder=new TabFolder(parent,SWT.NULL);
-*/
+
 		if (tabFolder == null) {
 			tabFolder = new TabFolder(parent,SWT.NULL);
 		}
@@ -154,7 +140,7 @@ public class SqlResultsView extends ViewPart {
 			
 			TabItem ti=new TabItem(tabFolder,SWT.NULL);
 			ti.setText(""+(tabItemNumber+i+1));
-			ti.setToolTipText(mo[i].getSQLStatement());
+			ti.setToolTipText(mo[i].getSQLStatement().getMultiLineText(MultiLineString.DEFAULT_WRAPLENGTH));
 			
 			//if(cmp!=null &&  !cmp.isDisposed())
 			//	cmp.dispose();
