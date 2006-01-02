@@ -101,13 +101,13 @@ public class AboutDlg extends Dialog {
         tabItem1.setToolTipText(Messages.getString("AboutDialog.Tab.AboutToolTip"));
 
         TabItem tabItem2 = new TabItem(tabFolder, SWT.NULL);
-        tabItem2.setText(Messages.getString("AboutDialog.Tab.License"));
-        tabItem2.setToolTipText(Messages.getString("AboutDialog.Tab.LicenseToolTip"));
+        tabItem2.setText(Messages.getString("AboutDialog.Tab.Credits"));
+        tabItem2.setToolTipText(Messages.getString("AboutDialog.Tab.CreditsToolTip"));
 
         TabItem tabItem3 = new TabItem(tabFolder, SWT.NULL);
-        tabItem3.setText(Messages.getString("AboutDialog.Tab.Credits"));
-        tabItem3.setToolTipText(Messages.getString("AboutDialog.Tab.CreditsToolTip"));
-
+        tabItem3.setText(Messages.getString("AboutDialog.Tab.License"));
+        tabItem3.setToolTipText(Messages.getString("AboutDialog.Tab.LicenseToolTip"));
+        
         TabItem tabItem4 = new TabItem(tabFolder, SWT.NULL);
         tabItem4.setText(Messages.getString("AboutDialog.Tab.System"));
         tabItem4.setToolTipText(Messages.getString("AboutDialog.Tab.SystemToolTip"));
@@ -117,15 +117,15 @@ public class AboutDlg extends Dialog {
         tabItem5.setToolTipText(Messages.getString("AboutDialog.Tab.PluginsToolTip"));
 
         new AboutItem(tabItem1, tabFolder);
-        new LicenseItem(tabItem2, tabFolder);
-        new CreditsItem(tabItem3, tabFolder);
+        new CreditsItem(tabItem2, tabFolder);
+        new LicenseItem(tabItem3, tabFolder);        
         new SystemProperties(tabItem4, tabFolder);
         new PluginsProperties(tabItem5, tabFolder, pluginManager);
         return parentComposite;
     }
 
     protected Point getInitialSize() {
-        return new Point(500, 400);
+        return new Point(495, 370);
     }
 
     protected void createButtonsForButtonBar(Composite parent) {
