@@ -45,7 +45,7 @@ public class SelectAll extends Action {
 	}
 
 	
-	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getSqlIcon()); 
+	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getSqlEditorIcon()); 
 	public String getText(){
 		return Messages.getString("SelectAll.Open_in_Sql_Editor_1"); //$NON-NLS-1$
 	}

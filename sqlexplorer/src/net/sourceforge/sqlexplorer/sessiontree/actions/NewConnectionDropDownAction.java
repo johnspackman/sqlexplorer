@@ -7,6 +7,7 @@
 package net.sourceforge.sqlexplorer.sessiontree.actions;
 
 import net.sourceforge.sqlexplorer.AliasModel;
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
@@ -33,9 +34,9 @@ public class NewConnectionDropDownAction extends Action implements IMenuCreator,
     private IViewPart view;
 
     public NewConnectionDropDownAction() {
-        setText("Open New Connection");
-        setToolTipText("Open New Connection");
-        setImageDescriptor(ImageDescriptor.createFromURL(SqlexplorerImages.getCreateDriverIcon()));
+        setText(Messages.getString("ConnectionsView.Actions.NewConnection"));
+        setToolTipText(Messages.getString("ConnectionsView.Actions.NewConnectionToolTip"));
+        setImageDescriptor(ImageDescriptor.createFromURL(SqlexplorerImages.getNewConnectionIcon()));
         setMenuCreator(this);
     }
 
@@ -77,7 +78,7 @@ public class NewConnectionDropDownAction extends Action implements IMenuCreator,
     }
 
     public void run(IAction action) {
-        System.out.println("This rocks");
+        // noop
     }
 
     public void selectionChanged(IAction action, ISelection selection) {

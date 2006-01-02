@@ -1,4 +1,5 @@
 package net.sourceforge.sqlexplorer.sessiontree.actions;
+
 /*
  * Copyright (C) 2002-2004 Andrea Mazzolini
  * andreamazzolini@users.sourceforge.net
@@ -27,30 +28,35 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 /**
  * @author Mazzolini
- *
+ * 
  */
 public class NewConnection extends Action {
-	ISQLAlias alias;
-	/**
-	 * @param alias
-	 */
-	public NewConnection(ISQLAlias alias) {
-		this.alias=alias;
-	}
-	public void run(){
-		final DriverModel driverModel=SQLExplorerPlugin.getDefault().getDriverModel();
-		final IPreferenceStore store=SQLExplorerPlugin.getDefault().getPreferenceStore();
-		final SQLDriverManager driverMgr=SQLExplorerPlugin.getDefault().getSQLDriverManager();
 
-		OpenPasswordConnectDialogAction openDlgAction=
-			new OpenPasswordConnectDialogAction(null,alias,driverModel,store,driverMgr);
-		openDlgAction.run();
-					
-	}
-	public String getText(){
-		String name=alias.getName();
-		name=name.replace('@','_');
-		return name;
-	}
+    ISQLAlias alias;
 
+    /**
+     * @param alias
+     */
+    public NewConnection(ISQLAlias alias) {
+        this.alias = alias;
+    }
+
+    public void run() {
+        final DriverModel driverModel = SQLExplorerPlugin.getDefault().getDriverModel();
+        final IPreferenceStore store = SQLExplorerPlugin.getDefault().getPreferenceStore();
+        final SQLDriverManager driverMgr = SQLExplorerPlugin.getDefault().getSQLDriverManager();
+
+        OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(null, alias, driverModel,
+                store, driverMgr);
+        openDlgAction.run();
+
+    }
+
+    public String getText() {
+        String name = alias.getName();
+        name = name.replace('@', '_');
+        return name;
+    }
+
+    
 }

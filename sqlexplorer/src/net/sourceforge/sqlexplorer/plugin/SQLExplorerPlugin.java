@@ -115,6 +115,16 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         }
     }
 
+    
+    /**
+     * Get the version number as specified in plugin.xml
+     * @return version number of SQL Explorer plugin
+     */
+    public String getVersion() {        
+        String version = (String) plugin.getBundle().getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION);
+        return version;
+    }
+    
     /**
      * Add a query string to the sql history.
      * New queries are added to the start of the list, so that

@@ -19,7 +19,6 @@ package net.sourceforge.sqlexplorer.sessiontree.model;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -33,39 +32,37 @@ import org.eclipse.swt.graphics.Image;
  * Defines the icons for the various ISessionTreeNode objects
  */
 public class SessionTreeLabelProvider extends LabelProvider {
-	private HashMap imageCache = new HashMap(5);
-	private ImageDescriptor rootDescriptor=ImageDescriptor.createFromURL(SqlexplorerImages.getRootIcon());
-	private ImageDescriptor sessionDescriptor=ImageDescriptor.createFromURL(SqlexplorerImages.getSessionIcon());	
-	//private ImageDescriptor dbDescriptor=ImageDescriptor.createFromURL(JFaceDbcImages.getOpenDBIcon());
-	//private ImageDescriptor historyDescriptor=ImageDescriptor.createFromURL(JFaceDbcImages.getHistory());		
-	
-	public Image getImage (Object element) {
-		ImageDescriptor descriptor=null;
-		if(element instanceof RootSessionTreeNode)
-			descriptor = rootDescriptor;
-		else if(element instanceof SessionTreeNode){
-			descriptor = sessionDescriptor;
-		}
-		
-		//else if (element instanceof DataBaseSessionTreeNode){
-		//	descriptor = dbDescriptor;	
-		//}
-		Image image = (Image)imageCache.get(descriptor);
-		if (image == null) {
-			image = descriptor.createImage();
-			imageCache.put(descriptor, image);
-		}
-		return image;
+
+    private HashMap imageCache = new HashMap(5);
+
+    private ImageDescriptor rootDescriptor = ImageDescriptor.createFromURL(SqlexplorerImages.getRootIcon());
+
+    private ImageDescriptor sessionDescriptor = ImageDescriptor.createFromURL(SqlexplorerImages.getConnectionIcon());
+
+    public Image getImage(Object element) {
+        ImageDescriptor descriptor = null;
+        if (element instanceof RootSessionTreeNode)
+            descriptor = rootDescriptor;
+        else if (element instanceof SessionTreeNode) {
+            descriptor = sessionDescriptor;
+        }
+
+        Image image = (Image) imageCache.get(descriptor);
+        if (image == null) {
+            image = descriptor.createImage();
+            imageCache.put(descriptor, image);
+        }
+        return image;
     }
 
-    public String getText (Object element) {           
-       return element.toString();
+    public String getText(Object element) {
+        return element.toString();
     }
+
     public void dispose() {
-		for (Iterator i = imageCache.values().iterator(); i.hasNext();) {
-			((Image) i.next()).dispose();
-		}
-		imageCache.clear();
-	}
+        for (Iterator i = imageCache.values().iterator(); i.hasNext();) {
+            ((Image) i.next()).dispose();
+        }
+        imageCache.clear();
+    }
 }
-

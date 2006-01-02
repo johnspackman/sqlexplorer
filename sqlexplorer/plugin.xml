@@ -3,7 +3,7 @@
 <plugin
    id="net.sourceforge.sqlexplorer"
    name="SQLExplorer Plugin"
-   version="2.2.4"
+   version="2.2.5"
    provider-name="Alexandre L Telles"
    class="net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin">
 
@@ -48,12 +48,12 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="SQLExplorer"
+            name="SQL Explorer"
             id="SQLExplorerPlugin">
       </category>
       <view
             name="SQL Results"
-            icon="icons/app_obj.gif"
+            icon="icons/common_tab.gif"
             category="SQLExplorerPlugin"
             class="net.sourceforge.sqlexplorer.plugin.views.SqlResultsView"
             id="net.sourceforge.sqlexplorer.plugin.views.SqlResultsView">
@@ -74,7 +74,7 @@
       </view>
       <view
             name="Connections"
-            icon="icons/showparents_mode.gif"
+            icon="icons/connections_view.gif"
             category="SQLExplorerPlugin"
             class="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
             id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
@@ -95,7 +95,7 @@
       </view>
       <view
             name="Aliases"
-            icon="icons/app_obj.gif"
+            icon="icons/alias.gif"
             category="SQLExplorerPlugin"
             class="net.sourceforge.sqlexplorer.plugin.views.AliasView"
             id="net.sourceforge.sqlexplorer.plugin.views.AliasView">
@@ -104,7 +104,7 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            name="SQLExplorer"
+            name="SQL Explorer"
             icon="icons/perspective_icon.gif"
             class="net.sourceforge.sqlexplorer.plugin.perspectives.SQLExplorerPluginPerspective"
             id="net.sourceforge.sqlexplorer.plugin.perspectives.SQLExplorerPluginPerspective">
@@ -113,7 +113,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            name="SQLExplorer"
+            name="SQL Explorer"
             class="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage"
             id="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage">
       </page>
@@ -134,7 +134,7 @@
             default="true"
             name="Sql Editor"
             extensions="sql"
-            icon="icons/perspective_icon.gif"
+            icon="icons/editor.gif"
             class="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor"
             contributorClass="net.sourceforge.sqlexplorer.plugin.editors.SQLEditorActionContributor"
             id="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor">
@@ -152,71 +152,44 @@
          point="org.eclipse.ui.viewActions">     
       <viewContribution
             targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
-            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.about">
+            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.rollback">
          <action
-               label="About"
-               icon="icons/view.gif"
-               class="net.sourceforge.sqlexplorer.sessiontree.actions.About"
-               tooltip="About"
-               enablesFor="*"
+               class="net.sourceforge.sqlexplorer.sessiontree.actions.Rollback"
+               disabledIcon="icons/rollback_dis.gif"
+               enablesFor="1"
+               icon="icons/rollback.gif"
+               id="net.sourceforge.sqlexplorer.actions.rollback"
+               label="Roll Back"
                toolbarPath="additions"
-               id="net.sourceforge.sqlexplorer.actions.about">
+               tooltip="Rollback">
          </action>
       </viewContribution>
       <viewContribution
             targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
             id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.commit">
          <action
-               label="Commit"
-               icon="icons/commit.gif"
                class="net.sourceforge.sqlexplorer.sessiontree.actions.Commit"
-               tooltip="Commit"
+               disabledIcon="icons/commit_dis.gif"
                enablesFor="1"
+               icon="icons/commit.gif"
+               id="net.sourceforge.sqlexplorer.actions.commit"
+               label="Commit"
                toolbarPath="additions"
-               id="net.sourceforge.sqlexplorer.actions.commit">
-         </action>
-      </viewContribution>
-      <viewContribution
-            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
-            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.rollback">
-         <action
-               label="Rollback"
-               icon="icons/rollback.gif"
-               class="net.sourceforge.sqlexplorer.sessiontree.actions.Rollback"
-               tooltip="Rollback"
-               enablesFor="1"
-               toolbarPath="additions"
-               id="net.sourceforge.sqlexplorer.actions.rollback">
-         </action>
-      </viewContribution>
-      <viewContribution
-            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
-            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.close">
-         <action
-               label="Close Connection"
-               icon="icons/remove_co.gif"
-               class="net.sourceforge.sqlexplorer.sessiontree.actions.CloseConnection"
-               tooltip="Close Connection"
-               enablesFor="1"
-               toolbarPath="additions"
-               id="net.sourceforge.sqlexplorer.actions.close">
-            <selection
-                  name="*"
-                  class="SessionTreeNode">
-            </selection>
+               tooltip="Commit">
          </action>
       </viewContribution>
       <viewContribution
             targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
             id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.closeAll">
          <action
-               label="Close All Connections"
-               icon="icons/removeAll_co.gif"
                class="net.sourceforge.sqlexplorer.sessiontree.actions.CloseAllConnections"
-               tooltip="Close All Connections"
+               disabledIcon="icons/removeall_dis.gif"
                enablesFor="1"
+               icon="icons/removeAll_co.gif"
+               id="net.sourceforge.sqlexplorer.actions.closeAll"
+               label="Close All Connections"
                toolbarPath="additions"
-               id="net.sourceforge.sqlexplorer.actions.closeAll">
+               tooltip="Close All Connections">
             <selection
                   name="*"
                   class="SessionTreeNode">
@@ -225,10 +198,29 @@
       </viewContribution>
       <viewContribution
             targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.close">
+         <action
+               class="net.sourceforge.sqlexplorer.sessiontree.actions.CloseConnection"
+               disabledIcon="icons/remove_dis.gif"
+               enablesFor="1"
+               icon="icons/remove_att.gif"
+               id="net.sourceforge.sqlexplorer.actions.close"
+               label="Close Connection"
+               toolbarPath="additions"
+               tooltip="Close Connection">
+            <selection
+                  name="*"
+                  class="SessionTreeNode">
+            </selection>
+         </action>
+      </viewContribution>
+
+      <viewContribution
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
             id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.NewEditor">
          <action
                label="New SQL Editor"
-               icon="icons/edittsk_tsk.gif"
+               icon="icons/new_editor.gif"
                class="net.sourceforge.sqlexplorer.sessiontree.actions.NewSQLEditor"
                tooltip="New SQL Editor"
                enablesFor="*"
@@ -256,5 +248,20 @@
                class="org.eclipse.core.resources.IResource">
          </selection>
       </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+	<actionSet
+		label="About SQL Explorer"
+		visible="true"
+		id="net.sourceforge.sqlexplorer.about">
+		<action
+        class="net.sourceforge.sqlexplorer.plugin.actions.About"
+        icon="icons/perspective_icon.gif"
+        id="org.eclipse.ui.cheatsheets.actions.CheatSheetHelpMenuAction"
+        label="About SQL Explorer"
+        menubarPath="help/about">
+		</action>
+	</actionSet>
    </extension>
 </plugin>

@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.sessiontree.actions;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 
@@ -31,83 +32,88 @@ import org.eclipse.ui.IViewPart;
 
 /**
  * @author Mazzolini
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * 
  */
-public class CloseAllConnections
-	extends Action
-	implements IViewActionDelegate {
-	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getCloseAllConnsIcon());
-		/**
-	 * @param treeNode
-	 */
-	public CloseAllConnections(RootSessionTreeNode treeNode) {
-		
-		rstn=treeNode;
-	}
-	public CloseAllConnections() {}
+public class CloseAllConnections extends Action implements IViewActionDelegate {
 
-	RootSessionTreeNode rstn;
+    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getCloseAllConnsIcon());
+    private ImageDescriptor _disabledImage = ImageDescriptor.createFromURL(SqlexplorerImages.getDisabledCloseAllConnsIcon());
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
-	 */
-	public void init(IViewPart view) {
-		
-	}
+    /**
+     * @param treeNode
+     */
+    public CloseAllConnections(RootSessionTreeNode treeNode) {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-	 */
-	public void run(IAction action) {
-		run();
-	}
+        rstn = treeNode;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
-	 */
-	public void selectionChanged(IAction action, ISelection selection) {
-		if(selection instanceof IStructuredSelection){
-			IStructuredSelection iss=(IStructuredSelection)selection;
-			if(iss.getFirstElement() instanceof RootSessionTreeNode){
-				rstn=(RootSessionTreeNode) iss.getFirstElement() ;
-				action.setEnabled(true);
-			}else{
-				action.setEnabled(false);
-				rstn=null;
-			}
-				
-		}
-	}
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.action.IAction#getText()
-	 */
-	public String getText() {
-		
-		return "Close All Connections";
-	}
+    public CloseAllConnections() {
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.action.IAction#run()
-	 */
-	public void run() {
-		if(rstn!=null)
-			rstn.closeAllConnections();
-	}
+    RootSessionTreeNode rstn;
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.action.IAction#getImageDescriptor()
-	 */
-	public ImageDescriptor getImageDescriptor() {
-		return img;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
+     */
+    public void init(IViewPart view) {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.action.IAction#getHoverImageDescriptor()
-	 */
-	public ImageDescriptor getHoverImageDescriptor() {
-		return img;
-	}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
+     */
+    public void run(IAction action) {
+        run();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
+     *      org.eclipse.jface.viewers.ISelection)
+     */
+    public void selectionChanged(IAction action, ISelection selection) {
+        if (selection instanceof IStructuredSelection) {
+            IStructuredSelection iss = (IStructuredSelection) selection;
+            if (iss.getFirstElement() instanceof RootSessionTreeNode) {
+                rstn = (RootSessionTreeNode) iss.getFirstElement();
+                action.setEnabled(true);
+            } else {
+                action.setEnabled(false);
+                rstn = null;
+            }
+
+        }
+    }
+
+    public String getText() {
+        return Messages.getString("ConnectionsView.Actions.CloseAllConnections");
+    }
+    
+    public String getToolTipText() {
+        return Messages.getString("ConnectionsView.Actions.CloseAllConnectionsToolTip");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jface.action.IAction#run()
+     */
+    public void run() {
+        if (rstn != null)
+            rstn.closeAllConnections();
+    }
+
+    public ImageDescriptor getImageDescriptor() {
+        return _image;
+    }
+
+    public ImageDescriptor getDisabledImageDescriptor() {
+        return _disabledImage;
+    }
 
 }

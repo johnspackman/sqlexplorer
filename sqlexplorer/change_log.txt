@@ -1,3 +1,9 @@
+2006.01.02 UI enhancements - Davy Vanherbergen
+==========================================================
+- updated alias view to use standard toolbar
+- update some icons
+- moved about action to help menu + updated logo
+
 2005.12.31 Enhancement to SQL History/SQL Panel  -  Davy Vanherbergen
 ===========================================================
 - removed linefeed characters from SQL History

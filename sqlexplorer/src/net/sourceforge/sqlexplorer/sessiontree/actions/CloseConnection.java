@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.sessiontree.actions;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
@@ -31,71 +32,68 @@ import org.eclipse.ui.IViewPart;
 
 /**
  * @author Mazzolini
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * 
  */
 public class CloseConnection extends Action implements IViewActionDelegate {
-	
-	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getCloseConnIcon());
-	/**
-	 * @param node
-	 */
-	public CloseConnection(SessionTreeNode node) {
-		
-		_stn=node;
-	}
-	public CloseConnection() {
-		
-			
-	}
 
+    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getCloseConnIcon());
+    private ImageDescriptor _disabledImage = ImageDescriptor.createFromURL(SqlexplorerImages.getDisabledCloseConnIcon());
 
-	SessionTreeNode _stn;
+    /**
+     * @param node
+     */
+    public CloseConnection(SessionTreeNode node) {
 
-	public void init(IViewPart view) {
-		
+        _stn = node;
+    }
 
-	}
+    public CloseConnection() {
 
-	
-	public void run(IAction action) {
-		run();
-	}
+    }
 
-	public void selectionChanged(IAction action, ISelection selection) {
-		if(selection instanceof IStructuredSelection){
-			IStructuredSelection iss=(IStructuredSelection)selection;
-			Object obj=iss.getFirstElement();
-			if(obj instanceof SessionTreeNode){
-				_stn=(SessionTreeNode)obj;
-				action.setEnabled(true);
-			}else{
-				action.setEnabled(false);
-				_stn=null;
-			}
-		}
-	}
+    SessionTreeNode _stn;
 
-	public void run() {
-		if(_stn!=null)
-			_stn.close();
-	}
-	public String getText() {
-		return "Close Connection";
-	}
-	/* (non-Javadoc)
-		 * @see org.eclipse.jface.action.IAction#getImageDescriptor()
-		 */
-	public ImageDescriptor getImageDescriptor() {
-		return img;
-	}
+    public void init(IViewPart view) {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.action.IAction#getHoverImageDescriptor()
-	 */
-	public ImageDescriptor getHoverImageDescriptor() {
-		return img;
-	}
+    }
+
+    public void run(IAction action) {
+        run();
+    }
+
+    public void selectionChanged(IAction action, ISelection selection) {
+        if (selection instanceof IStructuredSelection) {
+            IStructuredSelection iss = (IStructuredSelection) selection;
+            Object obj = iss.getFirstElement();
+            if (obj instanceof SessionTreeNode) {
+                _stn = (SessionTreeNode) obj;
+                action.setEnabled(true);
+            } else {
+                action.setEnabled(false);
+                _stn = null;
+            }
+        }
+    }
+
+    public void run() {
+        if (_stn != null)
+            _stn.close();
+    }
+
+    public String getText() {
+        return Messages.getString("ConnectionsView.Actions.CloseConnection");
+    }
+    
+    public String getToolTipText() {
+        return Messages.getString("ConnectionsView.Actions.CloseConnectionToolTip");
+    }
+
+    public ImageDescriptor getImageDescriptor() {
+        return _image;
+    }
+
+    public ImageDescriptor getDisabledImageDescriptor() {        
+        return _disabledImage;
+    }
 
 }

@@ -18,7 +18,6 @@
  */
 package net.sourceforge.sqlexplorer.plugin.views;
 
-
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.actions.NewConnectionDropDownAction;
 import net.sourceforge.sqlexplorer.sessiontree.ui.SessionViewer;
@@ -34,49 +33,47 @@ import org.eclipse.ui.part.ViewPart;
 
 /**
  * @author Andrea Mazzolini
- *
+ * 
  */
-public class ConnectionsView extends ViewPart{
-	
-	private TreeViewer treeViewer;
-	//private SQLDriverManager _driverMgr;
-	//private AliasModel aliasModel;
-	//private DriverModel driverModel;
-	public void createPartControl(Composite parent) {
-		SQLExplorerPlugin plugin=SQLExplorerPlugin.getDefault();
-		
-		treeViewer = new SessionViewer(parent,SWT.V_SCROLL|SWT.H_SCROLL,plugin.stm,this);
-		
-		this.getSite().setSelectionProvider(treeViewer);
-		final ConnectionsActionGroup actGroup=new ConnectionsActionGroup(this);
-		MenuManager  menuMgr= new MenuManager("#ConnectionsPopupMenu"); //$NON-NLS-1$
-		menuMgr.setRemoveAllWhenShown(true);
-		Menu fDbContextMenu= menuMgr.createContextMenu(treeViewer.getTree());
-		treeViewer.getTree().setMenu(fDbContextMenu);
-		menuMgr.addMenuListener(new IMenuListener(){
-			public void menuAboutToShow(IMenuManager manager){
-				//MessageDialog.openInformation(null,"fillContextMenu","");
-				actGroup.fillContextMenu(manager);
-			}
-		});
-		
-		getViewSite().getActionBars().getToolBarManager().add(new NewConnectionDropDownAction());
-	}
+public class ConnectionsView extends ViewPart {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#setFocus()
-	 */
-	public void setFocus() {
-		
-	}
+    private TreeViewer treeViewer;
 
-	/**
-	 * 
-	 */
-	public TreeViewer getTreeViewer() {
-		return treeViewer;
-		
-	}
+    public void createPartControl(Composite parent) {
+        SQLExplorerPlugin plugin = SQLExplorerPlugin.getDefault();
+
+        treeViewer = new SessionViewer(parent, SWT.V_SCROLL | SWT.H_SCROLL, plugin.stm, this);
+
+        this.getSite().setSelectionProvider(treeViewer);
+        final ConnectionsActionGroup actGroup = new ConnectionsActionGroup(this);
+        MenuManager menuMgr = new MenuManager("#ConnectionsPopupMenu"); //$NON-NLS-1$
+        menuMgr.setRemoveAllWhenShown(true);
+        Menu fDbContextMenu = menuMgr.createContextMenu(treeViewer.getTree());
+        treeViewer.getTree().setMenu(fDbContextMenu);
+        menuMgr.addMenuListener(new IMenuListener() {
+
+            public void menuAboutToShow(IMenuManager manager) {
+                actGroup.fillContextMenu(manager);
+            }
+        });
+
+        getViewSite().getActionBars().getToolBarManager().add(new NewConnectionDropDownAction());
+    }
+
+
+
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchPart#setFocus()
+     */
+    public void setFocus() {
+    }
+
+    /**
+     * 
+     */
+    public TreeViewer getTreeViewer() {
+        return treeViewer;
+
+    }
 
 }
-	

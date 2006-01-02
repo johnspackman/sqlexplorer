@@ -79,12 +79,12 @@ public class CreateAliasDlg extends TitleAreaDialog {
 	protected void configureShell(Shell shell) {
 		super.configureShell(shell);
 		if(type==1){
-			shell.setText(Messages.getString("Create_new_Alias_!_1"));  //$NON-NLS-1$
+			shell.setText(Messages.getString("AliasDialog.Create.Title"));  //$NON-NLS-1$
 		}else if(type==2){
-			shell.setText(Messages.getString("Modify_Alias_!_2"));  //$NON-NLS-1$
+			shell.setText(Messages.getString("AliasDialog.Change.Title"));  //$NON-NLS-1$
 		}
 		else if(type==3){
-			shell.setText(Messages.getString("Copy_Alias_!_3"));  //$NON-NLS-1$
+			shell.setText(Messages.getString("AliasDialog.Copy.Title"));  //$NON-NLS-1$
 		}		
 	}
 	protected void okPressed() {
@@ -118,13 +118,13 @@ public class CreateAliasDlg extends TitleAreaDialog {
 		Control contents = super.createContents(parent);
 		
 		if(type==1){
-			setTitle(Messages.getString("New_Alias_6")); //$NON-NLS-1$
+			setTitle(Messages.getString("AliasDialog.Create.Title")); //$NON-NLS-1$
 			setMessage("Create a new alias"); //$NON-NLS-1$
 		}else if(type==2){
-			setTitle(Messages.getString("Modify_Alias_7")); //$NON-NLS-1$
+			setTitle(Messages.getString("AliasDialog.Change.Title")); //$NON-NLS-1$
 			setMessage("Modify the alias"); //$NON-NLS-1$			
 		}else if(type==3){
-			setTitle(Messages.getString("Copy_Alias_8")); //$NON-NLS-1$
+			setTitle(Messages.getString("AliasDialog.Copy.Title")); //$NON-NLS-1$
 			setMessage("Copy the alias"); //$NON-NLS-1$						
 		}
 	//	ctGroup.setFocus();		

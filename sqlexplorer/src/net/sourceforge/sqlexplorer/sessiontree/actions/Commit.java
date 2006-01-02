@@ -32,72 +32,73 @@ import org.eclipse.ui.IViewPart;
 
 /**
  * @author Andrea Mazzolini
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * 
  */
-public class Commit
-	extends Action
-	implements IViewActionDelegate {
-		SessionTreeNode _stn;
-		private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getCommitIcon());
+public class Commit extends Action implements IViewActionDelegate {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
-	 */
-	public void init(IViewPart arg0) {
-		
+    SessionTreeNode _stn;
 
-	}
+    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getCommitIcon());
+    private ImageDescriptor _disabledImage = ImageDescriptor.createFromURL(SqlexplorerImages.getDisabledCommitIcon());
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-	 */
-	public void run(IAction arg0) {
-		if(_stn!=null)
-			_stn.commit();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
+     */
+    public void init(IViewPart arg0) {
 
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
-	 */
-	public void selectionChanged(IAction action, ISelection selection) {
-		if(selection instanceof IStructuredSelection){
-			IStructuredSelection iss=(IStructuredSelection)selection;
-			Object obj=iss.getFirstElement();
-			if(obj instanceof SessionTreeNode){
-				SessionTreeNode stn=(SessionTreeNode)obj;
-				if(!stn.isAutoCommitMode()){
-					_stn=stn;
-					action.setEnabled(true);
-				}
-					
-				else{
-					action.setEnabled(false);
-					_stn=null;
-				}
-					
-			}else{
-				action.setEnabled(false);
-				_stn=null;
-			}
-		}
-	}
-	public String getText(){
-		return Messages.getString("Close_All_Connections_1"); //$NON-NLS-1$
-	}
-	/* (non-Javadoc)
-			 * @see org.eclipse.jface.action.IAction#getImageDescriptor()
-			 */
-		public ImageDescriptor getImageDescriptor() {
-			return img;
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
+     */
+    public void run(IAction arg0) {
+        if (_stn != null)
+            _stn.commit();
 
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.action.IAction#getHoverImageDescriptor()
-		 */
-		public ImageDescriptor getHoverImageDescriptor() {
-			return img;
-		}
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
+     *      org.eclipse.jface.viewers.ISelection)
+     */
+    public void selectionChanged(IAction action, ISelection selection) {
+        if (selection instanceof IStructuredSelection) {
+            IStructuredSelection iss = (IStructuredSelection) selection;
+            Object obj = iss.getFirstElement();
+            if (obj instanceof SessionTreeNode) {
+                SessionTreeNode stn = (SessionTreeNode) obj;
+                if (!stn.isAutoCommitMode()) {
+                    _stn = stn;
+                    action.setEnabled(true);
+                }
+
+                else {
+                    action.setEnabled(false);
+                    _stn = null;
+                }
+
+            } else {
+                action.setEnabled(false);
+                _stn = null;
+            }
+        }
+    }
+
+    public String getText() {
+        return Messages.getString("ConnectionsView.Actions.Commit"); //$NON-NLS-1$
+    }
+
+    public ImageDescriptor getImageDescriptor() {
+        return _image;
+    }
+
+    public ImageDescriptor getDisabledImageDescriptor() {
+        return _disabledImage;
+    }
 }

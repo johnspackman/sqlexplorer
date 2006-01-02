@@ -39,55 +39,62 @@ import org.eclipse.ui.actions.ActionGroup;
 
 /**
  * @author Andrea Mazzolini
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * 
  */
-public class ConnectionsActionGroup extends ActionGroup{
-	ConnectionsView view;
-	IAction closeAll;
-	IAction closeConn;
-	IAction openEditor;
-	public ConnectionsActionGroup(ConnectionsView view){
-		this.view=view;
-	}
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.actions.ActionGroup#fillContextMenu(org.eclipse.jface.action.IMenuManager)
-	 */
-	public void fillContextMenu(IMenuManager menuMgr) {
-		ISessionTreeNode treeNode=getSelectedNode();
-		Object[] aliases=SQLExplorerPlugin.getDefault().getAliasModel().getElements();
-		if(aliases!=null && aliases.length>0){
-			IMenuManager manager = new MenuManager("New Connection...");
-			for(int i=0;i<aliases.length;i++){
-				final ISQLAlias alias=(ISQLAlias) aliases[i];
-				manager.add(new NewConnection(alias));
-			}
-			menuMgr.add(manager);
-		}
-		if(treeNode==null)
-			return;
-		if(treeNode instanceof RootSessionTreeNode){
-			closeAll=new CloseAllConnections((RootSessionTreeNode)treeNode);
-			openEditor=new NewSQLEditor(null);
-			menuMgr.add(closeAll);
-			menuMgr.add(openEditor);
-		}else if (treeNode instanceof SessionTreeNode){
-			closeConn=new CloseConnection((SessionTreeNode)treeNode);
-			openEditor=new NewSQLEditor((SessionTreeNode)treeNode);
-			menuMgr.add(closeConn);
-			menuMgr.add(openEditor);
-		}
-	}
-	ISessionTreeNode getSelectedNode(){
-		TreeViewer viewer=view.getTreeViewer();
-		ISelection sel=viewer.getSelection();
-		if(sel!=null){
-			IStructuredSelection iSel=(IStructuredSelection)sel;
-			ISessionTreeNode node=(ISessionTreeNode)iSel.getFirstElement();
-			return node;
-		}
-		return null;
-	}
+public class ConnectionsActionGroup extends ActionGroup {
+
+    ConnectionsView view;
+
+    IAction closeAll;
+
+    IAction closeConn;
+
+    IAction openEditor;
+
+    public ConnectionsActionGroup(ConnectionsView view) {
+        this.view = view;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.actions.ActionGroup#fillContextMenu(org.eclipse.jface.action.IMenuManager)
+     */
+    public void fillContextMenu(IMenuManager menuMgr) {
+        ISessionTreeNode treeNode = getSelectedNode();
+        Object[] aliases = SQLExplorerPlugin.getDefault().getAliasModel().getElements();
+        if (aliases != null && aliases.length > 0) {
+            IMenuManager manager = new MenuManager("New Connection...");
+            for (int i = 0; i < aliases.length; i++) {
+                final ISQLAlias alias = (ISQLAlias) aliases[i];
+                manager.add(new NewConnection(alias));
+            }
+            menuMgr.add(manager);
+        }
+        if (treeNode == null)
+            return;
+        if (treeNode instanceof RootSessionTreeNode) {
+            closeAll = new CloseAllConnections((RootSessionTreeNode) treeNode);
+            openEditor = new NewSQLEditor(null);
+            menuMgr.add(closeAll);
+            menuMgr.add(openEditor);
+        } else if (treeNode instanceof SessionTreeNode) {
+            closeConn = new CloseConnection((SessionTreeNode) treeNode);
+            openEditor = new NewSQLEditor((SessionTreeNode) treeNode);
+            menuMgr.add(closeConn);
+            menuMgr.add(openEditor);
+        }
+    }
+
+    ISessionTreeNode getSelectedNode() {
+        TreeViewer viewer = view.getTreeViewer();
+        ISelection sel = viewer.getSelection();
+        if (sel != null) {
+            IStructuredSelection iSel = (IStructuredSelection) sel;
+            ISessionTreeNode node = (ISessionTreeNode) iSel.getFirstElement();
+            return node;
+        }
+        return null;
+    }
 
 }
