@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 
+import net.sourceforge.sqlexplorer.MultiLineString;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sqlpanel.SQLTableSorter;
@@ -117,7 +118,7 @@ public class TableConstructor {
 				tc.addSelectionListener(headerListener);
 			}
 			viewer.setColumnProperties(ss);
-			stm=new SqlTableModel(reader,metaData,1000,conn,ss,sorter, sql);
+			stm=new SqlTableModel(reader,metaData,1000,conn,ss,sorter, new MultiLineString(sql));
 			SqlTableLabelProvider slp=new SqlTableLabelProvider(stm);
 			viewer.setLabelProvider(slp);	
 			viewer.setInput(stm);
