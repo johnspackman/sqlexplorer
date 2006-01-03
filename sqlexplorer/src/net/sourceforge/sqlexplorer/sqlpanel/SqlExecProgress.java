@@ -25,17 +25,20 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.MultiLineString;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
-import net.sourceforge.squirrel_sql.fw.sql.QueryTokenizer;
+import net.sourceforge.sqlexplorer.util.QueryTokenizer;
 import net.sourceforge.squirrel_sql.fw.sql.ResultSetReader;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+
 
 
 public class SqlExecProgress implements IRunnableWithProgress {
@@ -66,9 +69,25 @@ public class SqlExecProgress implements IRunnableWithProgress {
 			InterruptedException
 		{
 		
-			// TODO make ';'  and Comment '#' configurable.
- 		final long startTime=System.currentTimeMillis();
-		QueryTokenizer qt = new QueryTokenizer(_sql,";", "#"); //$NON-NLS-1$
+       
+        Preferences prefs = SQLExplorerPlugin.getDefault().getPluginPreferences();
+        String queryDelimiter = prefs.getString(IConstants.SQL_QRY_DELIMITER);
+        if (queryDelimiter == null || queryDelimiter.trim().length() == 0) {
+            queryDelimiter = prefs.getDefaultString(IConstants.SQL_QRY_DELIMITER);
+        }
+        
+        String alternateDelimiter = prefs.getString(IConstants.SQL_ALT_QRY_DELIMITER);
+        if (alternateDelimiter != null && alternateDelimiter.trim().length() == 0) {
+            alternateDelimiter = null;
+        }
+        
+        String commentDelimiter = prefs.getString(IConstants.SQL_COMMENT_DELIMITER);
+        if (commentDelimiter == null || commentDelimiter.trim().length() == 0) {
+            commentDelimiter = prefs.getDefaultString(IConstants.SQL_COMMENT_DELIMITER);
+        }        
+        
+ 		final long startTime = System.currentTimeMillis();
+		QueryTokenizer qt = new QueryTokenizer(_sql, queryDelimiter, alternateDelimiter, commentDelimiter);
 		List queryStrings = new ArrayList();
 		while (qt.hasQuery())
 		{

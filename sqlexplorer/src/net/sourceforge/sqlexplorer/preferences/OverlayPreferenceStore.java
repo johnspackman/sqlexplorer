@@ -19,6 +19,8 @@ package net.sourceforge.sqlexplorer.preferences;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
  
+import net.sourceforge.sqlexplorer.IConstants;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -263,6 +265,19 @@ public class OverlayPreferenceStore implements IPreferenceStore {
 
 
 	public String getDefaultString(String name) {
+        
+        // TODO fix this.  Surely we shouldn't be setting
+        // the default values here.. but since I can't find
+        // where they are supposed to go, it will have to do 
+        // for now..
+        
+        if (name.equals(IConstants.SQL_QRY_DELIMITER)) {
+            return ";";
+        }
+        if (name.equals(IConstants.SQL_COMMENT_DELIMITER)) {
+            return "#";
+        }
+        
 		return fStore.getDefaultString(name);
 	}
 
