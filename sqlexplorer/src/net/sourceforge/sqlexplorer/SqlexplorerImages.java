@@ -219,8 +219,8 @@ public class SqlexplorerImages {
 		return URLUtil.getResourceURL("icons/showparents_mode.gif"); //$NON-NLS-1$
 	}
 	
-	public static final URL getSaveFileIcon(){
-		return URLUtil.getResourceURL("icons/save.gif"); //$NON-NLS-1$
+	public static final URL getSaveFileAsIcon(){
+		return URLUtil.getResourceURL("icons/saveAs.gif"); //$NON-NLS-1$
 	}
 	public static URL getSchemaIcon() {
 		return URLUtil.getResourceURL("icons/replace_persp.gif");//$NON-NLS-1$

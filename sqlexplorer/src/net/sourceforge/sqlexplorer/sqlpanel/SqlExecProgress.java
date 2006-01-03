@@ -105,7 +105,7 @@ public class SqlExecProgress implements IRunnableWithProgress {
 					resultsView.setData(((SqlTableModel[])rsLis.toArray(new SqlTableModel[rsLis.size()])));//mo,new SQLTableSorter(count,metaData));
 					long endTime=System.currentTimeMillis();
 					String message=Messages.getString("Time__1")+" "+(int)(endTime-startTime)+Messages.getString("_ms");  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					txtComp.setMessage(message);
+					txtComp.setMessage(message + " droopie");
 				}catch(Throwable e){
 					SQLExplorerPlugin.error("Error displaying data",e);
 					txtComp.setMessage(e.getMessage());

@@ -21,41 +21,35 @@ package net.sourceforge.sqlexplorer.sqlpanel.actions;
  
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 
-public class SaveFileAction extends Action {
+public class SaveFileAsAction extends Action {
 	
-    private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getSaveFileIcon()); 
+    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getSaveFileAsIcon()); 
 	
+    private SQLEditor _editor;
 
-public SaveFileAction(){
-		
+    public SaveFileAsAction(SQLEditor editor){
+		_editor = editor;
 	}
+    
 	public  String getText() {
-         return Messages.getString("Save_1"); //$NON-NLS-1$
+         return Messages.getString("SQLEditor.Actions.SaveAs");
     }
 
     public void run() {
-    	/*FileDialog dlg=new FileDialog(txtComposite.getShell(),SWT.SAVE);
-		dlg.setFilterExtensions(new String[]{"*.sql","*.txt"});  //$NON-NLS-1$ //$NON-NLS-2$
-		String str=dlg.open();
-		if(str!=null){
-			txtComposite.save(str);
-		}
-		*/		
-    }
-   
+        _editor.doSaveAs();
+    }  
 	
 	public String getToolTipText(){
-		return Messages.getString("Save_2");  //$NON-NLS-1$
+		return Messages.getString("SQLEditor.Actions.SaveAsToolTip");  //$NON-NLS-1$
 	}
-	public ImageDescriptor getHoverImageDescriptor(){
-		return img;
-    }
+
     public ImageDescriptor getImageDescriptor(){
-		return img;
+		return _image;
     };
 }
