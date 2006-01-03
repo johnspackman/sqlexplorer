@@ -1,3 +1,7 @@
+2006.01.03 Enhancements - Davy Vanherbergen
+==========================================================
+- when new connection is made, a new SQL editor is automatically opened
+
 2006.01.02 UI enhancements - Davy Vanherbergen
 ==========================================================
 - updated alias view to use standard toolbar

@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer;
 import java.lang.reflect.InvocationTargetException;
 
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModel;
+import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
@@ -36,8 +37,9 @@ public class RetrievingTableDataProgress implements IRunnableWithProgress {
 		throws InvocationTargetException, InterruptedException {
 			monitor.setTaskName(Messages.getString("RetrievingTableDataProgress.Getting_Database_Structure_Data_1")); //$NON-NLS-1$
 			monitor.beginTask(Messages.getString("RetrievingTableDataProgress.Getting_Database_Structure_Data_1"),IProgressMonitor.UNKNOWN); //$NON-NLS-1$
-			try{sessionTreeModel.createSessionTreeNode(conn,alias,monitor,pswd);}
-			finally{
+			try{
+                sessionNode = sessionTreeModel.createSessionTreeNode(conn,alias,monitor,pswd);
+            } finally{
 				monitor.done();
 			}
 			
@@ -48,6 +50,8 @@ public class RetrievingTableDataProgress implements IRunnableWithProgress {
 	ISQLAlias alias;
 	String pswd;
 	SessionTreeModel sessionTreeModel;	
+    SessionTreeNode sessionNode;
+    
 	public RetrievingTableDataProgress(SQLConnection conn,ISQLAlias alias,SessionTreeModel sessionTreeModel, String pswd){
 		
 		this.conn=conn;
@@ -60,5 +64,10 @@ public class RetrievingTableDataProgress implements IRunnableWithProgress {
 	String error;
 	public boolean isOk(){return ((error==null)?true:false);}
 	public String getError(){return error;}
+    
+    public SessionTreeNode getSessionTreeNode() {
+        return sessionNode;
+    }
 
+    
 }

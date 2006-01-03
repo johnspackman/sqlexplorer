@@ -27,6 +27,7 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.RetrievingTableDataProgress;
 import net.sourceforge.sqlexplorer.dialogs.PasswordConnDlg;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
@@ -39,6 +40,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchPage;
 
 public class OpenPasswordConnectDialogAction extends Action {
 	
@@ -91,6 +93,18 @@ public class OpenPasswordConnectDialogAction extends Action {
 				RetrievingTableDataProgress rtdp=new RetrievingTableDataProgress(conn,alias,SQLExplorerPlugin.getDefault().stm,pswd);
 				ProgressMonitorDialog pg2=new ProgressMonitorDialog(shell);
 				pg2.run(true,true,rtdp);
+                
+                
+				// after opening connection, open editor
+                SQLEditorInput input = new SQLEditorInput("SQL Editor ("+SQLExplorerPlugin.getDefault().getNextElement()+").sql");
+                input.setSessionNode(rtdp.getSessionTreeNode());
+                IWorkbenchPage page= SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                try{
+                    page.openEditor(input,"net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
+                }catch(Throwable e){
+                    SQLExplorerPlugin.error("Error creating sql editor",e);
+                }
+                
 			}else{
 				MessageDialog.openError(shell,Messages.getString("Error..._4"),lp.getError());
 			}

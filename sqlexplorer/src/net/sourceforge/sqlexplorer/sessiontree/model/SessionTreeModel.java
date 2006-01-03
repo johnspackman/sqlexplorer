@@ -60,17 +60,15 @@ public class SessionTreeModel implements ISessionTreeNode{
 	 * @param conn
 	 * @param alias
 	 */
-	public void createSessionTreeNode(SQLConnection conn, ISQLAlias alias,IProgressMonitor monitor, String pswd) throws InterruptedException {
-		//MessageDialog.openInformation(null,"createSessionTreeNode","");
-		SessionTreeNode tt=null;
+	public SessionTreeNode createSessionTreeNode(SQLConnection conn, ISQLAlias alias,IProgressMonitor monitor, String pswd) throws InterruptedException {
+
+		SessionTreeNode node = null;
 		try{
-			tt=new SessionTreeNode(conn,alias,this,monitor,pswd);
+			node = new SessionTreeNode(conn,alias,this,monitor,pswd);
 		}finally{
-			modelChanged(tt);
+			modelChanged(node);
 		}
-		//MessageDialog.openInformation(null,"createdSessionTreeNode","");
-		
-		
+		return node;
 	}
 
 	/**
