@@ -2,6 +2,7 @@
 ==========================================================
 - when new connection is made, a new SQL editor is automatically opened
 - implemented 'save as' on SQL editor
+- query/comment delimiters can now be set in preferences
 
 2006.01.02 UI enhancements - Davy Vanherbergen
 ==========================================================
