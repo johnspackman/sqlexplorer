@@ -39,7 +39,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 public class TriggerEdit extends Action {
 	
 	IDbModel nd;
-	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getSqlIcon());
+	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getSqlEditorIcon());
 	IPreferenceStore store;
 	SessionTreeNode treeNode;
 	public TriggerEdit(SessionTreeNode treeNode,IDbModel nd){

@@ -41,7 +41,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 public class ProcedureEdit extends Action {
 	
 	IDbModel nd;
-		private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getSqlIcon());
+		private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getSqlEditorIcon());
 		IPreferenceStore store;
 		SessionTreeNode treeNode;
 		public ProcedureEdit(SessionTreeNode treeNode,IDbModel nd){

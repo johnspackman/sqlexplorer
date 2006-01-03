@@ -38,7 +38,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 public class PackageEdit extends Action {
 	
 	IDbModel nd;
-	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getSqlIcon());
+	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getSqlEditorIcon());
 	IPreferenceStore store;
 	SessionTreeNode treeNode;
 	public PackageEdit(SessionTreeNode treeNode,IDbModel nd){

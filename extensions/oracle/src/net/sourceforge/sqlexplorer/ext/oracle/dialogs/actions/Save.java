@@ -42,7 +42,7 @@ public class Save extends Action {
 		
 		
 	}
-	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getSaveFileIcon()); 
+	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getSaveFileAsIcon()); 
 
 	public  String getText() {
 		 return "Save to Database"; //$NON-NLS-1$
