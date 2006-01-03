@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer.dbviewer.model;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import net.sourceforge.sqlexplorer.SQLAlias;
 import net.sourceforge.sqlexplorer.dbviewer.DetailManager;
 
 import org.eclipse.swt.widgets.Composite;
@@ -40,7 +41,8 @@ public class DatabaseNode implements IDbModel{
 		children.add(e);
 	}
 	
-	public DatabaseNode(String txt){
+	public DatabaseNode(String txt, SQLAlias alias) {
+        _metaFilterExpression = alias.getMetaFilterExpression();
 		this.txt=txt;
 	}
 	
@@ -96,9 +98,5 @@ public class DatabaseNode implements IDbModel{
 	public Object getParent(){return null;};
 
 	public String toString(){return txt;}
-
-	public void setMetaFilterExpression(String expression) {
-		_metaFilterExpression = expression;
-	}
 		
 }

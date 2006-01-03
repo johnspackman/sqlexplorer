@@ -24,7 +24,6 @@ import java.util.ArrayList;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.IdentifierFactory;
-import net.sourceforge.sqlexplorer.SQLAlias;
 import net.sourceforge.sqlexplorer.dbviewer.model.CatalogNode;
 import net.sourceforge.sqlexplorer.dbviewer.model.DatabaseModel;
 import net.sourceforge.sqlexplorer.dbviewer.model.DatabaseNode;
@@ -134,9 +133,6 @@ public class SessionTreeNode  implements ISessionTreeNode {
 			
 			Object []children=dbModel.getChildren();
 			DatabaseNode dbNode=((DatabaseNode)children[0]);
-			
-			// filter out metadata based on filter expression defined in alias
-			dbNode.setMetaFilterExpression(((SQLAlias) alias).getMetaFilterExpression());
 			
 			children=dbNode.getChildren();
 			if(children==null)

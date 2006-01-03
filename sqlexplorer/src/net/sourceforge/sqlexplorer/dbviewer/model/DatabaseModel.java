@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.SQLAlias;
 import net.sourceforge.sqlexplorer.dbviewer.DetailManager;
 import net.sourceforge.sqlexplorer.ext.PluginManager;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -74,7 +75,7 @@ public class DatabaseModel implements IDbModel{
 	public DatabaseModel(SessionTreeNode sessionNode,PluginManager pm){
 		this.sessionNode=sessionNode;
 		this.pm=pm;
-		root=new DatabaseNode(Messages.getString("Database_1")); //$NON-NLS-1$
+		root=new DatabaseNode(Messages.getString("Database_1"), (SQLAlias) sessionNode.getAlias()); //$NON-NLS-1$
 		
 		if(sessionNode==null) return;
 		SQLDatabaseMetaData md=sessionNode.getConnection().getSQLMetaData();
