@@ -71,20 +71,10 @@ public class SqlExecProgress implements IRunnableWithProgress {
 		
        
         Preferences prefs = SQLExplorerPlugin.getDefault().getPluginPreferences();
-        String queryDelimiter = prefs.getString(IConstants.SQL_QRY_DELIMITER);
-        if (queryDelimiter == null || queryDelimiter.trim().length() == 0) {
-            queryDelimiter = prefs.getDefaultString(IConstants.SQL_QRY_DELIMITER);
-        }
-        
+
+        String queryDelimiter = prefs.getString(IConstants.SQL_QRY_DELIMITER);        
         String alternateDelimiter = prefs.getString(IConstants.SQL_ALT_QRY_DELIMITER);
-        if (alternateDelimiter != null && alternateDelimiter.trim().length() == 0) {
-            alternateDelimiter = null;
-        }
-        
         String commentDelimiter = prefs.getString(IConstants.SQL_COMMENT_DELIMITER);
-        if (commentDelimiter == null || commentDelimiter.trim().length() == 0) {
-            commentDelimiter = prefs.getDefaultString(IConstants.SQL_COMMENT_DELIMITER);
-        }        
         
  		final long startTime = System.currentTimeMillis();
 		QueryTokenizer qt = new QueryTokenizer(_sql, queryDelimiter, alternateDelimiter, commentDelimiter);

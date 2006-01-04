@@ -31,7 +31,7 @@ public interface IConstants {
 	String FONT="font"; //$NON-NLS-1$
 	String SQL_ASSIST="assist"; //$NON-NLS-1$
 	String SQL_EDITOR_CLASS = SQLEditor.class.getName();
-    String SQL_QRY_DELIMITER = "sql_qry_delimiter";
-    String SQL_ALT_QRY_DELIMITER = "sql_alt_qry_delimiter";
-    String SQL_COMMENT_DELIMITER = "sql_comment_delimiter";
+    String SQL_QRY_DELIMITER = "SQLEditor.QueryDelimiter";
+    String SQL_ALT_QRY_DELIMITER = "SQLEditor.AltQueryDelimiter";
+    String SQL_COMMENT_DELIMITER = "SQLEditor.CommentDelimiter";
 }

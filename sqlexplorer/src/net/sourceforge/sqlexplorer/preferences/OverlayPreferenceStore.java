@@ -264,20 +264,7 @@ public class OverlayPreferenceStore implements IPreferenceStore {
 	}
 
 
-	public String getDefaultString(String name) {
-        
-        // TODO fix this.  Surely we shouldn't be setting
-        // the default values here.. but since I can't find
-        // where they are supposed to go, it will have to do 
-        // for now..
-        
-        if (name.equals(IConstants.SQL_QRY_DELIMITER)) {
-            return ";";
-        }
-        if (name.equals(IConstants.SQL_COMMENT_DELIMITER)) {
-            return "#";
-        }
-        
+	public String getDefaultString(String name) {               
 		return fStore.getDefaultString(name);
 	}
 

@@ -6,6 +6,9 @@ import java.util.StringTokenizer;
  * QueryTokenizer based on original SquirreL SQL tokenizer, but adds the
  * possibility to use multiple characters as the sql delimeter.
  * 
+ * This is used for splitting the input text in the editor into
+ * multiple executable sql statements.
+ * 
  * @author Davy Vanherbergen
  */
 public class QueryTokenizer {
@@ -29,9 +32,14 @@ public class QueryTokenizer {
      */
     public QueryTokenizer(String sql, String querySeparator, String alternateSeparator, String solComment) {
 
-        _querySeparator = querySeparator.substring(0, 1);
+        if (querySeparator != null && querySeparator.trim().length() > 0) {
+            _querySeparator = querySeparator.substring(0, 1);
+        } else {
+            // failsave..
+            _querySeparator = ";";
+        }
         
-        if (alternateSeparator != null && alternateSeparator.length() > 0) {
+        if (alternateSeparator != null && alternateSeparator.trim().length() > 0) {
             _alternateQuerySeparator = alternateSeparator;    
         } else {
             _alternateQuerySeparator = null;
