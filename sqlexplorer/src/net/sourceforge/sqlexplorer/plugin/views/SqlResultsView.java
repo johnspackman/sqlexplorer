@@ -19,11 +19,11 @@
 package net.sourceforge.sqlexplorer.plugin.views;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.MultiLineString;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.sqlpanel.SQLTableSorter;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlTableLabelProvider;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlTableModel;
+import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
@@ -140,7 +140,7 @@ public class SqlResultsView extends ViewPart {
 			
 			TabItem ti=new TabItem(tabFolder,SWT.NULL);
 			ti.setText(""+(tabItemNumber+i+1));
-			ti.setToolTipText(mo[i].getSQLStatement().getMultiLineText(MultiLineString.DEFAULT_WRAPLENGTH));
+			ti.setToolTipText(TextUtil.getWrappedText(mo[i].getSQLStatement().getText()));
 			
 			//if(cmp!=null &&  !cmp.isDisposed())
 			//	cmp.dispose();

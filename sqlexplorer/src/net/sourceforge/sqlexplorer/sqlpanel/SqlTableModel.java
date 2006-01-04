@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.sourceforge.sqlexplorer.MultiLineString;
+import net.sourceforge.sqlexplorer.util.SQLString;
 import net.sourceforge.squirrel_sql.fw.sql.ResultSetReader;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
@@ -42,7 +42,7 @@ public class SqlTableModel {
 	String []columnNames;
 	SQLConnection conn;
 	
-	private MultiLineString _sqlStatement;
+	private SQLString _sqlStatement;
 	
 	public int getColumnIndex(String property){
 		Integer ind=(Integer)columnMap.get(property);
@@ -56,7 +56,7 @@ public class SqlTableModel {
 	public String ss[];
 	public SQLTableSorter sorter;
 	
-	public SqlTableModel(ResultSetReader rs,ResultSetMetaData metaData, int maxRows, SQLConnection conn, String[]ss,SQLTableSorter sorter, MultiLineString sql)throws java.lang.Exception{
+	public SqlTableModel(ResultSetReader rs,ResultSetMetaData metaData, int maxRows, SQLConnection conn, String[]ss,SQLTableSorter sorter, SQLString sql)throws java.lang.Exception{
 		this.sorter=sorter;
 		this.ss=ss;
 		this.conn=conn;
@@ -175,7 +175,7 @@ public class SqlTableModel {
 	 * 
 	 * @return SQLStatement SQL query string
 	 */
-	public MultiLineString getSQLStatement() {
+	public SQLString getSQLStatement() {
 		return _sqlStatement;
 	}
 

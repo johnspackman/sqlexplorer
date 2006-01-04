@@ -35,11 +35,11 @@ import net.sourceforge.sqlexplorer.ApplicationFiles;
 import net.sourceforge.sqlexplorer.DataCache;
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.MultiLineString;
 import net.sourceforge.sqlexplorer.ext.PluginManager;
 import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModel;
 import net.sourceforge.sqlexplorer.sqleditor.ISQLColorConstants;
+import net.sourceforge.sqlexplorer.util.SQLString;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
@@ -133,10 +133,10 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
      * 
      * @param newSql sql query string
      */
-    public void addSQLtoHistory(MultiLineString newSql) {
+    public void addSQLtoHistory(SQLString newSql) {
 
         for (int i = 0; i < sqlHistory.size(); i++) {
-            MultiLineString sql = (MultiLineString) sqlHistory.get(i);
+            SQLString sql = (SQLString) sqlHistory.get(i);
             if (sql.equals(newSql)) {
                 sqlHistory.remove(i);
                 break;
@@ -312,7 +312,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     		while (currentLine != null) {
     			if (currentLine.trim().length() != 0) {
     				currentLine = currentLine.replaceAll(SQLExplorerPlugin.NEWLINE_REPLACEMENT, SQLExplorerPlugin.NEWLINE_SEPARATOR);
-    				sqlHistory.add(new MultiLineString(currentLine));
+    				sqlHistory.add(new SQLString(currentLine));
     			}
     			currentLine = reader.readLine();
     		}
@@ -352,8 +352,8 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     		Iterator it = sqlHistory.iterator();
     		while (it.hasNext()) {
     			
-                MultiLineString tmp = (MultiLineString) it.next();
-                String qry = tmp.getOriginalText();
+                SQLString tmp = (SQLString) it.next();
+                String qry = tmp.getText();
     			qry = qry.replaceAll(SQLExplorerPlugin.NEWLINE_SEPARATOR, SQLExplorerPlugin.NEWLINE_REPLACEMENT);
     			writer.write(qry, 0, qry.length());
     			writer.newLine();

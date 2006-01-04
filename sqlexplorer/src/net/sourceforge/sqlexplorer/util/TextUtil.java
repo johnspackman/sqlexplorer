@@ -1,19 +1,14 @@
-package net.sourceforge.sqlexplorer;
+package net.sourceforge.sqlexplorer.util;
 
 
 /**
- * Utility class to wrap long text into multiple lines,
- * or to combine multiple lines into a single line.
- * 
- * This class is used to wrap the long sql statements
- * in the sql history and tooltip displays.
+ * Text handling utility.
  * 
  * @author Davy Vanherbergen
- *
  */
-public class MultiLineString {
+public class TextUtil {
 
-    private String _originalText;
+    public static final int DEFAULT_WRAPLENGTH = 150;
     
     private static final String NEWLINE_SEPARATOR = "\n";
     
@@ -21,38 +16,34 @@ public class MultiLineString {
     
     private static final String RETURN_EXPR = "\\r";
     
-    public static final int DEFAULT_WRAPLENGTH = 150;
+    private static final int MAX_LABEL_LENGTH = 500;
     
     /**
-     * Create new wrapper for a given text string.
-     * 
-     * @param text String
+     * Clear all linebreaks and carriage returns from input text.
+     * @return cleaned string
      */
-    public MultiLineString(String text) {
-        _originalText = text;
+    public static String removeLineBreaks(String input) {
+        String tmp = input.replaceAll(NEWLINE_EXPR, "");
+        return tmp.replaceAll(RETURN_EXPR, "");
     }
     
-    /**
-     * Return all text without newline separators.
-     */
-    public String getSingleLineText() {
-        return _originalText.replaceAll(NEWLINE_EXPR, " ").replaceAll(RETURN_EXPR, "");
-    }
+    
     
     /**
-     * Return the text used to create this wrapper.
+     * Return the text reformatted to have a max charwidth of maxWidth.
+     * @param maxWidth number of chars that the text can be wide.
      */
-    public String getOriginalText() {
-        return _originalText;
+    public static String getWrappedText(String input) {
+        return getWrappedText(input, DEFAULT_WRAPLENGTH);
     }
     
     /**
      * Return the text reformatted to have a max charwidth of maxWidth.
      * @param maxWidth number of chars that the text can be wide.
      */
-    public String getMultiLineText(int maxWidth) {
+    public static String getWrappedText(String input, int maxWidth) {
         
-        String[] text = _originalText.split(NEWLINE_EXPR);
+        String[] text = input.split(NEWLINE_EXPR);
         String wrappedText = "";
         
         for (int i = 0; i < text.length; i++) {
@@ -107,22 +98,21 @@ public class MultiLineString {
     }
     
     
-    public String toString() {
-        return getSingleLineText();
-    }
-
-    
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
+    /**
+     * Returns a length restricted string.  If the string is longer
+     * than MAX_LABEL_LENGTH, it is cut and a postfix of ... is added.
      */
-    public boolean equals(Object arg0) {
-
-        if (!(arg0 instanceof MultiLineString)) {
-            return false;
+    public static String getCappedText(String input) {
+        
+        if (input == null) {
+            return null;
         }
-        MultiLineString otherString = (MultiLineString) arg0;
-        return otherString.getSingleLineText().equals(getSingleLineText());
+        
+        if (input.length() > MAX_LABEL_LENGTH) {
+            return input.substring(0, MAX_LABEL_LENGTH ) + " ...";
+        } else {
+            return input;
+        }
+        
     }
-    
-    
 }

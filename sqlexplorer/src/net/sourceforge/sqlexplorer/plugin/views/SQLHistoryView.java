@@ -18,11 +18,11 @@
  */
 package net.sourceforge.sqlexplorer.plugin.views;
 
-import net.sourceforge.sqlexplorer.MultiLineString;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.SqlHistoryChangedListener;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
+import net.sourceforge.sqlexplorer.util.SQLString;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -109,8 +109,8 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 					SQLEditor editorPart= (SQLEditor) page.openEditor((IEditorInput) input,"net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
 					
                     Object data = ti[0].getData();
-                    MultiLineString mls = (MultiLineString) data;
-                    editorPart.setText(mls.getOriginalText());
+                    SQLString mls = (SQLString) data;
+                    editorPart.setText(mls.getText());
 
 				}catch(Throwable e){
 					SQLExplorerPlugin.error("Error creating sql editor",e);
@@ -167,9 +167,9 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 					TextTransfer textTransfer = TextTransfer.getInstance();
                     
                     Object data = ti[0].getData();
-                    MultiLineString mls = (MultiLineString) data;
+                    SQLString mls = (SQLString) data;
                     
-					cb.setContents(new Object[]{mls.getOriginalText()}, new Transfer[]{textTransfer});			
+					cb.setContents(new Object[]{mls.getText()}, new Transfer[]{textTransfer});			
 			
 				}catch(Throwable e){
 					SQLExplorerPlugin.error("Error copying to clipboard",e);

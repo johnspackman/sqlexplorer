@@ -18,7 +18,6 @@
  */
 package net.sourceforge.sqlexplorer.plugin.views;
 
-import net.sourceforge.sqlexplorer.MultiLineString;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlRowElement;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlTableContentProvider;
@@ -26,6 +25,8 @@ import net.sourceforge.sqlexplorer.sqlpanel.actions.CloseSQLResultTab;
 import net.sourceforge.sqlexplorer.sqlpanel.actions.ExportToClipboard;
 import net.sourceforge.sqlexplorer.sqlpanel.actions.MoreRowsAction;
 import net.sourceforge.sqlexplorer.sqlpanel.actions.RetrieveAllRowsAction;
+import net.sourceforge.sqlexplorer.util.SQLString;
+import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.eclipse.jface.action.StatusLineManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -34,6 +35,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -78,17 +80,19 @@ public class CompositeSQLResultsViewer extends Composite {
 		layout.horizontalSpacing = 0;
 		layout.verticalSpacing = 0;
 		myParent.setLayout(layout);
-		//CoolBar coolBar = new CoolBar(this, SWT.FLAT);
 		    		
+        
 		// Add the sql statement to the results tab & tooltip
 		Label label = new Label(myParent, SWT.WRAP);		
-		MultiLineString sqlStatement = sqlResultsView.mo[ii].getSQLStatement();
-		label.setText(sqlStatement.getSingleLineText());
-		label.setToolTipText(sqlStatement.getMultiLineText(MultiLineString.DEFAULT_WRAPLENGTH));	
-		
+        label.setAlignment(SWT.LEFT);
+		SQLString sqlStatement = sqlResultsView.mo[ii].getSQLStatement();
+		label.setText(TextUtil.getCappedText(sqlStatement.getText()));
+        label.setToolTipText(TextUtil.getWrappedText(sqlStatement.getText()));
+        label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        
 		ToolBarManager toolBarMgr = new ToolBarManager(SWT.FLAT);
-		//ToolBar toolBar = 
 		toolBarMgr.createControl(myParent);
+        
 		moreRowsAction=new MoreRowsAction(sqlResultsView,ii);
 		getAllRowsAction=new RetrieveAllRowsAction(sqlResultsView,ii);
 		clipAction = new ExportToClipboard(sqlResultsView,SQLExplorerPlugin.getDefault().getPreferenceStore(),ii);
@@ -103,16 +107,15 @@ public class CompositeSQLResultsViewer extends Composite {
 		      
 		    
 		GridData gid = new GridData();
-		gid.horizontalAlignment = GridData.FILL;
-		gid.verticalAlignment = GridData.BEGINNING;
+		gid.horizontalAlignment = SWT.FILL;
+		gid.verticalAlignment = SWT.TOP;
 		toolBarMgr.getControl().setLayoutData(gid);				
 				
 		gid = new GridData();
 		gid.grabExcessHorizontalSpace = gid.grabExcessVerticalSpace = true;
-		gid.horizontalAlignment = gid.verticalAlignment = GridData.FILL;
+		gid.horizontalAlignment = SWT.FILL;
+        gid.verticalAlignment = SWT.TOP;
 
-
-		
 		tableViewer=new TableViewer(myParent,SWT.V_SCROLL | SWT.H_SCROLL|SWT.FULL_SELECTION); 
 		tableViewer.getTable().setHeaderVisible(true);
 		tableViewer.getTable().setLinesVisible(true);
@@ -137,8 +140,8 @@ public class CompositeSQLResultsViewer extends Composite {
 		statusMgr.createControl(myParent);
 		lb=new Label((Composite)statusMgr.getControl(),SWT.NULL);
 		gid = new GridData();
-		gid.horizontalAlignment = GridData.FILL;
-		gid.verticalAlignment = GridData.BEGINNING;
+		gid.horizontalAlignment = SWT.FILL;
+		gid.verticalAlignment = SWT.TOP;
 		statusMgr.getControl().setLayoutData(gid);
 				
 		myParent.layout();
