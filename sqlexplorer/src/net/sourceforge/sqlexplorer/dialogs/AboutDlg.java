@@ -254,7 +254,6 @@ class LicenseItem {
 
         } catch (Exception e) {
             st.setText(Messages.getString("AboutDialog.License")); //$NON-NLS-1$
-            SQLExplorerPlugin.error("Error loading license document", e); //$NON-NLS-1$
         } finally {
             try {
                 if (bbr != null)
