@@ -259,7 +259,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
 		data.horizontalSpan=2;
 		data.widthHint = SIZING_TEXT_FIELD_WIDTH;
 		_metaFilterExpressionField.setLayoutData(data);
-		
+		_metaFilterExpressionField.setToolTipText(Messages.getString("AliasDialog.MetaFilterExpressionToolTip"));
 		_metaFilterExpressionField.addKeyListener(new KeyListener(){
 			public void keyPressed(org.eclipse.swt.events.KeyEvent e){
 				CreateAliasDlg.this.validate();
@@ -281,6 +281,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
 		Label label8= new Label(nameGroup, SWT.WRAP);
 		label8.setText(Messages.getString("AliasDialog.AutoLogon"));
 		label8.setToolTipText(Messages.getString("AliasDialog.AutoLogonToolTip"));
+        
 		_btnAutoLogon = new Button(nameGroup,SWT.CHECK);
 		data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
 		data.horizontalSpan=2;
