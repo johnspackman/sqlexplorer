@@ -1,3 +1,7 @@
+2006.01.05 Bugfix - Davy Vanherbergen
+==========================================================
+- sql results tab numbering no longer restarts if some tabs are closed
+
 2006.01.03 Enhancements - Davy Vanherbergen
 ==========================================================
 - when new connection is made, a new SQL editor is automatically opened
