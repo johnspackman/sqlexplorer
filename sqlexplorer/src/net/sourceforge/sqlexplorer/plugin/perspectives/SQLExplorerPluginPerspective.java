@@ -85,7 +85,6 @@ public class SQLExplorerPluginPerspective implements IPerspectiveFactory
 		IFolderLayout main = 
 						 layout.createFolder("main", IPageLayout.RIGHT, 0.75f,editorArea); //$NON-NLS-1$
 		
-				//main.addView(JFaceDbcViewConstants.JFACEDBC_VIEW);
 		main.addView(SqlexplorerViewConstants.SQLEXPLORER_DBVIEW);
 		main.addView(SqlexplorerViewConstants.SQLEXPLORER_CONNINFO);
 		main.addView(SqlexplorerViewConstants.SQLEXPLORER_SQLHISTORY);

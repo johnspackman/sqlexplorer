@@ -35,7 +35,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -43,6 +42,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * @author Mazzolini
@@ -83,10 +83,11 @@ public class CompositeSQLResultsViewer extends Composite {
 		    		
         
 		// Add the sql statement to the results tab & tooltip
-		Label label = new Label(myParent, SWT.WRAP);		
-        label.setAlignment(SWT.LEFT);
+		Text label = new Text(myParent, SWT.WRAP | SWT.MULTI);		
+        label.setEditable(false);
+        label.setBackground(myParent.getBackground());
 		SQLString sqlStatement = sqlResultsView.mo[ii].getSQLStatement();
-		label.setText(TextUtil.getCappedText(sqlStatement.getText()));
+		label.setText(TextUtil.getCappedText(TextUtil.removeLineBreaks(sqlStatement.getText())));
         label.setToolTipText(TextUtil.getWrappedText(sqlStatement.getText()));
         label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
         

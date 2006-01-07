@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.dbviewer.model.TableNode;
 import net.sourceforge.sqlexplorer.gef.commands.AddTablesToSchemaCommand;
 import net.sourceforge.sqlexplorer.gef.model.Schema;
@@ -38,8 +39,10 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
 
@@ -163,4 +166,7 @@ public class ReverseDatabaseWizard extends Wizard implements IWorkbenchWizard {
 	}
 	Command command;
 
+    public Image getDefaultPageImage() {
+        return ImageDescriptor.createFromURL(SqlexplorerImages.getWizardLogo()).createImage();
+    }
 }

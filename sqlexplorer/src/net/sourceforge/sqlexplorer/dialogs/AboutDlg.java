@@ -35,8 +35,6 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.resource.FontRegistry;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -52,7 +50,6 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -125,7 +122,7 @@ public class AboutDlg extends Dialog {
     }
 
     protected Point getInitialSize() {
-        return new Point(495, 370);
+        return new Point(455, 340);
     }
 
     protected void createButtonsForButtonBar(Composite parent) {
@@ -172,18 +169,11 @@ class AboutItem {
 
         GridData data = new GridData(GridData.VERTICAL_ALIGN_CENTER | GridData.CENTER);
         lb.setLayoutData(data);
-
+        lb.setSize(SWT.DEFAULT, 50);
 
         ImageData imgData = logoImage.getImageData();
         int width = imgData.width;
         int height = imgData.height;
-
-        FontRegistry fr = JFaceResources.getFontRegistry();
-        FontData[] fData = parent.getFont().getFontData();
-        fData[0].setStyle(SWT.BOLD);
-        fr.put("MyBoldFont", fData);
-        lb.setFont(fr.get("MyBoldFont"));
-
 
         final Composite imgComposite = new Composite(cmp, SWT.BORDER);
         data = new GridData(GridData.VERTICAL_ALIGN_CENTER | GridData.CENTER);
@@ -193,6 +183,7 @@ class AboutItem {
 
    
         final Color imageBackgroundColor = new Color(parent.getDisplay(), 255, 255, 255);
+        final Color fontColor = new Color(parent.getDisplay(), 102, 118, 145);
         
         final String version = Messages.getString("AboutDialog.About.versionPrefix") + SQLExplorerPlugin.getDefault().getVersion();        
         imgComposite.addPaintListener(new PaintListener() {
@@ -201,15 +192,18 @@ class AboutItem {
                 GC gc = event.gc;
                 gc.drawImage(logoImage, 0, 0);
                 gc.setBackground(imageBackgroundColor);
-                gc.drawText(version, 360, 170);
+                gc.setForeground(fontColor);
+                gc.drawText(version, 290, 75);
             }
         });
 
         Link link = new Link(cmp, SWT.CENTER);
         link.setText(Messages.getString("AboutDialog.About.url"));
-        data = new GridData(GridData.VERTICAL_ALIGN_CENTER | GridData.CENTER);
+        data = new GridData(SWT.FILL);
+        
+        
         link.setLayoutData(data);
-        link.setFont(fr.get("MyBoldFont"));
+        link.setForeground(fontColor);
         link.addListener (SWT.Selection, new Listener () {
             public void handleEvent(Event event) {
 
@@ -282,12 +276,15 @@ class CreditsItem {
         String separator = System.getProperty("line.separator"); //$NON-NLS-1$
 
         final String credits =      
-            "Active Developers:" + separator +
+            "Active Developers (versions 2.2.5 and above):" + separator +
             " - Alexandre Luti Telles" + separator +
-            " - Gert Wohlgemuth" + separator +
             " - Davy Vanherbergen" + separator + 
             separator +        
-            "Other Contributors:" + separator +
+            "Previous Developers (versions 2.2.3 and 2.2.4):" + separator +
+            " - Alexandre Luti Telles" + separator +            
+            " - Gert Wohlgemuth" + separator +            
+            separator +        
+            "Other Contributors (versions 2.2.2 and before):" + separator +
             " - Andrea Mazzolini (original version of JFacedb)" + separator +
             " - Johan Compagner" + separator +
             " - Jouneau Luc" + separator +

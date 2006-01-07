@@ -24,7 +24,7 @@ package net.sourceforge.sqlexplorer;
 public class SqlexplorerImages {
 	
 	public static final URL getAboutIcon(){
-		return URLUtil.getResourceURL("icons/perspective_icon.gif"); //$NON-NLS-1$
+		return URLUtil.getResourceURL("icons/logo16.gif"); //$NON-NLS-1$
 	}
 	
 	public static final URL getAliasIcon(){
@@ -46,7 +46,14 @@ public class SqlexplorerImages {
 	public static final URL getAscOrderIcon(){
 		return URLUtil.getResourceURL("icons/sort_asc.gif"); //$NON-NLS-1$
 	}
-	
+
+    public static final URL getWizardLogo(){
+        return URLUtil.getResourceURL("icons/logowiz.gif"); //$NON-NLS-1$
+    }
+    public static final URL getWindowIcon(){
+        return URLUtil.getResourceURL("icons/logo16.gif"); //$NON-NLS-1$
+    }
+    
 	public static final URL getClearTextIcon(){
 		return URLUtil.getResourceURL("icons/clear.gif"); //$NON-NLS-1$
 	}

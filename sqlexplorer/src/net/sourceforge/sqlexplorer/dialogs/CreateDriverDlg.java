@@ -28,6 +28,7 @@ import java.util.StringTokenizer;
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.MyURLClassLoader;
+import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.squirrel_sql.fw.persist.ValidationException;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
@@ -36,6 +37,7 @@ import net.sourceforge.squirrel_sql.fw.util.DuplicateObjectException;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -67,13 +69,12 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
 public class CreateDriverDlg extends TitleAreaDialog {
+
     protected void setShellStyle(int newShellStyle) {
         super.setShellStyle(newShellStyle | SWT.RESIZE);// Make the dialog
-                                                        // resizable
+        // resizable
     }
 
-    // private Button okButton;
-    // private Image dlgTitleImage = null;
     private DriverModel driverModel;
 
     private ISQLDriver driver;
@@ -102,18 +103,13 @@ public class CreateDriverDlg extends TitleAreaDialog {
 
     Text nameField;
 
-    // Text jarField;
-
     Button jarSearch;
 
     Combo combo;
 
     Text exampleUrlField;
 
-    // private String _currentJarFileText = ""; //$NON-NLS-1$
-
-    public CreateDriverDlg(Shell parentShell, DriverModel dm, int type,
-            ISQLDriver dv) {
+    public CreateDriverDlg(Shell parentShell, DriverModel dm, int type, ISQLDriver dv) {
         super(parentShell);
         driverModel = dm;
         driver = dv;
@@ -135,7 +131,6 @@ public class CreateDriverDlg extends TitleAreaDialog {
 
         Control contents = super.createContents(parent);
 
-        // dlgTitleImage=ImageDescriptor.createFromURL(JFaceDbcImages.getDriverIcon()).createImage();
         if (type == 1) {
             setTitle(Messages.getString("New_Driver_6")); //$NON-NLS-1$
             setMessage(Messages.getString("Create_a_new_driver_7")); //$NON-NLS-1$
@@ -146,29 +141,30 @@ public class CreateDriverDlg extends TitleAreaDialog {
             setTitle(Messages.getString("Copy_Driver_10")); //$NON-NLS-1$
             setMessage(Messages.getString("Copy_the_driver_11")); //$NON-NLS-1$
         }
-        // setTitleImage(dlgTitleImage);
+
+        Image image = ImageDescriptor.createFromURL(SqlexplorerImages.getWizardLogo()).createImage();
+        if (image != null) {
+            setTitleImage(image);
+        }
+
         return contents;
     }
 
     protected void okPressed() {
         String name = nameField.getText().trim();
         String driverClassName = (String) combo.getText();
-        driverClassName = (driverClassName != null ? driverClassName.trim()
-                : "");//$NON-NLS-1$
+        driverClassName = (driverClassName != null ? driverClassName.trim() : "");//$NON-NLS-1$
         String url = exampleUrlField.getText().trim();
         if (name.equals("")) {//$NON-NLS-1$
-            MessageDialog.openError(this.getShell(), Messages
-                    .getString("Error..._2"), "Name is empty");//$NON-NLS-1$ //$NON-NLS-2$
+            MessageDialog.openError(this.getShell(), Messages.getString("Error..._2"), "Name is empty");//$NON-NLS-1$ //$NON-NLS-2$
             return;
         }
         if (driverClassName.equals("")) {//$NON-NLS-1$
-            MessageDialog.openError(this.getShell(), Messages
-                    .getString("Error..._2"), "Driver Class Name is empty");//$NON-NLS-1$ //$NON-NLS-2$
+            MessageDialog.openError(this.getShell(), Messages.getString("Error..._2"), "Driver Class Name is empty");//$NON-NLS-1$ //$NON-NLS-2$
             return;
         }
         if (url.equals("")) {//$NON-NLS-1$
-            MessageDialog.openError(this.getShell(), Messages
-                    .getString("Error..._2"), "URL is empty");//$NON-NLS-1$ //$NON-NLS-2$
+            MessageDialog.openError(this.getShell(), Messages.getString("Error..._2"), "URL is empty");//$NON-NLS-1$ //$NON-NLS-2$
             return;
         }
 
@@ -186,31 +182,24 @@ public class CreateDriverDlg extends TitleAreaDialog {
         } catch (ValidationException excp) {
             SQLExplorerPlugin.error("Validation Exception", excp); //$NON-NLS-1$
 
-            MessageDialog
-                    .openError(
-                            this.getShell(),
-                            Messages.getString("Error..._2"), Messages.getString("Error_Validation_Exception_12")); //$NON-NLS-1$ //$NON-NLS-2$
+            MessageDialog.openError(this.getShell(),
+                    Messages.getString("Error..._2"), Messages.getString("Error_Validation_Exception_12")); //$NON-NLS-1$ //$NON-NLS-2$
 
         } catch (DuplicateObjectException excp1) {
             SQLExplorerPlugin.error("Duplicate Exception", excp1); //$NON-NLS-1$
-            MessageDialog
-                    .openError(
-                            this.getShell(),
-                            Messages.getString("Error..._2"), Messages.getString("Error_DuplicateObjectException_13")); //$NON-NLS-1$ //$NON-NLS-2$
+            MessageDialog.openError(this.getShell(),
+                    Messages.getString("Error..._2"), Messages.getString("Error_DuplicateObjectException_13")); //$NON-NLS-1$ //$NON-NLS-2$
         } catch (java.lang.Exception e) {
             SQLExplorerPlugin.error("Exception when adding driver", e); //$NON-NLS-1$ 
-            MessageDialog
-                    .openError(
-                            this.getShell(),
-                            Messages.getString("Error..._2"), "Error Adding Driver:" + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+            MessageDialog.openError(this.getShell(),
+                    Messages.getString("Error..._2"), "Error Adding Driver:" + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         close();
     }
 
     void validate() {
-        if ((nameField.getText().trim().length() > 0)
-                && (exampleUrlField.getText().trim().length() > 0)
+        if ((nameField.getText().trim().length() > 0) && (exampleUrlField.getText().trim().length() > 0)
                 && (combo.getText().trim().length() > 0))
             setDialogComplete(true);
         else
@@ -248,8 +237,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         layout.numColumns = 3;
         layout.marginWidth = 10;
         nameGroup.setLayout(layout);
-        GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-                | GridData.GRAB_HORIZONTAL);
+        GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         nameGroup.setLayoutData(data);
 
         Composite topComposite = new Composite(nameGroup, SWT.NONE);
@@ -273,13 +261,13 @@ public class CreateDriverDlg extends TitleAreaDialog {
         Label label = new Label(topGroup, SWT.WRAP);
         label.setText(Messages.getString("Name_15")); //$NON-NLS-1$
         nameField = new Text(topGroup, SWT.BORDER);
-        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-                | GridData.GRAB_HORIZONTAL);
+        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         data.horizontalSpan = 2;
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         nameField.setLayoutData(data);
 
         nameField.addKeyListener(new KeyListener() {
+
             public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
                 CreateDriverDlg.this.validate();
             };
@@ -292,12 +280,12 @@ public class CreateDriverDlg extends TitleAreaDialog {
         Label label5 = new Label(topGroup, SWT.WRAP);
         label5.setText(Messages.getString("Example_URL_16")); //$NON-NLS-1$
         exampleUrlField = new Text(topGroup, SWT.BORDER);
-        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-                | GridData.GRAB_HORIZONTAL);
+        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         data.horizontalSpan = 2;
         exampleUrlField.setLayoutData(data);
         exampleUrlField.addKeyListener(new KeyListener() {
+
             public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
                 CreateDriverDlg.this.validate();
             };
@@ -326,26 +314,24 @@ public class CreateDriverDlg extends TitleAreaDialog {
         Label label4 = new Label(nameGroup, SWT.WRAP);
         label4.setText(Messages.getString("Driver_Class_Name_19")); //$NON-NLS-1$
         combo = new Combo(nameGroup, SWT.BORDER | SWT.DROP_DOWN);
-        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-                | GridData.GRAB_HORIZONTAL);
+        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         data.horizontalSpan = 2;
         // int size=driverModel.size();
         combo.setLayoutData(data);
 
-        combo
-                .addSelectionListener(new org.eclipse.swt.events.SelectionListener() {
-                    public void widgetDefaultSelected(
-                            org.eclipse.swt.events.SelectionEvent e) {
-                    }
+        combo.addSelectionListener(new org.eclipse.swt.events.SelectionListener() {
 
-                    public void widgetSelected(
-                            org.eclipse.swt.events.SelectionEvent e) {
-                        CreateDriverDlg.this.validate();
-                    };
-                });
+            public void widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent e) {
+            }
+
+            public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+                CreateDriverDlg.this.validate();
+            };
+        });
 
         combo.addKeyListener(new KeyListener() {
+
             public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
                 CreateDriverDlg.this.validate();
             };
@@ -389,8 +375,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
 
     /*
      * private void setJarFileName(String fileName) { if (fileName != null &&
-     * !_currentJarFileText.equals(fileName)) { //jarField.setText(fileName);
-     *  } }
+     * !_currentJarFileText.equals(fileName)) { //jarField.setText(fileName); } }
      */
 
     protected Point getInitialSize() {
@@ -406,8 +391,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         grid.numColumns = 2;
 
         cmp.setLayout(grid);
-        javaClassPathList = new ListViewer(cmp, SWT.BORDER | SWT.H_SCROLL
-                | SWT.V_SCROLL);
+        javaClassPathList = new ListViewer(cmp, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 
         GridData data = new GridData();
         data.grabExcessVerticalSpace = true;
@@ -439,60 +423,55 @@ public class CreateDriverDlg extends TitleAreaDialog {
         left.setLayout(gridLayout);
 
         _javaClasspathListDriversBtn = new Button(left, SWT.NULL);
-        _javaClasspathListDriversBtn.setText(Messages
-                .getString("List_Drivers_20")); //$NON-NLS-1$
-        _javaClasspathListDriversBtn
-                .addSelectionListener(new SelectionAdapter() {
-                    public void widgetSelected(SelectionEvent event) {
-                        combo.removeAll();
-                        File file = (File) ((IStructuredSelection) javaClassPathList
-                                .getSelection()).getFirstElement();
-                        if (file != null) {
-                            try {
-                                // SQLDriverClassLoader cl = new
-                                // SQLDriverClassLoader(file.toURL());
-                                MyURLClassLoader cl = new MyURLClassLoader(file
-                                        .toURL());
-                                Class[] classes = cl
-                                        .getAssignableClasses(Driver.class);
-                                for (int i = 0; i < classes.length; ++i) {
-                                    combo.add(classes[i].getName());
-                                }
-                            } catch (MalformedURLException ex) {
-                                ex.printStackTrace();
-                                // displayErrorMessage(ex);
-                            } catch (IOException ex) {
-                                ex.printStackTrace();
-                                // displayErrorMessage(ex);
-                            }
-                        }
-                        if (combo.getItemCount() > 0) {
-                            combo.setText(combo.getItem(0));
-                        }
+        _javaClasspathListDriversBtn.setText(Messages.getString("List_Drivers_20")); //$NON-NLS-1$
+        _javaClasspathListDriversBtn.addSelectionListener(new SelectionAdapter() {
 
+            public void widgetSelected(SelectionEvent event) {
+                combo.removeAll();
+                File file = (File) ((IStructuredSelection) javaClassPathList.getSelection()).getFirstElement();
+                if (file != null) {
+                    try {
+                        // SQLDriverClassLoader cl = new
+                        // SQLDriverClassLoader(file.toURL());
+                        MyURLClassLoader cl = new MyURLClassLoader(file.toURL());
+                        Class[] classes = cl.getAssignableClasses(Driver.class);
+                        for (int i = 0; i < classes.length; ++i) {
+                            combo.add(classes[i].getName());
+                        }
+                    } catch (MalformedURLException ex) {
+                        ex.printStackTrace();
+                        // displayErrorMessage(ex);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        // displayErrorMessage(ex);
                     }
-                });
+                }
+                if (combo.getItemCount() > 0) {
+                    combo.setText(combo.getItem(0));
+                }
+
+            }
+        });
 
         data = new GridData();
         data.grabExcessHorizontalSpace = true;
         data.horizontalAlignment = GridData.FILL;
         _javaClasspathListDriversBtn.setLayoutData(data);
 
-        javaClassPathList
-                .addSelectionChangedListener(new ISelectionChangedListener() {
-                    public void selectionChanged(SelectionChangedEvent event) {
-                        IStructuredSelection selection = (IStructuredSelection) event
-                                .getSelection();
-                        File f = (File) selection.getFirstElement();
-                        if (f != null) {
-                            if (f.isFile())
-                                _javaClasspathListDriversBtn.setEnabled(true);
-                            else
-                                _javaClasspathListDriversBtn.setEnabled(false);
-                        } else
-                            _javaClasspathListDriversBtn.setEnabled(false);
-                    }
-                });
+        javaClassPathList.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            public void selectionChanged(SelectionChangedEvent event) {
+                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+                File f = (File) selection.getFirstElement();
+                if (f != null) {
+                    if (f.isFile())
+                        _javaClasspathListDriversBtn.setEnabled(true);
+                    else
+                        _javaClasspathListDriversBtn.setEnabled(false);
+                } else
+                    _javaClasspathListDriversBtn.setEnabled(false);
+            }
+        });
         if (model.size() > 0) {
             Object obj = (model.toArray())[0];
             StructuredSelection sel = new StructuredSelection(obj);
@@ -501,8 +480,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
 
     }
 
-    private void createExtraClassPathPanel(final TabFolder tabFolder,
-            TabItem tabItem) {
+    private void createExtraClassPathPanel(final TabFolder tabFolder, TabItem tabItem) {
         Composite parent = new Composite(tabFolder, SWT.NULL);
         parent.setLayout(new FillLayout());
         tabItem.setControl(parent);
@@ -511,8 +489,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         grid.numColumns = 2;
 
         cmp.setLayout(grid);
-        extraClassPathList = new ListViewer(cmp, SWT.BORDER | SWT.H_SCROLL
-                | SWT.V_SCROLL);
+        extraClassPathList = new ListViewer(cmp, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 
         GridData data = new GridData();
         data.grabExcessVerticalSpace = true;
@@ -545,42 +522,38 @@ public class CreateDriverDlg extends TitleAreaDialog {
         left.setLayout(gridLayout);
 
         _extraClasspathListDriversBtn = new Button(left, SWT.NULL);
-        _extraClasspathListDriversBtn.setText(Messages
-                .getString("List_Drivers_21")); //$NON-NLS-1$
-        _extraClasspathListDriversBtn
-                .addSelectionListener(new SelectionAdapter() {
-                    public void widgetSelected(SelectionEvent event) {
-                        combo.removeAll();
-                        File file = (File) ((IStructuredSelection) extraClassPathList
-                                .getSelection()).getFirstElement();
-                        if (file != null) {
-                            try {
-                                // SQLDriverClassLoader cl = new
-                                // SQLDriverClassLoader(file.toURL());
+        _extraClasspathListDriversBtn.setText(Messages.getString("List_Drivers_21")); //$NON-NLS-1$
+        _extraClasspathListDriversBtn.addSelectionListener(new SelectionAdapter() {
 
-                                MyURLClassLoader cl = new MyURLClassLoader(file
-                                        .toURL());
-                                Class[] classes = cl
-                                        .getAssignableClasses(Driver.class);
+            public void widgetSelected(SelectionEvent event) {
+                combo.removeAll();
+                File file = (File) ((IStructuredSelection) extraClassPathList.getSelection()).getFirstElement();
+                if (file != null) {
+                    try {
+                        // SQLDriverClassLoader cl = new
+                        // SQLDriverClassLoader(file.toURL());
 
-                                // Class[] classes = cl.getDriverClasses(s_log);
-                                for (int i = 0; i < classes.length; ++i) {
-                                    combo.add(classes[i].getName());
-                                }
-                            } catch (MalformedURLException ex) {
-                                // ex.printStackTrace();
-                                // displayErrorMessage(ex);
-                            } catch (IOException ex) {
-                                // ex.printStackTrace();
-                                // displayErrorMessage(ex);
-                            }
+                        MyURLClassLoader cl = new MyURLClassLoader(file.toURL());
+                        Class[] classes = cl.getAssignableClasses(Driver.class);
+
+                        // Class[] classes = cl.getDriverClasses(s_log);
+                        for (int i = 0; i < classes.length; ++i) {
+                            combo.add(classes[i].getName());
                         }
-                        if (combo.getItemCount() > 0) {
-                            combo.setText(combo.getItem(0));
-                        }
-
+                    } catch (MalformedURLException ex) {
+                        // ex.printStackTrace();
+                        // displayErrorMessage(ex);
+                    } catch (IOException ex) {
+                        // ex.printStackTrace();
+                        // displayErrorMessage(ex);
                     }
-                });
+                }
+                if (combo.getItemCount() > 0) {
+                    combo.setText(combo.getItem(0));
+                }
+
+            }
+        });
 
         data = new GridData();
         data.grabExcessHorizontalSpace = true;
@@ -606,10 +579,11 @@ public class CreateDriverDlg extends TitleAreaDialog {
         newBtn = new Button(left, SWT.NULL);
         newBtn.setText(Messages.getString("New_24")); //$NON-NLS-1$
         newBtn.addSelectionListener(new SelectionAdapter() {
+
             public void widgetSelected(SelectionEvent event) {
                 FileDialog dlg = new FileDialog(tabFolder.getShell(), SWT.OPEN);
                 // dlg.setFilterNames(new String[]{"JAR files","Zip files"});
-                dlg.setFilterExtensions(new String[] { "*.jar;*.zip" }); //$NON-NLS-1$
+                dlg.setFilterExtensions(new String[] {"*.jar;*.zip"}); //$NON-NLS-1$
                 String str = dlg.open();
                 if (str != null) {
                     Object obj = new File(str);
@@ -629,9 +603,9 @@ public class CreateDriverDlg extends TitleAreaDialog {
         _extraClasspathDeleteBtn.setText(Messages.getString("Delete_26")); //$NON-NLS-1$
         _extraClasspathDeleteBtn.setEnabled(false);
         _extraClasspathDeleteBtn.addSelectionListener(new SelectionAdapter() {
+
             public void widgetSelected(SelectionEvent event) {
-                File f = (File) ((IStructuredSelection) extraClassPathList
-                        .getSelection()).getFirstElement();
+                File f = (File) ((IStructuredSelection) extraClassPathList.getSelection()).getFirstElement();
                 if (f != null) {
                     defaultModel.remove(f);
                     extraClassPathList.refresh();
@@ -647,26 +621,26 @@ public class CreateDriverDlg extends TitleAreaDialog {
         data.grabExcessHorizontalSpace = true;
         data.horizontalAlignment = GridData.FILL;
         _extraClasspathDeleteBtn.setLayoutData(data);
-        extraClassPathList
-                .addSelectionChangedListener(new ISelectionChangedListener() {
-                    public void selectionChanged(SelectionChangedEvent event) {
-                        IStructuredSelection selection = (IStructuredSelection) event
-                                .getSelection();
-                        File f = (File) selection.getFirstElement();
-                        if (f != null) {
-                            _extraClasspathDeleteBtn.setEnabled(true);
-                            _extraClasspathListDriversBtn.setEnabled(true);
-                        } else {
-                            _extraClasspathListDriversBtn.setEnabled(false);
-                            _extraClasspathDeleteBtn.setEnabled(false);
-                        }
-                    }
-                });
+        extraClassPathList.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            public void selectionChanged(SelectionChangedEvent event) {
+                IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+                File f = (File) selection.getFirstElement();
+                if (f != null) {
+                    _extraClasspathDeleteBtn.setEnabled(true);
+                    _extraClasspathListDriversBtn.setEnabled(true);
+                } else {
+                    _extraClasspathListDriversBtn.setEnabled(false);
+                    _extraClasspathDeleteBtn.setEnabled(false);
+                }
+            }
+        });
 
     }
 }
 
 class DefaultFileListBoxModel extends java.util.Vector {
+
     public void addFile(File file) {
         addElement(file);
     }
@@ -674,13 +648,12 @@ class DefaultFileListBoxModel extends java.util.Vector {
     /**
      * Return the File at the passed index.
      * 
-     * @param idx
-     *            Index to return File for.
+     * @param idx Index to return File for.
      * 
      * @return The File at <TT>idx</TT>.
      * 
-     * @throws ArrayInexOutOfBoundsException
-     *             Thrown if <TT>idx</TT> < 0 or >= <TT>getSize()</TT>.
+     * @throws ArrayInexOutOfBoundsException Thrown if <TT>idx</TT> < 0 or >=
+     *             <TT>getSize()</TT>.
      */
     public File getFile(int idx) {
         return (File) get(idx);
@@ -709,6 +682,7 @@ class DefaultFileListBoxModel extends java.util.Vector {
 }
 
 class ClassPathListModel extends DefaultFileListBoxModel {
+
     /**
      * Default ctor.
      */
@@ -745,6 +719,7 @@ class FileContentProvider implements IStructuredContentProvider {
 }
 
 class FileLabelProvider implements ILabelProvider {
+
     FileLabelProvider() {
     };
 

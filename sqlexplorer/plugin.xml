@@ -105,7 +105,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             name="SQL Explorer"
-            icon="icons/perspective_icon.gif"
+            icon="icons/logo16.gif"
             class="net.sourceforge.sqlexplorer.plugin.perspectives.SQLExplorerPluginPerspective"
             id="net.sourceforge.sqlexplorer.plugin.perspectives.SQLExplorerPluginPerspective">
       </perspective>
@@ -257,11 +257,32 @@
 		id="net.sourceforge.sqlexplorer.about">
 		<action
         class="net.sourceforge.sqlexplorer.plugin.actions.About"
-        icon="icons/perspective_icon.gif"
+        icon="icons/logo16.gif"
         id="org.eclipse.ui.cheatsheets.actions.CheatSheetHelpMenuAction"
         label="About SQL Explorer"
         menubarPath="help/about">
 		</action>
 	</actionSet>
    </extension>
+   <extension
+         id="application"
+         name="SQL Explorer Client"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run class="net.sourceforge.sqlexplorer.rcp.SQLExplorerApplication"/>
+      </application>
+   </extension>
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="net.sourceforge.sqlexplorer.application"
+            description="SQL Explorer"
+            name="application">
+         <property
+               name="windowImages"
+               value="icons/logo16.gif,icons/logo32.gif"/>
+      </product>
+   </extension>
+
 </plugin>

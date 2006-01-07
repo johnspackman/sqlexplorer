@@ -18,8 +18,12 @@
  */
 package net.sourceforge.sqlexplorer.plugin.wizards;
 
+import net.sourceforge.sqlexplorer.SqlexplorerImages;
+
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 
@@ -50,6 +54,10 @@ public class NewSQLEditorWizard extends Wizard implements INewWizard {
 	{
 		return page.performFinish();
 	}
+
+    public Image getDefaultPageImage() {
+        return ImageDescriptor.createFromURL(SqlexplorerImages.getWizardLogo()).createImage();
+    }
 
 
 }
