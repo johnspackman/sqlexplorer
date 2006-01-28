@@ -30,13 +30,13 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPage;
 
 import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.MultiLineString;
 import net.sourceforge.sqlexplorer.ext.oracle.ParamObj;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqlpanel.SQLTableSorter;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlTableModel;
+import net.sourceforge.sqlexplorer.util.SQLString;
 import net.sourceforge.squirrel_sql.fw.sql.ResultSetReader;
 
 public class Utils {
@@ -100,7 +100,7 @@ public class Utils {
                     final SQLTableSorter sorter = new SQLTableSorter(count, metaData);
                     ResultSetReader reader = new ResultSetReader(rs);
                     final SqlTableModel mo = new SqlTableModel(reader, metaData, SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(
-                            IConstants.MAX_SQL_ROWS), session.getConnection(), ss, sorter, new MultiLineString(sql));
+                            IConstants.MAX_SQL_ROWS), session.getConnection(), ss, sorter, new SQLString(sql));
                     final IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
                     if (page != null) {
                         Display.getCurrent().asyncExec(new Runnable() {

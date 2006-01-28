@@ -22,13 +22,13 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 
-import net.sourceforge.sqlexplorer.MultiLineString;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sqlpanel.SQLTableSorter;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlTableContentProvider;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlTableLabelProvider;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlTableModel;
+import net.sourceforge.sqlexplorer.util.SQLString;
 import net.sourceforge.squirrel_sql.fw.sql.ResultSetReader;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
@@ -119,7 +119,7 @@ public class TableConstructor {
 			}
 			viewer.setColumnProperties(ss);
 			
-			stm=new SqlTableModel(reader,metaData,1000,conn,ss,sorter, new MultiLineString(sql));
+			stm=new SqlTableModel(reader,metaData,1000,conn,ss,sorter, new SQLString(sql));
 			SqlTableLabelProvider slp=new SqlTableLabelProvider(stm);
 			viewer.setLabelProvider(slp);	
 			viewer.setInput(stm);
