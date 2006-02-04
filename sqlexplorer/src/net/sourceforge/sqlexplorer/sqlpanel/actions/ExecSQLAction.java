@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
- 
+
 package net.sourceforge.sqlexplorer.sqlpanel.actions;
 
 import net.sourceforge.sqlexplorer.Messages;
@@ -26,73 +26,84 @@ import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlExecProgress;
 
-
-
 import org.eclipse.jface.action.Action;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 
-
 public class ExecSQLAction extends Action {
-	
-	SQLEditor txtComp;
-	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getExecSQLIcon());
-	private int maxRows;
-	//private SessionTreeNode sessionTreeNode;
-	//private boolean reRun=false;
-	//SessionTreeNode node;
-	SessionTreeNode preferredNode;
-	public ExecSQLAction(SQLEditor txtComp, int maxRows){
-		
-		this.txtComp=txtComp;
-		this.maxRows=maxRows;
-	}
-	public ExecSQLAction(SQLEditor txtComp, int maxRows,SessionTreeNode node_){
-		
-		this.txtComp=txtComp;
-		this.maxRows=maxRows;
-		this.preferredNode=node_;
-	}
-	public String getText(){
-		return Messages.getString("Execute_SQL_2"); //$NON-NLS-1$
-	}
-	public String getToolTipText(){
-		return Messages.getString("Execute_SQL_3"); //$NON-NLS-1$
-	}
-	public void run(){
-		SessionTreeNode runNode=null;
-		if(preferredNode==null)
-			runNode=txtComp.getSessionTreeNode();
-		else
-			runNode=preferredNode;
-		if(runNode==null)
-			return;
-		//System.out.println("Executing on "+runNode);
-		final SqlExecProgress sExecP=new SqlExecProgress(txtComp.getSQLToBeExecuted(),txtComp, maxRows,runNode);								
-								
-		ProgressMonitorDialog pg=new ProgressMonitorDialog(txtComp.getSite().getShell());
-		try{
-			pg.run(true, true, sExecP);
-		}catch(java.lang.Exception e){
-			SQLExplorerPlugin.error("Error executing the SQL statement ",e); //$NON-NLS-1$
-		}
-		if(sExecP.isSqlError()){
-			txtComp.getSite().getShell().getDisplay().asyncExec(new Runnable(){
-				public void run(){
-					MessageDialog.openError(txtComp.getSite().getShell(),Messages.getString("Error..._2"),sExecP.getException().getMessage());//$NON-NLS-1$
 
-				}
-			});
-		}
-	}
-    public ImageDescriptor getHoverImageDescriptor(){
-    	return img;
+    SQLEditor txtComp;
+
+    private ImageDescriptor img = ImageDescriptor.createFromURL(SqlexplorerImages.getExecSQLIcon());
+
+    private int maxRows;
+
+    SessionTreeNode preferredNode;
+
+
+    public ExecSQLAction(SQLEditor txtComp, int maxRows) {
+
+        this.txtComp = txtComp;
+        this.maxRows = maxRows;
     }
-    public ImageDescriptor getImageDescriptor(){
-    	return img;          		
-	};		
+
+
+    public ExecSQLAction(SQLEditor txtComp, int maxRows, SessionTreeNode node_) {
+
+        this.txtComp = txtComp;
+        this.maxRows = maxRows;
+        this.preferredNode = node_;
+    }
+
+
+    public String getText() {
+        return Messages.getString("Execute_SQL_2");
+    }
+
+
+    public String getToolTipText() {
+        return Messages.getString("Execute_SQL_3");
+    }
+
+
+    public void run() {
+        SessionTreeNode runNode = null;
+        if (preferredNode == null)
+            runNode = txtComp.getSessionTreeNode();
+        else
+            runNode = preferredNode;
+        if (runNode == null)
+            return;
+
+        final SqlExecProgress sExecP = new SqlExecProgress(txtComp.getSQLToBeExecuted(), txtComp, maxRows, runNode);
+
+        ProgressMonitorDialog pg = new ProgressMonitorDialog(txtComp.getSite().getShell());
+        try {
+            pg.run(true, true, sExecP);
+        } catch (java.lang.Exception e) {
+            SQLExplorerPlugin.error("Error executing the SQL statement ", e);
+        }
+        if (sExecP.isSqlError()) {
+            txtComp.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+
+                public void run() {
+                    MessageDialog.openError(txtComp.getSite().getShell(), Messages.getString("Error..._2"), sExecP.getException().getMessage());
+
+                }
+            });
+        }
+    }
+
+
+    public ImageDescriptor getHoverImageDescriptor() {
+        return img;
+    }
+
+
+    public ImageDescriptor getImageDescriptor() {
+        return img;
+    };
 
 }
-

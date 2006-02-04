@@ -33,73 +33,68 @@ import org.eclipse.ui.IPerspectiveFactory;
  * 
  * @author Macon Pegram
  */
-public class SQLExplorerPluginPerspective implements IPerspectiveFactory
-{     
-   /**
-    * Creates the default initial layout for this plugin.  This method fufills
-    * the contract for the IPerspectiveFactory interface
-    * 
-    * @param IPageLayout
-    */                      
-    public void createInitialLayout(IPageLayout layout)
-    {
+public class SQLExplorerPluginPerspective implements IPerspectiveFactory {
+
+    /**
+     * Creates the default initial layout for this plugin. This method fufills
+     * the contract for the IPerspectiveFactory interface
+     * 
+     * @param IPageLayout
+     */
+    public void createInitialLayout(IPageLayout layout) {
         defineActions(layout);
         defineLayout(layout);
     }
 
-   /** 
-    * Define the actions and views you want to make available from the menus.
-    * 
-    * @param IPageLayout
-    */                      
-    private void defineActions(IPageLayout layout)
-    {
+
+    /**
+     * Define the actions and views you want to make available from the menus.
+     * 
+     * @param IPageLayout
+     */
+    private void defineActions(IPageLayout layout) {
         // You can add "new" wizards" here if you want, but none seem applicable
         // in the case of this plugin
-        
+
         // Grab the list of all available views defined in the constants class
         List views = SqlexplorerViewConstants.getInstance().getFullViewList();
         Iterator iterator = views.iterator();
-        
+
         // Iterate through those views and add them to the Show Views menu.
         while (iterator.hasNext())
-           layout.addShowViewShortcut((String)iterator.next());          
+            layout.addShowViewShortcut((String) iterator.next());
     }
-    
-   /** 
-    * Controls the physical default layout of the perspective
-    * 
-    * @param IPageLayout
-    */                      
-    private void defineLayout(IPageLayout layout)
-    {
-        // Hide the editor.  Note the user can always make it come back.  
-        layout.setEditorAreaVisible(true);
-        
-		String editorArea = layout.getEditorArea();
 
-		IFolderLayout left = layout.createFolder("topLeft", IPageLayout.LEFT, 0.25f,editorArea); //$NON-NLS-1$
-		left.addView(SqlexplorerViewConstants.SQLEXPLORER_DRIVER);
-		left.addView(SqlexplorerViewConstants.SQLEXPLORER_ALIAS);
-		
-		IFolderLayout main = 
-						 layout.createFolder("main", IPageLayout.RIGHT, 0.75f,editorArea); //$NON-NLS-1$
-		
-		main.addView(SqlexplorerViewConstants.SQLEXPLORER_DBVIEW);
-		main.addView(SqlexplorerViewConstants.SQLEXPLORER_CONNINFO);
-		main.addView(SqlexplorerViewConstants.SQLEXPLORER_SQLHISTORY);
-		
-		IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.50f,
-			   "topLeft");
-		
-		bottomLeft.addView(SqlexplorerViewConstants.SQLEXPLORER_CONNECTIONS);
-		IFolderLayout bottom=layout.createFolder("bottom",IPageLayout.BOTTOM,0.5f,editorArea);
-		bottom.addView(SqlexplorerViewConstants.SQLEXPLORER_SQLRESULT);
-		
-				
+
+    /**
+     * Controls the physical default layout of the perspective
+     * 
+     * @param IPageLayout
+     */
+    private void defineLayout(IPageLayout layout) {
         
-		
+        layout.setEditorAreaVisible(true);
+        String editorArea = layout.getEditorArea();       
+
+        IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.15f, editorArea);
+        topLeft.addView(SqlexplorerViewConstants.SQLEXPLORER_DRIVER);
+
+        IFolderLayout midLeft = layout.createFolder("midLeft", IPageLayout.BOTTOM, 0.40f, "topLeft");
+        midLeft.addView(SqlexplorerViewConstants.SQLEXPLORER_ALIAS);
+
+        IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.70f, "midLeft");
+        bottomLeft.addView(SqlexplorerViewConstants.SQLEXPLORER_CONNECTIONS);
+
+        IFolderLayout main = layout.createFolder("right", IPageLayout.RIGHT, 0.70f, editorArea);
+
+        main.addView(SqlexplorerViewConstants.SQLEXPLORER_DBSTRUCTURE);
+        main.addView(SqlexplorerViewConstants.SQLEXPLORER_SQLHISTORY);
+        
+        IFolderLayout bottom = layout.createFolder("bottom", IPageLayout.BOTTOM, 0.35f, editorArea);
+
+        bottom.addView(SqlexplorerViewConstants.SQLEXPLORER_SQLRESULT);
+        bottom.addView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
+
     }
-        
-    
+
 }

@@ -1,0 +1,94 @@
+/*
+ * Copyright (C) 2006 Davy Vanherbergen
+ * dvanherbergen@users.sourceforge.net
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+package net.sourceforge.sqlexplorer.dbstructure.actions;
+
+import org.eclipse.jface.resource.ImageDescriptor;
+
+import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.sqlexplorer.SqlexplorerImages;
+
+/**
+ * Refresh this node from the alias metadata filter.
+ * 
+ * @author Davy Vanherbergen
+ * 
+ */
+public class RemoveNodeFilterAction extends AbstractDBTreeContextAction {
+
+    private static final ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getFilterIcon());
+
+
+    /**
+     * Custom image for action
+     * 
+     * @see org.eclipse.jface.action.IAction#getImageDescriptor()
+     */
+    public ImageDescriptor getImageDescriptor() {
+        return _image;
+    }
+
+
+    /**
+     * Set the text for the menu entry.
+     * 
+     * @see org.eclipse.jface.action.IAction#getText()
+     */
+    public String getText() {
+        return Messages.getString("DatabaseStructureView.Actions.RemoveNodeFilter");
+    }
+
+
+    /**
+     * Refresh selected node and descendants.
+     * 
+     * @see org.eclipse.jface.action.IAction#run()
+     */
+    public void run() {
+
+        SQLAlias alias = (SQLAlias) _selectedNodes[0].getSession().getAlias();
+        alias.setMetaFilterExpression("");
+
+        _selectedNodes[0].getSession().getRoot().refresh(false);
+        _treeViewer.refresh();
+
+    }
+
+
+    /**
+     * Action is availble when a node is selected and filter is active
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction#isAvailable()
+     */
+    public boolean isAvailable() {
+
+        if (_selectedNodes.length == 0) {
+            return false;
+        }
+
+        SQLAlias alias = (SQLAlias) _selectedNodes[0].getSession().getAlias();
+        String filter = alias.getMetaFilterExpression();
+        if (filter == null || filter.trim().length() == 0) {
+            return false;
+        }
+
+        return true;
+    }
+}

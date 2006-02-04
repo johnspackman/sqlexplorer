@@ -40,7 +40,6 @@ public class Dictionary {
 	private HashMap realCatalogSchemas= new HashMap();
 	private HashMap realExternalObjects=new HashMap();
 	
-	//private TernarySearchTree col_tree=new TernarySearchTree();
 	private HashMap col_map= new HashMap();
 
 	

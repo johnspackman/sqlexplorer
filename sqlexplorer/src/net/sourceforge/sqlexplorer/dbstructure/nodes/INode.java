@@ -1,0 +1,118 @@
+/*
+ * Copyright (C) 2006 Davy Vanherbergen
+ * dvanherbergen@users.sourceforge.net
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+package net.sourceforge.sqlexplorer.dbstructure.nodes;
+
+import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
+
+/**
+ * All nodes displayed in the database structure outline should implement this
+ * interface.
+ * 
+ * @author Davy Vanherbergen
+ */
+public interface INode {
+
+    public void fillDetailComposite(Composite composite);
+
+
+    /**
+     * @return All child nodes of this node.
+     */
+    public INode[] getChildNodes();
+
+
+    /**
+     * The returned image is displayed in the database structure outline for
+     * this node.
+     * 
+     * @return Image to be used for this node.
+     */
+    public Image getImage();
+
+
+    /**
+     * @return Text that is displayed for this node in the treeviewer.
+     */
+    public String getLabelText();
+
+
+    /**
+     * @return Parent node of this node.
+     */
+    public INode getParent();
+
+
+    /**
+     * @return true if the node has children.
+     */
+    public boolean hasChildNodes();
+
+
+    /**
+     * Initialize this node.
+     * 
+     * @param parent the parent INode of this node.
+     * @param name the name of this node.
+     * @param sessionNode the session this node belongs too.
+     */
+    public void initialize(INode parent, String name, SessionTreeNode sessionNode);
+    
+    
+    /**
+     * @return true if this node cannot have children..
+     */
+    public boolean isEndNode();
+    
+    
+    /**
+     * @return type of this node, e.g. Database, schema, catalog, table, view, ...
+     */
+    public String getType();
+    
+    
+    /**
+     * Refresh. This will clear the nodes' children and reload them.
+     * @param cascade when true all of the nodes descendants will be refreshed too.
+     */
+    public void refresh(boolean cascade);
+    
+    
+    /**
+     * @return SessionTreeNode for this node.
+     */
+    public SessionTreeNode getSession();
+    
+    /**
+     * @return Qualified name for this node.
+     */
+    public String getQualifiedName();
+    
+    /**
+     * @return Qualified path for this node.
+     */
+    public String getUniqueIdentifier();
+    
+    /**
+     * @return Simple name for this node.
+     */
+    public String getName();
+}

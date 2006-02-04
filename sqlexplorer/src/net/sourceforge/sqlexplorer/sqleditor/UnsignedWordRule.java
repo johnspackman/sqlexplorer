@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
-import net.sourceforge.sqlexplorer.dbviewer.model.TableNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 
@@ -118,7 +118,7 @@ public class UnsignedWordRule implements IRule {
 								TableNode nd=(TableNode) list.get(j);
 								ArrayList ls=null;
 								try{
-									ls=nd.getColumnNames();
+									ls= (ArrayList) nd.getColumnNames();
 								}catch(Throwable e){
 									SQLExplorerPlugin.error("Error getting columns names",e); //$NON-NLS-1$
 								}

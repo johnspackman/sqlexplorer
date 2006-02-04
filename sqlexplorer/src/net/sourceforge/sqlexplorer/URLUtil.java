@@ -18,58 +18,60 @@ package net.sourceforge.sqlexplorer;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
- 
+
 import java.net.URL;
 
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 public class URLUtil {
-	private URLUtil(){}
-	public static URL getResourceURL(String s){
-		if(!initialized)
-			init();
-		URL url = null;
-		try {
-		  url = new URL(baseURL, s);
-		 } catch(Throwable e){
-		 }
-		 return url;
-	}
-	
-	static private boolean initialized=false;
-	static private void init(){
-		SQLExplorerPlugin defaultPlugin=SQLExplorerPlugin.getDefault();
-		//if(defaultPlugin!=null){
-			baseURL=defaultPlugin.getDescriptor().getInstallURL();
-			//plugged=true;
-		//}
-		
-		initialized=true;
-	}
-	private static URL baseURL;
-	
-	public static URL getPluggableFile(String file){
-		if(!initialized)
-			init();
 
-		//URL installURL = JFaceDbcPlugin.getDefault().getDescriptor().getInstallURL();
-		URL url=null;
-		try {
-			  //url = new URL(installURL, file);
-			url = new URL(getBaseURL(), file);
-			 } catch(Throwable e){
-			 }
-		
-		return url;
-	}
-	public static URL getBaseURL(){
-		if(!initialized)
-			init();
-		return baseURL;
-	}
-	
+    private URLUtil() {
+    }
 
+
+    public static URL getResourceURL(String s) {
+        if (!initialized)
+            init();
+        URL url = null;
+        try {
+            url = new URL(baseURL, s);
+        } catch (Throwable e) {
+        }
+        return url;
+    }
+
+    static private boolean initialized = false;
+
+
+    static private void init() {
+        SQLExplorerPlugin defaultPlugin = SQLExplorerPlugin.getDefault();
+
+        baseURL = defaultPlugin.getDescriptor().getInstallURL();
+        initialized = true;
+    }
+
+    private static URL baseURL;
+
+
+    public static URL getPluggableFile(String file) {
+        if (!initialized)
+            init();
+
+        URL url = null;
+        try {
+
+            url = new URL(getBaseURL(), file);
+        } catch (Throwable e) {
+        }
+
+        return url;
+    }
+
+
+    public static URL getBaseURL() {
+        if (!initialized)
+            init();
+        return baseURL;
+    }
 
 }
-
-

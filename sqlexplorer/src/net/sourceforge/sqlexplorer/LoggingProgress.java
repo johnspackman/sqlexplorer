@@ -27,50 +27,68 @@ import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverManager;
 
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
-
 public class LoggingProgress implements IRunnableWithProgress {
 
-	/**
-	 * @see org.eclipse.jface.operation.IRunnableWithProgress#run(IProgressMonitor)
-	 */
-	SQLDriverManager _driverMgr;
-	ISQLDriver driver;
-	ISQLAlias alias;
-	String user;
-	String pswd;
-	String error;
-	SQLConnection conn;
-	Throwable th;
-	
-	public LoggingProgress(SQLDriverManager dm,ISQLDriver dv,ISQLAlias al,String user,String pswd){
+    /**
+     * @see org.eclipse.jface.operation.IRunnableWithProgress#run(IProgressMonitor)
+     */
+    SQLDriverManager _driverMgr;
 
-		_driverMgr=dm;
-		driver=dv;
-		alias = al;
-		this.user=user;
-		this.pswd=pswd;
-	};
-	public void run(IProgressMonitor monitor)
-		throws InvocationTargetException, InterruptedException {
-			monitor.setTaskName(Messages.getString("Logging_to_database..._1")); //$NON-NLS-1$
-			monitor.beginTask(Messages.getString("Logging_to_database..._1"),IProgressMonitor.UNKNOWN);//$NON-NLS-1$
-			try{
-				conn=_driverMgr.getConnection(driver, alias,user,pswd);
-				monitor.done();
-			}catch(Throwable e){
-				th=e;
-				error=e.getMessage();
-				SQLExplorerPlugin.error("Error logging to database",e); //$NON-NLS-1$
-				
-			}
-	}
-	public SQLConnection getConn(){return conn;}
-	public String getError(){return error;}
-	public boolean isOk(){return ((th==null)?true:false);}
+    ISQLDriver driver;
+
+    ISQLAlias alias;
+
+    String user;
+
+    String pswd;
+
+    String error;
+
+    SQLConnection conn;
+
+    Throwable th;
+
+
+    public LoggingProgress(SQLDriverManager dm, ISQLDriver dv, ISQLAlias al, String user, String pswd) {
+
+        _driverMgr = dm;
+        driver = dv;
+        alias = al;
+        this.user = user;
+        this.pswd = pswd;
+    };
+
+
+    public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+        monitor.setTaskName(Messages.getString("Logging_to_database..._1"));
+        monitor.beginTask(Messages.getString("Logging_to_database..._1"), IProgressMonitor.UNKNOWN);
+        try {
+            conn = _driverMgr.getConnection(driver, alias, user, pswd);
+            monitor.done();
+        } catch (Throwable e) {
+            th = e;
+            error = e.getMessage();
+            SQLExplorerPlugin.error("Error logging to database", e);
+
+        }
+    }
+
+
+    public SQLConnection getConn() {
+        return conn;
+    }
+
+
+    public String getError() {
+        return error;
+    }
+
+
+    public boolean isOk() {
+        return ((th == null) ? true : false);
+    }
 
 }
-

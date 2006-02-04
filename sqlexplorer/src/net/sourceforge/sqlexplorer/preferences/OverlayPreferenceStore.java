@@ -19,8 +19,6 @@ package net.sourceforge.sqlexplorer.preferences;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
  
-import net.sourceforge.sqlexplorer.IConstants;
-
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;

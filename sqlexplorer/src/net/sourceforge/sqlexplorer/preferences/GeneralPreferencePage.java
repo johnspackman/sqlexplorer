@@ -48,7 +48,8 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_ASSIST),
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_QRY_DELIMITER),
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_ALT_QRY_DELIMITER),
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_COMMENT_DELIMITER)};
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_COMMENT_DELIMITER),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.INCLUDE_COLUMNS_IN_TREE)};
 
     private IntegerFieldEditor fPreviewRowCountEditor;
 
@@ -67,6 +68,8 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     Button fCommitOnCloseBox;
 
     Button fAssistance;
+    
+    Button _includeColumnsButton;
 
     public GeneralPreferencePage(OverlayPreferenceStore fOverlayStore) {
         this.setTitle(Messages.getString("General_Preferences_1")); //$NON-NLS-1$
@@ -123,6 +126,12 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
         gd.horizontalSpan = 2;
         fAssistance.setLayoutData(gd);
 
+        _includeColumnsButton = new Button(colorComposite, SWT.CHECK);
+        _includeColumnsButton.setText(Messages.getString("Preferences.SQLExplorer.IncludeColumns")); //$NON-NLS-1$
+        gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalAlignment = GridData.BEGINNING;
+        gd.horizontalSpan = 2;
+        _includeColumnsButton.setLayoutData(gd);
         
         _qryDelimiterField = new StringFieldEditor(IConstants.SQL_QRY_DELIMITER, Messages.getString("Preferences.SQLExplorer.QueryDelimiter"),
                 colorComposite);
@@ -175,6 +184,16 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
             }
         });
 
+        _includeColumnsButton.addSelectionListener(new SelectionListener() {
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+            }
+
+            public void widgetSelected(SelectionEvent e) {
+                fOverlayStore.setValue(IConstants.INCLUDE_COLUMNS_IN_TREE, _includeColumnsButton.getSelection());
+            }
+        });
+        
         initialize();
 
         return colorComposite;
@@ -227,6 +246,13 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
 
             public void run() {
                 fAssistance.setSelection(fOverlayStore.getBoolean(IConstants.SQL_ASSIST));
+            }
+        });
+        
+        _includeColumnsButton.getDisplay().asyncExec(new Runnable() {
+
+            public void run() {
+                _includeColumnsButton.setSelection(fOverlayStore.getBoolean(IConstants.INCLUDE_COLUMNS_IN_TREE));
             }
         });
 

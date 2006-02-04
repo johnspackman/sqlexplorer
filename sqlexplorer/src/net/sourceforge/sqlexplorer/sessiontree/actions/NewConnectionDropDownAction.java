@@ -31,7 +31,6 @@ import org.eclipse.ui.IViewPart;
 public class NewConnectionDropDownAction extends Action implements IMenuCreator, IViewActionDelegate {
     private Menu menu;
 
-    private IViewPart view;
 
     public NewConnectionDropDownAction() {
         setText(Messages.getString("ConnectionsView.Actions.NewConnection"));
@@ -74,7 +73,7 @@ public class NewConnectionDropDownAction extends Action implements IMenuCreator,
     }
 
     public void init(IViewPart view) {
-        this.view = view;
+        
     }
 
     public void run(IAction action) {

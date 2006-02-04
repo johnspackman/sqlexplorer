@@ -83,8 +83,8 @@ public class DriverModel {
     }
 
 
-    public void addDriver(ISQLDriver dv) throws DuplicateObjectException, ClassNotFoundException,
-            java.lang.IllegalAccessException, java.lang.InstantiationException, MalformedURLException {
+    public void addDriver(ISQLDriver dv) throws DuplicateObjectException, ClassNotFoundException, java.lang.IllegalAccessException,
+            java.lang.InstantiationException, MalformedURLException {
 
         cache.addDriver(dv);
         sl.add(dv);

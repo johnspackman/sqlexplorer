@@ -83,7 +83,7 @@ public class SessionTreeModel implements ISessionTreeNode{
 	public void modelChanged(SessionTreeNode stn){
 		
 		Object []ls=listeners.getListeners();
-		//MessageDialog.openInformation(null,"modelChanged",""+ls.length);
+
 		for(int i=0;i<ls.length;++i){
 			try{
 				((SessionTreeModelChangedListener)ls[i]).modelChanged(stn);

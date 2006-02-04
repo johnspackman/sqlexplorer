@@ -1,0 +1,26 @@
+* review/fix sql editor content assist
+* drop sqltable and replace by new datasettable that is used for detail tabs and sql results
+* connect to database in background
+* add drag support for nodes into sqleditor
+* remove overlaystore from preferences 
+* add ok/cancel prompts where beneficial (example delete alias)
+* background processing for dictionary loading
+* make dictionary persistent, and only update on request
+* background processing for queries
+* ad-hoc override of sql result set limit in sql editor
+* better timing details of sql results
+* store connection info in sql history, so that the 'open in editor' feature, can initiate the correct connection
+* create extension points for sql editor
+* add refresh action to sql result table
+* merge alias and connections view
+* add help documentation
+* create plugin fragments for every database specific extension
+* move drivers to preferences
+* add autowrap to editor..
+* add more detailed timing to sql result
+* set detail for column node to parent node.. 
+* add top 10 sql drop down in editor 
+* create update manager 
+* creating first editor is slow..
+* create installer for standalone app
+* remove all deprecated methods

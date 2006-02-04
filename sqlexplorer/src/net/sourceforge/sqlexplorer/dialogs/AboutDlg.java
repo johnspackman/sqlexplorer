@@ -24,13 +24,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.Collator;
-import java.util.ArrayList;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.URLUtil;
-import net.sourceforge.sqlexplorer.ext.PluginInfo;
-import net.sourceforge.sqlexplorer.ext.PluginManager;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -73,11 +70,8 @@ import org.eclipse.ui.internal.browser.WorkbenchBrowserSupport;
 
 public class AboutDlg extends Dialog {
 
-    PluginManager pluginManager;
-
-    public AboutDlg(Shell parentShell, PluginManager pluginManager) {
+    public AboutDlg(Shell parentShell) {
         super(parentShell);
-        this.pluginManager = pluginManager;
     }
 
     protected void configureShell(Shell shell) {
@@ -117,7 +111,6 @@ public class AboutDlg extends Dialog {
         new CreditsItem(tabItem2, tabFolder);
         new LicenseItem(tabItem3, tabFolder);        
         new SystemProperties(tabItem4, tabFolder);
-        new PluginsProperties(tabItem5, tabFolder, pluginManager);
         return parentComposite;
     }
 
@@ -275,8 +268,11 @@ class CreditsItem {
         st.setEditable(false);
         String separator = System.getProperty("line.separator"); //$NON-NLS-1$
 
-        final String credits =      
-            "Active Developers (versions 2.2.5 and above):" + separator +
+        final String credits =    
+            "Developers (versions 3.0.0):" + separator +
+            " - Davy Vanherbergen" + separator + 
+            separator +              
+            "Developers (versions 2.2.5 (never released)):" + separator +
             " - Alexandre Luti Telles" + separator +
             " - Davy Vanherbergen" + separator + 
             separator +        
@@ -375,127 +371,7 @@ class MyViewerSorter extends ViewerSorter {
     }
 }
 
-class PluginRow {
 
-    String[] objArr = new String[5];
 
-    PluginRow(PluginInfo pInfo) {
-        objArr[0] = pInfo.getDescriptiveName();
-        objArr[1] = pInfo.getInternalName();
-        objArr[2] = pInfo.getAuthor();
-        objArr[3] = pInfo.getWebSite();
-        objArr[4] = pInfo.getVersion();
-    }
 
-    public Object getValue(int i) {
-        return objArr[i];
-    }
 
-}
-
-class PluginLabelProvider extends LabelProvider implements ITableLabelProvider {
-
-    PluginTableModel cdtm;
-
-    public PluginLabelProvider(PluginTableModel cdtm) {
-        this.cdtm = cdtm;
-    }
-
-    /**
-     * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(Object,
-     *      int)
-     */
-    public Image getColumnImage(Object arg0, int arg1) {
-        return null;
-    }
-
-    public String getColumnText(Object element, int columnIndex) {
-        Object obj = cdtm.getValue(element, columnIndex);
-        if (obj != null)
-            return obj.toString();
-        return ""; //$NON-NLS-1$
-    }
-
-}
-
-class PluginTableModel {
-
-    private ArrayList list = new ArrayList();
-
-    public PluginTableModel(PluginInfo[] rs) {
-
-        if (rs == null)
-            return;
-        try {
-            for (int i = 0; i < rs.length; i++) {
-                list.add(new PluginRow(rs[i]));
-            }
-        } catch (java.lang.Exception e) {
-            SQLExplorerPlugin.error("Error creating plugin table model", e); //$NON-NLS-1$
-        }
-    }
-
-    public Object[] getElements() {
-        return list.toArray();
-    }
-
-    public Object getValue(Object element, int i) {
-        PluginRow e = (PluginRow) element;
-        return e.getValue(i);
-    }
-
-}
-
-class PluginsContentProvider implements IStructuredContentProvider {
-
-    TableViewer m_viewer;
-
-    public Object[] getElements(Object input) {
-        return ((PluginTableModel) input).getElements();
-    }
-
-    public void dispose() {
-    }
-
-    public void inputChanged(Viewer viewer, Object arg1, Object arg2) {
-        m_viewer = (TableViewer) viewer;
-    }
-
-}
-
-class PluginsProperties {
-
-    PluginManager pluginManager;
-
-    PluginsProperties(TabItem itemTab, Composite parent, PluginManager pluginManager) {
-        this.pluginManager = pluginManager;
-        PluginInfo[] pInfo = pluginManager.getPluginInformation();
-
-        TableViewer viewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
-        itemTab.setControl(viewer.getControl());
-        Table table = viewer.getTable();
-        table.setLinesVisible(true);
-        table.setHeaderVisible(true);
-        TableColumn tc = new TableColumn(table, SWT.NULL);
-        tc.setText(Messages.getString("AboutDialog.Plugins.Name")); //$NON-NLS-1$
-        tc = new TableColumn(table, SWT.NULL);
-        tc.setText(Messages.getString("AboutDialog.Plugins.InternalName")); //$NON-NLS-1$
-        tc = new TableColumn(table, SWT.NULL);
-        tc.setText(Messages.getString("AboutDialog.Plugins.Author")); //$NON-NLS-1$
-        tc = new TableColumn(table, SWT.NULL);
-        tc.setText(Messages.getString("AboutDialog.Plugins.WebSite")); //$NON-NLS-1$
-        tc = new TableColumn(table, SWT.NULL);
-        tc.setText(Messages.getString("AboutDialog.Plugins.Version")); //$NON-NLS-1$
-
-        TableLayout tableLayout = new TableLayout();
-        for (int i = 0; i < 5; i++)
-            tableLayout.addColumnData(new ColumnWeightData(1, 50, true));
-        table.setLayout(tableLayout);
-        viewer.setContentProvider(new PluginsContentProvider());
-        PluginTableModel cdtm = new PluginTableModel(pInfo);
-        PluginLabelProvider cdlp = new PluginLabelProvider(cdtm);
-        viewer.setLabelProvider(cdlp);
-        viewer.setInput(cdtm);
-
-    }
-}

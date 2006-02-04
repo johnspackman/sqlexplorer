@@ -1,4 +1,5 @@
 package net.sourceforge.sqlexplorer;
+
 /*
  * Copyright (C) 2002-2004 Andrea Mazzolini
  * andreamazzolini@users.sourceforge.net
@@ -17,7 +18,7 @@ package net.sourceforge.sqlexplorer;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
- 
+
 import java.lang.reflect.InvocationTargetException;
 
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModel;
@@ -30,44 +31,54 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 
 public class RetrievingTableDataProgress implements IRunnableWithProgress {
 
-	/**
-	 * @see org.eclipse.jface.operation.IRunnableWithProgress#run(org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	public void run(IProgressMonitor monitor)
-		throws InvocationTargetException, InterruptedException {
-			monitor.setTaskName(Messages.getString("RetrievingTableDataProgress.Getting_Database_Structure_Data_1")); //$NON-NLS-1$
-			monitor.beginTask(Messages.getString("RetrievingTableDataProgress.Getting_Database_Structure_Data_1"),IProgressMonitor.UNKNOWN); //$NON-NLS-1$
-			try{
-                sessionNode = sessionTreeModel.createSessionTreeNode(conn,alias,monitor,pswd);
-            } finally{
-				monitor.done();
-			}
-			
-			
-	}
+    /**
+     * @see org.eclipse.jface.operation.IRunnableWithProgress#run(org.eclipse.core.runtime.IProgressMonitor)
+     */
+    public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+        monitor.setTaskName(Messages.getString("RetrievingTableDataProgress.Getting_Database_Structure_Data_1"));
+        monitor.beginTask(Messages.getString("RetrievingTableDataProgress.Getting_Database_Structure_Data_1"), IProgressMonitor.UNKNOWN);
+        try {
+            sessionNode = sessionTreeModel.createSessionTreeNode(conn, alias, monitor, pswd);
+        } finally {
+            monitor.done();
+        }
 
-	SQLConnection conn;
-	ISQLAlias alias;
-	String pswd;
-	SessionTreeModel sessionTreeModel;	
+    }
+
+    SQLConnection conn;
+
+    ISQLAlias alias;
+
+    String pswd;
+
+    SessionTreeModel sessionTreeModel;
+
     SessionTreeNode sessionNode;
-    
-	public RetrievingTableDataProgress(SQLConnection conn,ISQLAlias alias,SessionTreeModel sessionTreeModel, String pswd){
-		
-		this.conn=conn;
-		this.alias=alias;
-		this.sessionTreeModel=sessionTreeModel;
-		this.pswd=pswd;
-	};
-	
-	
-	String error;
-	public boolean isOk(){return ((error==null)?true:false);}
-	public String getError(){return error;}
-    
+
+
+    public RetrievingTableDataProgress(SQLConnection conn, ISQLAlias alias, SessionTreeModel sessionTreeModel, String pswd) {
+
+        this.conn = conn;
+        this.alias = alias;
+        this.sessionTreeModel = sessionTreeModel;
+        this.pswd = pswd;
+    };
+
+    String error;
+
+
+    public boolean isOk() {
+        return ((error == null) ? true : false);
+    }
+
+
+    public String getError() {
+        return error;
+    }
+
+
     public SessionTreeNode getSessionTreeNode() {
         return sessionNode;
     }
 
-    
 }

@@ -35,7 +35,6 @@ import net.sourceforge.sqlexplorer.ApplicationFiles;
 import net.sourceforge.sqlexplorer.DataCache;
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.ext.PluginManager;
 import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModel;
 import net.sourceforge.sqlexplorer.sqleditor.ISQLColorConstants;
@@ -45,7 +44,8 @@ import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverManager;
 
-import org.eclipse.core.runtime.CoreException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -56,19 +56,20 @@ import org.eclipse.jface.util.ListenerList;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
  */
 public class SQLExplorerPlugin extends AbstractUIPlugin {
 
+    private static final Log _logger = LogFactory.getLog(SQLExplorerPlugin.class);
+
     private int count = 0;
 
     public final static String PLUGIN_ID = "net.sourceforge.sqlexplorer";
 
     public SessionTreeModel stm = new SessionTreeModel();
-
-    public PluginManager pluginManager;
 
     // The shared instance.
     private static SQLExplorerPlugin plugin;
@@ -89,20 +90,24 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     private ArrayList sqlHistory = new ArrayList();
 
     private static final String NEWLINE_SEPARATOR = System.getProperty("line.separator");
-    
+
     private static final String NEWLINE_REPLACEMENT = "#LF#";
-    
+
+
     public ArrayList getSQLHistory() {
         return sqlHistory;
     }
+
 
     public void addListener(SqlHistoryChangedListener listener) {
         listeners.add(listener);
     }
 
+
     public void removeListener(SqlHistoryChangedListener listener) {
         listeners.remove(listener);
     }
+
 
     private void sqlHistoryChanged() {
         Object[] ls = listeners.getListeners();
@@ -115,21 +120,22 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         }
     }
 
-    
+
     /**
      * Get the version number as specified in plugin.xml
+     * 
      * @return version number of SQL Explorer plugin
      */
-    public String getVersion() {        
+    public String getVersion() {
         String version = (String) plugin.getBundle().getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION);
         return version;
     }
-    
+
+
     /**
-     * Add a query string to the sql history.
-     * New queries are added to the start of the list, so that
-     * the most recent entry is always located on the top of
-     * the history list
+     * Add a query string to the sql history. New queries are added to the start
+     * of the list, so that the most recent entry is always located on the top
+     * of the history list
      * 
      * @param newSql sql query string
      */
@@ -146,17 +152,21 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         sqlHistoryChanged();
     }
 
+
     public SQLDriverManager getSQLDriverManager() {
         return _driverMgr;
     }
+
 
     public AliasModel getAliasModel() {
         return aliasModel;
     }
 
+
     public DriverModel getDriverModel() {
         return driverModel;
     }
+
 
     /**
      * The constructor.
@@ -164,15 +174,6 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     public SQLExplorerPlugin(IPluginDescriptor descriptor) {
         super(descriptor);
         plugin = this;
-
-        try {
-            pluginManager = new PluginManager();
-            pluginManager.loadPlugins();
-            pluginManager.initializePlugins();
-
-        } catch (Throwable e) {
-            error("Error loading plugins preference pages", e);//$NON-NLS-1$
-        }
 
         _driverMgr = new SQLDriverManager();
         _cache = new DataCache(_driverMgr);
@@ -187,6 +188,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
                     final SQLConnection conn = _driverMgr.getConnection(dv, alias, alias.getUserName(), alias.getPassword());
 
                     Display.getDefault().asyncExec(new Runnable() {
+
                         public void run() {
 
                             try {
@@ -209,22 +211,29 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         } catch (MissingResourceException x) {
             resourceBundle = null;
         }
-        
+
         // load SQL History from previous sessions
         loadSQLHistoryFromFile();
     }
 
-    public void shutdown() throws CoreException {
+
+    /**
+     * Game over. End all..
+     * 
+     * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
+     */
+    public void stop(BundleContext context) throws Exception {
+
         _cache.save();
         RootSessionTreeNode rstn = stm.getRoot();
         rstn.closeAllConnections();
 
         // save SQL History for next session
         saveSQLHistoryToFile();
-        
-        super.shutdown();
 
+        super.stop(context);
     }
+
 
     /**
      * Returns the shared instance.
@@ -232,6 +241,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     public static SQLExplorerPlugin getDefault() {
         return plugin;
     }
+
 
     /**
      * Returns the string from the plugin's resource bundle, or 'key' if not
@@ -246,12 +256,14 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         }
     }
 
+
     /**
      * Returns the plugin's resource bundle,
      */
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }
+
 
     /**
      * @return
@@ -260,6 +272,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 
         return count++;
     }
+
 
     protected void initializeDefaultPreferences(IPreferenceStore store) {
 
@@ -283,87 +296,92 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         store.setDefault(IConstants.CLIP_EXPORT_SEPARATOR, ";");//$NON-NLS-1$
     }
 
+
     /**
      * Global log method.
+     * 
      * @param message
      * @param t
      */
     public static void error(String message, Throwable t) {
         getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, String.valueOf(message), t));
+        _logger.error(message, t);
     }
 
-    
+
     /**
      * Load the sql history from previous sessions.
      */
     private void loadSQLHistoryFromFile() {
-    	   	
-    	try {
-    	
-    		File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME);
-    		
-    		if (!file.exists()) {
-    			return;
-    		}
-    		
-    		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-    		
-    		String currentLine = reader.readLine();    		
-    		while (currentLine != null) {
-    			if (currentLine.trim().length() != 0) {
-    				currentLine = currentLine.replaceAll(SQLExplorerPlugin.NEWLINE_REPLACEMENT, SQLExplorerPlugin.NEWLINE_SEPARATOR);
-    				sqlHistory.add(new SQLString(currentLine));
-    			}
-    			currentLine = reader.readLine();
-    		}
-    		
-    		reader.close();
-    		
-    	} catch (Exception e) {
-    		error("Couldn't load sql history.", e);
-    	}
-    	
+
+        try {
+
+            File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME);
+
+            if (!file.exists()) {
+                return;
+            }
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+
+            String currentLine = reader.readLine();
+            while (currentLine != null) {
+                if (currentLine.trim().length() != 0) {
+                    currentLine = currentLine.replaceAll(SQLExplorerPlugin.NEWLINE_REPLACEMENT, SQLExplorerPlugin.NEWLINE_SEPARATOR);
+                    sqlHistory.add(new SQLString(currentLine));
+                }
+                currentLine = reader.readLine();
+            }
+
+            reader.close();
+
+        } catch (Exception e) {
+            error("Couldn't load sql history.", e);
+        }
+
     }
-    
+
+
     /**
-     * Save all the used queries into a file, so that we
-     * can reuse them next time.
+     * Save all the used queries into a file, so that we can reuse them next
+     * time.
      */
     private void saveSQLHistoryToFile() {
-    	
-    	try {
-        	
-    		File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME);
-    		    		
-    		if (file.exists()) {
-    			// clear old history
-    			file.delete();    			
-    		}
-    		
-    		if (sqlHistory.size() == 0) {
-    			// nothing to save
-    			return;
-    		}
-    		    		
-    		file.createNewFile();
-    		
-    		BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-    		
-    		Iterator it = sqlHistory.iterator();
-    		while (it.hasNext()) {
-    			
+
+        try {
+
+            File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME);
+
+            if (file.exists()) {
+                // clear old history
+                file.delete();
+            }
+
+            if (sqlHistory.size() == 0) {
+                // nothing to save
+                return;
+            }
+
+            file.createNewFile();
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+
+            Iterator it = sqlHistory.iterator();
+            while (it.hasNext()) {
+
                 SQLString tmp = (SQLString) it.next();
                 String qry = tmp.getText();
-    			qry = qry.replaceAll(SQLExplorerPlugin.NEWLINE_SEPARATOR, SQLExplorerPlugin.NEWLINE_REPLACEMENT);
-    			writer.write(qry, 0, qry.length());
-    			writer.newLine();
-    		}
-    		
-    		writer.close();
-    		
-    	} catch (Exception e) {
-    		error("Couldn't save sql history.", e);
-    	}
-    	
+                qry = qry.replaceAll(SQLExplorerPlugin.NEWLINE_SEPARATOR, SQLExplorerPlugin.NEWLINE_REPLACEMENT);
+                writer.write(qry, 0, qry.length());
+                writer.newLine();
+            }
+
+            writer.close();
+
+        } catch (Exception e) {
+            error("Couldn't save sql history.", e);
+        }
+
     }
+
 }

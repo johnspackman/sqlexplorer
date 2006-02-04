@@ -20,8 +20,6 @@ package net.sourceforge.sqlexplorer.plugin.actions;
 
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.dialogs.AboutDlg;
-import net.sourceforge.sqlexplorer.ext.PluginManager;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -52,8 +50,7 @@ public class About extends Action implements IWorkbenchWindowActionDelegate {
 
     public void run(IAction action) {
 
-        PluginManager pm=SQLExplorerPlugin.getDefault().pluginManager;
-        Dialog dialog = new AboutDlg(_shell, pm);
+        Dialog dialog = new AboutDlg(_shell);
         dialog.open();
     }
 

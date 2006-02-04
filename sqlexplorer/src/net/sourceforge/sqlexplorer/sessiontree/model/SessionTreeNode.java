@@ -1,4 +1,5 @@
 package net.sourceforge.sqlexplorer.sessiontree.model;
+
 /*
  * Copyright (C) 2002-2004 Andrea Mazzolini
  * andreamazzolini@users.sourceforge.net
@@ -18,18 +19,19 @@ package net.sourceforge.sqlexplorer.sessiontree.model;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.IdentifierFactory;
-import net.sourceforge.sqlexplorer.dbviewer.model.CatalogNode;
-import net.sourceforge.sqlexplorer.dbviewer.model.DatabaseModel;
-import net.sourceforge.sqlexplorer.dbviewer.model.DatabaseNode;
-import net.sourceforge.sqlexplorer.dbviewer.model.IDbModel;
-import net.sourceforge.sqlexplorer.dbviewer.model.SchemaNode;
-import net.sourceforge.sqlexplorer.ext.PluginManager;
+import net.sourceforge.sqlexplorer.dbdetail.DetailTabManager;
+import net.sourceforge.sqlexplorer.dbstructure.DatabaseModel;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.CatalogNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.SchemaNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
@@ -40,228 +42,265 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.util.ListenerList;
 import org.eclipse.swt.widgets.Table;
 
+/**
+ * The SessionTreeNode represents one active database session.
+ * 
+ * @modified Davy Vanherbergen
+ */
+public class SessionTreeNode implements ISessionTreeNode {
+
+    private SQLConnection _connection;
+
+    private IIdentifier _id = IdentifierFactory.getInstance().createIdentifier();
+
+    private ISQLAlias _alias;
+
+    boolean _assistanceEnabled;
+
+    public DatabaseModel dbModel;
+
+    private Dictionary _dictionary = new Dictionary();
+
+    private ListenerList _listeners = new ListenerList();
+
+    private ArrayList ls = new ArrayList(10);
+
+    private SessionTreeModel _model;
+
+    private RootSessionTreeNode _parent;
+
+    final private String _password;
+
+    Table table;
 
 
-public class SessionTreeNode  implements ISessionTreeNode {
-	private ListenerList listeners = new ListenerList();
-	public DatabaseModel  dbModel;
-	private RootSessionTreeNode parent;
-	private SQLConnection m_conn;
-	private ISQLAlias alias;
-	private SessionTreeModel model;
-	private ArrayList ls=new ArrayList(10);
-	//private ViewerManager mg;
-	//private TreeViewer tv;
-	//private boolean initialized=false;
-	PluginManager pm=null;
-	private IIdentifier _id = IdentifierFactory.getInstance().createIdentifier();
-	
-	private Dictionary dictionary=new Dictionary();
-	public Dictionary getDictionary(){
-		return dictionary;
-	}
-	
-	
-	public IIdentifier getIdentifier()
-	{
-		return _id;
-	}
+    public SessionTreeNode(final SQLConnection conn, ISQLAlias alias, SessionTreeModel md, IProgressMonitor monitor, final String password)
+            throws InterruptedException {
+        _connection = conn;
+        _alias = alias;
+        dbModel = new DatabaseModel(this);
+        _model = md;
+        _parent = md.getRoot();
+        _parent.add(this);
+        _password = password;
 
-	
-	public SQLConnection getConnection(){
-		return m_conn;
-	}
-	/**
-	 * @see org.gnu.amaz.ISessionTreeNode#getChildren()
-	 */
-	public Object[] getChildren() {
-		return ls.toArray();
-	}
-	Table table;
-	final private String pswd;
-	boolean assistanceEnabled;
-	/**
-	 * @see org.gnu.amaz.ISessionTreeNode#getParent()
-	 */
-	public Object getParent() {
-		return parent;
-	}
-	public SQLConnection getSQLConnection(){
-		return m_conn;
-	}
-	public String getCurrentConnectionPassword(){
-		return pswd;
-	}
-	public boolean supportsCatalogs(){
-		return dbModel.supportsCatalogs();
-	}
-	public String [] getCatalogs(){
-		return dbModel.getCatalogNames();
-	}
-	public String getCatalog(){
-		String cat="";
-		try{
-			cat=m_conn.getCatalog();
-		}catch(Throwable e){
-		}
-		return cat;
-	}
-	public void setCatalog(String cat) throws SQLException{
-		m_conn.getConnection().setCatalog(cat);			
-	}
-	public SessionTreeNode(final SQLConnection conn,ISQLAlias alias,SessionTreeModel md,IProgressMonitor monitor, final String pswd) throws InterruptedException{
-		m_conn=conn;
-		this.alias=alias;
-		pm=SQLExplorerPlugin.getDefault().pluginManager;
-		pm.sessionStarted(SessionTreeNode.this);
-		dbModel=new DatabaseModel(this,pm);
-		model=md;
-		parent=md.getRoot();
-		parent.add(this);
-		this.pswd=pswd;
-		
-				
-			//	DataBaseSessionTreeNode treeNode=createDatabaseSessionTreeNode();
-			
-				//DatabaseModel dbModel=null;//JFaceDbcPlugin.getDefault().treeNode.getDBModel();
-		assistanceEnabled=SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.SQL_ASSIST);
-		final String cancelled="Operation was cancelled by user";
-		if(monitor !=null && monitor.isCanceled())
-			throw new InterruptedException(cancelled);
-		
-		try{
-			
-			Object []children=dbModel.getChildren();
-			DatabaseNode dbNode=((DatabaseNode)children[0]);
-			
-			children=dbNode.getChildren();
-			if(children==null)
-				return;
-			for(int i=0;i<children.length;i++){
-				if(monitor!=null)
-					monitor.subTask(children[i].toString());
-				if(monitor !=null && monitor.isCanceled())
-					throw new InterruptedException(cancelled);
-				IDbModel idbModel=(IDbModel)children[i];//Catalog or Schema Node
-				dictionary.putCatalogSchemaName(idbModel.toString(),idbModel);
-				if(assistanceEnabled){
-					//Object [] children2=null;
-					if(idbModel instanceof SchemaNode){
-						((SchemaNode)idbModel).fastLoadSchema();
-					}
-					else if (idbModel instanceof CatalogNode){
-						((CatalogNode)idbModel).fastLoadCatalog();
-					}
-/*						children2=idbModel.getChildren();
-						if(children2!=null){
-							for(int j=0;j<children2.length;j++){
-								if(monitor !=null && monitor.isCanceled())
-									throw new InterruptedException(cancelled);
-								if(children2[j] instanceof TableObjectTypeNode){
-									scanTableNode((TableObjectTypeNode)children2[j]);
-								}
-							}
-						}						
-					}*/
-				}
-			}
-		}catch(Throwable e){
-			SQLExplorerPlugin.error("Error enabling assistance ", e); //$NON-NLS-1$
-		}
-	}
-	
-	/*private void scanTableNode(TableObjectTypeNode parent){
-		Object [] children=parent.getChildren();
-	}*/
-	
-	public String toString(){
-		try{
-			return alias.getName();
-//			return m_conn.getUserName();
-		}
-		catch(java.lang.Throwable e){
-			SQLExplorerPlugin.error("Error getting the alias name ",e); //$NON-NLS-1$
-			return ""; //$NON-NLS-1$
-		}
-	}
-	public void add(ISessionTreeNode n){
-		ls.add(n);
-		//model.ModelChanged();
-	}
-	public void remove(ISessionTreeNode n){
-		ls.remove(n);
-		//model.ModelChanged();
-	}
-	
-	public void close(){
-		pm.sessionEnding(this);
-		parent.remove(this);
-		//closeWindow();
-		
-		Object []ls=listeners.getListeners();
-	
-		for(int i=0;i<ls.length;++i){
-			try{
-				((ISessionTreeClosedListener)ls[i]).sessionTreeClosed();
-			}catch(Throwable e){
-			}
+        _assistanceEnabled = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.SQL_ASSIST);
+        final String cancelled = "Operation was cancelled by user";
+        if (monitor != null && monitor.isCanceled())
+            throw new InterruptedException(cancelled);
 
-		}
-		model.modelChanged(null);
-		try{
-			m_conn.close();
-		}catch(Throwable e){
-			SQLExplorerPlugin.error("Error closing database connection ",e); //$NON-NLS-1$
-		}
-			
-		//int sz=ls.size();
-	}
-	public void commit(){
-		try{
-			m_conn.commit();
-		}
-		catch(Throwable e){
-			SQLExplorerPlugin.error("Error committing ",e); //$NON-NLS-1$
-		}
-		
-	}
-	public void rollback(){
-		try{
-			m_conn.rollback();
-		}
-		catch(Throwable e){
-			SQLExplorerPlugin.error("Error rollbacking ",e); //$NON-NLS-1$
-			
-		}
-	}
+        try {
 
-	public PluginManager getPluginManager(){
-		return pm;
-	}
-	public boolean isAutoCommitMode(){
-		boolean result=false;
-		try{
-			result=m_conn.getAutoCommit();
-		}catch(Throwable e){
-		}
-		return result;
-	}
-	
-	
-	
+            Object[] children = dbModel.getChildNodes();
+            DatabaseNode dbNode = ((DatabaseNode) children[0]);
+
+            children = dbNode.getChildNodes();
+            if (children == null)
+                return;
+            for (int i = 0; i < children.length; i++) {
+                if (monitor != null)
+                    monitor.subTask(children[i].toString());
+                if (monitor != null && monitor.isCanceled())
+                    throw new InterruptedException(cancelled);
+                INode idbModel = (INode) children[i];// Catalog or Schema
+                // Node
+
+                // TODO we should be able to persist dictionary between sessions.. 
+                _dictionary.putCatalogSchemaName(idbModel.toString(), idbModel);
+                if (_assistanceEnabled) {
+
+                    if (idbModel instanceof SchemaNode) {
+                        // trigger loading of child nodes
+                        ((SchemaNode) idbModel).load();
+                    } else if (idbModel instanceof CatalogNode) {
+                        // trigger loading of child nodes
+                        ((CatalogNode) idbModel).load();
+                    }
+                }
+            }
+        } catch (Throwable e) {
+            SQLExplorerPlugin.error("Error enabling assistance ", e);
+        }
+    }
 
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	
-	public void addListener(ISessionTreeClosedListener listener) {
-		listeners.add(listener);
-	}
+    public void add(ISessionTreeNode n) {
+        ls.add(n);
+    }
 
-	public ISQLAlias getAlias() {
-		return alias;
-	}
+
+    public void addListener(ISessionTreeClosedListener listener) {
+        _listeners.add(listener);
+    }
+
+
+    public void close() {
+
+        // clear detail tab cache
+        DetailTabManager.clearCacheForSession(this);
+        
+        _parent.remove(this);
+
+        Object[] ls = _listeners.getListeners();
+
+        for (int i = 0; i < ls.length; ++i) {
+            try {
+                ((ISessionTreeClosedListener) ls[i]).sessionTreeClosed();
+            } catch (Throwable e) {
+            }
+
+        }
+        _model.modelChanged(null);
+        try {
+            _connection.close();
+        } catch (Throwable e) {
+            SQLExplorerPlugin.error("Error closing database _connection ", e);
+        }
+
+    }
+
+
+    public void commit() {
+        try {
+            _connection.commit();
+        } catch (Throwable e) {
+            SQLExplorerPlugin.error("Error committing ", e);
+        }
+
+    }
+
+
+    public ISQLAlias getAlias() {
+        return _alias;
+    }
+
+
+    public String getCatalog() {
+        String cat = "";
+        try {
+            cat = _connection.getCatalog();
+        } catch (Throwable e) {
+        }
+        return cat;
+    }
+
+
+    public String[] getCatalogs() {
+        
+        List catalogs = ((DatabaseNode)dbModel.getChildNodes()[0]).getCatalogs();
+        String[] catalogNames = new String[catalogs.size()];
+        
+        Iterator it = catalogs.iterator();
+        int i = 0;
+        
+        while (it.hasNext()) {
+            INode node = (INode) it.next();
+            if (node != null) {
+                catalogNames[i] = it.next().toString();
+                i++;
+            }
+        }
+        
+        return catalogNames;
+    }
+
+
+    /**
+     * @see org.gnu.amaz.ISessionTreeNode#getChildren()
+     */
+    public Object[] getChildren() {
+        return ls.toArray();
+    }
+
+
+    public SQLConnection getConnection() {
+        return _connection;
+    }
+
+
+    public String getCurrentConnectionPassword() {
+        return _password;
+    }
+
+
+    public Dictionary getDictionary() {
+        return _dictionary;
+    }
+
+
+    public IIdentifier getIdentifier() {
+        return _id;
+    }
+
+
+    /**
+     * @see org.gnu.amaz.ISessionTreeNode#getParent()
+     */
+    public Object getParent() {
+        return _parent;
+    }
+
+    public SQLConnection getSQLConnection() {
+        return _connection;
+    }
+
+
+    public boolean isAutoCommitMode() {
+        boolean result = false;
+        try {
+            result = _connection.getAutoCommit();
+        } catch (Throwable e) {
+        }
+        return result;
+    }
+
+
+    public void remove(ISessionTreeNode n) {
+        ls.remove(n);
+    }
+
+
+    public void rollback() {
+        try {
+            _connection.rollback();
+        } catch (Throwable e) {
+            SQLExplorerPlugin.error("Error rollbacking ", e);
+
+        }
+    }
+
+
+    public void setCatalog(String cat) throws SQLException {
+        _connection.getConnection().setCatalog(cat);
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+
+    public boolean supportsCatalogs() {
+        return getRoot().supportsCatalogs();
+    }
+
+    public DatabaseNode getRoot() {
+        return dbModel.getRoot();
+    }
+
+    /**
+     * Returns connection alias name
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        try {
+            return _alias.getName();
+
+        } catch (java.lang.Throwable e) {
+            SQLExplorerPlugin.error("Error getting the alias name ", e);
+            return "";
+        }
+    }
 
 }
-

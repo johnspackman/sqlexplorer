@@ -18,21 +18,12 @@
  */
 package net.sourceforge.sqlexplorer.sessiontree.ui;
 
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.views.ConnectionInfo;
-import net.sourceforge.sqlexplorer.plugin.views.DBView;
-import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeContentProvider;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeLabelProvider;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModel;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModelChangedListener;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
-
-
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.events.DisposeEvent;
@@ -73,48 +64,6 @@ public class SessionViewer extends TreeViewer{
 					}
 				});
 				
-			}
-		});
-		addSelectionChangedListener(new ISelectionChangedListener(){
-			public void selectionChanged(SelectionChangedEvent ev){
-				IStructuredSelection sel=(IStructuredSelection)ev.getSelection();
-				if(!sel.isEmpty()){
-					//actGroup.updateActionBars();
-					if(sel.getFirstElement() instanceof SessionTreeNode){
-						SessionTreeNode node=(SessionTreeNode)sel.getFirstElement();
-
-						try{
-							ConnectionInfo connInfo=(ConnectionInfo)SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().findView("net.sourceforge.sqlexplorer.plugin.views.ConnectionInfo");
-							if(connInfo!=null)
-								connInfo.setInput(node);
-						}catch(Throwable e){
-							SQLExplorerPlugin.error("Error opening connection info view",e);
-						}
-						try {
-							DBView dbView=(DBView)SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().findView("net.sourceforge.sqlexplorer.plugin.views.DBView");
-							if(dbView!=null)
-								dbView.setInput(node);
-	
-						} catch (Throwable e) {
-							SQLExplorerPlugin.error("Error opening db view",e);
-						}						
-					}else if (sel.getFirstElement() instanceof RootSessionTreeNode){
-
-						try {
-							DBView dbView=(DBView)SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().findView("net.sourceforge.sqlexplorer.plugin.views.DBView");
-							dbView.setInput(null);
-						}catch(Throwable e){
-						}
-						try{
-							ConnectionInfo connInfo=(ConnectionInfo)SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().findView("net.sourceforge.sqlexplorer.plugin.views.ConnectionInfo");
-							if(connInfo!=null)
-								connInfo.setInput(null);
-						}catch(Throwable e){
-							SQLExplorerPlugin.error("Error opening connection info view",e);
-						}
-					}
-					
-				}
 			}
 		});
 

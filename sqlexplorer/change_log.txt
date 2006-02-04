@@ -1,18 +1,66 @@
-2006.01.07 Enhancements - Davy Vanherbergen
+2006.01.xx - 2006.02.xx Enhancements - Davy Vanherbergen
 ==========================================================
-- sql explorer can now run as standalone RCP application
-- updated logo & icons for standalone application
-- sql text displayed on results tab is now copyable
+General
+* dropped support for hibernate plugin
+* dropped support for schema visualizer
+* dropped experimental edit table data feature
+* sql explorer can now run as a standalone RCP application
+* updated logo & icons
+* connection info view removed, information has been added as detail of database node
 
-2006.01.05 Bugfix - Davy Vanherbergen
-==========================================================
-- sql results tab numbering no longer restarts if some tabs are closed
+SQL History
+* only successfull queries are stored
+* sql history is now persistent
 
-2006.01.03 Enhancements - Davy Vanherbergen
-==========================================================
-- when new connection is made, a new SQL editor is automatically opened
-- implemented 'save as' on SQL editor
-- query/comment delimiters can now be set in preferences
+Database Structure
+* split of database structure view into database structure view and database detail view
+* reimplemented database structure view nodes to support lazy loading and caching
+* new eclipse extension point for database structure view context action
+* new eclipse extension point for database structure view node
+* easy filtering of catalog/schema nodes (right-click and select add to filter)
+* added preference option to select whether columns should be visible in the database structure view
+* improved the generate select action to allow column selection to generate sql
+
+Database Detail
+* new detailtab manager that supports caching and lazy loading of tabs
+* new eclipse extension point for database detail tabs
+* same detail tab remains selected between nodes
+
+DataSet
+* new eclipse extension point for datasettable context menu
+* column find feature in table (CTRL-F) to scroll table to given column name
+* dataset table can be navigated with arrow keys
+* columns in dataset table are moveable
+* when datasettable widget is active, it can be refreshed by pressing F5
+
+SQL Results
+* sql query is displayed on sql result tabs
+* SQL statement is displayed when hovering over the different result tabs (with wrapping)
+* sql result tabs no longer renumber when a tab is closed
+* after an SQL is executed, the results pane now automatically focusses on the last results.
+
+SQL Editor
+* query/comment delimiters can now be set in preferences
+* sqltable has been dropped and replaced by new datasettable that is used for detail tabs and sql results
+* save as functionality in sql editor has been fixed
+* file open dialog now allows loading of multiple files into editor
+* removed save prompt when sql editor is closed
+
+Connection view
+* when new connection is made, a new SQL editor is automatically opened
+
+Driver view
+* doubleclick on driver opens 'modify driver' dialog
+* added filter to show only loaded drivers
+* added option to restore the default drivers
+
+Alias view
+* added autologon option in alias
+
+Plugins
+* all plugin extensions are no longer compatible with the new codebase
+
+
 
 2006.01.02 UI enhancements - Davy Vanherbergen
 ==========================================================

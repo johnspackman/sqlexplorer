@@ -16,7 +16,6 @@ public class TextUtil {
     
     private static final String RETURN_EXPR = "\\r";
     
-    private static final int MAX_LABEL_LENGTH = 500;
     
     /**
      * Clear all linebreaks and carriage returns from input text.
@@ -97,22 +96,5 @@ public class TextUtil {
         return wrappedText;
     }
     
-    
-    /**
-     * Returns a length restricted string.  If the string is longer
-     * than MAX_LABEL_LENGTH, it is cut and a postfix of ... is added.
-     */
-    public static String getCappedText(String input) {
-        
-        if (input == null) {
-            return null;
-        }
-        
-        if (input.length() > MAX_LABEL_LENGTH) {
-            return input.substring(0, MAX_LABEL_LENGTH ) + " ...";
-        } else {
-            return input;
-        }
-        
-    }
+
 }

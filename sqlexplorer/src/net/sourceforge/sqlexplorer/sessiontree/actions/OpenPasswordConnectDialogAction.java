@@ -28,11 +28,11 @@ import net.sourceforge.sqlexplorer.RetrievingTableDataProgress;
 import net.sourceforge.sqlexplorer.dialogs.PasswordConnDlg;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
+import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverManager;
-
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -95,10 +95,21 @@ public class OpenPasswordConnectDialogAction extends Action {
 				pg2.run(true,true,rtdp);
                 
                 
+                // add session to database structure view
+                DatabaseStructureView dbView = (DatabaseStructureView) SQLExplorerPlugin.getDefault().getWorkbench()
+                .getActiveWorkbenchWindow().getActivePage().findView("net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView");
+                if (dbView != null) {
+                    dbView.addSession(rtdp.getSessionTreeNode());
+                }
+                
+                
 				// after opening connection, open editor
                 SQLEditorInput input = new SQLEditorInput("SQL Editor ("+SQLExplorerPlugin.getDefault().getNextElement()+").sql");
                 input.setSessionNode(rtdp.getSessionTreeNode());
                 IWorkbenchPage page= SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                
+                                
+                
                 try{
                     page.openEditor(input,"net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
                 }catch(Throwable e){

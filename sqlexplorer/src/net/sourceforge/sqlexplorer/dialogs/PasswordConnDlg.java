@@ -50,10 +50,6 @@ public class PasswordConnDlg extends TitleAreaDialog {
 
     ISQLAlias alias;
 
-    private Button okButton;
-
-    private Button cancelButton;
-
     private ISQLDriver driver;
 
     private DriverModel driverModel;
@@ -102,11 +98,7 @@ public class PasswordConnDlg extends TitleAreaDialog {
         return contents;
     }
 
-    protected void createButtonsForButtonBar(Composite parent) {
-        okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-        cancelButton = createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
 
-    }
 
     protected Control createDialogArea(Composite parent) {
         // top level composite

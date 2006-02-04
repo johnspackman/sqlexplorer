@@ -19,43 +19,59 @@ package net.sourceforge.sqlexplorer.sqlpanel;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
 final public class SqlRowElement {
-	SqlTableModel tableModel;
-	public final Object getValue(int k){
-		if(el[k]!=null)
-			return el[k].toString(); 
-		return "<NULL>"; //$NON-NLS-1$
-	}
-	public final Object getInternalValue(int k){
-		return el[k]; 
-	}
-	public final Object[] getInternalArray() {
-		return el;
-	}
-	final Object []el;
-	SqlRowElement(Object []obj,int count, SqlTableModel tableModel)throws java.lang.Exception{
-		this.tableModel=tableModel;
-		el= new Object[count];
-		
-		for(int i=0;i<count;i++){
-			el[i]=obj[i];
-		}
-	};
-	public final int getSize(){return el.length;}
-	public final Object getValue(String property){
-		int i=tableModel.getColumnIndex(property);
-		if(i!=-1){
-			return getValue(i);
-		}
-		return null;
-	}
-	public final Object getInternalValue(String property){
-		int i=tableModel.getColumnIndex(property);
-		if(i!=-1){
-			return getInternalValue(i);
-		}
-		return null;
-	}
-}
 
+    SqlTableModel tableModel;
+
+
+    public final Object getValue(int k) {
+        if (el[k] != null)
+            return el[k].toString();
+        return "<NULL>"; //$NON-NLS-1$
+    }
+
+
+    public final Object getInternalValue(int k) {
+        return el[k];
+    }
+
+
+    public final Object[] getInternalArray() {
+        return el;
+    }
+
+    final Object[] el;
+
+
+    SqlRowElement(Object[] obj, int count, SqlTableModel tableModel) throws java.lang.Exception {
+        this.tableModel = tableModel;
+        el = new Object[count];
+
+        for (int i = 0; i < count; i++) {
+            el[i] = obj[i];
+        }
+    };
+
+
+    public final int getSize() {
+        return el.length;
+    }
+
+
+    public final Object getValue(String property) {
+        int i = tableModel.getColumnIndex(property);
+        if (i != -1) {
+            return getValue(i);
+        }
+        return null;
+    }
+
+
+    public final Object getInternalValue(String property) {
+        int i = tableModel.getColumnIndex(property);
+        if (i != -1) {
+            return getInternalValue(i);
+        }
+        return null;
+    }
+}

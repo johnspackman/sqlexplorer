@@ -22,16 +22,17 @@ import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
  */
 
 public interface IConstants {
-	String CLIP_EXPORT_COLUMNS ="clip_export_columns"; //$NON-NLS-1$
-	String CLIP_EXPORT_SEPARATOR ="clip_export_separator"; //$NON-NLS-1$
-	String AUTO_COMMIT="autocommit"; //$NON-NLS-1$
-	String COMMIT_ON_CLOSE="commitonclose"; //$NON-NLS-1$
-	String MAX_SQL_ROWS="maxSQLRows"; //$NON-NLS-1$
-	String PRE_ROW_COUNT="preRowCount"; //$NON-NLS-1$
-	String FONT="font"; //$NON-NLS-1$
-	String SQL_ASSIST="assist"; //$NON-NLS-1$
+	String CLIP_EXPORT_COLUMNS ="clip_export_columns"; 
+	String CLIP_EXPORT_SEPARATOR ="clip_export_separator"; 
+	String AUTO_COMMIT="autocommit"; 
+	String COMMIT_ON_CLOSE="commitonclose"; 
+	String MAX_SQL_ROWS="maxSQLRows"; 
+	String PRE_ROW_COUNT="preRowCount"; 
+	String FONT="font"; 
+	String SQL_ASSIST="assist"; 
 	String SQL_EDITOR_CLASS = SQLEditor.class.getName();
     String SQL_QRY_DELIMITER = "SQLEditor.QueryDelimiter";
     String SQL_ALT_QRY_DELIMITER = "SQLEditor.AltQueryDelimiter";
     String SQL_COMMENT_DELIMITER = "SQLEditor.CommentDelimiter";
+    String INCLUDE_COLUMNS_IN_TREE = "SQLEditor.IncludeColumns";
 }

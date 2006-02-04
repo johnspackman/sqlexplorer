@@ -1,4 +1,5 @@
 package net.sourceforge.sqlexplorer;
+
 /*
  * Copyright (C) 2001-2002-2004 Colin Bell
  * colbell@users.sourceforge.net
@@ -32,94 +33,72 @@ import java.util.zip.ZipFile;
 import net.sourceforge.squirrel_sql.fw.util.EnumerationIterator;
 import net.sourceforge.squirrel_sql.fw.util.Utilities;
 
-public class MyURLClassLoader extends URLClassLoader
-{
-	private Map _classes = new HashMap();
+public class MyURLClassLoader extends URLClassLoader {
 
-	public MyURLClassLoader(String fileName) throws IOException
-	{
-		this(new File(fileName).toURL());
-	}
+    private Map _classes = new HashMap();
 
-	public MyURLClassLoader(URL url)
-	{
-		this(new URL[] { url });
-	}
 
-	public MyURLClassLoader(URL[] urls)
-	{
-		super(urls, URLUtil.class.getClassLoader());
-	}
+    public MyURLClassLoader(String fileName) throws IOException {
+        this(new File(fileName).toURL());
+    }
 
-	public Class[] getAssignableClasses(Class type)
-		throws IOException
-	{
-		List classes = new ArrayList();
-		URL[] urls = getURLs();
-		for (int i = 0; i < urls.length; ++i)
-		{
-			URL url = urls[i];
-			File file = new File(url.getFile());
-			if (!file.isDirectory() && file.exists() && file.canRead())
-			{
-				ZipFile zipFile = null;
-				try
-				{
-					zipFile = new ZipFile(file);
-				}
-				catch (IOException ex)
-				{
-					//logger.error("Error occured trying to load: " + file.getAbsolutePath(), //$NON-NLS-1$
-					//				ex);
-				}
-				for (Iterator it = new EnumerationIterator(zipFile.entries());
-					it.hasNext();
-					)
-				{
-					Class cls = null;
-					String entryName = ((ZipEntry) it.next()).getName();
-					String className =
-						Utilities.changeFileNameToClassName(entryName);
-					if (className != null)
-					{
 
-						
-						try
-						{
-							cls = loadClass(className);
-						}
-						catch (Throwable th)
-						{
-							//logger.error("Error loading class " + className, //$NON-NLS-1$
-							//				th);
-						}
-						if (cls != null)
-						{
-							if (type.isAssignableFrom(cls))
-							{
-								classes.add(cls);
-							}
-						}
-					}
-				}
-			}
-		}
-		return (Class[]) classes.toArray(new Class[classes.size()]);
-	}
+    public MyURLClassLoader(URL url) {
+        this(new URL[] {url});
+    }
 
-	protected synchronized Class findClass(String className)
-		throws ClassNotFoundException
-	{
-		Class cls = (Class) _classes.get(className);
-		if (cls == null)
-		{
-			cls = super.findClass(className);
-			_classes.put(className, cls);
-		}
-		return cls;
-	}
 
-	protected void classHasBeenLoaded(Class cls)
-	{
-	}
+    public MyURLClassLoader(URL[] urls) {
+        super(urls, URLUtil.class.getClassLoader());
+    }
+
+
+    public Class[] getAssignableClasses(Class type) throws IOException {
+        List classes = new ArrayList();
+        URL[] urls = getURLs();
+        for (int i = 0; i < urls.length; ++i) {
+            URL url = urls[i];
+            File file = new File(url.getFile());
+            if (!file.isDirectory() && file.exists() && file.canRead()) {
+                ZipFile zipFile = null;
+                try {
+                    zipFile = new ZipFile(file);
+                } catch (IOException ex) {
+                }
+                for (Iterator it = new EnumerationIterator(zipFile.entries()); it.hasNext();) {
+                    Class cls = null;
+                    String entryName = ((ZipEntry) it.next()).getName();
+                    String className = Utilities.changeFileNameToClassName(entryName);
+                    if (className != null) {
+
+                        try {
+                            cls = loadClass(className);
+                        } catch (Throwable th) {
+
+                        }
+                        if (cls != null) {
+                            if (type.isAssignableFrom(cls)) {
+                                classes.add(cls);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return (Class[]) classes.toArray(new Class[classes.size()]);
+    }
+
+
+    protected synchronized Class findClass(String className) throws ClassNotFoundException {
+        Class cls = (Class) _classes.get(className);
+        if (cls == null) {
+            cls = super.findClass(className);
+            _classes.put(className, cls);
+        }
+        return cls;
+    }
+
+
+    protected void classHasBeenLoaded(Class cls) {
+    }
 }

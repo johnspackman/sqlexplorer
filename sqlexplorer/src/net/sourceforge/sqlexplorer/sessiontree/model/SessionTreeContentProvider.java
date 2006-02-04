@@ -19,13 +19,12 @@ package net.sourceforge.sqlexplorer.sessiontree.model;
  */
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 
 
 public class SessionTreeContentProvider implements ITreeContentProvider {
 
-	private TreeViewer m_viewer;
+
 	/**
 	 * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(Object)
 	 */
@@ -68,7 +67,7 @@ public class SessionTreeContentProvider implements ITreeContentProvider {
 	 * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(Viewer, Object, Object)
 	 */
 	public void inputChanged(Viewer arg0, Object arg1, Object arg2) {
-		m_viewer=(TreeViewer)arg0;
+
 	}
 
 }

@@ -3,8 +3,8 @@
 <plugin
    id="net.sourceforge.sqlexplorer"
    name="SQLExplorer Plugin"
-   version="2.2.5"
-   provider-name="Alexandre L Telles"
+   version="3.0.0"
+   provider-name="Davy Vanherbergen"
    class="net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin">
 
    <runtime>
@@ -14,7 +14,7 @@
       <library name="lib/commons-logging.jar">
          <export name="*"/>
       </library>
-      <library name="lib/fw-1.2beta6.jar">
+      <library name="lib/squirrel.jar">
          <export name="*"/>
       </library>
       <library name="lib/log4j.jar">
@@ -35,14 +35,16 @@
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.swt"/>
       <import plugin="org.eclipse.ui.editors"/>
-      <import plugin="org.eclipse.ui.views"/>
       <import plugin="org.eclipse.ui.workbench"/>
       <import plugin="org.eclipse.ui.workbench.texteditor"/>
       <import plugin="org.eclipse.jface"/>
       <import plugin="org.eclipse.text"/>
       <import plugin="org.eclipse.jface.text"/>
-      <import plugin="org.eclipse.gef"/>
    </requires>
+   <extension-point id="nodeContextAction" name="Database Structure Node Context Menu Action" schema="schema/nodeContextAction.exsd"/>
+   <extension-point id="node" name="Database Structure Node" schema="schema/node.exsd"/>
+   <extension-point id="nodeDetailTab" name="Database Structure Node Detail Tab" schema="schema/nodeDetailTab.exsd"/>
+   <extension-point id="dataSetTableContextAction" name="Table Context Menu Action" schema="schema/dataSetTableContextAction.exsd"/>
 
 
    <extension
@@ -52,62 +54,68 @@
             id="SQLExplorerPlugin">
       </category>
       <view
-            name="SQL Results"
-            icon="icons/common_tab.gif"
-            category="SQLExplorerPlugin"
-            class="net.sourceforge.sqlexplorer.plugin.views.SqlResultsView"
-            id="net.sourceforge.sqlexplorer.plugin.views.SqlResultsView">
-      </view>
-      <view
-            name="SQL History"
-            icon="icons/history_list.gif"
-            category="SQLExplorerPlugin"
-            class="net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView"
-            id="net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView">
-      </view>
-      <view
-            name="Connection Info"
-            icon="icons/app_obj.gif"
-            category="SQLExplorerPlugin"
-            class="net.sourceforge.sqlexplorer.plugin.views.ConnectionInfo"
-            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionInfo">
-      </view>
-      <view
-            name="Connections"
-            icon="icons/connections_view.gif"
+            allowMultiple="false"
             category="SQLExplorerPlugin"
             class="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
-            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
+            icon="icons/connections_view.gif"
+            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            name="Connections">
       </view>
       <view
-            name="Database Structure View"
-            icon="icons/tree_mode.gif"
+            allowMultiple="false"
             category="SQLExplorerPlugin"
-            class="net.sourceforge.sqlexplorer.plugin.views.DBView"
-            id="net.sourceforge.sqlexplorer.plugin.views.DBView">
-      </view>
+            class="net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView"
+            icon="icons/tree_mode.gif"
+            id="net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView"
+            name="Database Structure"/>
       <view
-            name="Drivers "
-            icon="icons/feature_obj.gif"
+            allowMultiple="false"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.DatabaseDetailView"
+            icon="icons/app_obj.gif"
+            id="net.sourceforge.sqlexplorer.plugin.views.DatabaseDetailView"
+            name="Database Detail"/>
+      <view
+            allowMultiple="false"
             category="SQLExplorerPlugin"
             class="net.sourceforge.sqlexplorer.plugin.views.DriverView"
-            id="net.sourceforge.sqlexplorer.plugin.views.DriverView">
+            icon="icons/feature_obj.gif"
+            id="net.sourceforge.sqlexplorer.plugin.views.DriverView"
+            name="Drivers ">
       </view>
       <view
-            name="Aliases"
-            icon="icons/alias.gif"
+            allowMultiple="false"
             category="SQLExplorerPlugin"
             class="net.sourceforge.sqlexplorer.plugin.views.AliasView"
-            id="net.sourceforge.sqlexplorer.plugin.views.AliasView">
+            icon="icons/alias.gif"
+            id="net.sourceforge.sqlexplorer.plugin.views.AliasView"
+            name="Aliases">
+      </view>
+      <view
+            allowMultiple="false"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.SqlResultsView"
+            icon="icons/common_tab.gif"
+            id="net.sourceforge.sqlexplorer.plugin.views.SqlResultsView"
+            name="SQL Results">
+      </view>
+      <view
+            allowMultiple="false"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView"
+            icon="icons/history_list.gif"
+            id="net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView"
+            name="SQL History">
       </view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            name="SQL Explorer"
-            icon="icons/logo16.gif"
             class="net.sourceforge.sqlexplorer.plugin.perspectives.SQLExplorerPluginPerspective"
-            id="net.sourceforge.sqlexplorer.plugin.perspectives.SQLExplorerPluginPerspective">
+            fixed="false"
+            icon="icons/logo16.gif"
+            id="net.sourceforge.sqlexplorer.plugin.perspectives.SQLExplorerPluginPerspective"
+            name="SQL Explorer">
       </perspective>
    </extension>
    <extension
@@ -139,17 +147,8 @@
             contributorClass="net.sourceforge.sqlexplorer.plugin.editors.SQLEditorActionContributor"
             id="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor">
       </editor>
-      <editor
-            name="Schema Viewer"
-            extensions="sqls"
-            icon="icons/edittsk_tsk.gif"
-            class="net.sourceforge.sqlexplorer.gef.editors.SchemaEditor"
-            contributorClass="net.sourceforge.sqlexplorer.gef.editors.SchemaViewerActionBarContributor"
-            id="net.sourceforge.sqlexplorer.gef.editors.SchemaEditor">
-      </editor>
    </extension>
-   <extension
-         point="org.eclipse.ui.viewActions">     
+   <extension point="org.eclipse.ui.viewActions">     
       <viewContribution
             targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
             id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.rollback">
@@ -283,6 +282,58 @@
                name="windowImages"
                value="icons/logo16.gif,icons/logo32.gif"/>
       </product>
+   </extension>
+   <extension
+         id="nodeContextAction"
+         point="net.sourceforge.sqlexplorer.nodeContextAction">
+      <action
+            class="net.sourceforge.sqlexplorer.dbstructure.actions.RefreshNodeAction"
+            database-product-name="*"
+            id="sqlexplorer.dbstructure.actions.RefreshNodeAction"
+            name="Refresh Node"
+            node-type="*"/>
+      <action
+            class="net.sourceforge.sqlexplorer.dbstructure.actions.CopyNodeNameAction"
+            database-product-name="*"
+            id="sqlexplorer.dbstructure.actions.CopyNodeNameAction"
+            name="Copy Node Name"
+            node-type="*"/>
+      <action
+            class="net.sourceforge.sqlexplorer.dbstructure.actions.GenerateSelectSQLAction"
+            database-product-name="*"
+            id="sqlexplorer.dbstructure.actions.GenerateSelectSQLAction"
+            name="Generate SELECT Statement"
+            node-type="table,column"/>
+      <action
+            class="net.sourceforge.sqlexplorer.dbstructure.actions.CreateTableScriptAction"
+            database-product-name="*"
+            id="sqlexplorer.dbstructure.actions.CreateTableScriptAction"
+            name="Generate TABLE Script"
+            node-type="table"/>
+      <action
+            class="net.sourceforge.sqlexplorer.dbstructure.actions.AddNodeToFilterAction"
+            database-product-name="*"
+            id="sqlexplorer.dbstructure.actions.AddNodeToFilterAction"
+            name="Add Node To Filter"
+            node-type="catalog,schema"/>
+      <action
+            class="net.sourceforge.sqlexplorer.dbstructure.actions.RemoveNodeFilterAction"
+            database-product-name="*"
+            id="sqlexplorer.dbstructure.actions.RemoveNodeFilterAction"
+            name="Remove Node Filter"
+            node-type="database"/>
+   </extension>
+   <extension
+         id="dataSetTableContextAction"
+         point="net.sourceforge.sqlexplorer.dataSetTableContextAction">
+      <action
+            class="net.sourceforge.sqlexplorer.dataset.actions.CopyCellAction"
+            id="sqlexplorer.dataset.actions.CopyCellAction"
+            name="Copy Cell Action"/>
+      <action
+            class="net.sourceforge.sqlexplorer.dataset.actions.CopyTableAction"
+            id="sqlexplorer.dataset.actions.CopyTableAction"
+            name="Copy Table Action"/>            
    </extension>
 
 </plugin>

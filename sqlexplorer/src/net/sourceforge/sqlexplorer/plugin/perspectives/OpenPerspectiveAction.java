@@ -37,7 +37,7 @@ public class OpenPerspectiveAction extends Action {
 		}
 		catch(Throwable e)
 		{
-			SQLExplorerPlugin.error("Error opening jfacedbc perspective", e);
+			SQLExplorerPlugin.error("Error opening sql explorer perspective", e);
 		}
 	}
 }

@@ -1,4 +1,5 @@
 package net.sourceforge.sqlexplorer;
+
 /*
  * Copyright (C) 2002-2004 Andrea Mazzolini
  * andreamazzolini@users.sourceforge.net
@@ -18,7 +19,6 @@ package net.sourceforge.sqlexplorer;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
 import java.util.Comparator;
 
 import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
@@ -29,59 +29,55 @@ import net.sourceforge.squirrel_sql.fw.util.DuplicateObjectException;
  * The aliases model.
  */
 public class AliasModel {
-	private static IISQLAliasComparator iISQLAliasComparator = new IISQLAliasComparator();
 
-	//private ArrayList ls=new ArrayList(10);
-	private SortedList sl;
-	private DataCache cache;	
-	
-	public AliasModel(DataCache c){
-		cache=c;
-		/*Iterator it=cache.aliases();
-		while(it.hasNext()){
-			ls.add(it.next());
-		}*/
-		sl = new SortedList(iISQLAliasComparator);
-		sl.addAll(c.aliases());
+    private static IISQLAliasComparator iISQLAliasComparator = new IISQLAliasComparator();
 
-	};
-	
-	public Object[] getElements(){
-			return sl.toArray();
+    private SortedList sl;
 
-//		return ls.toArray();
-	}
-	public void removeAlias(ISQLAlias as){
-		cache.removeAlias(as);
-		/*ls.clear();
-		Iterator it=cache.aliases();
-		while(it.hasNext()){
-			ls.add(it.next());
-		}*/
-		sl.remove(as);
+    private DataCache cache;
 
-		
-	}
-	public void addAlias (ISQLAlias as) throws DuplicateObjectException{
-		cache.addAlias(as);
-		//ls.add(as);
-		sl.add(as);
 
-	}
-	public SQLAlias createAlias(IIdentifier id){
-		return (SQLAlias) cache.createAlias(id);
-	}
-	private static class IISQLAliasComparator implements Comparator
-	{
-		
-		/**
-		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-		 */
-		public int compare(Object o1, Object o2)
-		{
-			return ((ISQLAlias)o1).getName().compareToIgnoreCase(((ISQLAlias)o2).getName());
-		}
+    public AliasModel(DataCache c) {
+        cache = c;
+        sl = new SortedList(iISQLAliasComparator);
+        sl.addAll(c.aliases());
 
-	}  
+    };
+
+
+    public Object[] getElements() {
+        return sl.toArray();
+
+    }
+
+
+    public void removeAlias(ISQLAlias as) {
+        cache.removeAlias(as);
+        sl.remove(as);
+
+    }
+
+
+    public void addAlias(ISQLAlias as) throws DuplicateObjectException {
+        cache.addAlias(as);
+        sl.add(as);
+
+    }
+
+
+    public SQLAlias createAlias(IIdentifier id) {
+        return (SQLAlias) cache.createAlias(id);
+    }
+
+    private static class IISQLAliasComparator implements Comparator {
+
+        /**
+         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+         */
+        public int compare(Object o1, Object o2) {
+            return ((ISQLAlias) o1).getName().compareToIgnoreCase(((ISQLAlias) o2).getName());
+        }
+
+    }
 
 }

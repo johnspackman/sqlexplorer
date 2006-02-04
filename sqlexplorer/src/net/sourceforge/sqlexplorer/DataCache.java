@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package net.sourceforge.sqlexplorer;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,243 +38,233 @@ import net.sourceforge.squirrel_sql.fw.util.IObjectCacheChangeListener;
 import net.sourceforge.squirrel_sql.fw.xml.XMLException;
 import net.sourceforge.squirrel_sql.fw.xml.XMLObjectCache;
 
-//import com.bigfoot.colbell.fw.xml.XMLObjectCache;
-
-//import com.bigfoot.colbell.squirrel.IApplication;
-//import com.bigfoot.colbell.squirrel.resources.Resources;
-//import com.bigfoot.colbell.squirrel.util.ApplicationFiles;
-
-
 /**
  * XML cache of JDBC drivers and aliases.
- *
- * @author	<A HREF="mailto:colbell@users.sourceforge.net">Colin Bell</A>
+ * 
+ * @author <A HREF="mailto:colbell@users.sourceforge.net">Colin Bell</A>
  */
 public class DataCache {
-	
-	private final static Class SQL_ALIAS_IMPL = SQLAlias.class;
-	private final static Class OLD_SQL_ALIAS_IMPL = net.sourceforge.squirrel_sql.fw.sql.SQLAlias.class;	
-	private final static Class SQL_DRIVER_IMPL = SQLDriver.class;
-         // private Logger _logger;
-          private SQLDriverManager _driverMgr;
+
+    private final static Class SQL_ALIAS_IMPL = SQLAlias.class;
+
+    private final static Class OLD_SQL_ALIAS_IMPL = net.sourceforge.squirrel_sql.fw.sql.SQLAlias.class;
+
+    private final static Class SQL_DRIVER_IMPL = SQLDriver.class;
+
+    private SQLDriverManager _driverMgr;
+
+    /** Cache that contains data. */
+    private XMLObjectCache _cache = new XMLObjectCache();
 
 
-	/** Application API. */
-	//private IApplication _app;
+    /**
+     * Ctor. Loads drivers and aliases from the XML document.
+     * 
+     * @param app Application API.
+     * 
+     * @throws IllegalArgumentException Thrown if <TT>null</TT> <TT>IApplication</TT>
+     *             passed.
+     * 
+     * @throws IllegalStateException Thrown if no <TT>SQLDriverManager</TT> or
+     *             <TT>Logger</TT> exists in IApplication.
+     */
+    public DataCache(SQLDriverManager dm) throws IllegalArgumentException {
+        super();
+        _driverMgr = dm;
 
-	/** Cache that contains data. */
-	private XMLObjectCache _cache = new XMLObjectCache();
+        loadDrivers();
+        loadAliases();
 
-	/**
-	 * Ctor. Loads drivers and aliases from the XML document.
-	 *
-	 * @param	app		Application API.
-	 *
-	 * @throws	IllegalArgumentException
-	 * 				Thrown if <TT>null</TT> <TT>IApplication</TT>
-	 * 				passed.
-	 *
-	 * @throws	IllegalStateException
-	 * 				Thrown if no <TT>SQLDriverManager</TT> or <TT>Logger</TT>
-	 * 				exists in IApplication.
-	 */
-	public DataCache(SQLDriverManager dm) throws IllegalArgumentException {
-		super();
-		_driverMgr=dm;
-
-		loadDrivers();
-		loadAliases();
-		
-		migrateAliases();
-	}
-
-	/**
-	 * Save cached objects. JDBC drivers are saved to
-	 * <CODE>ApplicationFiles.getUserDriversFileName()</CODE> and aliases are
-	 * saved to <CODE>ApplicationFiles.getUserAliasesFileName()</CODE>.
-	 */
-	public void save() {
-		try {
-			_cache.saveAllForClass(ApplicationFiles.USER_DRIVER_FILE_NAME, SQL_DRIVER_IMPL);
-		} catch (IOException ex) {
-			SQLExplorerPlugin.error("Error occured saving drivers",ex); //$NON-NLS-1$		
-		} catch (XMLException ex) {
-			SQLExplorerPlugin.error("Error occured saving drivers",ex); //$NON-NLS-1$
-		
-		}
-		try {
-			_cache.saveAllForClass(ApplicationFiles.USER_ALIAS_FILE_NAME, SQL_ALIAS_IMPL);
-		} catch (Exception ex) {
-			SQLExplorerPlugin.error("Error occured saving aliases",ex); //$NON-NLS-1$
-		}
-	}
-
-	/**
-	 * Return the <TT>ISQLDriver</TT> for the passed identifier.
-	 */
-	public ISQLDriver getDriver(IIdentifier id) {
-		return (ISQLDriver)_cache.get(SQL_DRIVER_IMPL, id);
-	}
-
-	public void addDriver(ISQLDriver sqlDriver) throws ClassNotFoundException,
-			IllegalAccessException, InstantiationException, DuplicateObjectException,MalformedURLException {
-	    _driverMgr.registerSQLDriver(sqlDriver);
-		_cache.add(sqlDriver);
-	}
-
-	public void removeDriver(ISQLDriver sqlDriver) {
-		_cache.remove(SQL_DRIVER_IMPL, sqlDriver.getIdentifier());
-		try {
-		    _driverMgr.unregisterSQLDriver(sqlDriver);
-		} catch (Exception ex) {
-			SQLExplorerPlugin.error("Error occured removing driver",ex); //$NON-NLS-1$
-		}
-	}
-
-	public Iterator drivers() {
-		return _cache.getAllForClass(SQL_DRIVER_IMPL);
-	}
-
-	public void addDriversListener(IObjectCacheChangeListener lis) {
-		_cache.addChangesListener(lis, SQL_DRIVER_IMPL);
-	}
-
-	public void removeDriversListener(IObjectCacheChangeListener lis) {
-		_cache.removeChangesListener(lis, SQL_DRIVER_IMPL);
-	}
+        migrateAliases();
+    }
 
 
-	public ISQLAlias getAlias(IIdentifier id) {
-		return (ISQLAlias)_cache.get(SQL_ALIAS_IMPL, id);
-	}
+    /**
+     * Save cached objects. JDBC drivers are saved to <CODE>ApplicationFiles.getUserDriversFileName()</CODE>
+     * and aliases are saved to <CODE>ApplicationFiles.getUserAliasesFileName()</CODE>.
+     */
+    public void save() {
+        try {
+            _cache.saveAllForClass(ApplicationFiles.USER_DRIVER_FILE_NAME, SQL_DRIVER_IMPL);
+        } catch (IOException ex) {
+            SQLExplorerPlugin.error("Error occured saving drivers", ex);
+        } catch (XMLException ex) {
+            SQLExplorerPlugin.error("Error occured saving drivers", ex);
 
-	public Iterator aliases() {
-		return _cache.getAllForClass(SQL_ALIAS_IMPL);
-	}
-
-	public void addAlias(ISQLAlias alias) throws DuplicateObjectException {
-		_cache.add(alias);
-	}
-
-	public void removeAlias(ISQLAlias alias) {
-		_cache.remove(SQL_ALIAS_IMPL, alias.getIdentifier());
-	}
-
-	public Iterator getAliasesForDriver(ISQLDriver driver) {
-		ArrayList data = new ArrayList();
-		for (Iterator it = aliases(); it.hasNext();) {
-			ISQLAlias alias = (ISQLAlias)it.next();
-		    if (driver.equals(getDriver(alias.getDriverIdentifier()))) {
-				data.add(alias);
-			}
-		}
-		return data.iterator();
-	}
-
-	public void addAliasesListener(IObjectCacheChangeListener lis) {
-		_cache.addChangesListener(lis, SQL_ALIAS_IMPL);
-	}
-
-	public void removeAliasesListener(IObjectCacheChangeListener lis) {
-		_cache.removeChangesListener(lis, SQL_ALIAS_IMPL);
-	}
-
-	private void loadDrivers() {
-		//final Logger logger = _logger;
-		try {
-			_cache.load(ApplicationFiles.USER_DRIVER_FILE_NAME);
-			if (!drivers().hasNext()) {
-				loadDefaultDrivers();
-			}
-			else{
-				fixupDrivers();
-			}
-		} catch (FileNotFoundException ex) {
-			loadDefaultDrivers();// first time user has run pgm.
-		} catch (Exception ex) {
-			loadDefaultDrivers();
-		}
-
-		registerDrivers();
-	}
-
-	public ISQLAlias createAlias(IIdentifier id) {
-		return new SQLAlias(id);
-	}
-
-	public ISQLDriver createDriver(IIdentifier id) {
-		return new SQLDriver(id);
-	}
-	
-	private void fixupDrivers()
-	{
-		for (Iterator it = drivers(); it.hasNext();)
-		{
-			ISQLDriver driver = (ISQLDriver)it.next();
-			String[] fileNames = driver.getJarFileNames();
-			if (fileNames == null || fileNames.length == 0)
-			{
-				String fileNameArray[] = driver.getJarFileNames(); 
-				if (fileNameArray != null && fileNameArray.length > 0)
-				{
-					driver.setJarFileNames(fileNameArray);
-					try
-					{
-						driver.setJarFileName(null);
-					}
-					catch (ValidationException ignore)
-					{
-					}
-				}
-			}
-		}
-	}
+        }
+        try {
+            _cache.saveAllForClass(ApplicationFiles.USER_ALIAS_FILE_NAME, SQL_ALIAS_IMPL);
+        } catch (Exception ex) {
+            SQLExplorerPlugin.error("Error occured saving aliases", ex);
+        }
+    }
 
 
-	private void loadDefaultDrivers() {
-		final URL url = URLUtil.getResourceURL("default_drivers.xml"); //$NON-NLS-1$
-		try
-		{
-			InputStreamReader isr = new InputStreamReader(url.openStream());
-			try
-			{
-				_cache.load(isr);
-			}
-			finally
-			{
-				isr.close();
-			}
-		}
-		catch (Exception ex)
-		{
-			SQLExplorerPlugin.error("Error loading default driver file",ex); //$NON-NLS-1$
-		}
+    /**
+     * Return the <TT>ISQLDriver</TT> for the passed identifier.
+     */
+    public ISQLDriver getDriver(IIdentifier id) {
+        return (ISQLDriver) _cache.get(SQL_DRIVER_IMPL, id);
+    }
 
-	}
+
+    public void addDriver(ISQLDriver sqlDriver) throws ClassNotFoundException, IllegalAccessException, InstantiationException,
+            DuplicateObjectException, MalformedURLException {
+        _driverMgr.registerSQLDriver(sqlDriver);
+        _cache.add(sqlDriver);
+    }
+
+
+    public void removeDriver(ISQLDriver sqlDriver) {
+        _cache.remove(SQL_DRIVER_IMPL, sqlDriver.getIdentifier());
+        try {
+            _driverMgr.unregisterSQLDriver(sqlDriver);
+        } catch (Exception ex) {
+            SQLExplorerPlugin.error("Error occured removing driver", ex);
+        }
+    }
+
+
+    public Iterator drivers() {
+        return _cache.getAllForClass(SQL_DRIVER_IMPL);
+    }
+
+
+    public void addDriversListener(IObjectCacheChangeListener lis) {
+        _cache.addChangesListener(lis, SQL_DRIVER_IMPL);
+    }
+
+
+    public void removeDriversListener(IObjectCacheChangeListener lis) {
+        _cache.removeChangesListener(lis, SQL_DRIVER_IMPL);
+    }
+
+
+    public ISQLAlias getAlias(IIdentifier id) {
+        return (ISQLAlias) _cache.get(SQL_ALIAS_IMPL, id);
+    }
+
+
+    public Iterator aliases() {
+        return _cache.getAllForClass(SQL_ALIAS_IMPL);
+    }
+
+
+    public void addAlias(ISQLAlias alias) throws DuplicateObjectException {
+        _cache.add(alias);
+    }
+
+
+    public void removeAlias(ISQLAlias alias) {
+        _cache.remove(SQL_ALIAS_IMPL, alias.getIdentifier());
+    }
+
+
+    public Iterator getAliasesForDriver(ISQLDriver driver) {
+        ArrayList data = new ArrayList();
+        for (Iterator it = aliases(); it.hasNext();) {
+            ISQLAlias alias = (ISQLAlias) it.next();
+            if (driver.equals(getDriver(alias.getDriverIdentifier()))) {
+                data.add(alias);
+            }
+        }
+        return data.iterator();
+    }
+
+
+    public void addAliasesListener(IObjectCacheChangeListener lis) {
+        _cache.addChangesListener(lis, SQL_ALIAS_IMPL);
+    }
+
+
+    public void removeAliasesListener(IObjectCacheChangeListener lis) {
+        _cache.removeChangesListener(lis, SQL_ALIAS_IMPL);
+    }
+
+
+    private void loadDrivers() {
+        try {
+            _cache.load(ApplicationFiles.USER_DRIVER_FILE_NAME);
+            if (!drivers().hasNext()) {
+                loadDefaultDrivers();
+            } else {
+                fixupDrivers();
+            }
+        } catch (FileNotFoundException ex) {
+            loadDefaultDrivers();// first time user has run pgm.
+        } catch (Exception ex) {
+            loadDefaultDrivers();
+        }
+
+        registerDrivers();
+    }
+
+
+    public ISQLAlias createAlias(IIdentifier id) {
+        return new SQLAlias(id);
+    }
+
+
+    public ISQLDriver createDriver(IIdentifier id) {
+        return new SQLDriver(id);
+    }
+
+
+    private void fixupDrivers() {
+        for (Iterator it = drivers(); it.hasNext();) {
+            ISQLDriver driver = (ISQLDriver) it.next();
+            String[] fileNames = driver.getJarFileNames();
+            if (fileNames == null || fileNames.length == 0) {
+                String fileNameArray[] = driver.getJarFileNames();
+                if (fileNameArray != null && fileNameArray.length > 0) {
+                    driver.setJarFileNames(fileNameArray);
+                    try {
+                        driver.setJarFileName(null);
+                    } catch (ValidationException ignore) {
+                    }
+                }
+            }
+        }
+    }
+
+
+    private void loadDefaultDrivers() {
+        final URL url = URLUtil.getResourceURL("default_drivers.xml");
+        try {
+            InputStreamReader isr = new InputStreamReader(url.openStream());
+            try {
+                _cache.load(isr);
+            } finally {
+                isr.close();
+            }
+        } catch (Exception ex) {
+            SQLExplorerPlugin.error("Error loading default driver file", ex);
+        }
+
+    }
+
 
     /**
      * Restore any missing drivers.
      */
     public void restoreDefaultDrivers() {
 
-        XMLObjectCache tmpCache = new XMLObjectCache();        
+        XMLObjectCache tmpCache = new XMLObjectCache();
         URL url = URLUtil.getResourceURL("default_drivers.xml");
-        
+
         try {
             InputStreamReader isr = new InputStreamReader(url.openStream());
             try {
                 tmpCache.load(isr);
-            } 
-            finally {
+            } finally {
                 isr.close();
             }
+        } catch (Exception ex) {
+            SQLExplorerPlugin.error("Error loading default driver file", ex);
         }
-        catch (Exception ex) {
-            SQLExplorerPlugin.error("Error loading default driver file",ex);
-        }
-        
+
         Iterator it = tmpCache.getAllForClass(SQL_DRIVER_IMPL);
-        
+
         while (it.hasNext()) {
             ISQLDriver driver = (ISQLDriver) it.next();
             if (driver != null) {
@@ -284,55 +275,56 @@ public class DataCache {
                     SQLExplorerPlugin.error("Error restoring default driver: " + driver.getName(), e);
                 }
             }
-        }        
+        }
     }
-    
-    
-	private void registerDrivers() {
-		SQLDriverManager driverMgr = _driverMgr;
-		for (Iterator it = drivers(); it.hasNext();) {
-			ISQLDriver sqlDriver = (ISQLDriver)it.next();
-			try {
-			    driverMgr.registerSQLDriver(sqlDriver);
-			} catch (Throwable th) {
-		//		s_log.error("Error registering SQL driver ",th); //$NON-NLS-1$
-			}
-		}
-	}
 
-	private void loadAliases() {
-		try {
-			_cache.load(ApplicationFiles.USER_ALIAS_FILE_NAME);
-		} catch (FileNotFoundException ignore) { // first time user has run pgm.
-		} catch (XMLException ex) {
-			SQLExplorerPlugin.error("Error loading aliases file ",ex); //$NON-NLS-1$
-		} catch (DuplicateObjectException ex) {
-			SQLExplorerPlugin.error("Error loading aliases file ",ex); //$NON-NLS-1$
-		}
-	}
-	
-	/**
-	 * Convert old style aliases to the new explorer Aliases.
-	 */
-	private void migrateAliases() {
-		
-		try {
-		
-			Iterator it = _cache.getAllForClass(OLD_SQL_ALIAS_IMPL);
-			while (it.hasNext()) {
-				ISQLAlias oldAlias = (ISQLAlias) it.next();
-				if (oldAlias != null) {
-					SQLAlias newAlias = new SQLAlias(oldAlias.getIdentifier());
-					newAlias.assignFrom(oldAlias);
-//					_cache.remove(OLD_SQL_ALIAS_IMPL, oldAlias.getIdentifier());
-					_cache.add(newAlias);
-				}
-			}
-			_cache.saveAllForClass(ApplicationFiles.USER_ALIAS_FILE_NAME, SQL_ALIAS_IMPL);
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-			SQLExplorerPlugin.error("Error migrating aliases.", e);
-		}
-				
-	}
+
+    private void registerDrivers() {
+        SQLDriverManager driverMgr = _driverMgr;
+        for (Iterator it = drivers(); it.hasNext();) {
+            ISQLDriver sqlDriver = (ISQLDriver) it.next();
+            try {
+                driverMgr.registerSQLDriver(sqlDriver);
+            } catch (Throwable th) {
+            }
+        }
+    }
+
+
+    private void loadAliases() {
+        try {
+            _cache.load(ApplicationFiles.USER_ALIAS_FILE_NAME);
+        } catch (FileNotFoundException ignore) { // first time user has run
+                                                    // pgm.
+        } catch (XMLException ex) {
+            SQLExplorerPlugin.error("Error loading aliases file ", ex);
+        } catch (DuplicateObjectException ex) {
+            SQLExplorerPlugin.error("Error loading aliases file ", ex);
+        }
+    }
+
+
+    /**
+     * Convert old style aliases to the new explorer Aliases.
+     */
+    private void migrateAliases() {
+
+        try {
+
+            Iterator it = _cache.getAllForClass(OLD_SQL_ALIAS_IMPL);
+            while (it.hasNext()) {
+                ISQLAlias oldAlias = (ISQLAlias) it.next();
+                if (oldAlias != null) {
+                    SQLAlias newAlias = new SQLAlias(oldAlias.getIdentifier());
+                    newAlias.assignFrom(oldAlias);
+                    _cache.add(newAlias);
+                }
+            }
+            _cache.saveAllForClass(ApplicationFiles.USER_ALIAS_FILE_NAME, SQL_ALIAS_IMPL);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            SQLExplorerPlugin.error("Error migrating aliases.", e);
+        }
+
+    }
 }

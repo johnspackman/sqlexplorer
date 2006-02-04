@@ -22,7 +22,6 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlRowElement;
 import net.sourceforge.sqlexplorer.sqlpanel.SqlTableContentProvider;
 import net.sourceforge.sqlexplorer.sqlpanel.actions.CloseSQLResultTab;
-import net.sourceforge.sqlexplorer.sqlpanel.actions.ExportToClipboard;
 import net.sourceforge.sqlexplorer.sqlpanel.actions.MoreRowsAction;
 import net.sourceforge.sqlexplorer.sqlpanel.actions.RetrieveAllRowsAction;
 import net.sourceforge.sqlexplorer.util.SQLString;
@@ -55,7 +54,6 @@ public class CompositeSQLResultsViewer extends Composite {
 	SqlResultsView sqlResultsView;
 	MoreRowsAction moreRowsAction;
 	RetrieveAllRowsAction getAllRowsAction;
-	ExportToClipboard clipAction;
 	StatusLineManager statusMgr;
 	Label lb;
 	
@@ -83,26 +81,27 @@ public class CompositeSQLResultsViewer extends Composite {
 		    		
         
 		// Add the sql statement to the results tab & tooltip
-		Text label = new Text(myParent, SWT.WRAP | SWT.MULTI);		
+		Text label = new Text(myParent, SWT.WRAP | SWT.MULTI | SWT.V_SCROLL);		
         label.setEditable(false);
         label.setBackground(myParent.getBackground());
 		SQLString sqlStatement = sqlResultsView.mo[ii].getSQLStatement();
-		label.setText(TextUtil.getCappedText(TextUtil.removeLineBreaks(sqlStatement.getText())));
+		label.setText(TextUtil.removeLineBreaks(sqlStatement.getText()));
         label.setToolTipText(TextUtil.getWrappedText(sqlStatement.getText()));
-        label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        GridData labelGridData = new GridData(SWT.FILL, SWT.TOP, true, false);
+        // TODO resize if field doesn't need to be this high
+        labelGridData.heightHint = 50;
+        label.setLayoutData(labelGridData);
         
 		ToolBarManager toolBarMgr = new ToolBarManager(SWT.FLAT);
 		toolBarMgr.createControl(myParent);
         
 		moreRowsAction=new MoreRowsAction(sqlResultsView,ii);
 		getAllRowsAction=new RetrieveAllRowsAction(sqlResultsView,ii);
-		clipAction = new ExportToClipboard(sqlResultsView,SQLExplorerPlugin.getDefault().getPreferenceStore(),ii);
 		closeSQLResultTab = new CloseSQLResultTab(tabItem);
 
 		//LOOK here is where we create the toolbar of the SQL results view
 		toolBarMgr.add(moreRowsAction);
 		toolBarMgr.add(getAllRowsAction);
-		toolBarMgr.add(clipAction);
 		toolBarMgr.add(closeSQLResultTab);
 		toolBarMgr.update(true);		
 		      

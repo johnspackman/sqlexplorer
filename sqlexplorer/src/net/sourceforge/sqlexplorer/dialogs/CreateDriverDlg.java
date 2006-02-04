@@ -70,6 +70,8 @@ import org.eclipse.swt.widgets.Text;
 
 public class CreateDriverDlg extends TitleAreaDialog {
 
+
+    
     protected void setShellStyle(int newShellStyle) {
         super.setShellStyle(newShellStyle | SWT.RESIZE);// Make the dialog
         // resizable
@@ -641,6 +643,8 @@ public class CreateDriverDlg extends TitleAreaDialog {
 
 class DefaultFileListBoxModel extends java.util.Vector {
 
+    public static final long serialVersionUID = 1; 
+    
     public void addFile(File file) {
         addElement(file);
     }
@@ -683,6 +687,8 @@ class DefaultFileListBoxModel extends java.util.Vector {
 
 class ClassPathListModel extends DefaultFileListBoxModel {
 
+    public static final long serialVersionUID = 1; 
+    
     /**
      * Default ctor.
      */
