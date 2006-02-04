@@ -34,6 +34,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -88,8 +89,17 @@ public class CompositeSQLResultsViewer extends Composite {
 		label.setText(TextUtil.removeLineBreaks(sqlStatement.getText()));
         label.setToolTipText(TextUtil.getWrappedText(sqlStatement.getText()));
         GridData labelGridData = new GridData(SWT.FILL, SWT.TOP, true, false);
-        // TODO resize if field doesn't need to be this high
-        labelGridData.heightHint = 50;
+        
+        myParent.layout();
+        int parentWidth = sqlResultsView.parent.getClientArea().width;
+        Point idealSize = label.computeSize(parentWidth, SWT.DEFAULT);
+        
+        if (idealSize.y < 60) {
+            labelGridData.heightHint = idealSize.y;
+        } else {
+            labelGridData.heightHint = 60;
+        }
+        
         label.setLayoutData(labelGridData);
         
 		ToolBarManager toolBarMgr = new ToolBarManager(SWT.FLAT);
