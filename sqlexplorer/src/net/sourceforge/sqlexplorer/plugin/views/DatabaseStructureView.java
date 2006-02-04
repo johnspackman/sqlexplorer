@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.plugin.views;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeActionGroup;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeContentProvider;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeLabelProvider;
@@ -41,8 +42,11 @@ import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -59,6 +63,7 @@ public class DatabaseStructureView extends ViewPart {
     /** We use one tab for every session */
     private TabFolder _tabFolder;
 
+    private Composite _parent;
 
     /**
      * Initializes the view and creates the root tabfolder that holds all the
@@ -68,21 +73,8 @@ public class DatabaseStructureView extends ViewPart {
      */
     public void createPartControl(Composite parent) {
 
-        // create tab folder for different sessions
-        _tabFolder = new TabFolder(parent, SWT.NULL);
-
-        // add listener to keep both views on the same active tab
-        _tabFolder.addSelectionListener(new SelectionAdapter() {
-
-            public void widgetSelected(SelectionEvent e) {
-            	
-                // set the selected node in the detail view.
-                DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
-                synchronizeDetailView(detailView);
-            }
-
-        });
-
+        _parent = parent;
+        
         // load all open sessions
         RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
         Object[] sessions = sessionRoot.getChildren();
@@ -93,6 +85,10 @@ public class DatabaseStructureView extends ViewPart {
             }
         }
 
+        // set default message
+        if (sessions == null || sessions.length == 0) {
+            setDefaultMessage();
+        }
     }
 
 
@@ -109,7 +105,7 @@ public class DatabaseStructureView extends ViewPart {
                     return;
                 }
 
-                if (_tabFolder.getItemCount() == 0) {
+                if (_tabFolder == null || _tabFolder.getItemCount() == 0) {
                     return;
                 }
 
@@ -171,6 +167,31 @@ public class DatabaseStructureView extends ViewPart {
      */
     public void addSession(SessionTreeNode sessionTreeNode) {
 
+        if (_tabFolder == null) {
+            
+            clearParent();
+
+            // create tab folder for different sessions
+            _tabFolder = new TabFolder(_parent, SWT.NULL);
+
+            // add listener to keep both views on the same active tab
+            _tabFolder.addSelectionListener(new SelectionAdapter() {
+
+                public void widgetSelected(SelectionEvent e) {
+                    
+                    // set the selected node in the detail view.
+                    DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
+                    synchronizeDetailView(detailView);
+                }
+
+            });
+            
+            _parent.layout();
+            _parent.redraw();
+        
+        }
+        
+        
         // create tab
         final TabItem tabItem = new TabItem(_tabFolder, SWT.NULL);
 
@@ -242,12 +263,16 @@ public class DatabaseStructureView extends ViewPart {
                     DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
                     if (detailView != null) {
                         detailView.setSelectedNode(null);
-                    }                    
-                }
+                    }             
+                    
+                    setDefaultMessage();
+                    
+                } else {
                 
-                // remove our tablink from hashmap
-                tabItem.setData(null);
-                tabItem.dispose();
+                    // remove tab
+                    tabItem.setData(null);
+                    tabItem.dispose();
+                }
             }
         });
 
@@ -290,4 +315,36 @@ public class DatabaseStructureView extends ViewPart {
     }
 
 
+    
+    /**
+     * Set a default message, this method is called
+     * when no sessions are available for viewing.
+     */
+    private void setDefaultMessage() {
+        
+        clearParent();
+        
+        // add message
+        String message = Messages.getString("DatabaseStructureView.NoSession");
+        Label label = new Label(_parent, SWT.FILL);
+        label.setText(message);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        
+        _parent.layout();
+        _parent.redraw();
+    }
+    
+    
+    /**
+     * Remove all items from parent
+     */
+    private void clearParent() {
+        
+        Control[] children = _parent.getChildren();
+        if (children != null) {
+            for (int i = 0; i < children.length; i++) {
+                children[i].dispose();
+            }
+        }
+    }
 }
