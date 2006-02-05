@@ -38,6 +38,7 @@ SQL Results
 * SQL statement is displayed when hovering over the different result tabs (with wrapping)
 * sql result tabs no longer renumber when a tab is closed
 * after an SQL is executed, the results pane now automatically focusses on the last results.
+* sqlCompositeResultViewer replaced by DataSetTable
 
 SQL Editor
 * query/comment delimiters can now be set in preferences

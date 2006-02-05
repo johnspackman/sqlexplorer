@@ -20,7 +20,6 @@ package net.sourceforge.sqlexplorer.dataset;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
-import net.sourceforge.sqlexplorer.dbdetail.IDetailTab;
 
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -71,7 +70,7 @@ public class DataSetTable {
      * @param dataSet content of table
      * @param info text displayed in bottem left corner under table
      */
-    public DataSetTable(IDetailTab tab, Composite parent, DataSet dataSet, String info) throws Exception {
+    public DataSetTable(Composite parent, DataSet dataSet, String info) throws Exception {
 
         Composite composite = new Composite(parent, SWT.FILL);
         
@@ -254,7 +253,7 @@ public class DataSetTable {
 
  
         // refresh tab on F5, copy cell on CTRL-C, etc
-        KeyListener keyListener = new DataSetTableKeyListener(parent, table, cursor, tab);
+        KeyListener keyListener = new DataSetTableKeyListener(parent, table, cursor);
         cursor.addKeyListener(keyListener);
         table.addKeyListener(keyListener);
                         

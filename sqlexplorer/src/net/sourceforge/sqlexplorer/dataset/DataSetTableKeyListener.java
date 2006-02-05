@@ -86,12 +86,16 @@ public class DataSetTableKeyListener implements KeyListener {
      * @param cursor
      * @param tab
      */
-    public DataSetTableKeyListener(Composite parent, Table table, TableCursor cursor, IDetailTab tab) {
+    public DataSetTableKeyListener(Composite parent, Table table, TableCursor cursor) {
 
         _table = table;
         _parent = parent;
         _cursor = cursor;
-        _tab = tab;
+        
+        Object o = _parent.getData("IDetailTab");
+        if (o != null) {
+            _tab = (IDetailTab) o;
+        }        
 
     }
 
@@ -156,7 +160,9 @@ public class DataSetTableKeyListener implements KeyListener {
 
             case SWT.F5:
                 // refresh tab
-                _tab.refresh();
+                if (_tab != null) {
+                    _tab.refresh();
+                }
                 disposePopup();
                 break;
 
@@ -270,7 +276,7 @@ public class DataSetTableKeyListener implements KeyListener {
      */
     private void disposePopup() {
 
-        if (_popup != null) {
+        if (_popup != null && !_popup.isDisposed()) {
             _popup.close();
             _popup.dispose();
             _popup = null;
@@ -336,8 +342,10 @@ public class DataSetTableKeyListener implements KeyListener {
                 _table.showColumn(column);
                 
                 // move cursor to found column
-                _cursor.setSelection(0, i);
-                _cursor.setVisible(true);
+                if (_table.getItemCount() > 0) {
+                    _cursor.setSelection(0, i);
+                    _cursor.setVisible(true);
+                }
 
                 // store column index so we can pickup where we left of
                 // in case of repeated search

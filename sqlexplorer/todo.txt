@@ -1,5 +1,4 @@
 * review/fix sql editor content assist
-* drop sqltable and replace by new datasettable that is used for detail tabs and sql results
 * connect to database in background
 * add drag support for nodes into sqleditor
 * remove overlaystore from preferences 

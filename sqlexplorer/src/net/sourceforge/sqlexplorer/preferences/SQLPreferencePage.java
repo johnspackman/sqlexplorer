@@ -23,7 +23,7 @@ import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sqleditor.ISQLColorConstants;
-import net.sourceforge.sqlexplorer.sqlpanel.SQLTextViewer;
+import net.sourceforge.sqlexplorer.sqleditor.SQLTextViewer;
 
 import org.eclipse.jface.preference.FontFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;

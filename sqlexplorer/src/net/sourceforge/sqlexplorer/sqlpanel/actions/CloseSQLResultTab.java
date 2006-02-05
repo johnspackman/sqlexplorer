@@ -51,7 +51,6 @@ public class CloseSQLResultTab extends Action {
 	
     
 	public void run() {
-		System.out.println(tabItem.getText());
 		tabItem.dispose();
     }
 	

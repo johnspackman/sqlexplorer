@@ -35,7 +35,10 @@ public abstract class AbstractDataSetTab extends AbstractTab {
                 throw new Exception("DataSet is null..");
             }
             
-            new DataSetTable(this, composite, dataSet, getStatusMessage());
+            // store for later use in dataset table
+            composite.setData("IDetailTab", this);
+            
+            new DataSetTable(composite, dataSet, getStatusMessage());
                          
             
         } catch (Exception e) {
