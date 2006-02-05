@@ -51,7 +51,7 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
 
         String[] header = new String[2];
         header[0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.Property");
-        header[1] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.Property");
+        header[1] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.Value");
 
         String[][] data = new String[123][2];
 
