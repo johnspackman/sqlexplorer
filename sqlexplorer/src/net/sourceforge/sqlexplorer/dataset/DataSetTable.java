@@ -27,6 +27,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.TableCursor;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -43,6 +44,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
@@ -138,33 +140,38 @@ public class DataSetTable {
         // create listener for sorting
         SelectionListener headerListener = new SelectionAdapter() {
 
-            public void widgetSelected(SelectionEvent e) {
+            public void widgetSelected(final SelectionEvent e) {
                 
-                DataSetTableSorter sorter = (DataSetTableSorter) tableViewer.getSorter();
-                TableColumn column = ((TableColumn) e.widget);                
-                int columnIndex = table.indexOf(column);                
-
-                if (columnIndex == sorter.getTopPriority()) {
-                    int k = sorter.reverseTopPriority();
-                    if (k == DataSetTableSorter.SORT_ASCENDING) {
-                        column.setImage(imgAsc);
-                    } else {
-                        column.setImage(imgDesc);
+                BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+                
+                    public void run() {
+                        DataSetTableSorter sorter = (DataSetTableSorter) tableViewer.getSorter();
+                        TableColumn column = ((TableColumn) e.widget);                
+                        int columnIndex = table.indexOf(column);                
+        
+                        if (columnIndex == sorter.getTopPriority()) {
+                            int k = sorter.reverseTopPriority();
+                            if (k == DataSetTableSorter.SORT_ASCENDING) {
+                                column.setImage(imgAsc);
+                            } else {
+                                column.setImage(imgDesc);
+                            }
+                        } else {
+                            sorter.setTopPriority(columnIndex);
+                            column.setImage(imgAsc);
+                        }
+        
+                        TableColumn[] columns = table.getColumns();
+                        for (int i = 0; i < columns.length; i++) {
+                            if (i != columnIndex && columns[i].getImage() != null) {
+                                columns[i].setImage(null);
+                            }
+                        }
+                        tableViewer.refresh();
+                        table.redraw();
+                        table.getParent().redraw();
                     }
-                } else {
-                    sorter.setTopPriority(columnIndex);
-                    column.setImage(imgAsc);
-                }
-
-                TableColumn[] columns = table.getColumns();
-                for (int i = 0; i < columns.length; i++) {
-                    if (i != columnIndex && columns[i].getImage() != null) {
-                        columns[i].setImage(null);
-                    }
-                }
-                tableViewer.refresh();
-                table.redraw();
-                table.getParent().redraw();
+                });
             }
         };
         
