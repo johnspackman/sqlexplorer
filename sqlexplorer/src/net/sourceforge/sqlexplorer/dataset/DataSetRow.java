@@ -34,7 +34,7 @@ public class DataSetRow {
      * @param columnCount number of columns
      */
     public DataSetRow(int columnCount) {
-        _values = new String[columnCount];
+        _values = new Object[columnCount];
     }
 
 
