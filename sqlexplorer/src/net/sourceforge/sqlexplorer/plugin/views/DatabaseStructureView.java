@@ -167,7 +167,7 @@ public class DatabaseStructureView extends ViewPart {
      */
     public void addSession(SessionTreeNode sessionTreeNode) {
 
-        if (_tabFolder == null) {
+        if (_tabFolder == null || _tabFolder.isDisposed()) {
             
             clearParent();
 

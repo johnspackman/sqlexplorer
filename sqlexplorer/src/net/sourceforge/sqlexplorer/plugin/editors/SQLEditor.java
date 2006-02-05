@@ -36,11 +36,11 @@ import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModel;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModelChangedListener;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
-import net.sourceforge.sqlexplorer.sqlpanel.SQLTextViewer;
-import net.sourceforge.sqlexplorer.sqlpanel.actions.ClearTextAction;
-import net.sourceforge.sqlexplorer.sqlpanel.actions.ExecSQLAction;
-import net.sourceforge.sqlexplorer.sqlpanel.actions.OpenFileAction;
-import net.sourceforge.sqlexplorer.sqlpanel.actions.SaveFileAsAction;
+import net.sourceforge.sqlexplorer.sqleditor.SQLTextViewer;
+import net.sourceforge.sqlexplorer.sqleditor.actions.ClearTextAction;
+import net.sourceforge.sqlexplorer.sqleditor.actions.ExecSQLAction;
+import net.sourceforge.sqlexplorer.sqleditor.actions.OpenFileAction;
+import net.sourceforge.sqlexplorer.sqleditor.actions.SaveFileAsAction;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -1170,7 +1170,6 @@ public class SQLEditor extends TextEditor {
             sql = sqlTextViewer.getTextWidget().getText();
 
         }
-        System.out.println("Exec " + sql);
         return sql != null ? sql : "";
     }
 

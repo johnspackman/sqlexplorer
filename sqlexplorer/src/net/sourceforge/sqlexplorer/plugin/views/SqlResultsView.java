@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2006 Davy Vanherbergen
+ * dvanherbergen@users.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,62 +19,60 @@
 package net.sourceforge.sqlexplorer.plugin.views;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
-import net.sourceforge.sqlexplorer.sqlpanel.SQLTableSorter;
-import net.sourceforge.sqlexplorer.sqlpanel.SqlTableLabelProvider;
-import net.sourceforge.sqlexplorer.sqlpanel.SqlTableModel;
+import net.sourceforge.sqlexplorer.dataset.DataSetTable;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.sqlpanel.SQLResult;
+import net.sourceforge.sqlexplorer.sqlpanel.actions.CloseSQLResultTab;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 /**
- * @author Mazzolini
+ * Displays the results for every query executed in the sql editor.
  * 
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * @author Davy Vanherbergen
  */
 public class SqlResultsView extends ViewPart {
 
-    private String[][] ss;
+    private Composite _parent;
 
-    private int[] colCount;
+    private TabFolder _tabFolder;
 
-    CompositeSQLResultsViewer cmp[];
+    private SQLResult[] _results;
 
-    SqlTableModel mo[];
+    private int _lastTabNumber = 0;
 
-    SQLTableSorter sorter[];
 
-    Composite parent;
-
-    TabFolder tabFolder;
-
-    /*
-     * (non-Javadoc)
+    /**
+     * Initialize sql result view.
      * 
      * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
      */
     public void createPartControl(Composite parent) {
-        this.parent = parent;
+
+        _parent = parent;
+
+        // set default message
+        if (_results == null || _results.length == 0) {
+            setDefaultMessage();
+        }
+
     }
+
 
     /*
      * (non-Javadoc)
@@ -85,196 +83,198 @@ public class SqlResultsView extends ViewPart {
 
     }
 
-    /**
-     * @param reader
-     * @param mo
-     * @param sorter
-     */
-    public void setData(SqlTableModel[] new_mo) throws Exception {
-        if (mo != null) {
-            for (int i = 0; i < mo.length; i++) {
-                mo[i].closeResultSet();
-            }
-
-        }
-
-        if (tabFolder == null) {
-            tabFolder = new TabFolder(parent, SWT.NULL);
-        }
-
-        // keep track of highest numbrt
-        Integer lastTabNumber = (Integer) tabFolder.getData();
-        if (lastTabNumber == null || tabFolder.getItemCount() == 0) {
-            lastTabNumber = new Integer(0);
-        }
-        
-        this.mo = new_mo;
-        sorter = new SQLTableSorter[mo.length];
-        colCount = new int[mo.length];
-        ss = new String[mo.length][];
-        cmp = new CompositeSQLResultsViewer[mo.length];
-
-        for (int i = 0; i < new_mo.length; i++) {
-            sorter[i] = mo[i].sorter;
-            colCount[i] = mo[i].ss.length;
-            ss[i] = mo[i].ss;
-
-            TabItem ti = new TabItem(tabFolder, SWT.NULL);
-            lastTabNumber = new Integer(lastTabNumber.intValue() + 1);
-            ti.setText("" + lastTabNumber);
-            ti.setToolTipText(TextUtil.getWrappedText(mo[i].getSQLStatement().getText()));
-
-            cmp[i] = new CompositeSQLResultsViewer(this, tabFolder, SWT.NULL, i, ti);
-            ti.setControl(cmp[i]);
-        }
-        
-        tabFolder.setData(lastTabNumber);
-        
-        refresh();
-        tabFolder.setSelection(tabFolder.getItemCount() - 1);
-
-    }
-
-    private void refresh() throws Exception {
-        for (int jj = 0; jj < mo.length; jj++) {
-            final int ii = jj;
-            int count = colCount[ii];
-
-            // Composite parent=cmp.getParent();
-            // cmp.dispose();
-            final Image imgAsc = ImageDescriptor.createFromURL(SqlexplorerImages.getAscOrderIcon()).createImage();
-            final Image imgDesc = ImageDescriptor.createFromURL(SqlexplorerImages.getDescOrderIcon()).createImage();
-            final TableViewer tableViewer = cmp[ii].getTableViewer();
-            tableViewer.getControl().addDisposeListener(new DisposeListener() {
-
-                public void widgetDisposed(DisposeEvent e) {
-                    imgAsc.dispose();
-                    imgDesc.dispose();
-                }
-            });
-
-            final Table table = tableViewer.getTable();
-            table.removeAll();
-
-            if (mo == null)
-                return;
-
-            // tv.setSorter(sorter);
-            SelectionListener headerListener = new SelectionAdapter() {
-
-                public void widgetSelected(SelectionEvent e) {
-                    if (tableViewer.getSorter() == null)
-                        tableViewer.setSorter(sorter[ii]);
-                    int column = table.indexOf((TableColumn) e.widget);
-                    if (column == sorter[ii].getTopPriority()) {
-                        int k = sorter[ii].reverseTopPriority();
-                        if (k == SQLTableSorter.ASCENDING)
-                            ((TableColumn) e.widget).setImage(imgAsc);
-                        else
-                            ((TableColumn) e.widget).setImage(imgDesc);
-                    } else {
-                        sorter[ii].setTopPriority(column);
-                        ((TableColumn) e.widget).setImage(imgAsc);
-                    }
-                    TableColumn[] tcArr = table.getColumns();
-                    for (int i = 0; i < tcArr.length; i++) {
-                        if (i != column) {
-                            tcArr[i].setImage(null);
-                        }
-                    }
-                    // updateSortingState();
-                    tableViewer.refresh();
-                    cmp[ii].setMessagePanel1("");
-                }
-            };
-            for (int i = 0; i < count; i++) {
-                TableColumn tc = new TableColumn(table, SWT.NULL);
-                tc.setText(ss[ii][i]);
-                tc.addSelectionListener(headerListener);
-            }
-            tableViewer.setColumnProperties(ss[ii]);
-            CellEditor[] cellEditors = new CellEditor[count];
-            for (int i = 0; i < cellEditors.length; i++) {
-                final int colIndex = i;
-                cellEditors[i] = new TextCellEditor(table) {
-
-                    protected void keyReleaseOccured(KeyEvent keyEvent) {
-                        super.keyReleaseOccured(keyEvent);
-                        int index = table.getSelectionIndex();
-                        int newCol = colIndex;
-
-                        TableItem[] selection = table.getSelection();
-                        fireApplyEditorValue();
-                        if (selection != null) {
-                            table.setSelection(selection);
-                        }
-
-                        Object element = tableViewer.getElementAt(index);
-                        tableViewer.reveal(element);
-                        tableViewer.editElement(element, newCol);
-                    }
-                };
-
-            }
-            tableViewer.setCellEditors(cellEditors);
-            tableViewer.setLabelProvider(new SqlTableLabelProvider(mo[ii]));
-
-            tableViewer.setInput(mo[ii]);
-            tableViewer.refresh();
-            // compositeTableViewer.setModel(mo);
-            tableViewer.getControl().addDisposeListener(new DisposeListener() {
-
-                public void widgetDisposed(DisposeEvent e) {
-                    // mo.
-                    // JFaceDbcPlugin.error("widget dispose: close result
-                    // set",new Exception());
-                    mo[ii].closeResultSet();
-                }
-            });
-            cmp[ii].setMessagePanel2(mo[ii].getPartial());
-            tableViewer.getTable().addSelectionListener(new SelectionListener() {
-
-                public void widgetDefaultSelected(SelectionEvent e) {
-                };
-
-                public void widgetSelected(SelectionEvent e) {
-                    cmp[ii].setMessagePanel1(Messages.getString("Selected_Row__1") + (tableViewer.getTable().getSelectionIndex() + 1)); //$NON-NLS-1$
-                };
-            });
-
-            cmp[ii].enableMoreRows(!mo[ii].isFinished());
-            for (int i = 0; i < count; i++) {
-                table.getColumn(i).pack();
-            }
-            table.layout();
-            parent.layout();
-            parent.redraw();
-        }
-    }
-
-    public SqlTableModel[] getModel() {
-        return mo;
-
-    }
 
     /**
+     * Add a new result tab folder
      * 
+     * @param sqlResult
      */
-    public TableViewer getTableViewer(int ii) {
-        if (cmp == null)
-            return null;
-        return cmp[ii].getTableViewer();
+    public void addSQLResult(SQLResult sqlResult) {
+
+        if (_tabFolder == null || _tabFolder.isDisposed()) {
+
+            clearParent();
+
+            // create tab folder for different sessions
+            _tabFolder = new TabFolder(_parent, SWT.NULL);
+
+            _parent.layout();
+            _parent.redraw();
+
+        }
+
+        // create tab
+        _lastTabNumber = _lastTabNumber + 1;
+        final TabItem tabItem = new TabItem(_tabFolder, SWT.NULL);
+
+        // set tab text & tooltip
+        String labelText = "" + _lastTabNumber;
+        tabItem.setText(labelText);
+        tabItem.setToolTipText(TextUtil.getWrappedText(sqlResult.getSqlStatement()));
+
+        // create composite for our result
+        Composite composite = new Composite(_tabFolder, SWT.NULL);
+
+        GridLayout layout = new GridLayout();
+        layout.numColumns = 1;
+        layout.marginLeft = 0;
+        layout.horizontalSpacing = 0;
+        layout.verticalSpacing = 2;
+        layout.marginWidth = 0;
+        layout.marginHeight = 0;
+
+        composite.setLayout(layout);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+        tabItem.setControl(composite);
+
+        tabItem.addDisposeListener(new DisposeListener() {
+
+            public void widgetDisposed(DisposeEvent e) {
+                
+                if (_tabFolder != null && !_tabFolder.isDisposed()) {
+
+                    if (_tabFolder.getItemCount() == 0) {
+                        // this is last tab..
+                        clearParent();
+                        setDefaultMessage();
+                    }
+                    
+                } else if (_tabFolder.isDisposed()) {
+                    clearParent();
+                    setDefaultMessage();
+                }
+            }
+            
+        });
+        
+        
+        // add sql statement, first create temp label to calculate correct size
+
+        String sqlStatement = sqlResult.getSqlStatement();
+
+        int labelHeight = 60;
+        int labelStyle = SWT.WRAP | SWT.MULTI;
+
+        Text tmpLabel = new Text(composite, labelStyle);
+        tmpLabel.setText(TextUtil.removeLineBreaks(sqlResult.getSqlStatement()));
+        tmpLabel.setLayoutData(new FillLayout());
+        int parentWidth = _parent.getClientArea().width;
+        Point idealSize = tmpLabel.computeSize(parentWidth - 30, SWT.DEFAULT);
+
+        if (idealSize.y <= 60) {
+            // we don't need a scroll bar. minimize
+            labelHeight = idealSize.y;
+        } else {
+            // we need a scroll bar
+            labelStyle = SWT.WRAP | SWT.MULTI | SWT.V_SCROLL;
+        }
+
+        tmpLabel.dispose();
+
+        // now create real label
+        // create spanned cell for table data
+        
+        Composite headerComposite = new Composite(composite, SWT.FILL);
+        headerComposite.setLayoutData(new GridData(SWT.FILL,  SWT.TOP, true, false));     
+        
+        GridLayout hLayout = new GridLayout();
+        hLayout.numColumns = 2;
+        hLayout.marginLeft = 0;
+        hLayout.horizontalSpacing = 0;
+        hLayout.verticalSpacing = 0;
+        hLayout.marginWidth = 0;
+        hLayout.marginHeight = 0;
+        
+        headerComposite.setLayout(hLayout);
+        
+        Text label = new Text(headerComposite, labelStyle);
+        label.setEditable(false);
+        label.setBackground(_parent.getBackground());
+        label.setText(TextUtil.removeLineBreaks(sqlStatement));
+        label.setToolTipText(TextUtil.getWrappedText(sqlStatement));
+
+        GridData labelGridData = new GridData(SWT.FILL, SWT.TOP, true, false);
+        labelGridData.heightHint = labelHeight;
+        label.setLayoutData(labelGridData);
+
+       
+        // add action bar
+        
+        ToolBarManager toolBarMgr = new ToolBarManager(SWT.FLAT);
+        toolBarMgr.createControl(headerComposite);        
+        toolBarMgr.add(new CloseSQLResultTab(tabItem));
+        toolBarMgr.update(true);        
+        GridData gid = new GridData();
+        gid.horizontalAlignment = SWT.RIGHT;
+        gid.verticalAlignment = SWT.TOP;
+        toolBarMgr.getControl().setLayoutData(gid);     
+
+   
+        
+        // add results table
+        
+        try {
+            String statusMessage = Messages.getString("SQLResultsView.Time.Prefix") + " " 
+                    + sqlResult.getExecutionTimeMillis() + " "  + Messages.getString("SQLResultsView.Time.Postfix");
+            new DataSetTable(composite, sqlResult.getDataSet(), statusMessage);
+
+        } catch (Exception e) {
+
+            // add message
+            String message = e.getMessage();
+            Label errorLabel = new Label(composite, SWT.FILL);
+            errorLabel.setText(message);
+            errorLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+            SQLExplorerPlugin.error("Error creating result tab", e);
+        }
+
+        // set new tab as the active one
+        _tabFolder.setSelection(_tabFolder.getItemCount() - 1);
+
+        // refresh view
+        composite.layout();
+        _tabFolder.layout();
+        _tabFolder.redraw();
+
+        // bring this view to top of the view stack
+        getSite().getPage().bringToTop(this);
 
     }
 
-    public void enableMoreRows(int ii, boolean b) {
-        cmp[ii].enableMoreRows(b);
+
+    /**
+     * Set a default message, this method is called when no results are
+     * available for viewing.
+     */
+    private void setDefaultMessage() {
+
+        clearParent();
+
+        // add message
+        String message = Messages.getString("SQLResultsView.NoResults");
+        Label label = new Label(_parent, SWT.FILL);
+        label.setText(message);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+        _parent.layout();
+        _parent.redraw();
     }
 
-    public void setMessagePanel2(int ii, String string) {
-        if (cmp != null)
-            cmp[ii].setMessagePanel2(string);
 
+    /**
+     * Remove all items from parent
+     */
+    private void clearParent() {
+
+        Control[] children = _parent.getChildren();
+        if (children != null) {
+            for (int i = 0; i < children.length; i++) {
+                children[i].dispose();
+            }
+        }
+
+        _lastTabNumber = 0;
     }
-
 }

@@ -1,4 +1,4 @@
-package net.sourceforge.sqlexplorer.sqlpanel;
+package net.sourceforge.sqlexplorer.sqleditor;
 
 /*
  * Copyright (C) 2002-2004 Andrea Mazzolini
@@ -21,9 +21,6 @@ package net.sourceforge.sqlexplorer.sqlpanel;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
-import net.sourceforge.sqlexplorer.sqleditor.ISQLColorConstants;
-import net.sourceforge.sqlexplorer.sqleditor.SQLSourceViewerConfiguration;
-import net.sourceforge.sqlexplorer.sqleditor.SQLTextTools;
 
 // import org.eclipse.jdt.internal.ui.text.HTMLTextPresenter;
 import org.eclipse.jface.preference.IPreferenceStore;
