@@ -20,6 +20,7 @@ package net.sourceforge.sqlexplorer;
  */
 
 import java.util.Comparator;
+import java.util.Iterator;
 
 import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
@@ -80,4 +81,26 @@ public class AliasModel {
 
     }
 
+    
+    /**
+     * Find a specific alias by name
+     * @param name of alias
+     * @return alias or null if not found.
+     */
+    public ISQLAlias getAliasByName(String name) {
+        
+        if (sl != null) {
+            
+            Iterator it = sl.iterator();
+            while (it.hasNext()) {
+                
+                ISQLAlias alias = (ISQLAlias) it.next();
+                if (alias != null && alias.toString().equals(name)) {
+                    return alias;
+                }                
+            }
+        }
+
+        return null;
+    }
 }

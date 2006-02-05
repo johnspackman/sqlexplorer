@@ -1,15 +1,19 @@
 * review/fix sql editor content assist
+* background processing for dictionary loading
+* make dictionary persistent, and only update on request
+* background processing for queries
+* create extension points for sql editor
+
 * connect to database in background
 * add drag support for nodes into sqleditor
 * remove overlaystore from preferences 
 * add ok/cancel prompts where beneficial (example delete alias)
-* background processing for dictionary loading
-* make dictionary persistent, and only update on request
-* background processing for queries
+
+
 * ad-hoc override of sql result set limit in sql editor
 * better timing details of sql results
 * store connection info in sql history, so that the 'open in editor' feature, can initiate the correct connection
-* create extension points for sql editor
+
 * add refresh action to sql result table
 * merge alias and connections view
 * add help documentation
@@ -23,3 +27,4 @@
 * creating first editor is slow..
 * create installer for standalone app
 * remove all deprecated methods
+* write doc on how to extend..

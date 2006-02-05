@@ -11,6 +11,9 @@ General
 SQL History
 * only successfull queries are stored
 * sql history is now persistent
+* on opening history in editor correct connection is set to editor or created if desired
+* clear all now prompts for confirmation
+* doubleclick on entry in history opens sql in editor
 
 Database Structure
 * split of database structure view into database structure view and database detail view

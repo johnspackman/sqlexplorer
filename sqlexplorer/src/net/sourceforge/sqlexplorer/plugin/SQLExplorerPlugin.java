@@ -92,6 +92,8 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     private static final String NEWLINE_SEPARATOR = System.getProperty("line.separator");
 
     private static final String NEWLINE_REPLACEMENT = "#LF#";
+    
+    private static final String SESSION_HINT_MARKER = "#SH#";
 
 
     public ArrayList getSQLHistory() {
@@ -327,8 +329,21 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
             String currentLine = reader.readLine();
             while (currentLine != null) {
                 if (currentLine.trim().length() != 0) {
-                    currentLine = currentLine.replaceAll(SQLExplorerPlugin.NEWLINE_REPLACEMENT, SQLExplorerPlugin.NEWLINE_SEPARATOR);
-                    sqlHistory.add(new SQLString(currentLine));
+                    
+                    String sessionHint = null;
+                    String query = null;
+                    
+                    int pos = currentLine.indexOf(SESSION_HINT_MARKER); 
+                    if (pos != -1) {
+                        // split line in session and query
+                        
+                        sessionHint = currentLine.substring(0, pos);
+                        currentLine = currentLine.substring(pos + SESSION_HINT_MARKER.length());                        
+                    } 
+                    
+                    query = currentLine.replaceAll(SQLExplorerPlugin.NEWLINE_REPLACEMENT, SQLExplorerPlugin.NEWLINE_SEPARATOR);
+                    sqlHistory.add(new SQLString(query, sessionHint));
+                    
                 }
                 currentLine = reader.readLine();
             }
@@ -372,7 +387,12 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
                 SQLString tmp = (SQLString) it.next();
                 String qry = tmp.getText();
                 qry = qry.replaceAll(SQLExplorerPlugin.NEWLINE_SEPARATOR, SQLExplorerPlugin.NEWLINE_REPLACEMENT);
-                writer.write(qry, 0, qry.length());
+                
+                String sessionHint = tmp.getSessionName();
+                
+                String tmpLine = sessionHint + SESSION_HINT_MARKER + qry;
+                
+                writer.write(tmpLine, 0, tmpLine.length());
                 writer.newLine();
             }
 

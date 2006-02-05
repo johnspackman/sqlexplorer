@@ -152,7 +152,7 @@ public class SqlExecProgress implements IRunnableWithProgress {
                     lt.endMonitor();
                     
                     // save successfull query
-                    SQLExplorerPlugin.getDefault().addSQLtoHistory(new SQLString(sql));
+                    SQLExplorerPlugin.getDefault().addSQLtoHistory(new SQLString(sql, sessionTreeNode.toString()));
                     
                     return result;
                 }
@@ -177,7 +177,7 @@ public class SqlExecProgress implements IRunnableWithProgress {
                 });
 
                 // save successfull query
-                SQLExplorerPlugin.getDefault().addSQLtoHistory(new SQLString(sql));
+                SQLExplorerPlugin.getDefault().addSQLtoHistory(new SQLString(sql, sessionTreeNode.toString()));
             }
 
         } catch (final Throwable e) {
