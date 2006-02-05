@@ -6,13 +6,12 @@
 
 * connect to database in background
 * add drag support for nodes into sqleditor
-* remove overlaystore from preferences 
+* remove overlaystore from preferences and add default preferences to preferences.ini
 * add ok/cancel prompts where beneficial (example delete alias)
 
 
 * ad-hoc override of sql result set limit in sql editor
 * better timing details of sql results
-* store connection info in sql history, so that the 'open in editor' feature, can initiate the correct connection
 
 * add refresh action to sql result table
 * merge alias and connections view

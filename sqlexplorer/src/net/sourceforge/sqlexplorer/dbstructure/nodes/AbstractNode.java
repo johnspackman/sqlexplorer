@@ -185,22 +185,14 @@ public abstract class AbstractNode implements INode {
 
     /**
      * Refresh. This will clear the nodes' children and reload them.
-     * @param cascade when true all of the nodes descendants will be refreshed too.
+     * It will also update the dictionary for this node & descendants
      */
-    public final void refresh(boolean cascade) {
+    public final void refresh() {
         
         _children.clear();
         _childrenLoaded = false;
         load();
-        
-        if (cascade) {            
-            Iterator it = getChildIterator();
-            while (it.hasNext()) {
-                INode node = (INode) it.next();
-                node.refresh(cascade);
-            }            
-        }
-        
+                
     }
 
 

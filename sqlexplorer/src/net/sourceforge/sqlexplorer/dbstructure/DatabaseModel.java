@@ -157,7 +157,7 @@ public class DatabaseModel implements INode {
      * 
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#refresh(boolean)
      */
-    public void refresh(boolean cascade) {
+    public void refresh() {
         // we don't need refresh for the database model..
     }
 

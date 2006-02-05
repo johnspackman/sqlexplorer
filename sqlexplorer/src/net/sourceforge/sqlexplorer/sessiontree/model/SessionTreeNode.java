@@ -26,12 +26,11 @@ import java.util.List;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.IdentifierFactory;
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbdetail.DetailTabManager;
 import net.sourceforge.sqlexplorer.dbstructure.DatabaseModel;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.CatalogNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.SchemaNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
@@ -85,39 +84,37 @@ public class SessionTreeNode implements ISessionTreeNode {
         _password = password;
 
         _assistanceEnabled = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.SQL_ASSIST);
-        final String cancelled = "Operation was cancelled by user";
-        if (monitor != null && monitor.isCanceled())
-            throw new InterruptedException(cancelled);
-
+               
+        if (monitor != null && monitor.isCanceled()) {
+            throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
+        }
+        
+        
         try {
 
-            Object[] children = dbModel.getChildNodes();
-            DatabaseNode dbNode = ((DatabaseNode) children[0]);
-
-            children = dbNode.getChildNodes();
-            if (children == null)
-                return;
-            for (int i = 0; i < children.length; i++) {
-                if (monitor != null)
-                    monitor.subTask(children[i].toString());
-                if (monitor != null && monitor.isCanceled())
-                    throw new InterruptedException(cancelled);
-                INode idbModel = (INode) children[i];// Catalog or Schema
-                // Node
-
-                // TODO we should be able to persist dictionary between sessions.. 
-                _dictionary.putCatalogSchemaName(idbModel.toString(), idbModel);
-                if (_assistanceEnabled) {
-
-                    if (idbModel instanceof SchemaNode) {
-                        // trigger loading of child nodes
-                        ((SchemaNode) idbModel).load();
-                    } else if (idbModel instanceof CatalogNode) {
-                        // trigger loading of child nodes
-                        ((CatalogNode) idbModel).load();
-                    }
+            if (_assistanceEnabled) {
+            
+                if (monitor != null) {
+                    monitor.setTaskName(Messages.getString("Progress.Dictionary.Loading"));
                 }
+                
+                Object[] children = dbModel.getChildNodes();
+                DatabaseNode dbNode = ((DatabaseNode) children[0]); 
+                
+                // check if we can persisted dictionary 
+                if (monitor != null) {
+                    monitor.subTask(Messages.getString("Progress.Dictionary.Scanning"));
+                }
+                
+                boolean isLoaded = _dictionary.restore(dbNode);
+            
+                if (!isLoaded) {           
+                    
+                    // load full dictionary
+                    _dictionary.load(dbNode, monitor);
+                }                
             }
+            
         } catch (Throwable e) {
             SQLExplorerPlugin.error("Error enabling assistance ", e);
         }
@@ -136,9 +133,12 @@ public class SessionTreeNode implements ISessionTreeNode {
 
     public void close() {
 
+        // store dictionary
+        _dictionary.store();
+        
         // clear detail tab cache
         DetailTabManager.clearCacheForSession(this);
-        
+
         _parent.remove(this);
 
         Object[] ls = _listeners.getListeners();
@@ -186,21 +186,21 @@ public class SessionTreeNode implements ISessionTreeNode {
 
 
     public String[] getCatalogs() {
-        
-        List catalogs = ((DatabaseNode)dbModel.getChildNodes()[0]).getCatalogs();
+
+        List catalogs = ((DatabaseNode) dbModel.getChildNodes()[0]).getCatalogs();
         String[] catalogNames = new String[catalogs.size()];
-        
+
         Iterator it = catalogs.iterator();
         int i = 0;
-        
+
         while (it.hasNext()) {
             INode node = (INode) it.next();
             if (node != null) {
-                catalogNames[i] = it.next().toString();
+                catalogNames[i] = node.toString();
                 i++;
             }
         }
-        
+
         return catalogNames;
     }
 
@@ -239,6 +239,7 @@ public class SessionTreeNode implements ISessionTreeNode {
     public Object getParent() {
         return _parent;
     }
+
 
     public SQLConnection getSQLConnection() {
         return _connection;
@@ -285,12 +286,15 @@ public class SessionTreeNode implements ISessionTreeNode {
         return getRoot().supportsCatalogs();
     }
 
+
     public DatabaseNode getRoot() {
         return dbModel.getRoot();
     }
 
+
     /**
      * Returns connection alias name
+     * 
      * @see java.lang.Object#toString()
      */
     public String toString() {

@@ -237,22 +237,26 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
             if (node != null) {
                 Object children[] = (Object[]) node.getChildNodes();
                 ArrayList propList = new ArrayList();
-                for (int i = 0; i < children.length; i++) {
-                    String childName = children[i].toString().toLowerCase();
-                    if (childName.equals("table") || childName.equals("view")) {
-                        Object[] tables = (Object[]) ((INode) children[i]).getChildNodes();
-                        for (int j = 0; j < tables.length; j++) {
-                            Image tmpImage = null;
-                            String tableName = tables[j].toString();
-                            if (tables[j] instanceof TableNode) {
-                                if (((TableNode) tables[j]).isTable())
-                                    tmpImage = tableImage;
-                                else if (((TableNode) tables[j]).isView())
-                                    tmpImage = viewImage;
-                                propList.add(new ExtendedCompletionProposal(tableName, documentOffset, 0, tableName.length(), tmpImage,
-                                        tableName, (TableNode) tables[j]));
+                if (children != null) {
+                    for (int i = 0; i < children.length; i++) {
+                        String childName = children[i].toString().toLowerCase();
+                        if (childName.equals("table") || childName.equals("view")) {
+                            Object[] tables = (Object[]) ((INode) children[i]).getChildNodes();
+                            if (tables != null) {
+                                for (int j = 0; j < tables.length; j++) {
+                                    Image tmpImage = null;
+                                    String tableName = tables[j].toString();
+                                    if (tables[j] instanceof TableNode) {
+                                        if (((TableNode) tables[j]).isTable())
+                                            tmpImage = tableImage;
+                                        else if (((TableNode) tables[j]).isView())
+                                            tmpImage = viewImage;
+                                        propList.add(new ExtendedCompletionProposal(tableName, documentOffset, 0, tableName.length(), tmpImage,
+                                                tableName, (TableNode) tables[j]));
+                                    }
+        
+                                }
                             }
-
                         }
                     }
                 }

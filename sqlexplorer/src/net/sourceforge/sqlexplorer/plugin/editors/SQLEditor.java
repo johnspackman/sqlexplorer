@@ -634,8 +634,7 @@ public class SQLEditor extends TextEditor {
          * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
          */
         public void propertyChange(PropertyChangeEvent event) {
-            // TODO Auto-generated method stub
-
+            // noop
         }
 
 

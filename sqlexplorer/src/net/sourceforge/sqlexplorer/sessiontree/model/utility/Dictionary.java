@@ -1,4 +1,5 @@
 package net.sourceforge.sqlexplorer.sessiontree.model.utility;
+
 /*
  * Copyright (C) 2002-2004 Andrea Mazzolini
  * andreamazzolini@users.sourceforge.net
@@ -20,127 +21,313 @@ package net.sourceforge.sqlexplorer.sessiontree.model.utility;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 
+import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.CatalogNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.SchemaNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.sqleditor.SQLCodeScanner;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 
 public class Dictionary {
-	public Dictionary(){}
-	private static TernarySearchTree keywordsTree=new TernarySearchTree();
-	static{
-		String[] str=SQLCodeScanner.getFgKeywords();
-		for(int i=0;i<str.length;i++)
-			keywordsTree.put(str[i],str[i]);
-		
-	}
-	private TernarySearchTree tree=new TernarySearchTree();
-	private TernarySearchTree catalogSchemaTree=new TernarySearchTree();
-	private TernarySearchTree externalObjectTree=new TernarySearchTree();
-	private HashMap realTables= new HashMap();
-	private HashMap realCatalogSchemas= new HashMap();
-	private HashMap realExternalObjects=new HashMap();
-	
-	private HashMap col_map= new HashMap();
 
-	
-	public void putTableName(String key, Object value) {
-		tree.put(key.toLowerCase(),value);
-		realTables.put(key.toLowerCase(),key);
-	}
-	public void putCatalogSchemaName(String key, Object value) {
-		catalogSchemaTree.put(key.toLowerCase(),value);
-		realCatalogSchemas.put(key.toLowerCase(),key);
-	}
-	
-	public void putExternalObjectName(String key, Object value) {
-		externalObjectTree.put(key.toLowerCase(),value);
-		realExternalObjects.put(key.toLowerCase(),key);
-	}
-	
-	public Object getByTableName(String key){
-		return tree.get(key);
-	}
-	public Object getByCatalogSchemaName(String key){
-		return catalogSchemaTree.get(key);
-	}
-	public Object getByExternalObjectName(String key){
-			return catalogSchemaTree.get(key);
-	}
-	
-	public void putColumnsByTableName(String key, Object value) {
-		//col_tree.put(key,value);
-		col_map.put(key,value);
-	}
-	
-	public Object getColumnListByTableName(String key){
-		return col_map.get(key);
-	}
+    // TODO check if we need to add more types or remove restriction completely?
+    private static final String[] SUPPORTED_CONTENT_ASSIST_TYPES = new String[] {"TABLE_TYPE", "VIEW_TYPE"};
+    
+    
+    public Dictionary() {
+    }
 
-	
-	/*public long table_size(){
-		return set.size();
-	}*/
-	public Iterator getTableNames(){
-		return realTables.keySet().iterator();	
-	}
-	public Iterator getCatalogSchemaNames(){
-		return realCatalogSchemas.keySet().iterator();
-	}
-	public Iterator getExternalObjectNames(){
-		return realExternalObjects.keySet().iterator();
-	}
-	
-	public ArrayList getTableObjectList(String tableName){
-		return (ArrayList)tree.get(tableName.toLowerCase());
-	}
-	
-	public String[] matchTablePrefix(String prefix){
-		prefix=prefix.toLowerCase();
-		DoublyLinkedList linkedList=tree.matchPrefix(prefix);
-		int size=linkedList.size();
-		DoublyLinkedList.DLLIterator iterator= linkedList.iterator();
-		String [] result=new String[size];
-		int k=0;
-		while(iterator.hasNext()){
-			result[k++]=(String)realTables.get(iterator.next());
-		}
-		return result;
-	}
-	public String[] matchCatalogSchemaPrefix(String prefix){
-		prefix=prefix.toLowerCase();
-		DoublyLinkedList linkedList=catalogSchemaTree.matchPrefix(prefix);
-		int size=linkedList.size();
-		DoublyLinkedList.DLLIterator iterator= linkedList.iterator();
-		String [] result=new String[size];
-		int k=0;
-		while(iterator.hasNext()){
-			result[k++]=(String)realCatalogSchemas.get(iterator.next());
-		}
-		return result;
-	}
-	public String[] matchExternalObjectPrefix(String prefix){
-		prefix=prefix.toLowerCase();
-		DoublyLinkedList linkedList=externalObjectTree.matchPrefix(prefix);
-		int size=linkedList.size();
-		DoublyLinkedList.DLLIterator iterator= linkedList.iterator();
-		String [] result=new String[size];
-		int k=0;
-		while(iterator.hasNext()){
-			result[k++]=(String)realExternalObjects.get(iterator.next());
-		}
-		return result;
-	}
-	public static String[] matchKeywordsPrefix(String prefix){
-		prefix=prefix.toLowerCase();
-		DoublyLinkedList linkedList=keywordsTree.matchPrefix(prefix);
-		int size=linkedList.size();
-		DoublyLinkedList.DLLIterator iterator= linkedList.iterator();
-		String [] result=new String[size];
-		int k=0;
-		while(iterator.hasNext()){
-			result[k++]=(String)iterator.next();
-		}
-		return result;
-	}
+    private static TernarySearchTree keywordsTree = new TernarySearchTree();
+    static {
+        String[] str = SQLCodeScanner.getFgKeywords();
+        for (int i = 0; i < str.length; i++)
+            keywordsTree.put(str[i], str[i]);
 
+    }
+
+    private TernarySearchTree tree = new TernarySearchTree();
+
+    private TernarySearchTree catalogSchemaTree = new TernarySearchTree();
+
+    private TernarySearchTree externalObjectTree = new TernarySearchTree();
+
+    private HashMap realTables = new HashMap();
+
+    private HashMap realCatalogSchemas = new HashMap();
+
+    private HashMap realExternalObjects = new HashMap();
+
+    private HashMap col_map = new HashMap();
+
+
+    public void putTableName(String key, Object value) {
+        tree.put(key.toLowerCase(), value);
+        realTables.put(key.toLowerCase(), key);
+    }
+
+
+    public void putCatalogSchemaName(String key, Object value) {
+        catalogSchemaTree.put(key.toLowerCase(), value);
+        realCatalogSchemas.put(key.toLowerCase(), key);
+    }
+
+
+    public void putExternalObjectName(String key, Object value) {
+        externalObjectTree.put(key.toLowerCase(), value);
+        realExternalObjects.put(key.toLowerCase(), key);
+    }
+
+
+    public Object getByTableName(String key) {
+        return tree.get(key);
+    }
+
+
+    public Object getByCatalogSchemaName(String key) {
+        return catalogSchemaTree.get(key);
+    }
+
+
+    public Object getByExternalObjectName(String key) {
+        return catalogSchemaTree.get(key);
+    }
+
+
+    public void putColumnsByTableName(String key, Object value) {
+        col_map.put(key, value);
+    }
+
+
+    public Object getColumnListByTableName(String key) {
+        return col_map.get(key);
+    }
+
+
+    public Iterator getTableNames() {
+        return realTables.keySet().iterator();
+    }
+
+
+    public Iterator getCatalogSchemaNames() {
+        return realCatalogSchemas.keySet().iterator();
+    }
+
+
+    public Iterator getExternalObjectNames() {
+        return realExternalObjects.keySet().iterator();
+    }
+
+
+    public ArrayList getTableObjectList(String tableName) {
+        return (ArrayList) tree.get(tableName.toLowerCase());
+    }
+
+
+    public String[] matchTablePrefix(String prefix) {
+        prefix = prefix.toLowerCase();
+        DoublyLinkedList linkedList = tree.matchPrefix(prefix);
+        int size = linkedList.size();
+        DoublyLinkedList.DLLIterator iterator = linkedList.iterator();
+        String[] result = new String[size];
+        int k = 0;
+        while (iterator.hasNext()) {
+            result[k++] = (String) realTables.get(iterator.next());
+        }
+        return result;
+    }
+
+
+    public String[] matchCatalogSchemaPrefix(String prefix) {
+        prefix = prefix.toLowerCase();
+        DoublyLinkedList linkedList = catalogSchemaTree.matchPrefix(prefix);
+        int size = linkedList.size();
+        DoublyLinkedList.DLLIterator iterator = linkedList.iterator();
+        String[] result = new String[size];
+        int k = 0;
+        while (iterator.hasNext()) {
+            result[k++] = (String) realCatalogSchemas.get(iterator.next());
+        }
+        return result;
+    }
+
+
+    public String[] matchExternalObjectPrefix(String prefix) {
+        prefix = prefix.toLowerCase();
+        DoublyLinkedList linkedList = externalObjectTree.matchPrefix(prefix);
+        int size = linkedList.size();
+        DoublyLinkedList.DLLIterator iterator = linkedList.iterator();
+        String[] result = new String[size];
+        int k = 0;
+        while (iterator.hasNext()) {
+            result[k++] = (String) realExternalObjects.get(iterator.next());
+        }
+        return result;
+    }
+
+
+    public static String[] matchKeywordsPrefix(String prefix) {
+        prefix = prefix.toLowerCase();
+        DoublyLinkedList linkedList = keywordsTree.matchPrefix(prefix);
+        int size = linkedList.size();
+        DoublyLinkedList.DLLIterator iterator = linkedList.iterator();
+        String[] result = new String[size];
+        int k = 0;
+        while (iterator.hasNext()) {
+            result[k++] = (String) iterator.next();
+        }
+        return result;
+    }
+
+
+    /**
+     * Loads the persisted dictionary from a previous session.
+     * 
+     * @param dbNode DatabaseNode for which to load the dictionary
+     * @return true if dictionary was found and loaded
+     */
+    public boolean restore(DatabaseNode dbNode) {
+        // TODO implement
+        return false;
+    }
+
+
+    /**
+     * Persists this dictionary so that it can be reused in next sessions
+     * without having to be reloaded from database.
+     */
+    public void store() {
+        // TODO implement
+    }
+
+
+    /**
+     * Perform full load of dictionary for dbNode
+     * 
+     * @param dbNode DatabaseNode of which to load dictionary information
+     * @param monitor ProgressMonitor displayed whilst loading
+     * @throws InterruptedException If user cancelled loading
+     */
+    public void load(DatabaseNode dbNode, IProgressMonitor monitor) throws InterruptedException {
+
+        INode[] children = dbNode.getChildNodes();
+
+        if (children == null) {
+            return;
+        }
+
+        for (int i = 0; i < children.length; i++) {
+
+            // check for cancellation by user
+            if (monitor != null && monitor.isCanceled()) {
+                throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
+            }
+
+            INode node = (INode) children[i];
+           
+            if (node instanceof SchemaNode || node instanceof CatalogNode) {
+                loadSchemaCatalog(node, monitor);
+            }
+
+        }
+
+        // store dictionary immediately so that
+        // we can resuse it if a second session is opened
+        store();
+    }
+    
+    
+    /**
+     * Load dictionary data for catalog
+     * 
+     * @param node catalognode to load
+     * @param monitor ProgressMonitor displayed whilst loading
+     * @throws InterruptedException If user cancelled loading
+     */
+    private void loadSchemaCatalog(INode iNode, IProgressMonitor monitor) throws InterruptedException {
+     
+        putCatalogSchemaName(iNode.toString(), iNode);
+        monitor.subTask(iNode.getName());
+        
+        INode[] children = iNode.getChildNodes();
+        
+        if (children != null) {
+            
+            for (int i = 0; i < children.length; i++) {
+
+                INode typeNode = children[i];        
+                
+
+                // only load a few types like tables and view nodes into the dictionary
+                boolean isIncludedInContentAssist = false;
+                for (int j = 0; j < SUPPORTED_CONTENT_ASSIST_TYPES.length; j++) {                    
+                    if (typeNode.getType().equalsIgnoreCase(SUPPORTED_CONTENT_ASSIST_TYPES[j])) {
+                        isIncludedInContentAssist = true;
+                    }                    
+                }
+                if (!isIncludedInContentAssist) {
+                    continue;
+                }
+                    
+                monitor.subTask(typeNode.getName());
+                
+                // check for cancellation by user
+                if (monitor != null && monitor.isCanceled()) {
+                    throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
+                }
+
+                INode tableNodes[] = typeNode.getChildNodes();
+                if (tableNodes == null) {
+                    continue;
+                }
+                
+                
+                for (int j = 0; j < tableNodes.length; j++) {
+                    
+                    INode tableNode = tableNodes[j];
+                    monitor.subTask(tableNode.getQualifiedName());
+                    
+                    // check for cancellation by user
+                    if (monitor != null && monitor.isCanceled()) {
+                        throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
+                    }   
+                    
+                    // add table name
+                    ArrayList tableDetails = (ArrayList) getByTableName(tableNode.getName());
+                    if (tableDetails == null) {
+                        tableDetails = new ArrayList();
+                        putTableName(tableNode.getName(), tableDetails);
+                    }
+                    tableDetails.add(tableNode);
+                    
+                    // add column names
+                    if (tableNode instanceof TableNode) {
+                        
+                        TreeSet columnNames = new TreeSet();
+                        List columns = ((TableNode) tableNode).getColumnNames();
+                        if (columns != null) {
+                            
+                            Iterator it = columns.iterator();
+                            while (it.hasNext()) {
+                                columnNames.add(it.next());                                
+                            }
+                        }
+                        putColumnsByTableName(tableNode.getName(), columnNames);                        
+                    }
+                    
+                }
+
+            }
+            
+        }   
+        
+    }
+    
+
+    
 }

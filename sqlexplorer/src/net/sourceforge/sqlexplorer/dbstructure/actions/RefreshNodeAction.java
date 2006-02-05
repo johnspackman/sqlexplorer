@@ -78,7 +78,7 @@ public class RefreshNodeAction extends AbstractDBTreeContextAction {
                 
         // refresh nodes
         for (int i = 0; i < _selectedNodes.length; i++) {
-            _selectedNodes[i].refresh(true);
+            _selectedNodes[i].refresh();
         }
         
         // refresh detail view

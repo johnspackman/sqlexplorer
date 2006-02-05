@@ -91,9 +91,8 @@ public interface INode {
     
     /**
      * Refresh. This will clear the nodes' children and reload them.
-     * @param cascade when true all of the nodes descendants will be refreshed too.
      */
-    public void refresh(boolean cascade);
+    public void refresh();
     
     
     /**

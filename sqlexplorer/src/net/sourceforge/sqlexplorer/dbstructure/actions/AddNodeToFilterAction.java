@@ -112,7 +112,7 @@ public class AddNodeToFilterAction extends AbstractDBTreeContextAction {
         
         
         alias.setMetaFilterExpression(filter);
-        _selectedNodes[0].getSession().getRoot().refresh(false);
+        _selectedNodes[0].getSession().getRoot().refresh();
         _treeViewer.refresh();
 
     }

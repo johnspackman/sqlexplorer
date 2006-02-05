@@ -27,7 +27,6 @@ import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
-import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -119,19 +118,6 @@ public class TableNode extends AbstractNode {
                 SQLExplorerPlugin.error("Could not create child nodes for " + getName(), e);
             }
         }
-
-        // We are misusing this method to add this table's information to the
-        // dictionary.. It's an easy hook and is only called once, until refresh
-        // is
-        // used.
-        Dictionary dictionary = _sessionNode.getDictionary();
-
-        ArrayList tableDetails = (ArrayList) dictionary.getByTableName(_name);
-        if (tableDetails == null) {
-            tableDetails = new ArrayList();
-            dictionary.putTableName(_name, tableDetails);
-        }
-        tableDetails.add(this);
 
     }
 

@@ -66,7 +66,7 @@ public class RemoveNodeFilterAction extends AbstractDBTreeContextAction {
         SQLAlias alias = (SQLAlias) _selectedNodes[0].getSession().getAlias();
         alias.setMetaFilterExpression("");
 
-        _selectedNodes[0].getSession().getRoot().refresh(false);
+        _selectedNodes[0].getSession().getRoot().refresh();
         _treeViewer.refresh();
 
     }

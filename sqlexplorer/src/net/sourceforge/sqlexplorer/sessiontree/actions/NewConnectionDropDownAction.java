@@ -1,8 +1,6 @@
 /*
  * Created on Apr 11, 2004
  * 
- * TODO To change the template for this generated file go to Window -
- * Preferences - Java - Code Generation - Code and Comments
  */
 package net.sourceforge.sqlexplorer.sessiontree.actions;
 
@@ -25,8 +23,6 @@ import org.eclipse.ui.IViewPart;
 /**
  * @author Aadi
  * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Generation - Code and Comments
  */
 public class NewConnectionDropDownAction extends Action implements IMenuCreator, IViewActionDelegate {
     private Menu menu;
@@ -81,7 +77,7 @@ public class NewConnectionDropDownAction extends Action implements IMenuCreator,
     }
 
     public void selectionChanged(IAction action, ISelection selection) {
-        // TODO Auto-generated method stub
+        // noop
     }
 
 }
