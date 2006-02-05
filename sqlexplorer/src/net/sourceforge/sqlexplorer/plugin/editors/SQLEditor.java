@@ -48,6 +48,7 @@ import org.eclipse.jface.action.StatusLineManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.DocumentEvent;
@@ -72,6 +73,7 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -88,11 +90,13 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IEditorInput;
@@ -792,6 +796,8 @@ public class SQLEditor extends TextEditor {
 
     Combo combo;
 
+    IntegerFieldEditor _maxResultField;
+    
     SQLEditorSessionListener listener;
 
     private MouseClickListener mcl = new MouseClickListener();
@@ -890,8 +896,8 @@ public class SQLEditor extends TextEditor {
         // This action definition is associated with the accelerator Ctrl+Space
         action.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
         setAction("ContentAssistProposal", action);
-        _execSQLAction.setActionDefinitionId("net.sourceforge.sqlexplorer.sqlrun");
-        setAction("SQL Run", _execSQLAction);
+//        _execSQLAction.setActionDefinitionId("net.sourceforge.sqlexplorer.sqlrun");
+//        setAction("SQL Run", _execSQLAction);
 
     }
 
@@ -913,7 +919,7 @@ public class SQLEditor extends TextEditor {
         gid.verticalAlignment = GridData.BEGINNING;
         gid.heightHint = 25;
         toolBar.setLayoutData(gid);
-        _execSQLAction = new ExecSQLAction(this, store.getInt(IConstants.MAX_SQL_ROWS));//$NON-NLS-1$
+        _execSQLAction = new ExecSQLAction(this);
         _openFileAction = new OpenFileAction(this);
         _saveAsAction = new SaveFileAsAction(this);
         _clearTextAction = new ClearTextAction(this);
@@ -933,8 +939,12 @@ public class SQLEditor extends TextEditor {
         
         toolBarMgr.update(true);
 
+
+        
         ToolItem sep = new ToolItem(toolBar, SWT.SEPARATOR);
         ToolItem sep2 = new ToolItem(toolBar, SWT.SEPARATOR);
+        
+        
         combo = new Combo(toolBar, SWT.READ_ONLY);
         catalogCombo = new Combo(toolBar, SWT.READ_ONLY);
         listener = new SQLEditorSessionListener(this);
@@ -1019,23 +1029,121 @@ public class SQLEditor extends TextEditor {
 
         sqlTextViewer = new SQLTextViewer(myParent, style, store, null, ruler);
         sqlTextViewer.getControl().setLayoutData(gid);
+        
+        
+        
+        // create bottom status bar
+        
+        Composite statusBar = new Composite(myParent, SWT.NULL);
+       
+        GridLayout statusBarLayout = new GridLayout();
+        statusBarLayout.numColumns = 3;
+        statusBarLayout.verticalSpacing = 0;
+        statusBarLayout.marginHeight = 0;
+        statusBarLayout.marginWidth = 0;
+        statusBarLayout.marginTop = 0;
+        statusBarLayout.marginBottom = 0;
+        statusBarLayout.marginRight = 5;
+        statusBarLayout.horizontalSpacing = 5;
+        statusBarLayout.verticalSpacing = 0;
+
+        statusBar.setLayout(statusBarLayout);
+
+        GridData statusBarGridData = new GridData(SWT.FILL, SWT.BOTTOM, true, false);     
+        statusBarGridData.verticalIndent = 0;
+        statusBarGridData.horizontalIndent = 0;
+        statusBar.setLayoutData(statusBarGridData);
+      
+        // add status line manager
+        
+        statusMgr = new StatusLineManager();
+        statusMgr.createControl(statusBar);
+     
+        GridData c1Grid = new GridData();
+        c1Grid.horizontalAlignment = SWT.FILL;
+        c1Grid.verticalAlignment = SWT.BOTTOM;
+        c1Grid.grabExcessHorizontalSpace = true;
+        c1Grid.grabExcessVerticalSpace = false;
+        statusMgr.getControl().setLayoutData(c1Grid);
+     
+        // add checkbox for limiting results
+    
+        GridData c2Grid = new GridData();
+        c2Grid.horizontalAlignment = SWT.RIGHT;
+        c2Grid.verticalAlignment = SWT.CENTER;
+        c2Grid.grabExcessHorizontalSpace = false;
+        c2Grid.grabExcessVerticalSpace = false;
+        
+        final Button limitResults = new Button(statusBar, SWT.CHECK);
+        limitResults.setText(Messages.getString("SQLEditor.LimitRows"));
+        limitResults.setSelection(true);
+        limitResults.setLayoutData(c2Grid);
+        
+        // add input field for result limit
+        
+        GridData c3Grid = new GridData();
+        c3Grid.horizontalAlignment = SWT.RIGHT;
+        c3Grid.verticalAlignment = SWT.CENTER;
+        c3Grid.grabExcessHorizontalSpace = false;
+        c3Grid.grabExcessVerticalSpace = false;
+        c3Grid.widthHint = 30;
+        
+        final Text maxResultText = new Text(statusBar, SWT.BORDER | SWT.SINGLE);
+        maxResultText.setText(store.getString(IConstants.MAX_SQL_ROWS));
+        maxResultText.setLayoutData(c3Grid);
+
+        
+        _execSQLAction.setInputFields(limitResults, maxResultText);
+        
+        limitResults.addMouseListener(new MouseAdapter() {
+
+            // enable/disable input field when checkbox is clicked
+            public void mouseUp(MouseEvent e) {
+                maxResultText.setEnabled(limitResults.getSelection());
+            }
+        });
+        
         sqlTextViewer.getTextWidget().addVerifyKeyListener(new VerifyKeyListener() {
 
             public void verifyKey(VerifyEvent event) {
                 if (event.stateMask == SWT.CTRL && event.keyCode == 13) {
                     event.doit = false;
-                    _execSQLAction.run();
+                    
+                    int maxresults = 0;
+                    try {
+                        if (limitResults.getSelection()) {
+                            String tmp = maxResultText.getText();
+                            maxresults = Integer.parseInt(tmp);
+                        }
+                        
+                        if (maxresults < 0) {
+                            throw new Exception(Messages.getString("SQLEditor.LimitRows.Error"));
+                        }
+                        
+                        if (maxresults == 0 || maxresults > 2000) {                            
+                            boolean okToExecute = MessageDialog.openConfirm(getSite().getShell(), 
+                                    Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Title") , 
+                                    Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Message"));
+                            if (!okToExecute) {
+                                return;
+                            }
+                            
+                        }                        
+                        
+                        _execSQLAction.run(maxresults);
+                        
+                    } catch (Exception e) {
+                        MessageDialog.openError(getSite().getShell(), Messages.getString("SQLEditor.LimitRows.Error.Title") , e.getMessage());
+                    }
+                    
                 }
             }
         });
-        statusMgr = new StatusLineManager();
-        statusMgr.createControl(myParent);
-        gid = new GridData();
-        gid.horizontalAlignment = GridData.FILL;
-        gid.verticalAlignment = GridData.BEGINNING;
-        statusMgr.getControl().setLayoutData(gid);
-
+        
+        
+        statusBar.layout();
         myParent.layout();
+        
         IDocument dc = new Document();
         sqlTextViewer.setDocument(dc);
         if (sessionTreeNode != null)

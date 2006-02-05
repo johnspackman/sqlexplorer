@@ -10,7 +10,7 @@
 * add ok/cancel prompts where beneficial (example delete alias)
 
 
-* ad-hoc override of sql result set limit in sql editor
+
 * better timing details of sql results
 
 * add refresh action to sql result table

@@ -289,7 +289,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         PreferenceConverter.setDefault(store, ISQLColorConstants.SQL_COLUMS, new RGB(100, 0, 255));
 
         store.setDefault(IConstants.PRE_ROW_COUNT, 80);
-        store.setDefault(IConstants.MAX_SQL_ROWS, 2000);
+        store.setDefault(IConstants.MAX_SQL_ROWS, 100);
 
         store.setDefault(IConstants.AUTO_COMMIT, true);
         store.setDefault(IConstants.COMMIT_ON_CLOSE, false);

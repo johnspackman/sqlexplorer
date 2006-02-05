@@ -26,10 +26,11 @@ import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
 import org.eclipse.jface.action.Action;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Text;
 
 public class ExecSQLAction extends Action {
 
@@ -37,22 +38,22 @@ public class ExecSQLAction extends Action {
 
     private ImageDescriptor img = ImageDescriptor.createFromURL(SqlexplorerImages.getExecSQLIcon());
 
-    private int maxRows;
-
     SessionTreeNode preferredNode;
 
+    private Button _limitResults;
 
-    public ExecSQLAction(SQLEditor txtComp, int maxRows) {
+    private Text _resultLimit;
+
+
+    public ExecSQLAction(SQLEditor txtComp) {
 
         this.txtComp = txtComp;
-        this.maxRows = maxRows;
     }
 
 
-    public ExecSQLAction(SQLEditor txtComp, int maxRows, SessionTreeNode node_) {
+    public ExecSQLAction(SQLEditor txtComp, SessionTreeNode node_) {
 
         this.txtComp = txtComp;
-        this.maxRows = maxRows;
         this.preferredNode = node_;
     }
 
@@ -68,6 +69,64 @@ public class ExecSQLAction extends Action {
 
 
     public void run() {
+
+        if (_limitResults == null || _resultLimit == null) {
+            return;
+        }
+
+        int maxresults = 0;
+        try {
+            if (_limitResults.getSelection()) {
+                String tmp = _resultLimit.getText();
+                maxresults = Integer.parseInt(tmp);
+            }
+
+            if (maxresults < 0) {
+                throw new Exception(Messages.getString("SQLEditor.LimitRows.Error"));
+            }
+
+            final ExecSQLAction action = this;
+
+            if (maxresults == 0 || maxresults > 2000) {
+
+                final int largeResults = maxresults;
+                txtComp.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+
+                    public void run() {
+
+                        boolean okToExecute = MessageDialog.openConfirm(txtComp.getSite().getShell(),
+                                Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Title"),
+                                Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Message"));
+                        if (okToExecute) {
+                            action.run(largeResults);
+                        }
+                    }
+                });
+
+            } else {
+                action.run(maxresults);
+            }
+
+        } catch (final Exception e) {
+
+            txtComp.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+
+                public void run() {
+                    MessageDialog.openError(txtComp.getSite().getShell(), Messages.getString("SQLEditor.LimitRows.Error.Title"), e.getMessage());
+                }
+            });
+
+        }
+    }
+
+
+    public void setInputFields(Button limitResults, Text resultLimit) {
+        _limitResults = limitResults;
+        _resultLimit = resultLimit;
+    }
+
+
+    public void run(int maxRows) {
         SessionTreeNode runNode = null;
         if (preferredNode == null)
             runNode = txtComp.getSessionTreeNode();

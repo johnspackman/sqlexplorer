@@ -49,6 +49,7 @@ SQL Editor
 * save as functionality in sql editor has been fixed
 * file open dialog now allows loading of multiple files into editor
 * removed save prompt when sql editor is closed
+* ad-hoc override of sql result set limit in sql editor
 
 Connection view
 * when new connection is made, a new SQL editor is automatically opened
