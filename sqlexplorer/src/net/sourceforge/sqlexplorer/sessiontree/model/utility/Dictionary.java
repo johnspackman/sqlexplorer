@@ -32,6 +32,8 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.SchemaNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.sqleditor.SQLCodeScanner;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 public class Dictionary {
@@ -39,6 +41,7 @@ public class Dictionary {
     // TODO check if we need to add more types or remove restriction completely?
     private static final String[] SUPPORTED_CONTENT_ASSIST_TYPES = new String[] {"TABLE_TYPE", "VIEW_TYPE"};
     
+    private static final Log _logger = LogFactory.getLog(Dictionary.class);
     
     public Dictionary() {
     }
@@ -65,7 +68,9 @@ public class Dictionary {
 
     private HashMap col_map = new HashMap();
 
-
+    private static int ROOT_WORK_UNIT = 1000;
+    
+    
     public void putTableName(String key, Object value) {
         tree.put(key.toLowerCase(), value);
         realTables.put(key.toLowerCase(), key);
@@ -191,7 +196,7 @@ public class Dictionary {
      * @param dbNode DatabaseNode for which to load the dictionary
      * @return true if dictionary was found and loaded
      */
-    public boolean restore(DatabaseNode dbNode) {
+    public boolean restore(DatabaseNode dbNode, IProgressMonitor monitor) throws InterruptedException {
         // TODO implement
         return false;
     }
@@ -221,6 +226,11 @@ public class Dictionary {
             return;
         }
 
+        if (monitor != null) {
+            // start task with a 1000 work units for every root node
+            monitor.beginTask(Messages.getString("Progress.Dictionary.Loading"), children.length * ROOT_WORK_UNIT);
+        }
+        
         for (int i = 0; i < children.length; i++) {
 
             // check for cancellation by user
@@ -233,7 +243,7 @@ public class Dictionary {
             if (node instanceof SchemaNode || node instanceof CatalogNode) {
                 loadSchemaCatalog(node, monitor);
             }
-
+            
         }
 
         // store dictionary immediately so that
@@ -251,17 +261,31 @@ public class Dictionary {
      */
     private void loadSchemaCatalog(INode iNode, IProgressMonitor monitor) throws InterruptedException {
      
+        if (_logger.isDebugEnabled()) {
+            _logger.debug("Loading dictionary: " + iNode.getName());
+        }
+        
+        
         putCatalogSchemaName(iNode.toString(), iNode);
-        monitor.subTask(iNode.getName());
+        if (monitor != null) {
+            monitor.subTask(iNode.getName());
+        }
         
         INode[] children = iNode.getChildNodes();
         
         if (children != null) {
             
+            // divide work equally between type nodes
+            int typeNodeWorkUnit = ROOT_WORK_UNIT / SUPPORTED_CONTENT_ASSIST_TYPES.length;
+            int typeNodeWorkCompleted = 0;
+            
             for (int i = 0; i < children.length; i++) {
 
                 INode typeNode = children[i];        
                 
+                if (_logger.isDebugEnabled()) {
+                    _logger.debug("Loading dictionary: " + typeNode.getName());
+                }
 
                 // only load a few types like tables and view nodes into the dictionary
                 boolean isIncludedInContentAssist = false;
@@ -274,55 +298,86 @@ public class Dictionary {
                     continue;
                 }
                     
-                monitor.subTask(typeNode.getName());
-                
-                // check for cancellation by user
-                if (monitor != null && monitor.isCanceled()) {
-                    throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
+                if (monitor != null) {                    
+                    monitor.subTask(typeNode.getName());
+                    
+                    // check for cancellation by user
+                    if (monitor.isCanceled()) {
+                        throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
+                    }
                 }
 
                 INode tableNodes[] = typeNode.getChildNodes();
-                if (tableNodes == null) {
-                    continue;
-                }
-                
-                
-                for (int j = 0; j < tableNodes.length; j++) {
+                if (tableNodes != null) {
+
+                    int tableNodeWorkUnit = typeNodeWorkUnit / tableNodes.length;
                     
-                    INode tableNode = tableNodes[j];
-                    monitor.subTask(tableNode.getQualifiedName());
-                    
-                    // check for cancellation by user
-                    if (monitor != null && monitor.isCanceled()) {
-                        throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
-                    }   
-                    
-                    // add table name
-                    ArrayList tableDetails = (ArrayList) getByTableName(tableNode.getName());
-                    if (tableDetails == null) {
-                        tableDetails = new ArrayList();
-                        putTableName(tableNode.getName(), tableDetails);
-                    }
-                    tableDetails.add(tableNode);
-                    
-                    // add column names
-                    if (tableNode instanceof TableNode) {
+                    for (int j = 0; j < tableNodes.length; j++) {
                         
-                        TreeSet columnNames = new TreeSet();
-                        List columns = ((TableNode) tableNode).getColumnNames();
-                        if (columns != null) {
+                        INode tableNode = tableNodes[j];
+                        
+                        if (_logger.isDebugEnabled()) {
+                            _logger.debug("Loading dictionary: " + tableNode.getName());
+                        }
+                        
+                        if (monitor != null) {
                             
-                            Iterator it = columns.iterator();
-                            while (it.hasNext()) {
-                                columnNames.add(it.next());                                
+                            monitor.worked(tableNodeWorkUnit);
+                            typeNodeWorkCompleted = typeNodeWorkCompleted + tableNodeWorkUnit;
+
+                            if (_logger.isDebugEnabled()) {
+                                _logger.debug("worked table: " + tableNodeWorkUnit + ", total type work: " + typeNodeWorkCompleted);
+                            }
+                            
+                            monitor.subTask(tableNode.getQualifiedName());                            
+                        
+                            // check for cancellation by user
+                            if (monitor.isCanceled()) {
+                                throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
                             }
                         }
-                        putColumnsByTableName(tableNode.getName(), columnNames);                        
+                        
+                        // add table name
+                        ArrayList tableDetails = (ArrayList) getByTableName(tableNode.getName());
+                        if (tableDetails == null) {
+                            tableDetails = new ArrayList();
+                            putTableName(tableNode.getName(), tableDetails);
+                        }
+                        tableDetails.add(tableNode);
+                        
+                        // add column names
+                        if (tableNode instanceof TableNode) {
+                            
+                            TreeSet columnNames = new TreeSet();
+                            List columns = ((TableNode) tableNode).getColumnNames();
+                            if (columns != null) {
+                                
+                                Iterator it = columns.iterator();
+                                while (it.hasNext()) {
+                                    columnNames.add(it.next());                                
+                                }
+                            }
+                            putColumnsByTableName(tableNode.getName(), columnNames);                        
+                        }
+                        
                     }
-                    
                 }
 
+                if (monitor != null) {
+                    if (typeNodeWorkCompleted < typeNodeWorkUnit) {
+                        // consume remainder of work for this type node
+                        
+                        if (_logger.isDebugEnabled()) {
+                            _logger.debug("consuming remainder: " + (typeNodeWorkUnit - typeNodeWorkCompleted));
+                        }
+                        
+                        monitor.worked(typeNodeWorkUnit - typeNodeWorkCompleted);                        
+                    }
+                    typeNodeWorkCompleted = 0;
+                }
             }
+            
+
             
         }   
         

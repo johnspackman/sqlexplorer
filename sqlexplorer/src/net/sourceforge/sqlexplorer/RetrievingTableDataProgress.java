@@ -36,7 +36,6 @@ public class RetrievingTableDataProgress implements IRunnableWithProgress {
      */
     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
         monitor.setTaskName(Messages.getString("RetrievingTableDataProgress.Getting_Database_Structure_Data_1"));
-        monitor.beginTask(Messages.getString("RetrievingTableDataProgress.Getting_Database_Structure_Data_1"), IProgressMonitor.UNKNOWN);
         try {
             sessionNode = sessionTreeModel.createSessionTreeNode(conn, alias, monitor, pswd);
         } finally {

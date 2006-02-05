@@ -75,6 +75,7 @@ public class SessionTreeNode implements ISessionTreeNode {
 
     public SessionTreeNode(final SQLConnection conn, ISQLAlias alias, SessionTreeModel md, IProgressMonitor monitor, final String password)
             throws InterruptedException {
+        
         _connection = conn;
         _alias = alias;
         dbModel = new DatabaseModel(this);
@@ -106,7 +107,7 @@ public class SessionTreeNode implements ISessionTreeNode {
                     monitor.subTask(Messages.getString("Progress.Dictionary.Scanning"));
                 }
                 
-                boolean isLoaded = _dictionary.restore(dbNode);
+                boolean isLoaded = _dictionary.restore(dbNode, monitor);
             
                 if (!isLoaded) {           
                     
