@@ -1,5 +1,4 @@
 * review/fix sql editor content assist
-* background processing for dictionary loading
 * make dictionary persistent, and only update on request
 * background processing for queries
 * create extension points for sql editor

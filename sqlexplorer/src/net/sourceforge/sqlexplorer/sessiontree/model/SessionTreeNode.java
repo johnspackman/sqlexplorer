@@ -26,13 +26,13 @@ import java.util.List;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.IdentifierFactory;
-import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbdetail.DetailTabManager;
 import net.sourceforge.sqlexplorer.dbstructure.DatabaseModel;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
+import net.sourceforge.sqlexplorer.sessiontree.model.utility.DictionaryLoader;
 import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
@@ -86,39 +86,13 @@ public class SessionTreeNode implements ISessionTreeNode {
 
         _assistanceEnabled = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.SQL_ASSIST);
                
-        if (monitor != null && monitor.isCanceled()) {
-            throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
+        if (_assistanceEnabled) {
+            // schedule job to load dictionary for this session
+            DictionaryLoader dictionaryLoader = new DictionaryLoader(this);
+            dictionaryLoader.schedule(500);
+            
         }
-        
-        
-        try {
-
-            if (_assistanceEnabled) {
             
-                if (monitor != null) {
-                    monitor.setTaskName(Messages.getString("Progress.Dictionary.Loading"));
-                }
-                
-                Object[] children = dbModel.getChildNodes();
-                DatabaseNode dbNode = ((DatabaseNode) children[0]); 
-                
-                // check if we can persisted dictionary 
-                if (monitor != null) {
-                    monitor.subTask(Messages.getString("Progress.Dictionary.Scanning"));
-                }
-                
-                boolean isLoaded = _dictionary.restore(dbNode, monitor);
-            
-                if (!isLoaded) {           
-                    
-                    // load full dictionary
-                    _dictionary.load(dbNode, monitor);
-                }                
-            }
-            
-        } catch (Throwable e) {
-            SQLExplorerPlugin.error("Error enabling assistance ", e);
-        }
     }
 
 

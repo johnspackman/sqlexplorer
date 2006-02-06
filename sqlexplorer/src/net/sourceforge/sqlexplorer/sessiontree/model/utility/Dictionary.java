@@ -220,21 +220,24 @@ public class Dictionary {
      */
     public void load(DatabaseNode dbNode, IProgressMonitor monitor) throws InterruptedException {
 
+        // check for cancellation by user
+        if (monitor.isCanceled()) {
+            throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
+        }
+        
         INode[] children = dbNode.getChildNodes();
 
         if (children == null) {
             return;
         }
 
-        if (monitor != null) {
-            // start task with a 1000 work units for every root node
-            monitor.beginTask(Messages.getString("Progress.Dictionary.Loading"), children.length * ROOT_WORK_UNIT);
-        }
+        // start task with a 1000 work units for every root node
+        monitor.beginTask(dbNode.getSession().toString(), children.length * ROOT_WORK_UNIT);
         
         for (int i = 0; i < children.length; i++) {
 
             // check for cancellation by user
-            if (monitor != null && monitor.isCanceled()) {
+            if (monitor.isCanceled()) {
                 throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
             }
 
@@ -265,22 +268,30 @@ public class Dictionary {
             _logger.debug("Loading dictionary: " + iNode.getName());
         }
         
+        // check for cancellation by user
+        if (monitor.isCanceled()) {
+            throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
+        }
         
         putCatalogSchemaName(iNode.toString(), iNode);
-        if (monitor != null) {
-            monitor.subTask(iNode.getName());
-        }
+        monitor.subTask(iNode.getName());
         
         INode[] children = iNode.getChildNodes();
         
         if (children != null) {
+            
+            // check for cancellation by user
+            if (monitor.isCanceled()) {
+                throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
+            }
+            
             
             // divide work equally between type nodes
             int typeNodeWorkUnit = ROOT_WORK_UNIT / SUPPORTED_CONTENT_ASSIST_TYPES.length;
             int typeNodeWorkCompleted = 0;
             
             for (int i = 0; i < children.length; i++) {
-
+                                               
                 INode typeNode = children[i];        
                 
                 if (_logger.isDebugEnabled()) {
@@ -298,18 +309,21 @@ public class Dictionary {
                     continue;
                 }
                     
-                if (monitor != null) {                    
-                    monitor.subTask(typeNode.getName());
+                monitor.subTask(typeNode.getName());
                     
-                    // check for cancellation by user
-                    if (monitor.isCanceled()) {
-                        throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
-                    }
+                // check for cancellation by user
+                if (monitor.isCanceled()) {
+                    throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
                 }
 
                 INode tableNodes[] = typeNode.getChildNodes();
                 if (tableNodes != null) {
 
+                    // check for cancellation by user
+                    if (monitor.isCanceled()) {
+                        throw new InterruptedException(Messages.getString("Progress.Dictionary.Cancelled"));
+                    }
+                    
                     int tableNodeWorkUnit = typeNodeWorkUnit / tableNodes.length;
                     
                     for (int j = 0; j < tableNodes.length; j++) {
@@ -363,18 +377,18 @@ public class Dictionary {
                     }
                 }
 
-                if (monitor != null) {
-                    if (typeNodeWorkCompleted < typeNodeWorkUnit) {
-                        // consume remainder of work for this type node
-                        
-                        if (_logger.isDebugEnabled()) {
-                            _logger.debug("consuming remainder: " + (typeNodeWorkUnit - typeNodeWorkCompleted));
-                        }
-                        
-                        monitor.worked(typeNodeWorkUnit - typeNodeWorkCompleted);                        
+
+                if (typeNodeWorkCompleted < typeNodeWorkUnit) {
+                    // consume remainder of work for this type node
+                    
+                    if (_logger.isDebugEnabled()) {
+                        _logger.debug("consuming remainder: " + (typeNodeWorkUnit - typeNodeWorkCompleted));
                     }
-                    typeNodeWorkCompleted = 0;
+                    
+                    monitor.worked(typeNodeWorkUnit - typeNodeWorkCompleted);                        
                 }
+                typeNodeWorkCompleted = 0;
+
             }
             
 

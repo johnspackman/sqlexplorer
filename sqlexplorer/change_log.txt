@@ -7,6 +7,7 @@ General
 * sql explorer can now run as a standalone RCP application
 * updated logo & icons
 * connection info view removed, information has been added as detail of database node
+* background processing for dictionary loading
 
 SQL History
 * only successfull queries are stored
