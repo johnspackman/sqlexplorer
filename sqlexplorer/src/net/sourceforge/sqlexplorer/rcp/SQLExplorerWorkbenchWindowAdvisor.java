@@ -37,7 +37,7 @@ public class SQLExplorerWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         windowConfigurer.setTitle(Messages.getString("Application.SQLExplorer.WindowTitle"));
         windowConfigurer.setShowCoolBar(false);
         windowConfigurer.setShowPerspectiveBar(false);
-        
+        windowConfigurer.setShowProgressIndicator(true);
     }
 
 
