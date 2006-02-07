@@ -19,6 +19,7 @@
 
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -87,16 +88,20 @@ public class ExecSQLAction extends Action {
 
             final ExecSQLAction action = this;
 
-            if (maxresults == 0 || maxresults > 2000) {
+            boolean warnNoLimit = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.WARN_IF_LARGE_LIMIT);
+            int warnLimit = SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(IConstants.WARN_LIMIT);
+            
+            if (warnNoLimit && (maxresults == 0 || maxresults > warnLimit)) {
 
                 final int largeResults = maxresults;
                 txtComp.getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
                     public void run() {
-
+                      
                         boolean okToExecute = MessageDialog.openConfirm(txtComp.getSite().getShell(),
-                                Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Title"),
-                                Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Message"));
+                                    Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Title"),
+                                    Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Message"));
+                        
                         if (okToExecute) {
                             action.run(largeResults);
                         }

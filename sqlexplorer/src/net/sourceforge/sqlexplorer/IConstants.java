@@ -35,4 +35,6 @@ public interface IConstants {
     String SQL_ALT_QRY_DELIMITER = "SQLEditor.AltQueryDelimiter";
     String SQL_COMMENT_DELIMITER = "SQLEditor.CommentDelimiter";
     String INCLUDE_COLUMNS_IN_TREE = "SQLEditor.IncludeColumns";
+    String WARN_IF_LARGE_LIMIT = "SQLEditor.WarnIfLargeLimit";
+    String WARN_LIMIT = "SQLEditor.WarnLimit";
 }
