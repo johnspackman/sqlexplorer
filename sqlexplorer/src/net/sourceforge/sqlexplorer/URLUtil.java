@@ -46,7 +46,7 @@ public class URLUtil {
     static private void init() {
         SQLExplorerPlugin defaultPlugin = SQLExplorerPlugin.getDefault();
 
-        baseURL = defaultPlugin.getDescriptor().getInstallURL();
+        baseURL = defaultPlugin.getBundle().getEntry("/");
         initialized = true;
     }
 
