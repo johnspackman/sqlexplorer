@@ -20,6 +20,7 @@ package net.sourceforge.sqlexplorer.plugin.views;
 import net.sourceforge.sqlexplorer.AliasModel;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.SqlHistoryChangedListener;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
@@ -34,7 +35,9 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -90,6 +93,14 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 
     private Point _tipPosition;
 
+    private ImageDescriptor _imageOpenInEditor = ImageDescriptor.createFromURL(SqlexplorerImages.getSqlEditorIcon());
+
+    private ImageDescriptor _imageRemove = ImageDescriptor.createFromURL(SqlexplorerImages.getRemoveIcon());
+
+    private ImageDescriptor _imageRemoveAll = ImageDescriptor.createFromURL(SqlexplorerImages.getRemoveAllIcon());
+
+    private ImageDescriptor _imageCopy = ImageDescriptor.createFromURL(SqlexplorerImages.getCopyIcon());
+
 
     /*
      * (non-Javadoc)
@@ -141,6 +152,11 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 
             public String getText() {
                 return Messages.getString("SQLHistoryView.OpenInEditor");
+            }
+
+
+            public ImageDescriptor getImageDescriptor() {                
+                return _imageOpenInEditor;
             }
 
 
@@ -241,7 +257,10 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                 return Messages.getString("SQLHistoryView.RemoveFromHistory");
             }
 
-
+            public ImageDescriptor getImageDescriptor() {                
+                return _imageRemove;
+            }
+            
             public void run() {
                 try {
                     int i = _tableViewer.getTable().getSelectionIndex();
@@ -263,6 +282,9 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                 return Messages.getString("SQLHistoryView.ClearHistory");
             }
 
+            public ImageDescriptor getImageDescriptor() {                
+                return _imageRemoveAll;
+            }
 
             public void run() {
 
@@ -281,6 +303,9 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
             }
         });
 
+        // add seperator
+        menuMgr.add(new Separator());
+        
         // add copy to clipboard action
         menuMgr.add(new Action() {
 
@@ -289,6 +314,10 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
             }
 
 
+            public ImageDescriptor getImageDescriptor() {                
+                return _imageCopy;
+            }
+            
             public void run() {
                 try {
                     TableItem[] ti = _tableViewer.getTable().getSelection();
@@ -326,14 +355,13 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
             }
         });
 
-        
         // add remove action on delete key
         _table.addKeyListener(new KeyAdapter() {
 
             public void keyReleased(KeyEvent e) {
-                
+
                 // delete entry
-                if (e.keyCode == SWT.DEL) {                    
+                if (e.keyCode == SWT.DEL) {
                     try {
                         int i = _tableViewer.getTable().getSelectionIndex();
                         if (i >= 0) {
@@ -346,13 +374,11 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                     }
                 }
             }
-            
+
         });
-        
-        
-        
+
         // Set multi-line tooltip
-        
+
         final Display display = parent.getDisplay();
         _tipShell = new Shell(parent.getShell(), SWT.ON_TOP);
         GridLayout gridLayout = new GridLayout();
@@ -366,10 +392,10 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
         _tipLabelText = new Label(_tipShell, SWT.WRAP | SWT.LEFT);
         _tipLabelText.setForeground(display.getSystemColor(SWT.COLOR_INFO_FOREGROUND));
         _tipLabelText.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-        
+
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_CENTER);
         _tipLabelText.setLayoutData(gridData);
-        
+
         _table.addMouseListener(new MouseAdapter() {
 
             public void mouseDown(MouseEvent e) {
@@ -379,7 +405,7 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                 }
             }
         });
-        
+
         _table.addMouseTrackListener(new MouseTrackAdapter() {
 
             public void mouseExit(MouseEvent e) {
@@ -398,7 +424,7 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                 Point pt = new Point(event.x, event.y);
                 Widget widget = event.widget;
                 TableItem tableItem = null;
-                
+
                 if (widget instanceof Table) {
                     Table table = (Table) widget;
                     widget = table.getItem(pt);
@@ -417,8 +443,8 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                 _tipPosition = _table.toDisplay(pt);
 
                 SQLString sqlString = (SQLString) tableItem.getData();
-                String text = TextUtil.getWrappedText(sqlString.getText());            
-                
+                String text = TextUtil.getWrappedText(sqlString.getText());
+
                 if (text == null || text.equals("")) {
                     _tipWidget = null;
                     return;
@@ -437,6 +463,7 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 
     /**
      * Sets the location for a hovering shell
+     * 
      * @param shell the object that is to hover
      * @param position the position of a widget to hover over
      * @return the top-left location for a hovering box
@@ -446,15 +473,15 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
         Rectangle shellBounds = shell.getBounds();
         shellBounds.x = Math.max(Math.min(position.x, displayBounds.width - shellBounds.width), 0);
         shellBounds.y = Math.max(Math.min(position.y + 10, displayBounds.height - shellBounds.height), 0);
-        
+
         if (shellBounds.y + labelHeight + 10 > displayBounds.height) {
-            shellBounds.y = Math.max(position.y - labelHeight - 10,0);
+            shellBounds.y = Math.max(position.y - labelHeight - 10, 0);
         }
 
         shell.setBounds(shellBounds);
     }
-    
-    
+
+
     /*
      * (non-Javadoc)
      * 

@@ -17,6 +17,7 @@ SQL History
 * doubleclick on entry in history opens sql in editor
 * DEL key now removes entry from list
 * added multi-line tooltip for sql
+* added icons to context actions
 
 Database Structure
 * split of database structure view into database structure view and database detail view

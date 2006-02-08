@@ -101,6 +101,9 @@ public class SqlexplorerImages {
         return URLUtil.getResourceURL("icons/removeAll_co.gif");
     }
 
+    public static URL getRemoveAllIcon() {
+        return URLUtil.getResourceURL("icons/removeAll_co.gif");
+    }
 
     public static URL getDisabledCloseAllConnsIcon() {
         return URLUtil.getResourceURL("icons/removeall_dis.gif");
@@ -111,6 +114,10 @@ public class SqlexplorerImages {
         return URLUtil.getResourceURL("icons/remove_att.gif");
     }
 
+
+    public static URL getRemoveIcon() {
+        return URLUtil.getResourceURL("icons/remove_att.gif");
+    }
 
     public static URL getDisabledCloseConnIcon() {
         return URLUtil.getResourceURL("icons/remove_dis.gif");
@@ -151,6 +158,9 @@ public class SqlexplorerImages {
         return URLUtil.getResourceURL("icons/copy_edit.gif");
     }
 
+    public static final URL getCopyIcon() {
+        return URLUtil.getResourceURL("icons/copy_edit.gif");
+    }
 
     public static final URL getCopyDriver() {
         return URLUtil.getResourceURL("icons/copy_edit.gif");

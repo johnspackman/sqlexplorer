@@ -103,7 +103,7 @@
             allowMultiple="false"
             category="SQLExplorerPlugin"
             class="net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView"
-            icon="icons/history_list.gif"
+            icon="icons/sql_history.gif"
             id="net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView"
             name="SQL History">
       </view>
