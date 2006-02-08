@@ -53,7 +53,7 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
         header[0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.Property");
         header[1] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.Value");
 
-        String[][] data = new String[123][2];
+        String[][] data = new String[124][2];
 
         
             data[0][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.DatabaseProductName");
@@ -72,20 +72,20 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
             try {data[6][1] = "" + jdbcMetaData.getURL();} catch (Throwable e) {}
             data[7][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.AutocommitMode");
             try {data[7][1] = "" + jdbcMetaData.getConnection().getAutoCommit();} catch (Throwable e) {}
-            data[8][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.ProceduresCallable");
-            try {data[8][1] = "" + jdbcMetaData.allProceduresAreCallable();} catch (Throwable e) {}
-            data[9][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.TablesSelectable");
-            try {data[9][1] = "" + jdbcMetaData.allTablesAreSelectable();} catch (Throwable e) {}
-            data[10][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.NullsSortedHigh");
-            try {data[10][1] = "" + jdbcMetaData.nullsAreSortedHigh();} catch (Throwable e) {}
-            data[11][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.NullsSortedLow");
-            try {data[11][1] = "" + jdbcMetaData.nullsAreSortedLow();} catch (Throwable e) {}
-            data[12][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.NullsSortedStart");
-            try {data[12][1] = "" + jdbcMetaData.nullsAreSortedAtStart();} catch (Throwable e) {}
-            data[13][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.NullsSortedEnd");
-            try {data[13][1] = "" + jdbcMetaData.nullsAreSortedAtEnd();} catch (Throwable e) {}
-            data[14][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.ReadOnly");
-            try {data[14][1] = "" + jdbcMetaData.isReadOnly();} catch (Throwable e) {}
+            data[8][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.CommitOnClose");            
+            try {data[8][1] = "" + node.getSession().getConnection().getCommitOnClose();} catch (Throwable e) {}            
+            data[9][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.ProceduresCallable");
+            try {data[9][1] = "" + jdbcMetaData.allProceduresAreCallable();} catch (Throwable e) {}
+            data[10][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.TablesSelectable");
+            try {data[10][1] = "" + jdbcMetaData.allTablesAreSelectable();} catch (Throwable e) {}
+            data[11][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.NullsSortedHigh");
+            try {data[11][1] = "" + jdbcMetaData.nullsAreSortedHigh();} catch (Throwable e) {}
+            data[12][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.NullsSortedLow");
+            try {data[12][1] = "" + jdbcMetaData.nullsAreSortedLow();} catch (Throwable e) {}
+            data[13][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.NullsSortedStart");
+            try {data[13][1] = "" + jdbcMetaData.nullsAreSortedAtStart();} catch (Throwable e) {}
+            data[14][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.NullsSortedEnd");
+            try {data[14][1] = "" + jdbcMetaData.nullsAreSortedAtEnd();} catch (Throwable e) {}
             data[15][0] = "Result Set Holdability";
             try {data[15][1] = "" + jdbcMetaData.getResultSetHoldability();} catch (Throwable e) {}
             data[16][0] = "Uses Local Files";
@@ -334,7 +334,9 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
             try {data[121][1] = "" + jdbcMetaData.locatorsUpdateCopy();} catch (Throwable e) {}
             data[122][0] = "Supports Statement Pooling";
             try {data[122][1] = "" + jdbcMetaData.supportsStatementPooling();} catch (Throwable e) {}
-
+            
+            data[123][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.ReadOnly");
+            try {data[123][1] = "" + jdbcMetaData.isReadOnly();} catch (Throwable e) {}
         
         int[] types = new int[2];
         types[0] = DataSet.TYPE_STRING;
