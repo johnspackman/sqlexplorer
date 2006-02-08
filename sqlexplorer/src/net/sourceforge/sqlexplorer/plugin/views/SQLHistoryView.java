@@ -193,30 +193,29 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                                     Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Message.Prefix") + " " + sqlString.getSessionName()
                                             + Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Message.Postfix"));
 
-                            if (!okToOpen) {
-                                return;
-                            }
+                            if (okToOpen) {
 
-                            // create new connection..
-                            AliasModel aliasModel = SQLExplorerPlugin.getDefault().getAliasModel();
-                            SQLAlias al = (SQLAlias) aliasModel.getAliasByName(sqlString.getSessionName());
-
-                            if (al != null) {
-                                OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(
-                                        _tableViewer.getTable().getShell(), al, SQLExplorerPlugin.getDefault().getDriverModel(),
-                                        SQLExplorerPlugin.getDefault().getPreferenceStore(),
-                                        SQLExplorerPlugin.getDefault().getSQLDriverManager());
-                                openDlgAction.run();
-                            }
-
-                            // find new session
-                            sessions = sessionRoot.getChildren();
-                            if (sessions != null) {
-                                for (int i = 0; i < sessions.length; i++) {
-                                    SessionTreeNode session = (SessionTreeNode) sessions[i];
-                                    if (session.toString().equalsIgnoreCase(sqlString.getSessionName())) {
-                                        querySession = session;
-                                        break;
+                                // create new connection..
+                                AliasModel aliasModel = SQLExplorerPlugin.getDefault().getAliasModel();
+                                SQLAlias al = (SQLAlias) aliasModel.getAliasByName(sqlString.getSessionName());
+    
+                                if (al != null) {
+                                    OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(
+                                            _tableViewer.getTable().getShell(), al, SQLExplorerPlugin.getDefault().getDriverModel(),
+                                            SQLExplorerPlugin.getDefault().getPreferenceStore(),
+                                            SQLExplorerPlugin.getDefault().getSQLDriverManager());
+                                    openDlgAction.run();
+                                }
+    
+                                // find new session
+                                sessions = sessionRoot.getChildren();
+                                if (sessions != null) {
+                                    for (int i = 0; i < sessions.length; i++) {
+                                        SessionTreeNode session = (SessionTreeNode) sessions[i];
+                                        if (session.toString().equalsIgnoreCase(sqlString.getSessionName())) {
+                                            querySession = session;
+                                            break;
+                                        }
                                     }
                                 }
                             }
