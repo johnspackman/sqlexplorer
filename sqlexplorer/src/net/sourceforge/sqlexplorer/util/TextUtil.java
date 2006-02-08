@@ -41,7 +41,7 @@ public class TextUtil {
      * @param maxWidth number of chars that the text can be wide.
      */
     public static String getWrappedText(String input, int maxWidth) {
-        
+              
         String[] text = input.split(NEWLINE_EXPR);
         String wrappedText = "";
         
@@ -70,8 +70,14 @@ public class TextUtil {
                         if (j < maxWidth) {
                             
                             char c = text[i].charAt(j); 
-                            if (c == ' ' || c == ',') {
-                                wrappedText += tmp.substring(0, j);
+                            if (c == ',') {
+                                wrappedText += tmp.substring(0, j + 1);
+                                wrappedText += NEWLINE_SEPARATOR;
+                                tmp = tmp.substring(j + 1);
+                                break;
+                            }
+                            if (c == ' ') {
+                                wrappedText += tmp.substring(0, j + 1);
                                 wrappedText += NEWLINE_SEPARATOR;
                                 tmp = tmp.substring(j + 1);
                                 break;
@@ -79,7 +85,7 @@ public class TextUtil {
                         }
                         
                         if (j == 0) {
-                            wrappedText += tmp.substring(0, j);
+                            wrappedText += tmp.substring(0, maxWidth + 1);
                             tmp = "";
                             break;
                         }

@@ -15,6 +15,8 @@ SQL History
 * on opening history in editor correct connection is set to editor or created if desired
 * clear all now prompts for confirmation
 * doubleclick on entry in history opens sql in editor
+* DEL key now removes entry from list
+* added multi-line tooltip for sql
 
 Database Structure
 * split of database structure view into database structure view and database detail view
@@ -29,6 +31,7 @@ Database Detail
 * new detailtab manager that supports caching and lazy loading of tabs
 * new eclipse extension point for database detail tabs
 * same detail tab remains selected between nodes
+* added 'commit on close' property to connection info tab
 
 DataSet
 * new eclipse extension point for datasettable context menu

@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) SQL Explorer Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,6 +28,7 @@ import net.sourceforge.sqlexplorer.sessiontree.actions.OpenPasswordConnectDialog
 import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.util.SQLString;
+import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -47,26 +47,48 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseTrackAdapter;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.part.ViewPart;
 
 /**
- * SQL History view shows all succesfully executed sql statements.
- * The list of statements remains persistent between sessions.
+ * SQL History view shows all succesfully executed sql statements. The list of
+ * statements remains persistent between sessions.
  * 
  * @modified Davy Vanherbergen
  */
 public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListener {
 
     private TableViewer _tableViewer;
+
+    private Table _table;
+
+    private Shell _tipShell;
+
+    private Widget _tipWidget;
+
+    private Label _tipLabelText;
+
+    private Point _tipPosition;
 
 
     /*
@@ -75,15 +97,15 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
      * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
      */
     public void createPartControl(final Composite parent) {
-        
+
         SQLExplorerPlugin.getDefault().addListener(this);
         _tableViewer = new TableViewer(parent, SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION);
-        Table table = _tableViewer.getTable();
-        table.setHeaderVisible(true);
-        table.setLinesVisible(true);
-        
+        _table = _tableViewer.getTable();
+        _table.setHeaderVisible(true);
+        _table.setLinesVisible(true);
+
         _tableViewer.setLabelProvider(new LabelProvider());
-        
+
         _tableViewer.setContentProvider(new IStructuredContentProvider() {
 
             public Object[] getElements(Object inputElement) {
@@ -100,23 +122,21 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 
             }
         });
-        
+
         _tableViewer.setInput(this);
-        TableColumn tc = new TableColumn(table, SWT.NULL);
+        TableColumn tc = new TableColumn(_table, SWT.NULL);
         tc.setText(Messages.getString("SQLHistoryView.ColumnLabel"));
         TableLayout tableLayout = new TableLayout();
 
         tableLayout.addColumnData(new ColumnWeightData(1, 100, true));
-        table.setLayout(tableLayout);
-        table.layout();
-        
-        
+        _table.setLayout(tableLayout);
+        _table.layout();
+
         // add context menus
         final MenuManager menuMgr = new MenuManager("#HistoryPopupMenu");
-        Menu historyContextMenu = menuMgr.createContextMenu(table);
-        
-        
-        // add 'open in editor' action 
+        Menu historyContextMenu = menuMgr.createContextMenu(_table);
+
+        // add 'open in editor' action
         final Action openInEditorAction = new Action() {
 
             public String getText() {
@@ -130,14 +150,13 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                     if (ti == null || ti.length < 1)
                         return;
 
-                     
                     SQLString sqlString = (SQLString) ti[0].getData();
                     SessionTreeNode querySession = null;
-                    
-                    if (sqlString.getSessionName() != null) {                        
+
+                    if (sqlString.getSessionName() != null) {
 
                         // check if we have an active session for this query
-                        
+
                         RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
                         Object[] sessions = sessionRoot.getChildren();
                         if (sessions != null) {
@@ -149,55 +168,54 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                                 }
                             }
                         }
-                        
+
                         // check if we need to open new connection
                         if (querySession == null) {
-                            
-                            boolean okToOpen = MessageDialog.openConfirm(getSite().getShell(), 
-                                    Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Title") , 
-                                    Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Message.Prefix")
-                                    + " " + sqlString.getSessionName() 
-                                    + Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Message.Postfix")
-                            );
-                            
-                            if (okToOpen) {
-                                
-                                // create new connection..
-                                AliasModel aliasModel = SQLExplorerPlugin.getDefault().getAliasModel();
-                                SQLAlias al = (SQLAlias) aliasModel.getAliasByName(sqlString.getSessionName());
-    
-                                if (al != null) {
-                                    OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(
-                                            _tableViewer.getTable().getShell(), 
-                                            al, 
-                                            SQLExplorerPlugin.getDefault().getDriverModel(),
-                                            SQLExplorerPlugin.getDefault().getPreferenceStore(),
-                                            SQLExplorerPlugin.getDefault().getSQLDriverManager());
-                                    openDlgAction.run();
-                                }
-                                
-                                // find new session
-                                sessions = sessionRoot.getChildren();
-                                if (sessions != null) {
-                                    for (int i = 0; i < sessions.length; i++) {
-                                        SessionTreeNode session = (SessionTreeNode) sessions[i];
-                                        if (session.toString().equalsIgnoreCase(sqlString.getSessionName())) {
-                                            querySession = session;
-                                            break;
-                                        }
+
+                            boolean okToOpen = MessageDialog.openConfirm(getSite().getShell(),
+                                    Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Title"),
+                                    Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Message.Prefix") + " " + sqlString.getSessionName()
+                                            + Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Message.Postfix"));
+
+                            if (!okToOpen) {
+                                return;
+                            }
+
+                            // create new connection..
+                            AliasModel aliasModel = SQLExplorerPlugin.getDefault().getAliasModel();
+                            SQLAlias al = (SQLAlias) aliasModel.getAliasByName(sqlString.getSessionName());
+
+                            if (al != null) {
+                                OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(
+                                        _tableViewer.getTable().getShell(), al, SQLExplorerPlugin.getDefault().getDriverModel(),
+                                        SQLExplorerPlugin.getDefault().getPreferenceStore(),
+                                        SQLExplorerPlugin.getDefault().getSQLDriverManager());
+                                openDlgAction.run();
+                            }
+
+                            // find new session
+                            sessions = sessionRoot.getChildren();
+                            if (sessions != null) {
+                                for (int i = 0; i < sessions.length; i++) {
+                                    SessionTreeNode session = (SessionTreeNode) sessions[i];
+                                    if (session.toString().equalsIgnoreCase(sqlString.getSessionName())) {
+                                        querySession = session;
+                                        break;
                                     }
                                 }
                             }
+
                         }
                     }
-                    
+
                     SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getNextElement() + ").sql");
                     input.setSessionNode(querySession);
                     IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
                     if (page == null) {
                         return;
                     }
-                    SQLEditor editorPart = (SQLEditor) page.openEditor((IEditorInput) input, "net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
+                    SQLEditor editorPart = (SQLEditor) page.openEditor((IEditorInput) input,
+                            "net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
                     editorPart.setText(sqlString.getText());
 
                 } catch (Throwable e) {
@@ -205,19 +223,17 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                 }
             }
         };
-        
 
         menuMgr.add(openInEditorAction);
-        
+
         // also add action as default when an entry is doubleclicked.
         _tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 
             public void doubleClick(DoubleClickEvent event) {
-                openInEditorAction.run();                
+                openInEditorAction.run();
             }
         });
-        
-        
+
         // add remove from history action
         menuMgr.add(new Action() {
 
@@ -252,9 +268,9 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 
                 try {
 
-                    boolean ok = MessageDialog.openConfirm(getSite().getShell(), Messages.getString("SQLHistoryView.ClearHistory") , 
+                    boolean ok = MessageDialog.openConfirm(getSite().getShell(), Messages.getString("SQLHistoryView.ClearHistory"),
                             Messages.getString("SQLHistoryView.ClearHistory.Confirm"));
-                    
+
                     if (ok) {
                         SQLExplorerPlugin.getDefault().getSQLHistory().clear();
                         changed();
@@ -265,7 +281,6 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
             }
         });
 
-        
         // add copy to clipboard action
         menuMgr.add(new Action() {
 
@@ -292,7 +307,7 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                 }
             }
         });
-        table.setMenu(historyContextMenu);
+        _table.setMenu(historyContextMenu);
         menuMgr.addMenuListener(new IMenuListener() {
 
             public void menuAboutToShow(IMenuManager manager) {
@@ -310,9 +325,136 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 
             }
         });
+
+        
+        // add remove action on delete key
+        _table.addKeyListener(new KeyAdapter() {
+
+            public void keyReleased(KeyEvent e) {
+                
+                // delete entry
+                if (e.keyCode == SWT.DEL) {                    
+                    try {
+                        int i = _tableViewer.getTable().getSelectionIndex();
+                        if (i >= 0) {
+                            SQLExplorerPlugin.getDefault().getSQLHistory().remove(i);
+                            changed();
+                        }
+
+                    } catch (Throwable t) {
+                        SQLExplorerPlugin.error("Error removing item from clipboard", t);
+                    }
+                }
+            }
+            
+        });
+        
+        
+        
+        // Set multi-line tooltip
+        
+        final Display display = parent.getDisplay();
+        _tipShell = new Shell(parent.getShell(), SWT.ON_TOP);
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.numColumns = 2;
+        gridLayout.marginWidth = 2;
+        gridLayout.marginHeight = 2;
+
+        _tipShell.setLayout(gridLayout);
+        _tipShell.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+
+        _tipLabelText = new Label(_tipShell, SWT.WRAP | SWT.LEFT);
+        _tipLabelText.setForeground(display.getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+        _tipLabelText.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+        
+        GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_CENTER);
+        _tipLabelText.setLayoutData(gridData);
+        
+        _table.addMouseListener(new MouseAdapter() {
+
+            public void mouseDown(MouseEvent e) {
+                if (_tipShell.isVisible()) {
+                    _tipShell.setVisible(false);
+                    _tipWidget = null;
+                }
+            }
+        });
+        
+        _table.addMouseTrackListener(new MouseTrackAdapter() {
+
+            public void mouseExit(MouseEvent e) {
+                if (_tipShell.isVisible())
+                    _tipShell.setVisible(false);
+                _tipWidget = null;
+            }
+
+
+            /*
+             * (non-Javadoc)
+             * 
+             * @see org.eclipse.swt.events.MouseTrackListener#mouseHover(org.eclipse.swt.events.MouseEvent)
+             */
+            public void mouseHover(MouseEvent event) {
+                Point pt = new Point(event.x, event.y);
+                Widget widget = event.widget;
+                TableItem tableItem = null;
+                
+                if (widget instanceof Table) {
+                    Table table = (Table) widget;
+                    widget = table.getItem(pt);
+                }
+                if (widget instanceof TableItem) {
+                    tableItem = (TableItem) widget;
+                }
+                if (widget == null) {
+                    _tipShell.setVisible(false);
+                    _tipWidget = null;
+                    return;
+                }
+                if (widget == _tipWidget)
+                    return;
+                _tipWidget = widget;
+                _tipPosition = _table.toDisplay(pt);
+
+                SQLString sqlString = (SQLString) tableItem.getData();
+                String text = TextUtil.getWrappedText(sqlString.getText());            
+                
+                if (text == null || text.equals("")) {
+                    _tipWidget = null;
+                    return;
+                }
+                // Set off the table tooltip as we provide our own
+                _table.setToolTipText("");
+                _tipLabelText.setText(text);
+                _tipShell.pack();
+                setHoverLocation(_tipShell, _tipPosition, _tipLabelText.getBounds().height);
+                _tipShell.setVisible(true);
+
+            }
+        });
     }
 
 
+    /**
+     * Sets the location for a hovering shell
+     * @param shell the object that is to hover
+     * @param position the position of a widget to hover over
+     * @return the top-left location for a hovering box
+     */
+    private void setHoverLocation(Shell shell, Point position, int labelHeight) {
+        Rectangle displayBounds = shell.getDisplay().getBounds();
+        Rectangle shellBounds = shell.getBounds();
+        shellBounds.x = Math.max(Math.min(position.x, displayBounds.width - shellBounds.width), 0);
+        shellBounds.y = Math.max(Math.min(position.y + 10, displayBounds.height - shellBounds.height), 0);
+        
+        if (shellBounds.y + labelHeight + 10 > displayBounds.height) {
+            shellBounds.y = Math.max(position.y - labelHeight - 10,0);
+        }
+
+        shell.setBounds(shellBounds);
+    }
+    
+    
     /*
      * (non-Javadoc)
      * 
