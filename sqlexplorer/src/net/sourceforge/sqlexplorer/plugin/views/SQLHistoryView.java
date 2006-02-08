@@ -71,6 +71,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 /**
@@ -109,6 +110,8 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
      */
     public void createPartControl(final Composite parent) {
 
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, SQLExplorerPlugin.PLUGIN_ID + ".SQLHistoryView"); 
+        
         SQLExplorerPlugin.getDefault().addListener(this);
         _tableViewer = new TableViewer(parent, SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION);
         _table = _tableViewer.getTable();

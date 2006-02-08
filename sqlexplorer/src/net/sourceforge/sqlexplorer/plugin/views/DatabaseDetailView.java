@@ -21,12 +21,14 @@ package net.sourceforge.sqlexplorer.plugin.views;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbdetail.DetailTabManager;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 /**
@@ -49,6 +51,8 @@ public class DatabaseDetailView extends ViewPart {
      */
     public void createPartControl(Composite parent) {
 
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, SQLExplorerPlugin.PLUGIN_ID + ".DatabaseDetailView");
+        
         // create new composite to display information
         _composite = new Composite(parent, SWT.NULL);
         _composite.setLayout(new FillLayout());

@@ -104,6 +104,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 
@@ -1391,6 +1392,10 @@ public class SQLEditor extends TextEditor {
 
     }
 
+    public void createPartControl(Composite parent) {
+        super.createPartControl(parent);
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(getSourceViewer().getTextWidget(), SQLExplorerPlugin.PLUGIN_ID + ".SQLEditor");       
+    }
 }
 
 class SQLEditorSessionListener implements SessionTreeModelChangedListener {

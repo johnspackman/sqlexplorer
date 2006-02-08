@@ -29,6 +29,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 /**
@@ -40,6 +41,9 @@ public class ConnectionsView extends ViewPart {
     private TreeViewer treeViewer;
 
     public void createPartControl(Composite parent) {
+        
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, SQLExplorerPlugin.PLUGIN_ID + ".ConnectionsView");
+        
         SQLExplorerPlugin plugin = SQLExplorerPlugin.getDefault();
 
         treeViewer = new SessionViewer(parent, SWT.V_SCROLL | SWT.H_SCROLL, plugin.stm, this);

@@ -49,6 +49,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 public class AliasView extends ViewPart {
@@ -243,6 +244,8 @@ public class AliasView extends ViewPart {
      */
     public void createPartControl(Composite parent) {
 
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, SQLExplorerPlugin.PLUGIN_ID + ".AliasView");
+        
         _driverModel = SQLExplorerPlugin.getDefault().getDriverModel();
         _aliasModel = SQLExplorerPlugin.getDefault().getAliasModel();
 
