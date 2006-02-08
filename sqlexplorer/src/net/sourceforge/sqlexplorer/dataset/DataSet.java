@@ -57,7 +57,7 @@ public class DataSet {
      * Hidden default constructor.
      */
     private DataSet() {
-        
+
     }
 
 
@@ -66,31 +66,34 @@ public class DataSet {
      * 
      * @param columnLabels String[] of column labels [mandatory]
      * @param resultSet ResultSet with values [mandatory]
-     * @param relevantIndeces int[] of all columns to add to the dataSet, use null if all columns should be included. 
+     * @param relevantIndeces int[] of all columns to add to the dataSet, use
+     *            null if all columns should be included.
      * @throws Exception if the dataset could not be created
      */
     public DataSet(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws Exception {
-        
-        initialize(columnLabels, resultSet, relevantIndeces);        
+
+        initialize(columnLabels, resultSet, relevantIndeces);
     }
-    
-    
+
+
     /**
      * Create new dataset based on sql query.
      * 
-     * @param columnLabels string[] of columnLabels, use null if the column name can be used as label
+     * @param columnLabels string[] of columnLabels, use null if the column name
+     *            can be used as label
      * @param sql query string
-     * @param relevantIndeces int[] of all columns to add to the dataSet, use null if all columns should be included. 
-     * @param connection An open SQLConnection [mandatory] 
+     * @param relevantIndeces int[] of all columns to add to the dataSet, use
+     *            null if all columns should be included.
+     * @param connection An open SQLConnection [mandatory]
      * @throws Exception if dataSet could not be created
      */
     public DataSet(String[] columnLabels, String sql, int[] relevantIndeces, SQLConnection connection) throws Exception {
-        
+
         Statement statement = connection.createStatement();
-        
+
         statement.execute(sql);
         ResultSet resultSet = statement.getResultSet();
-        
+
         initialize(columnLabels, resultSet, relevantIndeces);
     }
 
@@ -100,17 +103,18 @@ public class DataSet {
      * 
      * @param columnLabels string[] of columnLabels [mandatory]
      * @param data string[][] with values for dataset [mandatory]
-     * @param columnTypes int[] with valid column types (e.g. DataSet.TYPE_STRING) [mandatory]
+     * @param columnTypes int[] with valid column types (e.g.
+     *            DataSet.TYPE_STRING) [mandatory]
      * @throws Exception if dataSet could not be created
      */
     public DataSet(String[] columnLabels, String[][] data, int[] columnTypes) throws Exception {
-        
+
         _columnLabels = columnLabels;
         _columnTypes = columnTypes;
-                
+
         _rows = new DataSetRow[data.length];
-        
-        for (int i = 0; i < data.length; i++) {            
+
+        for (int i = 0; i < data.length; i++) {
             _rows[i] = new DataSetRow(data[i]);
         }
     }
@@ -118,48 +122,51 @@ public class DataSet {
 
     /**
      * Get the column index for a given column name
+     * 
      * @param name
      * @return index of column whose name matches or 0 if none found
      */
     public int getColumnIndex(String name) {
-        for (int i = 0; i < _columnLabels.length; i++) {            
+        for (int i = 0; i < _columnLabels.length; i++) {
             if (_columnLabels[i].equalsIgnoreCase(name)) {
                 return i;
             }
         }
         return 0;
     }
-    
+
+
     /**
      * @return String[] with all column labels
      */
     public String[] getColumnLabels() {
         return _columnLabels;
     }
-    
-    
+
+
     /**
      * @return int[] with all column types
      */
     public int[] getColumnTypes() {
         return _columnTypes;
     }
-    
-    
+
+
     /**
      * @return all rows in this dataset
      */
     public DataSetRow[] getRows() {
         return _rows;
     }
-    
-    
+
+
     /**
      * Initialize dataSet based on an existing ResultSet.
      * 
      * @param columnLabels String[] of column labels [mandatory]
      * @param resultSet ResultSet with values [mandatory]
-     * @param relevantIndeces int[] of all columns to add to the dataSet, use null if all columns should be included. 
+     * @param relevantIndeces int[] of all columns to add to the dataSet, use
+     *            null if all columns should be included.
      * @throws Exception if the dataset could not be created
      */
     private void initialize(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws Exception {
@@ -236,28 +243,32 @@ public class DataSet {
             DataSetRow row = new DataSetRow(relevantIndeces.length);
 
             for (int i = 0; i < relevantIndeces.length; i++) {
-                
+
                 switch (_columnTypes[i]) {
 
                     case TYPE_STRING:
+                        row.setValue(i, resultSet.getString(relevantIndeces[i]));
+                        break;
                     case TYPE_INTEGER:
+                        row.setValue(i, new Integer(resultSet.getInt(relevantIndeces[i])));
+                        break;
                     case TYPE_DOUBLE:
-                        row.setValue(i, resultSet.getString(relevantIndeces[i]));        
-                        break;                   
+                        row.setValue(i, new Double(resultSet.getDouble(relevantIndeces[i])));
+                        break;
                     case TYPE_DATE:
-                        row.setValue(i, resultSet.getDate(relevantIndeces[i]));        
+                        row.setValue(i, resultSet.getDate(relevantIndeces[i]));
                         break;
                     case TYPE_DATETIME:
-                        row.setValue(i, resultSet.getTimestamp(relevantIndeces[i]));        
+                        row.setValue(i, resultSet.getTimestamp(relevantIndeces[i]));
                         break;
                     case TYPE_TIME:
-                        row.setValue(i, resultSet.getTime(relevantIndeces[i]));        
+                        row.setValue(i, resultSet.getTime(relevantIndeces[i]));
                         break;
                     default:
-                        row.setValue(i, resultSet.getString(relevantIndeces[i]));        
-                        break;                                            
-                }                
-                
+                        row.setValue(i, resultSet.getString(relevantIndeces[i]));
+                        break;
+                }
+
             }
             rows.add(row);
         }
