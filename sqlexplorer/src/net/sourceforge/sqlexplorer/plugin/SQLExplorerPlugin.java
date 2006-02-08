@@ -46,7 +46,6 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLDriverManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -171,11 +170,21 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 
 
     /**
-     * The constructor.
+     * The constructor. Moved previous logic to the start method.
      */
-    public SQLExplorerPlugin(IPluginDescriptor descriptor) {
-        super(descriptor);
+    public SQLExplorerPlugin() {
+        super();
         plugin = this;
+    }
+    
+    
+    public void start(BundleContext context) throws Exception {
+
+        super.start(context);
+        
+        initializePreferences();
+
+
 
         _driverMgr = new SQLDriverManager();
         _cache = new DataCache(_driverMgr);
@@ -276,9 +285,9 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     }
 
 
-    protected void initializeDefaultPreferences(IPreferenceStore store) {
+    protected void initializePreferences() {
 
-        super.initializeDefaultPreferences(store);
+        IPreferenceStore store = getPreferenceStore();
         PreferenceConverter.setDefault(store, ISQLColorConstants.SQL_KEYWORD, new RGB(0, 0, 255));
         PreferenceConverter.setDefault(store, ISQLColorConstants.SQL_MULTILINE_COMMENT, new RGB(0, 100, 0));
         PreferenceConverter.setDefault(store, ISQLColorConstants.SQL_SINGLE_LINE_COMMENT, new RGB(0, 100, 0));
