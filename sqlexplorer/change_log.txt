@@ -9,6 +9,7 @@ General
 * connection info view removed, information has been added as detail of database node
 * background processing for dictionary loading
 * removed deprecated methods
+* Connection dialog is now resizable
 
 SQL History
 * only successfull queries are stored

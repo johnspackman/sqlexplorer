@@ -70,6 +70,11 @@ public class PasswordConnDlg extends TitleAreaDialog {
 
     private static final int SIZING_TEXT_FIELD_WIDTH = 250;
 
+    protected void setShellStyle(int newShellStyle) {
+        super.setShellStyle(newShellStyle | SWT.RESIZE);// Make the dialog
+                                                        // resizable
+    }
+    
     public PasswordConnDlg(Shell parentShell, ISQLAlias al, DriverModel dm, IPreferenceStore store) {
         super(parentShell);
         alias = al;
