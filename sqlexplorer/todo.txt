@@ -2,21 +2,15 @@
 * make dictionary persistent, and only update on request
 * background processing for queries
 * create extension points for sql editor
-
 * connect to database in background
 * add drag support for nodes into sqleditor
 * remove overlaystore from preferences and add default preferences to preferences.ini
 * add ok/cancel prompts where beneficial (example delete alias)
-
-
-
 * better timing details of sql results
-
 * add refresh action to sql result table
 * merge alias and connections view
 * add help documentation
 * create plugin fragments for every database specific extension
-* move drivers to preferences
 * add autowrap to editor..
 * add more detailed timing to sql result
 * set detail for column node to parent node.. 
@@ -24,5 +18,4 @@
 * create update manager 
 * creating first editor is slow..
 * create installer for standalone app
-* remove all deprecated methods
 * write doc on how to extend..

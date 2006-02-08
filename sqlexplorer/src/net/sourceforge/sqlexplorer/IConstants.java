@@ -37,4 +37,5 @@ public interface IConstants {
     String INCLUDE_COLUMNS_IN_TREE = "SQLEditor.IncludeColumns";
     String WARN_IF_LARGE_LIMIT = "SQLEditor.WarnIfLargeLimit";
     String WARN_LIMIT = "SQLEditor.WarnLimit";
+    String DEFAULT_DRIVER = "Drivers.DefaultDriverName";
 }

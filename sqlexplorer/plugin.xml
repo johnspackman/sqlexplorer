@@ -77,14 +77,6 @@
       <view
             allowMultiple="false"
             category="SQLExplorerPlugin"
-            class="net.sourceforge.sqlexplorer.plugin.views.DriverView"
-            icon="icons/feature_obj.gif"
-            id="net.sourceforge.sqlexplorer.plugin.views.DriverView"
-            name="Drivers ">
-      </view>
-      <view
-            allowMultiple="false"
-            category="SQLExplorerPlugin"
             class="net.sourceforge.sqlexplorer.plugin.views.AliasView"
             icon="icons/alias.gif"
             id="net.sourceforge.sqlexplorer.plugin.views.AliasView"
@@ -124,9 +116,15 @@
             class="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage"
             id="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage">
       </page>
+      
    </extension>
+
    <extension
          point="org.eclipse.ui.preferencePages">
+      <page class="net.sourceforge.sqlexplorer.preferences.DriverPreferencePage" 
+      		category="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage" 
+      		name="JDBC Drivers" 
+      		id="net.sourceforge.sqlexplorer.preferences.DriverPreferencePage"/>
       <page
             name="SQL Editor"
             category="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage"

@@ -34,8 +34,6 @@ public final class SqlexplorerViewConstants {
 
     public static final String SQLEXPLORER_CONNECTIONS = "net.sourceforge.sqlexplorer.plugin.views.ConnectionsView";
 
-    public static final String SQLEXPLORER_DRIVER = "net.sourceforge.sqlexplorer.plugin.views.DriverView";
-
     public static final String SQLEXPLORER_ALIAS = "net.sourceforge.sqlexplorer.plugin.views.AliasView";
 
     public static final String SQLEXPLORER_SQLRESULT = "net.sourceforge.sqlexplorer.plugin.views.SqlResultsView";
@@ -72,7 +70,6 @@ public final class SqlexplorerViewConstants {
      */
     private void setupDefaultViewList() {
         defaultViewList = new ArrayList(7);
-        defaultViewList.add(SQLEXPLORER_DRIVER);
         defaultViewList.add(SQLEXPLORER_ALIAS);
         defaultViewList.add(SQLEXPLORER_CONNECTIONS);
         defaultViewList.add(SQLEXPLORER_DBSTRUCTURE);

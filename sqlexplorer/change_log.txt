@@ -8,6 +8,7 @@ General
 * updated logo & icons
 * connection info view removed, information has been added as detail of database node
 * background processing for dictionary loading
+* removed deprecated methods
 
 SQL History
 * only successfull queries are stored
@@ -60,9 +61,12 @@ Connection view
 * when new connection is made, a new SQL editor is automatically opened
 
 Driver view
-* doubleclick on driver opens 'modify driver' dialog
-* added filter to show only loaded drivers
+* view removed
+
+Preferences
+* added driver preferences
 * added option to restore the default drivers
+* added option to set default driver in preferences.ini
 
 Alias view
 * added autologon option in alias

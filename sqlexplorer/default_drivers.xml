@@ -252,6 +252,27 @@
 		</identifier>
 	</Bean>
 	
+    <Bean Class="net.sourceforge.squirrel_sql.fw.sql.SQLDriver">
+        <driverClassName>com.ddtek.jdbc.openedge.OpenEdgeDriver</driverClassName>
+        <identifier Class="net.sourceforge.squirrel_sql.fw.id.UidIdentifier">
+            <string>-27</string>
+        </identifier>
+        <url>jdbc:datadirect:openedge://hostname:port;databaseName=name</url>
+        <jarFileName/>
+        <name>Progress OpenEdge 10.1 JDBC Driver </name>
+        <jarFileNames Indexed="true">
+            <Bean Class="net.sourceforge.squirrel_sql.fw.util.beanwrapper.StringWrapper">
+                <string>[[install-dir]]\java\openedge.jar</string>
+            </Bean>
+            <Bean Class="net.sourceforge.squirrel_sql.fw.util.beanwrapper.StringWrapper">
+                <string>[[install-dir]]\java\base.jar</string>
+            </Bean>
+            <Bean Class="net.sourceforge.squirrel_sql.fw.util.beanwrapper.StringWrapper">
+                <string>[[install-dir]]\java\util.jar</string>
+            </Bean>
+        </jarFileNames>
+    </Bean>
+	
 	<Bean Class="net.sourceforge.squirrel_sql.fw.sql.SQLDriver">
 		<name>Oracle OCI Driver</name>
 		<driverClassName>oracle.jdbc.driver.OracleDriver</driverClassName>
