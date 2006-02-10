@@ -3,14 +3,12 @@
 
 <product name="application" id="net.sourceforge.sqlexplorer.application" application="net.sourceforge.sqlexplorer.application" useFeatures="false">
 
-
    <configIni use="default"/>
 
    <launcherArgs>
    </launcherArgs>
 
    <windowImages small="/sqlexplorer/icons/logo16.gif" large="/sqlexplorer/icons/logo32.gif"/>
-
 
    <launcher name="sqlexplorer">
       <linux icon="/sqlexplorer/icons/logo48.xpm"/>
@@ -30,10 +28,8 @@
       <plugin id="org.eclipse.core.filebuffers"/>
       <plugin id="org.eclipse.core.resources"/>
       <plugin id="org.eclipse.core.runtime"/>
-      <plugin id="org.eclipse.core.runtime.compatibility"/>
       <plugin id="org.eclipse.core.variables"/>
       <plugin id="org.eclipse.draw2d"/>
-      <plugin id="org.eclipse.gef"/>
       <plugin id="org.eclipse.help"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.text"/>
