@@ -18,6 +18,8 @@
  */
 package net.sourceforge.sqlexplorer.dataset;
 
+import java.text.DecimalFormat;
+
 /**
  * DataSetRow, represents one row in a dataSet.
  * 
@@ -27,7 +29,9 @@ public class DataSetRow {
 
     private Object[] _values;
 
-
+    private DecimalFormat _decimalFormat = new DecimalFormat();
+    
+    
     /**
      * Create new DataSetRow with columnCount values
      * 
@@ -35,6 +39,7 @@ public class DataSetRow {
      */
     public DataSetRow(int columnCount) {
         _values = new Object[columnCount];
+        _decimalFormat.setGroupingUsed(false);
     }
 
 
@@ -57,6 +62,14 @@ public class DataSetRow {
 
         Object tmp = _values[column];
         if (tmp != null) {
+            
+            Class clazz = tmp.getClass();
+            
+            // filter out scientific values
+            if (clazz == Double.class || clazz == Integer.class)  {                 
+                return _decimalFormat.format(tmp); 
+            } 
+            
             return tmp.toString();
         }
         return "<null>";
