@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package net.sourceforge.sqlexplorer.sessiontree.actions;
+package net.sourceforge.sqlexplorer.connections.actions;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
@@ -34,7 +34,7 @@ import org.eclipse.ui.IViewPart;
  * @author Mazzolini
  * 
  */
-public class CloseConnection extends Action implements IViewActionDelegate {
+public class CloseConnectionAction extends Action implements IViewActionDelegate {
 
     private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getCloseConnIcon());
     private ImageDescriptor _disabledImage = ImageDescriptor.createFromURL(SqlexplorerImages.getDisabledCloseConnIcon());
@@ -42,12 +42,12 @@ public class CloseConnection extends Action implements IViewActionDelegate {
     /**
      * @param node
      */
-    public CloseConnection(SessionTreeNode node) {
+    public CloseConnectionAction(SessionTreeNode node) {
 
         _stn = node;
     }
 
-    public CloseConnection() {
+    public CloseConnectionAction() {
 
     }
 

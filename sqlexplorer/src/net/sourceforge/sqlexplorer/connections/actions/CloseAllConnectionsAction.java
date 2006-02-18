@@ -16,11 +16,11 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package net.sourceforge.sqlexplorer.sessiontree.actions;
+package net.sourceforge.sqlexplorer.connections.actions;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -31,22 +31,33 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 
 /**
- * @author Andrea Mazzolini
+ * @author Mazzolini
  * 
  */
-public class Commit extends Action implements IViewActionDelegate {
+public class CloseAllConnectionsAction extends Action implements IViewActionDelegate {
 
-    SessionTreeNode _stn;
+    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getCloseAllConnsIcon());
+    private ImageDescriptor _disabledImage = ImageDescriptor.createFromURL(SqlexplorerImages.getDisabledCloseAllConnsIcon());
 
-    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getCommitIcon());
-    private ImageDescriptor _disabledImage = ImageDescriptor.createFromURL(SqlexplorerImages.getDisabledCommitIcon());
+    /**
+     * @param treeNode
+     */
+    public CloseAllConnectionsAction(RootSessionTreeNode treeNode) {
+
+        rstn = treeNode;
+    }
+
+    public CloseAllConnectionsAction() {
+    }
+
+    RootSessionTreeNode rstn;
 
     /*
      * (non-Javadoc)
      * 
      * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
      */
-    public void init(IViewPart arg0) {
+    public void init(IViewPart view) {
 
     }
 
@@ -55,10 +66,8 @@ public class Commit extends Action implements IViewActionDelegate {
      * 
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
-    public void run(IAction arg0) {
-        if (_stn != null)
-            _stn.commit();
-
+    public void run(IAction action) {
+        run();
     }
 
     /*
@@ -70,28 +79,33 @@ public class Commit extends Action implements IViewActionDelegate {
     public void selectionChanged(IAction action, ISelection selection) {
         if (selection instanceof IStructuredSelection) {
             IStructuredSelection iss = (IStructuredSelection) selection;
-            Object obj = iss.getFirstElement();
-            if (obj instanceof SessionTreeNode) {
-                SessionTreeNode stn = (SessionTreeNode) obj;
-                if (!stn.isAutoCommitMode()) {
-                    _stn = stn;
-                    action.setEnabled(true);
-                }
-
-                else {
-                    action.setEnabled(false);
-                    _stn = null;
-                }
-
+            if (iss.getFirstElement() instanceof RootSessionTreeNode) {
+                rstn = (RootSessionTreeNode) iss.getFirstElement();
+                action.setEnabled(true);
             } else {
                 action.setEnabled(false);
-                _stn = null;
+                rstn = null;
             }
+
         }
     }
 
     public String getText() {
-        return Messages.getString("ConnectionsView.Actions.Commit"); //$NON-NLS-1$
+        return Messages.getString("ConnectionsView.Actions.CloseAllConnections");
+    }
+    
+    public String getToolTipText() {
+        return Messages.getString("ConnectionsView.Actions.CloseAllConnectionsToolTip");
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jface.action.IAction#run()
+     */
+    public void run() {
+        if (rstn != null)
+            rstn.closeAllConnections();
     }
 
     public ImageDescriptor getImageDescriptor() {
@@ -101,4 +115,5 @@ public class Commit extends Action implements IViewActionDelegate {
     public ImageDescriptor getDisabledImageDescriptor() {
         return _disabledImage;
     }
+
 }

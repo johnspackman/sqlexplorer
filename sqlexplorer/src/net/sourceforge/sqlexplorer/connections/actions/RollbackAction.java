@@ -16,13 +16,10 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package net.sourceforge.sqlexplorer.sessiontree.actions;
+package net.sourceforge.sqlexplorer.connections.actions;
 
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
-
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -31,80 +28,63 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IWorkbenchPage;
 
-public class NewSQLEditor extends Action implements IViewActionDelegate {
-
-	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getOpenSQLIcon());
+/**
+ * @author Mazzolini
+ *
+ * To change the template for this generated type comment go to
+ * Window>Preferences>Java>Code Generation>Code and Comments
+ */
+public class RollbackAction extends Action implements IViewActionDelegate {
+	SessionTreeNode _stn;
+	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getRollbackIcon());
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
 	 */
-	IViewPart view;
-	SessionTreeNode _stn;
 	public void init(IViewPart view) {
-		this.view=view;
+		
 
-	}
-	public NewSQLEditor(SessionTreeNode node){
-		_stn=node;
-	}
-	public NewSQLEditor(){
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
 	public void run(IAction action) {
-		run();
+		if(_stn!=null)
+			_stn.rollback();
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
-	 */
 	public void selectionChanged(IAction action, ISelection selection) {
 		if(selection instanceof IStructuredSelection){
 			IStructuredSelection iss=(IStructuredSelection)selection;
 			Object obj=iss.getFirstElement();
 			if(obj instanceof SessionTreeNode){
-				_stn=(SessionTreeNode)obj;
+				SessionTreeNode stn=(SessionTreeNode)obj;
+				if(!stn.isAutoCommitMode()){
+					_stn=stn;
+					action.setEnabled(true);
+				}
+					
+				else{
+					action.setEnabled(false);
+					_stn=null;
+				}
+					
 			}else{
+				action.setEnabled(false);
 				_stn=null;
 			}
 		}
+	}
+	public ImageDescriptor getImageDescriptor() {
+				return img;
+			}
 
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.action.IAction#run()
-	 */
-	public void run() {
-		SQLEditorInput input = new SQLEditorInput("SQL Editor ("+SQLExplorerPlugin.getDefault().getNextElement()+").sql");
-		//SessionTreeNode sessionNode=(SessionTreeNode) ((SqlEditNode)sel.getFirstElement()).getParent();
-		input.setSessionNode(_stn);
-		IWorkbenchPage page= SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		try{
-			//SQLEditor editorPart= (SQLEditor) 
-			page.openEditor(input,"net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
-		}catch(Throwable e){
-			SQLExplorerPlugin.error("Error creating sql editor",e);
-		}
-	}
-	public String getText() {
-		return "New SQL Editor";
-	}
-	/* (non-Javadoc)
-			 * @see org.eclipse.jface.action.IAction#getImageDescriptor()
+			/* (non-Javadoc)
+			 * @see org.eclipse.jface.action.IAction#getHoverImageDescriptor()
 			 */
-		public ImageDescriptor getImageDescriptor() {
-			return img;
-		}
-
-		/* (non-Javadoc)
-		 * @see org.eclipse.jface.action.IAction#getHoverImageDescriptor()
-		 */
-		public ImageDescriptor getHoverImageDescriptor() {
-			return img;
-		}
-
+			public ImageDescriptor getHoverImageDescriptor() {
+				return img;
+			}
 }

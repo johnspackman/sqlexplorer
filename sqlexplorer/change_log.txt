@@ -60,6 +60,7 @@ SQL Editor
 
 Connection view
 * when new connection is made, a new SQL editor is automatically opened
+* view merged with Alias View
 
 Driver view
 * view removed

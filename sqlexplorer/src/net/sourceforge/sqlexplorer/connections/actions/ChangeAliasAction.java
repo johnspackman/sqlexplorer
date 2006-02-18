@@ -1,0 +1,98 @@
+/*
+ * Copyright (C) 2006 Davy Vanherbergen
+ * dvanherbergen@users.sourceforge.net
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+package net.sourceforge.sqlexplorer.connections.actions;
+
+import net.sourceforge.sqlexplorer.AliasModel;
+import net.sourceforge.sqlexplorer.DriverModel;
+import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.sqlexplorer.SqlexplorerImages;
+import net.sourceforge.sqlexplorer.dialogs.CreateAliasDlg;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
+
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.swt.widgets.Display;
+
+/**
+ * @author Davy Vanherbergen
+ * 
+ */
+public class ChangeAliasAction extends AbstractConnectionTreeAction {
+
+    ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getEditAlias());
+
+
+    public String getText() {
+        return Messages.getString("AliasView.Actions.ChangeAlias");
+    }
+
+
+    public String getToolTipText() {
+        return Messages.getString("AliasView.Actions.ChangeAliasToolTip");
+    }
+
+
+    public ImageDescriptor getHoverImageDescriptor() {
+        return _image;
+    }
+
+
+    public ImageDescriptor getImageDescriptor() {
+        return _image;
+    };
+
+
+    public void run() {
+
+        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
+        if (sel.getFirstElement() instanceof ISQLAlias) {
+            SQLAlias al = (SQLAlias) sel.getFirstElement();
+            if (al != null) {
+                DriverModel driverModel = SQLExplorerPlugin.getDefault().getDriverModel();
+                AliasModel aliasModel = SQLExplorerPlugin.getDefault().getAliasModel();
+                CreateAliasDlg dlg = new CreateAliasDlg(Display.getCurrent().getActiveShell(), driverModel, 2, al, aliasModel);
+                dlg.open();
+                _treeViewer.refresh();
+            }
+        }
+    }
+
+
+    /**
+     * Only show action when there is 1 alias selected
+     * 
+     * @see net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction#isAvailable()
+     */
+    public boolean isAvailable() {
+
+        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
+
+        if (sel.size() != 1) {
+            return false;
+        }
+        if (sel.getFirstElement() instanceof ISQLAlias) {
+            return true;
+        }
+
+        return false;
+    }
+
+}

@@ -168,7 +168,7 @@ public class SqlExecProgress implements IRunnableWithProgress {
                             long endTime = System.currentTimeMillis();
                             String message = Messages.getString("Time__1") + " " + (int) (endTime - startTime) + Messages.getString("_ms");
                             txtComp.setMessage(message + Messages.getString("SqlExecProgress._updated_rowcount__5") + stmt.getUpdateCount());
-
+                            stmt.close();
                         } catch (Throwable e) {
                             SQLExplorerPlugin.error("Error displaying data ", e);
                             txtComp.setMessage(e.getMessage());

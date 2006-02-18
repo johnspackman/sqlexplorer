@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SQLExplorer Plugin
+Bundle-SymbolicName: net.sourceforge.sqlexplorer; singleton:=true
+Bundle-Version: 3.0.0
+Bundle-Activator: net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.core.runtime.compatibility
+Eclipse-AutoStart: true
+Export-Package: javax.sql.rowset,
+ net.n3.nanoxml,
+ net.sourceforge.sqlexplorer,
+ net.sourceforge.squirrel_sql.fw,
+ org.apache.commons.logging,
+ org.apache.log4j
+Bundle-ClassPath: lib/commons-logging.jar,
+ lib/log4j.jar,
+ lib/nanoxml.jar,
+ lib/rowset.jar,
+ lib/squirrel.jar
+Bundle-Vendor: Davy Vanherbergen
+Plugin-Class: net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin

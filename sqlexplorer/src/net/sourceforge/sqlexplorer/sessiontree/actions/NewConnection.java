@@ -20,6 +20,7 @@ package net.sourceforge.sqlexplorer.sessiontree.actions;
  */
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverManager;
 

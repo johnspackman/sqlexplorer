@@ -79,9 +79,6 @@ public class SQLExplorerPluginPerspective implements IPerspectiveFactory {
         IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.15f, editorArea);
         topLeft.addView(SqlexplorerViewConstants.SQLEXPLORER_ALIAS);
 
-        IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.70f, "midLeft");
-        bottomLeft.addView(SqlexplorerViewConstants.SQLEXPLORER_CONNECTIONS);
-
         IFolderLayout main = layout.createFolder("right", IPageLayout.RIGHT, 0.70f, editorArea);
 
         main.addView(SqlexplorerViewConstants.SQLEXPLORER_DBSTRUCTURE);

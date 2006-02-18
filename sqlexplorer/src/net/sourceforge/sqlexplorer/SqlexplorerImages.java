@@ -32,6 +32,9 @@ public class SqlexplorerImages {
         return URLUtil.getResourceURL("icons/alias.gif");
     }
 
+    public static final URL getConnectedAliasIcon() {
+        return URLUtil.getResourceURL("icons/connected_alias.gif");
+    }
 
     public static final URL getDatabaseIcon() {
         return URLUtil.getResourceURL("icons/database.jpg");

@@ -1,4 +1,4 @@
-package net.sourceforge.sqlexplorer.sessiontree.actions;
+package net.sourceforge.sqlexplorer.plugin.actions;
 
 /*
  * Copyright (C) 2002-2004 Andrea Mazzolini

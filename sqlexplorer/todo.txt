@@ -1,3 +1,5 @@
+* fix actions in alias view
+* fix standalone RCP application -> doesn't start anymore after removal of compatibiltiy runtime
 * review/fix sql editor content assist
 * make dictionary persistent, and only update on request
 * background processing for queries

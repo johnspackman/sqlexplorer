@@ -21,17 +21,19 @@ public class SQLExplorerApplication implements IPlatformRunnable {
      */
     public Object run(Object args) throws Exception {
 
-        Display display = PlatformUI.createDisplay();
+        Display display = null;
         
         try {
-            
+            display = PlatformUI.createDisplay();
             WorkbenchAdvisor advisor = new SQLExplorerWorkbenchAdvisor();
             int rc = PlatformUI.createAndRunWorkbench(display, advisor);            
             return (rc == PlatformUI.RETURN_RESTART ? IPlatformRunnable.EXIT_RESTART : IPlatformRunnable.EXIT_OK);
     
         } finally {
             
-            display.dispose();
+            if (display != null) {
+                display.dispose();
+            }
         }
         
     }

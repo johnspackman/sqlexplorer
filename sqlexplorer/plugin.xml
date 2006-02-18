@@ -1,45 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="net.sourceforge.sqlexplorer"
-   name="SQLExplorer Plugin"
-   version="3.0.0"
-   provider-name="Davy Vanherbergen"
-   class="net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin">
+<plugin>
 
-   <runtime>
-      <library name="sqlexplorer.jar">
-         <export name="*"/>
-      </library>
-      <library name="lib/commons-logging.jar">
-         <export name="*"/>
-      </library>
-      <library name="lib/squirrel.jar">
-         <export name="*"/>
-      </library>
-      <library name="lib/log4j.jar">
-         <export name="*"/>
-      </library>
-      <library name="lib/nanoxml.jar">
-         <export name="*"/>
-      </library>
-      <library name="lib/rowset.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-   <requires>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.swt"/>
-      <import plugin="org.eclipse.ui.editors"/>
-      <import plugin="org.eclipse.ui.workbench"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor"/>
-      <import plugin="org.eclipse.jface"/>
-      <import plugin="org.eclipse.text"/>
-      <import plugin="org.eclipse.jface.text"/>
-   </requires>
+
    <extension-point id="nodeContextAction" name="Database Structure Node Context Menu Action" schema="schema/nodeContextAction.exsd"/>
    <extension-point id="node" name="Database Structure Node" schema="schema/node.exsd"/>
    <extension-point id="nodeDetailTab" name="Database Structure Node Detail Tab" schema="schema/nodeDetailTab.exsd"/>
@@ -52,14 +15,6 @@
             name="SQL Explorer"
             id="SQLExplorerPlugin">
       </category>
-      <view
-            allowMultiple="false"
-            category="SQLExplorerPlugin"
-            class="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
-            icon="icons/connections_view.gif"
-            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
-            name="Connections">
-      </view>
       <view
             allowMultiple="false"
             category="SQLExplorerPlugin"
@@ -147,10 +102,10 @@
    </extension>
    <extension point="org.eclipse.ui.viewActions">     
       <viewContribution
-            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.AliasView"
             id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.rollback">
          <action
-               class="net.sourceforge.sqlexplorer.sessiontree.actions.Rollback"
+               class="net.sourceforge.sqlexplorer.connections.actions.RollbackAction"
                disabledIcon="icons/rollback_dis.gif"
                enablesFor="1"
                icon="icons/rollback.gif"
@@ -161,10 +116,10 @@
          </action>
       </viewContribution>
       <viewContribution
-            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.AliasView"
             id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.commit">
          <action
-               class="net.sourceforge.sqlexplorer.sessiontree.actions.Commit"
+               class="net.sourceforge.sqlexplorer.connections.actions.CommitAction"
                disabledIcon="icons/commit_dis.gif"
                enablesFor="1"
                icon="icons/commit.gif"
@@ -175,12 +130,12 @@
          </action>
       </viewContribution>
       <viewContribution
-            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.AliasView"
             id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.closeAll">
          <action
-               class="net.sourceforge.sqlexplorer.sessiontree.actions.CloseAllConnections"
+               class="net.sourceforge.sqlexplorer.connections.actions.CloseAllConnectionsAction"
                disabledIcon="icons/removeall_dis.gif"
-               enablesFor="1"
+               enablesFor="*"
                icon="icons/removeAll_co.gif"
                id="net.sourceforge.sqlexplorer.actions.closeAll"
                label="Close All Connections"
@@ -190,15 +145,18 @@
                   name="*"
                   class="SessionTreeNode">
             </selection>
+            <selection
+                  class="SQLAlias"
+                  name="SQL Alias"/>
          </action>
       </viewContribution>
       <viewContribution
-            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.AliasView"
             id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.close">
          <action
-               class="net.sourceforge.sqlexplorer.sessiontree.actions.CloseConnection"
+               class="net.sourceforge.sqlexplorer.connections.actions.CloseConnectionAction"
                disabledIcon="icons/remove_dis.gif"
-               enablesFor="1"
+               enablesFor="*"
                icon="icons/remove_att.gif"
                id="net.sourceforge.sqlexplorer.actions.close"
                label="Close Connection"
@@ -212,12 +170,12 @@
       </viewContribution>
 
       <viewContribution
-            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.AliasView"
             id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.NewEditor">
          <action
                label="New SQL Editor"
                icon="icons/new_editor.gif"
-               class="net.sourceforge.sqlexplorer.sessiontree.actions.NewSQLEditor"
+               class="net.sourceforge.sqlexplorer.connections.actions.NewEditorAction"
                tooltip="New SQL Editor"
                enablesFor="*"
                toolbarPath="additions"
@@ -260,26 +218,7 @@
 		</action>
 	</actionSet>
    </extension>
-   <extension
-         id="application"
-         name="SQL Explorer Client"
-         point="org.eclipse.core.runtime.applications">
-      <application>
-         <run class="net.sourceforge.sqlexplorer.rcp.SQLExplorerApplication"/>
-      </application>
-   </extension>
-   <extension
-         id="application"
-         point="org.eclipse.core.runtime.products">
-      <product
-            application="net.sourceforge.sqlexplorer.application"
-            description="SQL Explorer"
-            name="application">
-         <property
-               name="windowImages"
-               value="icons/logo16.gif,icons/logo32.gif"/>
-      </product>
-   </extension>
+
    <extension
          id="nodeContextAction"
          point="net.sourceforge.sqlexplorer.nodeContextAction">
@@ -331,6 +270,22 @@
             class="net.sourceforge.sqlexplorer.dataset.actions.CopyTableAction"
             id="sqlexplorer.dataset.actions.CopyTableAction"
             name="Copy Table Action"/>            
+   </extension>
+   <extension
+         id="application"
+         name="SQL Explorer Plugin"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run class="net.sourceforge.sqlexplorer.rcp.SQLExplorerApplication"/>
+      </application>
+   </extension>
+   <extension
+         id="product"
+         name="SQL Explorer Client"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="net.sourceforge.sqlexplorer.application"
+            name="SQL Explorer Client"/>
    </extension>
 
 </plugin>
