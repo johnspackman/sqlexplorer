@@ -221,6 +221,13 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                                         }
                                     }
                                 }
+                                
+                                // refresh connection view
+                                ConnectionsView connView = (ConnectionsView) getSite().getPage().findView(SqlexplorerViewConstants.SQLEXPLORER_CONNECTIONS);
+
+                                if (connView != null) {
+                                    connView.getTreeViewer().refresh();
+                                }
                             }
 
                         }
@@ -235,7 +242,8 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                     SQLEditor editorPart = (SQLEditor) page.openEditor((IEditorInput) input,
                             "net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
                     editorPart.setText(sqlString.getText());
-
+                   
+                    
                 } catch (Throwable e) {
                     SQLExplorerPlugin.error("Error creating sql editor", e);
                 }
