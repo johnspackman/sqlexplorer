@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2006 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,82 +18,108 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
+import java.util.Iterator;
+
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
+import net.sourceforge.sqlexplorer.plugin.views.ConnectionsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 
 /**
- * @author Mazzolini
+ * @author Davy Vanherbergen
  * 
  */
-public class CloseConnectionAction extends Action implements IViewActionDelegate {
+public class CloseConnectionAction extends AbstractConnectionTreeAction implements IViewActionDelegate {
 
     private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getCloseConnIcon());
+
     private ImageDescriptor _disabledImage = ImageDescriptor.createFromURL(SqlexplorerImages.getDisabledCloseConnIcon());
 
-    /**
-     * @param node
-     */
-    public CloseConnectionAction(SessionTreeNode node) {
-
-        _stn = node;
-    }
-
-    public CloseConnectionAction() {
-
-    }
-
-    SessionTreeNode _stn;
 
     public void init(IViewPart view) {
-
+        _treeViewer = ((ConnectionsView) view).getTreeViewer();
     }
+
 
     public void run(IAction action) {
         run();
     }
 
+
     public void selectionChanged(IAction action, ISelection selection) {
-        if (selection instanceof IStructuredSelection) {
-            IStructuredSelection iss = (IStructuredSelection) selection;
-            Object obj = iss.getFirstElement();
-            if (obj instanceof SessionTreeNode) {
-                _stn = (SessionTreeNode) obj;
-                action.setEnabled(true);
-            } else {
-                action.setEnabled(false);
-                _stn = null;
-            }
-        }
+        action.setEnabled(isAvailable());
     }
 
+
     public void run() {
-        if (_stn != null)
-            _stn.close();
+
+        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
+
+        Iterator it = sel.iterator();
+        while (it.hasNext()) {
+
+            Object o = it.next();
+
+            if (o instanceof SessionTreeNode) {
+                SessionTreeNode node = (SessionTreeNode) o;
+                node.close();
+            }
+
+        }
+
+        _treeViewer.refresh();
+
     }
+
 
     public String getText() {
         return Messages.getString("ConnectionsView.Actions.CloseConnection");
     }
-    
+
+
     public String getToolTipText() {
         return Messages.getString("ConnectionsView.Actions.CloseConnectionToolTip");
     }
+
 
     public ImageDescriptor getImageDescriptor() {
         return _image;
     }
 
-    public ImageDescriptor getDisabledImageDescriptor() {        
+
+    public ImageDescriptor getDisabledImageDescriptor() {
         return _disabledImage;
+    }
+
+
+    /**
+     * Action is available when there is at least one session selected.
+     * 
+     * @see net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction#isAvailable()
+     */
+    public boolean isAvailable() {
+
+        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
+
+        Iterator it = sel.iterator();
+        while (it.hasNext()) {
+
+            Object o = it.next();
+
+            if (o instanceof SessionTreeNode) {
+                return true;
+            }
+
+        }
+
+        return false;
     }
 
 }

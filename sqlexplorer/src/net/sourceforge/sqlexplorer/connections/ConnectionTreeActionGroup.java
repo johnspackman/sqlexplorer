@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2006 Davy Vanherbergen
- * dvanherbergen@users.sourceforge.net
+ * Copyright (C) 2006 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,11 +20,16 @@ package net.sourceforge.sqlexplorer.connections;
 
 import net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction;
 import net.sourceforge.sqlexplorer.connections.actions.ChangeAliasAction;
+import net.sourceforge.sqlexplorer.connections.actions.CloseAllConnectionsAction;
+import net.sourceforge.sqlexplorer.connections.actions.CloseConnectionAction;
+import net.sourceforge.sqlexplorer.connections.actions.CommitAction;
 import net.sourceforge.sqlexplorer.connections.actions.ConnectAliasAction;
 import net.sourceforge.sqlexplorer.connections.actions.CopyAliasAction;
 import net.sourceforge.sqlexplorer.connections.actions.DeleteAliasAction;
 import net.sourceforge.sqlexplorer.connections.actions.NewAliasAction;
 import net.sourceforge.sqlexplorer.connections.actions.NewEditorAction;
+import net.sourceforge.sqlexplorer.connections.actions.RollbackAction;
+import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -52,6 +57,14 @@ public class ConnectionTreeActionGroup extends ActionGroup {
     
     private AbstractConnectionTreeAction _newEditorAction;
 
+    private AbstractConnectionTreeAction _closeAllConnectionsAction;
+    
+    private AbstractConnectionTreeAction _closeConnectionAction;
+    
+    private AbstractConnectionTreeAction _commitAction;
+    
+    private AbstractConnectionTreeAction _rollBackAction;
+    
     private TreeViewer _treeViewer;
 
 
@@ -71,6 +84,11 @@ public class ConnectionTreeActionGroup extends ActionGroup {
         _connectAliasAction = new ConnectAliasAction();
         _newEditorAction = new NewEditorAction();
         
+        _closeAllConnectionsAction = new CloseAllConnectionsAction();       
+        _closeConnectionAction = new CloseConnectionAction();
+        _commitAction= new CommitAction();
+        _rollBackAction = new RollbackAction();
+        
         _newAliasAction.setTreeViewer(_treeViewer);
         _changeAliasAction.setTreeViewer(_treeViewer);
         _copyAliasAction.setTreeViewer(_treeViewer);
@@ -78,6 +96,10 @@ public class ConnectionTreeActionGroup extends ActionGroup {
         _connectAliasAction.setTreeViewer(_treeViewer);
         _newEditorAction.setTreeViewer(_treeViewer);
 
+        _closeAllConnectionsAction.setTreeViewer(_treeViewer);      
+        _closeConnectionAction.setTreeViewer(_treeViewer);
+        _commitAction.setTreeViewer(_treeViewer);
+        _rollBackAction.setTreeViewer(_treeViewer);
     }
 
 
@@ -97,10 +119,27 @@ public class ConnectionTreeActionGroup extends ActionGroup {
             return;
         }
 
-        addSessionActions(menu);
-        menu.add(new Separator());
-        addAliasActions(menu);
-        menu.add(new Separator());
+
+        if (_newEditorAction.isAvailable()) {
+            menu.add(_newEditorAction);
+            menu.add(new Separator());
+        }
+        
+        if (selection.getFirstElement() instanceof ISQLAlias) {
+
+            addAliasActions(menu);
+            menu.add(new Separator());
+            addSessionActions(menu);
+            menu.add(new Separator());
+            
+        } else {
+
+            addSessionActions(menu);
+            menu.add(new Separator());
+            addAliasActions(menu);
+            menu.add(new Separator());            
+        }
+        
         addGenericActions(menu);
 
     }
@@ -116,9 +155,6 @@ public class ConnectionTreeActionGroup extends ActionGroup {
 
         menu.add(_newAliasAction);
 
-        if (_newEditorAction.isAvailable()) {
-            menu.add(_newEditorAction);
-        }
     }
 
 
@@ -130,7 +166,21 @@ public class ConnectionTreeActionGroup extends ActionGroup {
      */
     private void addSessionActions(IMenuManager menu) {
 
+        if (_closeConnectionAction.isAvailable()) {
+            menu.add(_closeConnectionAction);
+        }
 
+        if (_closeAllConnectionsAction.isAvailable()) {
+            menu.add(_closeAllConnectionsAction);
+        }
+
+        if (_commitAction.isAvailable()) {
+            menu.add(_commitAction);
+        }
+
+        if (_rollBackAction.isAvailable()) {
+            menu.add(_rollBackAction);
+        }
         
     }
 

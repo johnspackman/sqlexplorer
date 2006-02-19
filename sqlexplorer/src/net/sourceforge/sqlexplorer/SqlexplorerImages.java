@@ -138,17 +138,12 @@ public class SqlexplorerImages {
 
 
     public static final URL getConnectionIcon() {
-        return URLUtil.getResourceURL("icons/connect_alias.gif");
+        return URLUtil.getResourceURL("icons/connected_session.gif");
     }
 
 
     public static final URL getCommitIcon() {
         return URLUtil.getResourceURL("icons/commit.gif");
-    }
-
-
-    public static final URL getDisabledCommitIcon() {
-        return URLUtil.getResourceURL("icons/commit_dis.gif");
     }
 
 
@@ -265,6 +260,9 @@ public class SqlexplorerImages {
         return URLUtil.getResourceURL("icons/new_connection.gif");
     }
 
+    public static final URL getConnectSessionIcon() {
+        return URLUtil.getResourceURL("icons/connect_session.gif");
+    }
 
     public static final URL getLogIcon() {
         return URLUtil.getResourceURL("icons/error_log.gif");
@@ -328,11 +326,6 @@ public class SqlexplorerImages {
 
     public static final URL getRollbackIcon() {
         return URLUtil.getResourceURL("icons/rollback.gif");
-    }
-
-
-    public static final URL getDisabledRollbackIcon() {
-        return URLUtil.getResourceURL("icons/rollback_dis.gif");
     }
 
 

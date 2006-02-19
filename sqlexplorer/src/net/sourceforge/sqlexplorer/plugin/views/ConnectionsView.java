@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-public class AliasView extends ViewPart {
+public class ConnectionsView extends ViewPart {
 
     private TreeViewer _treeViewer;
 
@@ -129,4 +129,11 @@ public class AliasView extends ViewPart {
 
     }
 
+
+    
+    public TreeViewer getTreeViewer() {
+        return _treeViewer;
+    }
+
+    
 }

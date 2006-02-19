@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2006 Davy Vanherbergen
- * dvanherbergen@users.sourceforge.net
+ * Copyright (C) 2006 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -42,11 +42,11 @@ public class DeleteAliasAction extends AbstractConnectionTreeAction {
     ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getDeleteAlias());
 
     public String getToolTipText() {
-        return Messages.getString("AliasView.Actions.DeleteAliasToolTip");
+        return Messages.getString("ConnectionsView.Actions.DeleteAliasToolTip");
     }
 
     public String getText() {
-        return Messages.getString("AliasView.Actions.DeleteAlias");
+        return Messages.getString("ConnectionsView.Actions.DeleteAlias");
     }
     
     public ImageDescriptor getHoverImageDescriptor() {
@@ -60,8 +60,8 @@ public class DeleteAliasAction extends AbstractConnectionTreeAction {
     public void run() {
 
         boolean okToDelete = MessageDialog.openConfirm(Display.getCurrent().getActiveShell(),
-                Messages.getString("AliasView.ConfirmDelete.WindowTitle"),
-                Messages.getString("AliasView.ConfirmDelete.Message"));
+                Messages.getString("ConnectionsView.ConfirmDelete.WindowTitle"),
+                Messages.getString("ConnectionsView.ConfirmDelete.Message"));
 
         if (!okToDelete) {
             return;

@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2006 Davy Vanherbergen
- * dvanherbergen@users.sourceforge.net
+ * Copyright (C) 2006 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,7 @@ import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
+import net.sourceforge.sqlexplorer.plugin.views.ConnectionsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
@@ -34,86 +35,79 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 
-
 /**
  * @author Davy Vanherbergen
- *
+ * 
  */
 public class NewEditorAction extends AbstractConnectionTreeAction implements IViewActionDelegate {
 
     ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getOpenSQLIcon());
 
     ImageDescriptor _disabledImage = ImageDescriptor.createFromURL(SqlexplorerImages.getAliasIcon());
-    
+
+
     public ImageDescriptor getHoverImageDescriptor() {
         return _image;
     }
 
+
     public ImageDescriptor getImageDescriptor() {
         return _image;
     };
-    
-    
-    
+
+
     public ImageDescriptor getDisabledImageDescriptor() {
         return _disabledImage;
     }
 
+
     public void init(IViewPart view) {
-        // noop
-        
+        _treeViewer = ((ConnectionsView) view).getTreeViewer();
     }
+
 
     public void run(IAction action) {
-        run();        
+        run();
     }
+
 
     public void selectionChanged(IAction action, ISelection selection) {
-        
-        if (selection == null) {
-            action.setEnabled(false);
-        }
-        
-        if (selection instanceof IStructuredSelection) {
-            IStructuredSelection sel = (IStructuredSelection) selection;
-            if (sel.size() != 0) {
-                action.setEnabled(true);                
-            }
-        }
-        
+        action.setEnabled(isAvailable());
     }
+
 
     public String getText() {
-        return Messages.getString("AliasView.Actions.NewEditor");
-    }
-    
-    public String getToolTipText() {
-        return Messages.getString("AliasView.Actions.NewEditorToolTip");
+        return Messages.getString("ConnectionsView.Actions.NewEditor");
     }
 
+
+    public String getToolTipText() {
+        return Messages.getString("ConnectionsView.Actions.NewEditorToolTip");
+    }
+
+
     public void run() {
-        
+
         StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
-        
+
         Iterator it = sel.iterator();
         while (it.hasNext()) {
-            
-            Object o = it.next();            
+
+            Object o = it.next();
             if (o instanceof SQLAlias) {
-                
-                ISQLAlias al = (ISQLAlias) o;               
+
+                ISQLAlias al = (ISQLAlias) o;
                 SessionTreeNode node = null;
-                
+
                 // locate open sessions
                 RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
-                Object[] sessions = sessionRoot.getChildren();                
+                Object[] sessions = sessionRoot.getChildren();
                 if (sessions != null) {
                     for (int i = 0; i < sessions.length; i++) {
                         SessionTreeNode session = (SessionTreeNode) sessions[i];
@@ -123,23 +117,21 @@ public class NewEditorAction extends AbstractConnectionTreeAction implements IVi
                         }
                     }
                 }
-                                
+
                 if (node == null) {
                     // if no session is open prompt to open one..
                     boolean okToOpen = MessageDialog.openConfirm(Display.getCurrent().getActiveShell(),
-                            Messages.getString("AliasView.Actions.NewEditor.Connect.WindowTitle"),
-                            Messages.getString("AliasView.Actions.NewEditor.Connect.Message"));
-    
+                            Messages.getString("ConnectionsView.Actions.NewEditor.Connect.WindowTitle"),
+                            Messages.getString("ConnectionsView.Actions.NewEditor.Connect.Message"));
+
                     if (okToOpen) {
-    
+
                         // create new connection..
                         OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(
                                 Display.getCurrent().getActiveShell(), al, SQLExplorerPlugin.getDefault().getDriverModel(),
-                                    SQLExplorerPlugin.getDefault().getPreferenceStore(),
-                                    SQLExplorerPlugin.getDefault().getSQLDriverManager());
-                            openDlgAction.run();
-    
-    
+                                SQLExplorerPlugin.getDefault().getPreferenceStore(), SQLExplorerPlugin.getDefault().getSQLDriverManager());
+                        openDlgAction.run();
+
                         // find new session
                         sessions = sessionRoot.getChildren();
                         if (sessions != null) {
@@ -153,27 +145,27 @@ public class NewEditorAction extends AbstractConnectionTreeAction implements IVi
                         }
                     }
                 }
-                
-                SQLEditorInput input = new SQLEditorInput("SQL Editor ("+SQLExplorerPlugin.getDefault().getNextElement()+").sql");
+
+                SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getNextElement() + ").sql");
                 input.setSessionNode(node);
-                IWorkbenchPage page= SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-                try{
-                    page.openEditor(input,"net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
-                }catch(Throwable e){
-                    SQLExplorerPlugin.error("Error creating sql editor",e);
+                IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                try {
+                    page.openEditor(input, "net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
+                } catch (Throwable e) {
+                    SQLExplorerPlugin.error("Error creating sql editor", e);
                 }
             }
-            
+
             if (o instanceof SessionTreeNode) {
-                
-                SessionTreeNode node = (SessionTreeNode) o;                
-                SQLEditorInput input = new SQLEditorInput("SQL Editor ("+SQLExplorerPlugin.getDefault().getNextElement()+").sql");
+
+                SessionTreeNode node = (SessionTreeNode) o;
+                SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getNextElement() + ").sql");
                 input.setSessionNode(node);
-                IWorkbenchPage page= SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-                try{
-                    page.openEditor(input,"net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
-                }catch(Throwable e){
-                    SQLExplorerPlugin.error("Error creating sql editor",e);
+                IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                try {
+                    page.openEditor(input, "net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
+                } catch (Throwable e) {
+                    SQLExplorerPlugin.error("Error creating sql editor", e);
                 }
             }
 
@@ -181,8 +173,7 @@ public class NewEditorAction extends AbstractConnectionTreeAction implements IVi
 
         _treeViewer.refresh();
     }
-    
-    
+
 
     /**
      * Only show action when there is at least 1 item selected

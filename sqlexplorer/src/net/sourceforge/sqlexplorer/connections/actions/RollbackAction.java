@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2006 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,73 +18,101 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
+import java.util.Iterator;
+
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
+import net.sourceforge.sqlexplorer.plugin.views.ConnectionsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 
 /**
- * @author Mazzolini
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * @author Davy Vanherbergen
+ * 
  */
-public class RollbackAction extends Action implements IViewActionDelegate {
-	SessionTreeNode _stn;
-	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getRollbackIcon());
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
-	 */
-	public void init(IViewPart view) {
-		
+public class RollbackAction extends AbstractConnectionTreeAction implements IViewActionDelegate {
 
-	}
+    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getRollbackIcon());
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-	 */
-	public void run(IAction action) {
-		if(_stn!=null)
-			_stn.rollback();
 
-	}
+    public void init(IViewPart view) {
+        _treeViewer = ((ConnectionsView) view).getTreeViewer();
+    }
 
-	public void selectionChanged(IAction action, ISelection selection) {
-		if(selection instanceof IStructuredSelection){
-			IStructuredSelection iss=(IStructuredSelection)selection;
-			Object obj=iss.getFirstElement();
-			if(obj instanceof SessionTreeNode){
-				SessionTreeNode stn=(SessionTreeNode)obj;
-				if(!stn.isAutoCommitMode()){
-					_stn=stn;
-					action.setEnabled(true);
-				}
-					
-				else{
-					action.setEnabled(false);
-					_stn=null;
-				}
-					
-			}else{
-				action.setEnabled(false);
-				_stn=null;
-			}
-		}
-	}
-	public ImageDescriptor getImageDescriptor() {
-				return img;
-			}
 
-			/* (non-Javadoc)
-			 * @see org.eclipse.jface.action.IAction#getHoverImageDescriptor()
-			 */
-			public ImageDescriptor getHoverImageDescriptor() {
-				return img;
-			}
+    public String getText() {
+        return Messages.getString("ConnectionsView.Actions.Rollback");
+    }
+
+
+    public void run(IAction action) {
+        run();
+    }
+
+
+    public void run() {
+        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
+
+        Iterator it = sel.iterator();
+        while (it.hasNext()) {
+
+            Object o = it.next();
+
+            if (o instanceof SessionTreeNode) {
+                SessionTreeNode node = (SessionTreeNode) o;
+                if (!node.isAutoCommitMode()) {
+                    node.rollback();
+                }
+            }
+        }
+    }
+
+
+    public void selectionChanged(IAction action, ISelection selection) {
+        action.setEnabled(isAvailable());
+    }
+
+
+    public ImageDescriptor getImageDescriptor() {
+        return _image;
+    }
+
+
+    public ImageDescriptor getHoverImageDescriptor() {
+        return _image;
+    }
+
+
+    /**
+     * Action is available when there is at least one session without autocommit
+     * selected
+     * 
+     * @see net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction#isAvailable()
+     */
+    public boolean isAvailable() {
+
+        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
+
+        Iterator it = sel.iterator();
+        while (it.hasNext()) {
+
+            Object o = it.next();
+
+            if (o instanceof SessionTreeNode) {
+                SessionTreeNode node = (SessionTreeNode) o;
+                if (!node.isAutoCommitMode()) {
+                    return true;
+                }
+            }
+
+        }
+
+        return false;
+    }
 }

@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2006 Davy Vanherbergen
- * dvanherbergen@users.sourceforge.net
+ * Copyright (C) 2006 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -112,18 +112,18 @@ public class ConnectionTreeLabelProvider extends LabelProvider {
             }
 
             if (children.size() == 1) {
-                return label += " (" + children.size() + " " + Messages.getString("AliasView.ConnectedAlias.single.Postfix") + ")";
+                return label += " (" + children.size() + " " + Messages.getString("ConnectionsView.ConnectedAlias.single.Postfix") + ")";
             }
 
             if (children.size() > 1) {
-                return label += " (" + children.size() + " " + Messages.getString("AliasView.ConnectedAlias.multiple.Postfix") + ")";
+                return label += " (" + children.size() + " " + Messages.getString("ConnectionsView.ConnectedAlias.multiple.Postfix") + ")";
             }
 
             return label;
 
         } else {
 
-            return Messages.getString("AliasView.ConnectedAlias.activeSession");
+            return Messages.getString("ConnectionsView.ConnectedAlias.activeSession");
         }
 
     }

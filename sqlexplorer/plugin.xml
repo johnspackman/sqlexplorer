@@ -32,10 +32,10 @@
       <view
             allowMultiple="false"
             category="SQLExplorerPlugin"
-            class="net.sourceforge.sqlexplorer.plugin.views.AliasView"
+            class="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
             icon="icons/alias.gif"
-            id="net.sourceforge.sqlexplorer.plugin.views.AliasView"
-            name="Aliases">
+            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            name="Connections">
       </view>
       <view
             allowMultiple="false"
@@ -100,13 +100,25 @@
             id="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor">
       </editor>
    </extension>
-   <extension point="org.eclipse.ui.viewActions">     
+   <extension point="org.eclipse.ui.viewActions">
       <viewContribution
-            targetID="net.sourceforge.sqlexplorer.plugin.views.AliasView"
-            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.rollback">
+            id="net.sourceforge.sqlexplorer.connections.actions.commit"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
+         <action
+               class="net.sourceforge.sqlexplorer.connections.actions.CommitAction"
+               enablesFor="1"
+               icon="icons/commit.gif"
+               id="net.sourceforge.sqlexplorer.actions.commit"
+               label="Commit"
+               toolbarPath="additions"
+               tooltip="Commit">
+         </action>
+      </viewContribution>     
+      <viewContribution
+            id="net.sourceforge.sqlexplorer.connections.actions.rollback"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
          <action
                class="net.sourceforge.sqlexplorer.connections.actions.RollbackAction"
-               disabledIcon="icons/rollback_dis.gif"
                enablesFor="1"
                icon="icons/rollback.gif"
                id="net.sourceforge.sqlexplorer.actions.rollback"
@@ -116,22 +128,8 @@
          </action>
       </viewContribution>
       <viewContribution
-            targetID="net.sourceforge.sqlexplorer.plugin.views.AliasView"
-            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.commit">
-         <action
-               class="net.sourceforge.sqlexplorer.connections.actions.CommitAction"
-               disabledIcon="icons/commit_dis.gif"
-               enablesFor="1"
-               icon="icons/commit.gif"
-               id="net.sourceforge.sqlexplorer.actions.commit"
-               label="Commit"
-               toolbarPath="additions"
-               tooltip="Commit">
-         </action>
-      </viewContribution>
-      <viewContribution
-            targetID="net.sourceforge.sqlexplorer.plugin.views.AliasView"
-            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.closeAll">
+            id="net.sourceforge.sqlexplorer.connections.actions.closeAll"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
          <action
                class="net.sourceforge.sqlexplorer.connections.actions.CloseAllConnectionsAction"
                disabledIcon="icons/removeall_dis.gif"
@@ -141,18 +139,11 @@
                label="Close All Connections"
                toolbarPath="additions"
                tooltip="Close All Connections">
-            <selection
-                  name="*"
-                  class="SessionTreeNode">
-            </selection>
-            <selection
-                  class="SQLAlias"
-                  name="SQL Alias"/>
          </action>
       </viewContribution>
       <viewContribution
-            targetID="net.sourceforge.sqlexplorer.plugin.views.AliasView"
-            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.close">
+            id="net.sourceforge.sqlexplorer.connections.actions.close"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
          <action
                class="net.sourceforge.sqlexplorer.connections.actions.CloseConnectionAction"
                disabledIcon="icons/remove_dis.gif"
@@ -162,16 +153,12 @@
                label="Close Connection"
                toolbarPath="additions"
                tooltip="Close Connection">
-            <selection
-                  name="*"
-                  class="SessionTreeNode">
-            </selection>
          </action>
       </viewContribution>
 
       <viewContribution
-            targetID="net.sourceforge.sqlexplorer.plugin.views.AliasView"
-            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView.NewEditor">
+            id="net.sourceforge.sqlexplorer.connections.actions.NewEditor"
+            targetID="net.sourceforge.sqlexplorer.plugin.views.AliasView">
          <action
                label="New SQL Editor"
                icon="icons/new_editor.gif"

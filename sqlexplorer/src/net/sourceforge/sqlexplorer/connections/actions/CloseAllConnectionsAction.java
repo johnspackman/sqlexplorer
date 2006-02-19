@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2006 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,37 +20,26 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.plugin.views.ConnectionsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 
 /**
- * @author Mazzolini
+ * @author Davy Vanherbergen
  * 
  */
-public class CloseAllConnectionsAction extends Action implements IViewActionDelegate {
+public class CloseAllConnectionsAction extends AbstractConnectionTreeAction implements IViewActionDelegate {
 
     private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getCloseAllConnsIcon());
+
     private ImageDescriptor _disabledImage = ImageDescriptor.createFromURL(SqlexplorerImages.getDisabledCloseAllConnsIcon());
 
-    /**
-     * @param treeNode
-     */
-    public CloseAllConnectionsAction(RootSessionTreeNode treeNode) {
-
-        rstn = treeNode;
-    }
-
-    public CloseAllConnectionsAction() {
-    }
-
-    RootSessionTreeNode rstn;
 
     /*
      * (non-Javadoc)
@@ -58,8 +47,9 @@ public class CloseAllConnectionsAction extends Action implements IViewActionDele
      * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
      */
     public void init(IViewPart view) {
-
+        _treeViewer = ((ConnectionsView) view).getTreeViewer();
     }
+
 
     /*
      * (non-Javadoc)
@@ -70,6 +60,7 @@ public class CloseAllConnectionsAction extends Action implements IViewActionDele
         run();
     }
 
+
     /*
      * (non-Javadoc)
      * 
@@ -77,26 +68,19 @@ public class CloseAllConnectionsAction extends Action implements IViewActionDele
      *      org.eclipse.jface.viewers.ISelection)
      */
     public void selectionChanged(IAction action, ISelection selection) {
-        if (selection instanceof IStructuredSelection) {
-            IStructuredSelection iss = (IStructuredSelection) selection;
-            if (iss.getFirstElement() instanceof RootSessionTreeNode) {
-                rstn = (RootSessionTreeNode) iss.getFirstElement();
-                action.setEnabled(true);
-            } else {
-                action.setEnabled(false);
-                rstn = null;
-            }
-
-        }
+        action.setEnabled(isAvailable());
     }
+
 
     public String getText() {
         return Messages.getString("ConnectionsView.Actions.CloseAllConnections");
     }
-    
+
+
     public String getToolTipText() {
         return Messages.getString("ConnectionsView.Actions.CloseAllConnectionsToolTip");
     }
+
 
     /*
      * (non-Javadoc)
@@ -104,16 +88,37 @@ public class CloseAllConnectionsAction extends Action implements IViewActionDele
      * @see org.eclipse.jface.action.IAction#run()
      */
     public void run() {
-        if (rstn != null)
-            rstn.closeAllConnections();
+
+        // locate open sessions
+        RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
+        sessionRoot.closeAllConnections();        
+        setEnabled(false);
+        _treeViewer.refresh();
     }
+
 
     public ImageDescriptor getImageDescriptor() {
         return _image;
     }
 
+
     public ImageDescriptor getDisabledImageDescriptor() {
         return _disabledImage;
+    }
+
+
+    /**
+     * Action is available when there are open sessions
+     */
+    public boolean isAvailable() {
+
+        RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
+        Object[] sessions = sessionRoot.getChildren();
+        if (sessions != null && sessions.length != 0) {
+            return true;
+        }
+
+        return false;
     }
 
 }

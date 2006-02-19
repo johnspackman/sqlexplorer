@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2006 Davy Vanherbergen
- * dvanherbergen@users.sourceforge.net
+ * Copyright (C) 2006 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -40,12 +40,12 @@ public class NewAliasAction extends AbstractConnectionTreeAction {
 
 
     public String getToolTipText() {
-        return Messages.getString("AliasView.Actions.CreateAliasToolTip");
+        return Messages.getString("ConnectionsView.Actions.CreateAliasToolTip");
     }
 
 
     public String getText() {
-        return Messages.getString("AliasView.Actions.CreateAlias");
+        return Messages.getString("ConnectionsView.Actions.CreateAlias");
     }
 
 

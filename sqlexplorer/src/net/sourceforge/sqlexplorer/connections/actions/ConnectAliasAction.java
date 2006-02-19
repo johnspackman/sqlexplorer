@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.Display;
  */
 public class ConnectAliasAction extends AbstractConnectionTreeAction {
 
-    ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getConnectionIcon());
+    ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getConnectSessionIcon());
 
     public ImageDescriptor getHoverImageDescriptor() {
         return _image;
@@ -49,11 +49,11 @@ public class ConnectAliasAction extends AbstractConnectionTreeAction {
     };
     
     public String getText() {
-        return Messages.getString("AliasView.Actions.ConnectAlias");
+        return Messages.getString("ConnectionsView.Actions.ConnectAlias");
     }
     
     public String getToolTipText() {
-        return Messages.getString("AliasView.Actions.ConnectAliasToolTip");
+        return Messages.getString("ConnectionsView.Actions.ConnectAliasToolTip");
     }
 
     public void run() {

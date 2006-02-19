@@ -10,7 +10,6 @@
 * add ok/cancel prompts where beneficial (example delete alias)
 * better timing details of sql results
 * add refresh action to sql result table
-* merge alias and connections view
 * add help documentation
 * create plugin fragments for every database specific extension
 * add autowrap to editor..
