@@ -158,7 +158,7 @@
 
       <viewContribution
             id="net.sourceforge.sqlexplorer.connections.actions.NewEditor"
-            targetID="net.sourceforge.sqlexplorer.plugin.views.AliasView">
+            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
          <action
                label="New SQL Editor"
                icon="icons/new_editor.gif"

@@ -18,7 +18,9 @@
  */
 package net.sourceforge.sqlexplorer.connections;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.Messages;
@@ -123,7 +125,11 @@ public class ConnectionTreeLabelProvider extends LabelProvider {
 
         } else {
 
-            return Messages.getString("ConnectionsView.ConnectedAlias.activeSession");
+            String label = Messages.getString("ConnectionsView.ConnectedAlias.activeSession");            
+            SessionTreeNode session = (SessionTreeNode) element;
+            
+            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm:ss");
+            return label + " " + fmt.format(new Date(session.getCreated()));
         }
 
     }

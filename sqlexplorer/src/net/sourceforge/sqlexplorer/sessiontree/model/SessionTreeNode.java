@@ -72,10 +72,12 @@ public class SessionTreeNode implements ISessionTreeNode {
 
     Table table;
 
+    private long _created;
 
     public SessionTreeNode(final SQLConnection conn, ISQLAlias alias, SessionTreeModel md, IProgressMonitor monitor, final String password)
             throws InterruptedException {
         
+        _created = System.currentTimeMillis();
         _connection = conn;
         _alias = alias;
         dbModel = new DatabaseModel(this);
@@ -282,4 +284,14 @@ public class SessionTreeNode implements ISessionTreeNode {
         }
     }
 
+
+    
+    /**
+     * @return time this session was created
+     */
+    public long getCreated() {
+        return _created;
+    }
+
+    
 }
