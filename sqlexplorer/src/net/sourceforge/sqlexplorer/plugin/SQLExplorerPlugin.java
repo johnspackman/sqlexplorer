@@ -155,6 +155,11 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 
 
     public SQLDriverManager getSQLDriverManager() {
+        
+        if (_driverMgr == null) {
+            _driverMgr = new SQLDriverManager();
+        }
+        
         return _driverMgr;
     }
 
@@ -181,13 +186,17 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
 
         super.start(context);
-        
-        initializePreferences();
-
+    
+        //FIXME loading preferences here causes
+        // thread exception when launching as standalone app
+        //initializePreferences();
 
 
         _driverMgr = new SQLDriverManager();
+        
         _cache = new DataCache(_driverMgr);
+        
+    
         aliasModel = new AliasModel(_cache);
         driverModel = new DriverModel(_cache);
         Object[] aliases = (Object[]) aliasModel.getElements();

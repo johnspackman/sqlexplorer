@@ -4,7 +4,7 @@
 <product name="application" id="net.sourceforge.sqlexplorer.application" application="net.sourceforge.sqlexplorer.application" useFeatures="false">
 
 
-   <configIni use="default"/>
+   <configIni use="custom" path="/sqlexplorer/config.ini"/>
 
    <launcherArgs>
    </launcherArgs>
