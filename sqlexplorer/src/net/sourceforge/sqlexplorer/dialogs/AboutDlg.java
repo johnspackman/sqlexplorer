@@ -103,10 +103,6 @@ public class AboutDlg extends Dialog {
         tabItem4.setText(Messages.getString("AboutDialog.Tab.System"));
         tabItem4.setToolTipText(Messages.getString("AboutDialog.Tab.SystemToolTip"));
 
-        TabItem tabItem5 = new TabItem(tabFolder, SWT.NULL);
-        tabItem5.setText(Messages.getString("AboutDialog.Tab.Plugins"));
-        tabItem5.setToolTipText(Messages.getString("AboutDialog.Tab.PluginsToolTip"));
-
         new AboutItem(tabItem1, tabFolder);
         new CreditsItem(tabItem2, tabFolder);
         new LicenseItem(tabItem3, tabFolder);        
