@@ -19,6 +19,7 @@ package net.sourceforge.sqlexplorer.sqleditor;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -78,11 +79,11 @@ public class SQLTextTools {
         fColorManager = new SQLColorManager();
         fCodeScanner = new SQLCodeScanner(fColorManager, store, dictionary);
         fMultilineCommentScanner = new SingleTokenSQLScanner(fColorManager,
-                store, ISQLColorConstants.SQL_MULTILINE_COMMENT);
+                store, IConstants.SQL_MULTILINE_COMMENT);
         fSinglelineCommentScanner = new SingleTokenSQLScanner(fColorManager,
-                store, ISQLColorConstants.SQL_SINGLE_LINE_COMMENT);
+                store, IConstants.SQL_SINGLE_LINE_COMMENT);
         fStringScanner = new SingleTokenSQLScanner(fColorManager, store,
-                ISQLColorConstants.SQL_STRING);
+                IConstants.SQL_STRING);
         fPartitionScanner = new SQLPartitionScanner();
 
     }
@@ -143,9 +144,9 @@ public class SQLTextTools {
     public IDocumentPartitioner createDocumentPartitioner() {
 
         String[] types = new String[] { IDocument.DEFAULT_CONTENT_TYPE,
-                ISQLColorConstants.SQL_MULTILINE_COMMENT,
-                ISQLColorConstants.SQL_SINGLE_LINE_COMMENT,
-                ISQLColorConstants.SQL_STRING };
+                IConstants.SQL_MULTILINE_COMMENT,
+                IConstants.SQL_SINGLE_LINE_COMMENT,
+                IConstants.SQL_STRING };
 
         return new FastPartitioner(getPartitionScanner(), types);
     }

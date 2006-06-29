@@ -22,43 +22,32 @@ package net.sourceforge.sqlexplorer.sqleditor;
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 
-// import org.eclipse.jdt.internal.ui.text.HTMLTextPresenter;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.JFaceResources;
-
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.DefaultUndoManager;
-
 import org.eclipse.jface.text.IDocument;
-
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextHover;
-
 import org.eclipse.jface.text.ITextViewer;
-
 import org.eclipse.jface.text.Region;
-
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
-
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
-
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.source.VerticalRuler;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.FontData;
-
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -164,8 +153,8 @@ public class SQLTextViewer extends SourceViewer {
             }
         });
 
-        String[] contentTypes = {IDocument.DEFAULT_CONTENT_TYPE, ISQLColorConstants.SQL_SINGLE_LINE_COMMENT, ISQLColorConstants.SQL_STRING,
-                ISQLColorConstants.SQL_MULTILINE_COMMENT};
+        String[] contentTypes = {IDocument.DEFAULT_CONTENT_TYPE, IConstants.SQL_SINGLE_LINE_COMMENT, IConstants.SQL_STRING,
+                IConstants.SQL_MULTILINE_COMMENT};
         for (int i = 0; i < contentTypes.length; i++) {
 
             super.setTextHover(new ITextHover() {

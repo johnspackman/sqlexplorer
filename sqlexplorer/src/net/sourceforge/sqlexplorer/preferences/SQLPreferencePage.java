@@ -22,7 +22,6 @@ package net.sourceforge.sqlexplorer.preferences;
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sqleditor.ISQLColorConstants;
 import net.sourceforge.sqlexplorer.sqleditor.SQLTextViewer;
 
 import org.eclipse.jface.preference.FontFieldEditor;
@@ -52,7 +51,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 public class SQLPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
-    public static final String BOLD = "_bold";//$NON-NLS-1$
+    public static final String BOLD = "_bold";
 
     private FontFieldEditor fFontEditor;
 
@@ -71,32 +70,32 @@ public class SQLPreferencePage extends PreferencePage implements IWorkbenchPrefe
 
     OverlayPreferenceStore fOverlayStore;
 
-    // public static final String BOLD= "_bold"; //$NON-NLS-1$
+    // public static final String BOLD= "_bold"; 
 
     public final OverlayPreferenceStore.OverlayKey[] fKeys = new OverlayPreferenceStore.OverlayKey[] {
 
-    new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.FONT), //$NON-NLS-1$
+    new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.FONT), 
 
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, ISQLColorConstants.SQL_MULTILINE_COMMENT),
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, ISQLColorConstants.SQL_MULTILINE_COMMENT + BOLD),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_MULTILINE_COMMENT),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_MULTILINE_COMMENT + BOLD),
 
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, ISQLColorConstants.SQL_TABLE),
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, ISQLColorConstants.SQL_TABLE + BOLD),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_TABLE),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_TABLE + BOLD),
 
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, ISQLColorConstants.SQL_COLUMS),
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, ISQLColorConstants.SQL_COLUMS + BOLD),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_COLUMS),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_COLUMS + BOLD),
 
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, ISQLColorConstants.SQL_SINGLE_LINE_COMMENT),
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, ISQLColorConstants.SQL_SINGLE_LINE_COMMENT + BOLD),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_SINGLE_LINE_COMMENT),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_SINGLE_LINE_COMMENT + BOLD),
 
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, ISQLColorConstants.SQL_DEFAULT),
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, ISQLColorConstants.SQL_DEFAULT + BOLD),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_DEFAULT),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_DEFAULT + BOLD),
 
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, ISQLColorConstants.SQL_STRING),
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, ISQLColorConstants.SQL_STRING + BOLD),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_STRING),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_STRING + BOLD),
 
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, ISQLColorConstants.SQL_KEYWORD),
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, ISQLColorConstants.SQL_KEYWORD + BOLD),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_KEYWORD),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_KEYWORD + BOLD),
 
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.CLIP_EXPORT_COLUMNS),
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.CLIP_EXPORT_SEPARATOR),};
@@ -114,20 +113,20 @@ public class SQLPreferencePage extends PreferencePage implements IWorkbenchPrefe
 
 
     public SQLPreferencePage(OverlayPreferenceStore fOverlayStore) {
-        super(Messages.getString("SQL_Preferences_1")); //$NON-NLS-1$
+        super(Messages.getString("SQL_Preferences_1")); 
         this.fOverlayStore = fOverlayStore;
-        this.setTitle(Messages.getString("Sql_Editor_Preferences_2")); //$NON-NLS-1$
+        this.setTitle(Messages.getString("Sql_Editor_Preferences_2")); 
 
     }
 
-    final String[][] fSyntaxColorListModel = new String[][] { {Messages.getString("SQL_Table_1"), ISQLColorConstants.SQL_TABLE}, //$NON-NLS-1$
-            {Messages.getString("SQL_Column_2"), ISQLColorConstants.SQL_COLUMS}, //$NON-NLS-1$
+    final String[][] fSyntaxColorListModel = new String[][] { {Messages.getString("SQL_Table_1"), IConstants.SQL_TABLE}, 
+            {Messages.getString("SQL_Column_2"), IConstants.SQL_COLUMS}, 
 
-            {Messages.getString("SQL_Keyword_3"), ISQLColorConstants.SQL_KEYWORD}, //$NON-NLS-1$
-            {Messages.getString("SQL_Single_Line_Comment_4"), ISQLColorConstants.SQL_SINGLE_LINE_COMMENT}, //$NON-NLS-1$
-            {Messages.getString("SQL_Multi_Line_Comment_5"), ISQLColorConstants.SQL_MULTILINE_COMMENT}, //$NON-NLS-1$
-            {Messages.getString("String_6"), ISQLColorConstants.SQL_STRING}, //$NON-NLS-1$
-            {Messages.getString("Others_7"), ISQLColorConstants.SQL_DEFAULT} //$NON-NLS-1$
+            {Messages.getString("SQL_Keyword_3"), IConstants.SQL_KEYWORD}, 
+            {Messages.getString("SQL_Single_Line_Comment_4"), IConstants.SQL_SINGLE_LINE_COMMENT}, 
+            {Messages.getString("SQL_Multi_Line_Comment_5"), IConstants.SQL_MULTILINE_COMMENT}, 
+            {Messages.getString("String_6"), IConstants.SQL_STRING}, 
+            {Messages.getString("Others_7"), IConstants.SQL_DEFAULT} 
     };
 
 
@@ -138,7 +137,7 @@ public class SQLPreferencePage extends PreferencePage implements IWorkbenchPrefe
         Group fntGroup = new Group(colorComposite, SWT.NULL);
         fntGroup.setLayout(new GridLayout());
         fntGroup.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-        fntGroup.setText(Messages.getString("Font_Properties_1")); //$NON-NLS-1$
+        fntGroup.setText(Messages.getString("Font_Properties_1")); 
 
         GridLayout layout = new GridLayout();
         layout.numColumns = 3;
@@ -149,9 +148,9 @@ public class SQLPreferencePage extends PreferencePage implements IWorkbenchPrefe
         layout = new GridLayout();
         layout.numColumns = 3;
         fntComposite.setLayout(layout);
-        fFontEditor = new FontFieldEditor("key", Messages.getString("Text_Font__3"), fntComposite); //$NON-NLS-1$ //$NON-NLS-2$
-        fFontEditor.setLabelText(Messages.getString("Text_Font__4")); //$NON-NLS-1$
-        fFontEditor.setChangeButtonText(Messages.getString("Change_5")); //$NON-NLS-1$
+        fFontEditor = new FontFieldEditor("key", Messages.getString("Text_Font__3"), fntComposite);  //$NON-NLS-2$
+        fFontEditor.setLabelText(Messages.getString("Text_Font__4")); 
+        fFontEditor.setChangeButtonText(Messages.getString("Change_5")); 
         fFontEditor.setPropertyChangeListener(new IPropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent event) {
@@ -166,7 +165,7 @@ public class SQLPreferencePage extends PreferencePage implements IWorkbenchPrefe
         Group colorGroup = new Group(colorComposite, SWT.NULL);
         colorGroup.setLayout(new GridLayout());
         colorGroup.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-        colorGroup.setText(Messages.getString("Text_Properties_6")); //$NON-NLS-1$
+        colorGroup.setText(Messages.getString("Text_Properties_6")); 
 
         Composite editorComposite = new Composite(colorGroup, SWT.NONE);
         layout = new GridLayout();
@@ -191,7 +190,7 @@ public class SQLPreferencePage extends PreferencePage implements IWorkbenchPrefe
         stylesComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         Label label = new Label(stylesComposite, SWT.LEFT);
-        label.setText(Messages.getString("Color_9")); //$NON-NLS-1$
+        label.setText(Messages.getString("Color_9")); 
         gd = new GridData();
         gd.horizontalAlignment = GridData.BEGINNING;
         label.setLayoutData(gd);
@@ -203,7 +202,7 @@ public class SQLPreferencePage extends PreferencePage implements IWorkbenchPrefe
         foregroundColorButton.setLayoutData(gd);
 
         fBoldCheckBox = new Button(stylesComposite, SWT.CHECK);
-        fBoldCheckBox.setText(Messages.getString("Bold_10")); //$NON-NLS-1$
+        fBoldCheckBox.setText(Messages.getString("Bold_10")); 
         gd = new GridData(GridData.FILL_HORIZONTAL);
         gd.horizontalAlignment = GridData.BEGINNING;
         gd.horizontalSpan = 2;
@@ -212,7 +211,7 @@ public class SQLPreferencePage extends PreferencePage implements IWorkbenchPrefe
         Group previewGroup = new Group(colorComposite, SWT.NULL);
         previewGroup.setLayout(new GridLayout());
         previewGroup.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-        previewGroup.setText(Messages.getString("Preview_7")); //$NON-NLS-1$
+        previewGroup.setText(Messages.getString("Preview_7")); 
 
         Control previewer = createPreviewer(previewGroup);
         gd = new GridData(GridData.FILL_BOTH);
@@ -260,7 +259,7 @@ public class SQLPreferencePage extends PreferencePage implements IWorkbenchPrefe
         Group exportGroup = new Group(colorComposite, SWT.NULL);
         exportGroup.setLayout(new GridLayout());
         exportGroup.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-        exportGroup.setText(Messages.getString("Export_to_Clipboard_1")); //$NON-NLS-1$
+        exportGroup.setText(Messages.getString("Export_to_Clipboard_1")); 
         Label lbt1 = new Label(exportGroup, SWT.NULL);
         lbt1.setText("Separator");
         btn1 = new Button(exportGroup, SWT.RADIO);
@@ -333,11 +332,11 @@ public class SQLPreferencePage extends PreferencePage implements IWorkbenchPrefe
 
         fPreviewViewer.setEditable(false);
 
-        String separator = System.getProperty("line.separator"); //$NON-NLS-1$
+        String separator = System.getProperty("line.separator"); 
 
-        String content = Messages.getString("select_*_from_MyTable_--_single_line_comment_12") + separator + Messages.getString("/*_multi_line_comment_13") + separator + //$NON-NLS-1$ //$NON-NLS-2$
-                Messages.getString("select_*_14") + separator + //$NON-NLS-1$
-                Messages.getString("end_multi_line_comment*/_15") + separator + Messages.getString("where_A___1___16"); //$NON-NLS-1$ //$NON-NLS-2$
+        String content = Messages.getString("select_*_from_MyTable_--_single_line_comment_12") + separator + Messages.getString("/*_multi_line_comment_13") + separator +  //$NON-NLS-2$
+                Messages.getString("select_*_14") + separator + 
+                Messages.getString("end_multi_line_comment*/_15") + separator + Messages.getString("where_A___1___16");  //$NON-NLS-2$
 
         IDocument document = new Document(content);
 
@@ -367,8 +366,8 @@ public class SQLPreferencePage extends PreferencePage implements IWorkbenchPrefe
 
     void handleFont() {
         fFontEditor.store();
-        FontData[] fData = PreferenceConverter.getFontDataArray(fOverlayStore, IConstants.FONT); //$NON-NLS-1$
-        String des = fOverlayStore.getString(IConstants.FONT); //$NON-NLS-1$
+        FontData[] fData = PreferenceConverter.getFontDataArray(fOverlayStore, IConstants.FONT); 
+        String des = fOverlayStore.getString(IConstants.FONT); 
         if (fData.length > 0) {
             JFaceResources.getFontRegistry().put(des, fData);
             fPreviewViewer.getControl().setFont(JFaceResources.getFontRegistry().get(des));
@@ -388,10 +387,10 @@ public class SQLPreferencePage extends PreferencePage implements IWorkbenchPrefe
             }
         });
         fFontEditor.setPreferenceStore(fOverlayStore);
-        fFontEditor.setPreferenceName("font"); //$NON-NLS-1$
+        fFontEditor.setPreferenceName("font"); 
         fFontEditor.setPage(this);
         fFontEditor.load();
-        FontData[] fData = PreferenceConverter.getFontDataArray(fOverlayStore, IConstants.FONT); //$NON-NLS-1$
+        FontData[] fData = PreferenceConverter.getFontDataArray(fOverlayStore, IConstants.FONT); 
 
         if (fData.length > 0) {
             JFaceResources.getFontRegistry().put(fData[0].toString(), fData);
@@ -444,7 +443,7 @@ public class SQLPreferencePage extends PreferencePage implements IWorkbenchPrefe
         super.performDefaults();
 
         fPreviewViewer.invalidateTextPresentation();
-        FontData[] fData = PreferenceConverter.getFontDataArray(fOverlayStore, IConstants.FONT); //$NON-NLS-1$
+        FontData[] fData = PreferenceConverter.getFontDataArray(fOverlayStore, IConstants.FONT); 
 
         if (fData.length > 0) {
             JFaceResources.getFontRegistry().put(fData[0].toString(), fData);

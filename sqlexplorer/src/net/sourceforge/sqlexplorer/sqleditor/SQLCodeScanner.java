@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -768,11 +769,11 @@ public class SQLCodeScanner extends AbstractSQLScanner {
 
     
    	static String[] fgTokenProperties= {
-   		ISQLColorConstants.SQL_TABLE,
-		ISQLColorConstants.SQL_COLUMS,
-		ISQLColorConstants.SQL_KEYWORD,
-		ISQLColorConstants.SQL_STRING,
-		ISQLColorConstants.SQL_DEFAULT
+   		IConstants.SQL_TABLE,
+		IConstants.SQL_COLUMS,
+		IConstants.SQL_KEYWORD,
+		IConstants.SQL_STRING,
+		IConstants.SQL_DEFAULT
 	};
 
 	private VersionedWordRule fVersionedWordRule;
@@ -800,7 +801,7 @@ public class SQLCodeScanner extends AbstractSQLScanner {
 		List rules= new ArrayList();		
 		
 		// Add rule for character constants.
-		Token token= getToken(ISQLColorConstants.SQL_STRING);
+		Token token= getToken(IConstants.SQL_STRING);
 		rules.add(new SingleLineRule("'", "'", token, '\\')); //$NON-NLS-2$ //$NON-NLS-1$
 				
 		
@@ -809,18 +810,18 @@ public class SQLCodeScanner extends AbstractSQLScanner {
 		
 		
 		// Add word rule for keywords, types, and constants.
-		token= getToken(ISQLColorConstants.SQL_DEFAULT);
+		token= getToken(IConstants.SQL_DEFAULT);
 		//WordRule wordRule= new WordRule(new org.gnu.amaz.SQLEditor.util.SQLWordDetector(), token);
 		//UnsignedWordRule wordRule= new UnsignedWordRule(new net.sourceforge.jfacedbc.sqleditor.SQLWordDetector(), token);
-		UnsignedWordRule wordRule= new UnsignedWordRule(new SQLWordDetector(), token,getToken(ISQLColorConstants.SQL_TABLE),getToken(ISQLColorConstants.SQL_COLUMS),dictionary);
+		UnsignedWordRule wordRule= new UnsignedWordRule(new SQLWordDetector(), token,getToken(IConstants.SQL_TABLE),getToken(IConstants.SQL_COLUMS),dictionary);
 
-		token= getToken(ISQLColorConstants.SQL_KEYWORD);
+		token= getToken(IConstants.SQL_KEYWORD);
 		for (int i=0; i<fgKeywords.length; i++)
 			wordRule.addWord(fgKeywords[i], token);
 		for (int i=0; i<sqlFunctions.length; i++)
 			wordRule.addWord(sqlFunctions[i], token);
 		
-		token= getToken(ISQLColorConstants.SQL_TABLE);
+		token= getToken(IConstants.SQL_TABLE);
 		
 		if(dictionary!=null){
 			Iterator it=dictionary.getTableNames();
@@ -837,7 +838,7 @@ public class SQLCodeScanner extends AbstractSQLScanner {
 		rules.add(wordRule);
 		
 		
-		setDefaultReturnToken(getToken(ISQLColorConstants.SQL_DEFAULT));
+		setDefaultReturnToken(getToken(IConstants.SQL_DEFAULT));
 		return rules;
 	}
 	protected String[] getTokenProperties() {

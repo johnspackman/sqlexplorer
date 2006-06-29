@@ -22,20 +22,61 @@ import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
  */
 
 public interface IConstants {
-	String CLIP_EXPORT_COLUMNS ="clip_export_columns"; 
-	String CLIP_EXPORT_SEPARATOR ="clip_export_separator"; 
-	String AUTO_COMMIT="autocommit"; 
-	String COMMIT_ON_CLOSE="commitonclose"; 
-	String MAX_SQL_ROWS="maxSQLRows"; 
-	String PRE_ROW_COUNT="preRowCount"; 
-	String FONT="font"; 
-	String SQL_ASSIST="assist"; 
-	String SQL_EDITOR_CLASS = SQLEditor.class.getName();
+
+    String CLIP_EXPORT_COLUMNS = "SQLEditor.ClipExportColumns";
+
+    String CLIP_EXPORT_SEPARATOR = "SQLEditor.ClipExportSeparator";
+
+    String AUTO_COMMIT = "SQLEditor.AutoCommit";
+
+    String COMMIT_ON_CLOSE = "SQLEditor.CommitOnClose";
+
+    String MAX_SQL_ROWS = "SQLEditor.MaxSQLRows";
+
+    String PRE_ROW_COUNT = "SQLEditor.PreRowCount";
+
+    String FONT = "SQLEditor.Font";
+
+    String SQL_ASSIST = "SQLEditor.Assist";
+
+    String SQL_EDITOR_CLASS = SQLEditor.class.getName();
+
     String SQL_QRY_DELIMITER = "SQLEditor.QueryDelimiter";
+
     String SQL_ALT_QRY_DELIMITER = "SQLEditor.AltQueryDelimiter";
+
     String SQL_COMMENT_DELIMITER = "SQLEditor.CommentDelimiter";
+
     String INCLUDE_COLUMNS_IN_TREE = "SQLEditor.IncludeColumns";
+
     String WARN_IF_LARGE_LIMIT = "SQLEditor.WarnIfLargeLimit";
+
     String WARN_LIMIT = "SQLEditor.WarnLimit";
+
     String DEFAULT_DRIVER = "Drivers.DefaultDriverName";
+
+    /** The color key for multi-line comments in Java code. */
+    String SQL_MULTILINE_COMMENT = "SQLEditor.MultiLineCommentColor";
+
+    /** The color key for single-line comments in Java code. */
+    String SQL_SINGLE_LINE_COMMENT = "SQLEditor.SingleLineCommentColor";
+
+    /** The color key for SQL keywords in Java code. */
+    String SQL_KEYWORD = "SQLEditor.KeywordColor";
+
+    /** The color key for string and character literals in Java code. */
+    String SQL_STRING = "SQLEditor.StringColor";
+
+    /** The color key for database tables names */
+    String SQL_TABLE = "SQLEditor.TableColor";
+
+    /** The color key for database tables column names */
+    String SQL_COLUMS = "SQLEditor.ColumnsColor";
+
+    /**
+     * The color key for everthing in SQL code for which no other color is
+     * specified.
+     */
+    String SQL_DEFAULT = "SQLEditor.DefaultColor";
+
 }

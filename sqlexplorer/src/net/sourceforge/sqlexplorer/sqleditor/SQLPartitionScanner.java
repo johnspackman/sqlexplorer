@@ -23,6 +23,8 @@ package net.sourceforge.sqlexplorer.sqleditor;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.sqlexplorer.IConstants;
+
 import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
@@ -89,9 +91,9 @@ public class SQLPartitionScanner extends RuleBasedPartitionScanner {
 		super();
 
 		//IToken skip= new Token(SKIP);
-		IToken string= new Token(ISQLColorConstants.SQL_STRING);
-		IToken multiLineComment= new Token(ISQLColorConstants.SQL_MULTILINE_COMMENT);
-		IToken singleLineComment= new Token(ISQLColorConstants.SQL_SINGLE_LINE_COMMENT);
+		IToken string= new Token(IConstants.SQL_STRING);
+		IToken multiLineComment= new Token(IConstants.SQL_MULTILINE_COMMENT);
+		IToken singleLineComment= new Token(IConstants.SQL_SINGLE_LINE_COMMENT);
 
 		List rules= new ArrayList();
 

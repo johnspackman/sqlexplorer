@@ -86,7 +86,7 @@ public class SessionTreeNode implements ISessionTreeNode {
         _parent.add(this);
         _password = password;
 
-        _assistanceEnabled = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.SQL_ASSIST);
+        _assistanceEnabled = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.SQL_ASSIST);
                
         if (_assistanceEnabled) {
             // schedule job to load dictionary for this session
