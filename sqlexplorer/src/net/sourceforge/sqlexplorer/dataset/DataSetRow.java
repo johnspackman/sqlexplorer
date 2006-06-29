@@ -18,7 +18,13 @@
  */
 package net.sourceforge.sqlexplorer.dataset;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+
+import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 /**
  * DataSetRow, represents one row in a dataSet.
@@ -31,6 +37,9 @@ public class DataSetRow {
 
     private DecimalFormat _decimalFormat = new DecimalFormat();
     
+    private SimpleDateFormat _dateFormatter = new SimpleDateFormat(SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_FORMAT)); 
+    
+    private boolean _formatDates = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.DATASETRESULT_FORMAT_DATES);
     
     /**
      * Create new DataSetRow with columnCount values
@@ -69,6 +78,14 @@ public class DataSetRow {
             if (clazz == Double.class || clazz == Integer.class)  {                 
                 return _decimalFormat.format(tmp); 
             } 
+            
+            // format dates
+            if (_formatDates && clazz == Timestamp.class) {                
+                return _dateFormatter.format(new java.util.Date(((Timestamp)tmp).getTime()));
+            }
+            if (_formatDates && clazz == Date.class) {                
+                return _dateFormatter.format(new java.util.Date(((Date)tmp).getTime()));
+            }
             
             return tmp.toString();
         }

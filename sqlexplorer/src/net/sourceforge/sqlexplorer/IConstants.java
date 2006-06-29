@@ -78,5 +78,9 @@ public interface IConstants {
      * specified.
      */
     String SQL_DEFAULT = "SQLEditor.DefaultColor";
+    
+    String DATASETRESULT_FORMAT_DATES = "DataSetResult.FormatDates";
+    
+    String DATASETRESULT_DATE_FORMAT = "DataSetResult.DateFormat";
 
 }
