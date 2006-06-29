@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.1"?>
 
-<product name="application" id="net.sourceforge.sqlexplorer.application" application="net.sourceforge.sqlexplorer.application" useFeatures="false">
+<product name="SQL Explorer" id="net.sourceforge.sqlexplorer.sqlexplorerproduct" application="net.sourceforge.sqlexplorer.sqlexplorerApp" useFeatures="false">
 
+   <configIni use="default"/>
 
-   <configIni use="custom" path="/sqlexplorer/config.ini"/>
+   <windowImages small="icons/logo16.gif" large="icons/logo32.gif"/>
 
    <launcherArgs>
    </launcherArgs>
@@ -29,11 +30,11 @@
       <plugin id="org.eclipse.core.expressions"/>
       <plugin id="org.eclipse.core.filebuffers"/>
       <plugin id="org.eclipse.core.resources"/>
+      <plugin id="org.eclipse.core.resources.compatibility"/>
+      <plugin id="org.eclipse.core.resources.win32"/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.runtime.compatibility"/>
       <plugin id="org.eclipse.core.variables"/>
-      <plugin id="org.eclipse.draw2d"/>
-      <plugin id="org.eclipse.gef"/>
       <plugin id="org.eclipse.help"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.text"/>
@@ -46,10 +47,13 @@
       <plugin id="org.eclipse.ui.forms"/>
       <plugin id="org.eclipse.ui.ide"/>
       <plugin id="org.eclipse.ui.views"/>
+      <plugin id="org.eclipse.ui.win32"/>
       <plugin id="org.eclipse.ui.workbench"/>
+      <plugin id="org.eclipse.ui.workbench.compatibility"/>
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
       <plugin id="org.eclipse.update.configurator"/>
       <plugin id="org.eclipse.update.core"/>
+      <plugin id="org.eclipse.update.core.win32"/>
       <plugin id="org.eclipse.update.ui"/>
    </plugins>
 
