@@ -20,7 +20,6 @@ package net.sourceforge.sqlexplorer.dataset.actions;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
-import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dataset.DataSetRow;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
@@ -29,6 +28,7 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.TableItem;
 
 /**
  * Copy the value of the selected cell in a datasettable to the clipboard.
@@ -71,18 +71,20 @@ public class CopyCellAction extends AbstractDataSetTableContextAction {
 
             Clipboard clipBoard = new Clipboard(Display.getCurrent());
             TextTransfer textTransfer = TextTransfer.getInstance();
-
-            int rowIndex = _table.getSelectionIndex();
-            int columnIndex = _cursor.getColumn();
             
-            DataSet dataSet = (DataSet) _table.getData();
-            if (dataSet == null) {
+            TableItem[] items = _table.getSelection();
+            
+            if (items == null || items.length == 0) {
                 return;
             }
             
-            DataSetRow[] rows = dataSet.getRows();
-            DataSetRow row = rows[rowIndex];
+            DataSetRow row = (DataSetRow) items[0].getData();
             
+            if (row == null) {
+                return;
+            }
+            
+            int columnIndex = _cursor.getColumn();           
 
             clipBoard.setContents(new Object[] {row.getStringValue(columnIndex)}, new Transfer[] {textTransfer});
 
