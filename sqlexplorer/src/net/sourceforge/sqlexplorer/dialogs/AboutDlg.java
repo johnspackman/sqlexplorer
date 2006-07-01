@@ -268,7 +268,7 @@ class CreditsItem {
             "Developers (versions 3.0.0):" + separator +
             " - Davy Vanherbergen" + separator + 
             separator +              
-            "Developers (versions 2.2.5 (never released)):" + separator +
+            "Developers (version 2.2.5 (never released)):" + separator +
             " - Alexandre Luti Telles" + separator +
             " - Davy Vanherbergen" + separator + 
             separator +        
