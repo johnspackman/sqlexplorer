@@ -1,22 +1,24 @@
+* make sql statements cancellable
 * fix actions in alias view
-* fix standalone RCP application -> doesn't start anymore after removal of compatibiltiy runtime
 * review/fix sql editor content assist
 * make dictionary persistent, and only update on request
 * background processing for queries
 * create extension points for sql editor
 * connect to database in background
 * add drag support for nodes into sqleditor
-* remove overlaystore from preferences and add default preferences to preferences.ini
 * add ok/cancel prompts where beneficial (example delete alias)
 * better timing details of sql results
 * add refresh action to sql result table
-* add help documentation
+* check preferences are being stored/restored properly after application exit
 * create plugin fragments for every database specific extension
 * add autowrap to editor..
 * add more detailed timing to sql result
 * set detail for column node to parent node.. 
 * add top 10 sql drop down in editor 
-* create update manager 
 * creating first editor is slow..
+* add timestamp column to sql history?
+
+* add help documentation
+* create update manager 
 * create installer for standalone app
 * write doc on how to extend..
