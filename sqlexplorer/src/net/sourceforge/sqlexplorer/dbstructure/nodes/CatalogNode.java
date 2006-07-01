@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer.dbstructure.nodes;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.util.TextUtil;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
 
 import org.apache.commons.logging.Log;
@@ -105,7 +106,7 @@ public class CatalogNode extends AbstractNode {
                             break;
                         }
                         
-                        String regex = product.replace("*", ".*");
+                        String regex = TextUtil.replaceChar(product, '*', ".*");
                         if (databaseProductName.matches(regex)) {
                             isValidProduct = true;
                             break;

@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer.sessiontree.actions;
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
+import net.sourceforge.sqlexplorer.util.TextUtil;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverManager;
 
@@ -55,7 +56,7 @@ public class NewConnection extends Action {
 
     public String getText() {
         String name = alias.getName();
-        name = name.replace('@', '_');
+        name = TextUtil.replaceChar(name, '@', "_");
         return name;
     }
 

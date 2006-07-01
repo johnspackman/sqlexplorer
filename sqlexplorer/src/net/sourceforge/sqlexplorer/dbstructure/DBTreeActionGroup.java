@@ -25,6 +25,7 @@ import java.util.List;
 import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -57,6 +58,7 @@ public class DBTreeActionGroup extends ActionGroup {
     }
 
 
+    
     /**
      * Fill the node context menu with all the correct actions.
      * @see org.eclipse.ui.actions.ActionGroup#fillContextMenu(org.eclipse.jface.action.IMenuManager)
@@ -143,8 +145,8 @@ public class DBTreeActionGroup extends ActionGroup {
                             isValidProduct = true;
                             break;
                         }
-                        
-                        String regex = product.replace("*", ".*");
+                                               
+                        String regex = TextUtil.replaceChar(product, '*', ".*");
                         if (databaseProductName.matches(regex)) {
                             isValidProduct = true;
                             break;
@@ -170,7 +172,7 @@ public class DBTreeActionGroup extends ActionGroup {
                             break;
                         }
                         
-                        String regex = type.replace("*", ".*");
+                        String regex = TextUtil.replaceChar(type, '*', ".*");
                         if (nodeType.matches(regex)) {
                             isValidNodeType = true;
                             break;

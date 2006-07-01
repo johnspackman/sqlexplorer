@@ -24,6 +24,7 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -227,7 +228,7 @@ public class DetailTabManager {
                             break;
                         }
 
-                        String regex = product.replace("*", ".*");
+                        String regex = TextUtil.replaceChar(product, '*', ".*");
                         if (databaseProductName.matches(regex)) {
                             isValidProduct = true;
                             break;
@@ -253,7 +254,7 @@ public class DetailTabManager {
                             break;
                         }
 
-                        String regex = type.replace("*", ".*");
+                        String regex = TextUtil.replaceChar(type, '*', ".*");
                         if (nodeType.matches(regex)) {
                             isValidNodeType = true;
                             break;

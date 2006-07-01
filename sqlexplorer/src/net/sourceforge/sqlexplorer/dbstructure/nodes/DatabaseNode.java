@@ -27,6 +27,7 @@ import net.sourceforge.sqlexplorer.SQLAlias;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.util.TextUtil;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDatabaseMetaData;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -156,7 +157,7 @@ public class DatabaseNode extends AbstractNode {
                                 break;
                             }
                             
-                            String regex = product.replace("*", ".*");
+                            String regex = TextUtil.replaceChar(product, '*', ".*");
                             if (databaseProductName.matches(regex)) {
                                 isValidProduct = true;
                                 break;
@@ -207,8 +208,8 @@ public class DatabaseNode extends AbstractNode {
         for (int i = 0; i < _filterExpressions.length; i++) {
 
             String regex = _filterExpressions[i].trim();
-            regex = regex.replace("?", ".");
-            regex = regex.replace("*", ".*");
+            regex = TextUtil.replaceChar(regex, '?', ".");
+            regex = TextUtil.replaceChar(regex, '*', ".*");
 
             if (regex.length() != 0 && name.matches(regex)) {
                 // we have a match, exclude node..

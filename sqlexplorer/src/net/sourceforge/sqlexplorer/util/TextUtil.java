@@ -103,4 +103,34 @@ public class TextUtil {
     }
     
 
+    /**
+     * Replace all occurrences of replaceFrom in inputString with replaceTo.
+     * 
+     * @param inputString string to update
+     * @param replaceFrom occurrences to replace
+     * @param replaceTo string that replaces occurrences
+     * @return
+     */
+    public static String replaceChar(String inputString, char replaceFrom, String replaceTo) {
+
+        if (inputString == null || inputString.length() == 0) {
+            return inputString;
+        }
+        
+        StringBuffer buffer = new StringBuffer();                
+        char[] input = inputString.toCharArray();
+            
+        for (int i = 0; i < input.length; i++) {
+            
+            if (input[i] == replaceFrom) {
+                buffer.append(replaceTo);
+            } else {
+                buffer.append(input[i]);
+            }                
+        }            
+
+        return buffer.toString();
+    }
+    
+    
 }
