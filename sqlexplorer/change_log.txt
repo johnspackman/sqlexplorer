@@ -1,4 +1,4 @@
-2006.01.xx - 2006.02.xx Enhancements - Davy Vanherbergen
+2006.01.xx - 2006.06.xx Enhancements - Davy Vanherbergen
 ==========================================================
 General
 * dropped support for hibernate plugin
