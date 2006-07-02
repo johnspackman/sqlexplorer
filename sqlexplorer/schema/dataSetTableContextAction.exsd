@@ -6,32 +6,32 @@
          <meta.schema plugin="net.sourceforge.sqlexplorer" id="dataSetTableContextAction" name="Table Context Menu Action"/>
       </appInfo>
       <documentation>
-         This extension points allows you to add custom actions to the context menu for a DataSetTable.
+         This extension point allows you to add custom actions to the context menu for a DataSetTable.
       </documentation>
    </annotation>
 
    <element name="action">
       <annotation>
          <documentation>
-            This extension points allows you to add custom actions to the context menu for a DataSetTable.
+            This extension point allows you to add custom actions to the context menu for a DataSetTable.
          </documentation>
       </annotation>
       <complexType>
-         <attribute name="name" type="string" use="required" value="myAction">
+         <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
                   Name of the extension action.
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="id" type="string" use="required" value="myActionId">
+         <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
                   Identifier of the extension action.
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="class" type="string" use="required" value="">
+         <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
                   A fully qualified name of a class which extends &lt;samp&gt;net.sourceforge.sqlexplorer.dataset.actions.AbstractDataSetTableContextAction&lt;/samp&gt;
@@ -41,7 +41,6 @@
                </appInfo>
             </annotation>
          </attribute>
-
       </complexType>
    </element>
 
