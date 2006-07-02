@@ -1,23 +1,24 @@
 * make sql statements cancellable
-* fix actions in alias view
-* review/fix sql editor content assist
-* make dictionary persistent, and only update on request
-* background processing for queries
-* create extension points for sql editor
-* connect to database in background
-* add drag support for nodes into sqleditor
-* add ok/cancel prompts where beneficial (example delete alias)
 * better timing details of sql results
 * add refresh action to sql result table
-* check preferences are being stored/restored properly after application exit
-* create plugin fragments for every database specific extension
+* background processing for queries
+
+* make dictionary persistent, and only update on request
+
+* review/fix sql editor content assist
+* create extension points for sql editor
+* add drag support for nodes into sqleditor
 * add autowrap to editor..
-* add more detailed timing to sql result
-* set detail for column node to parent node.. 
 * add top 10 sql drop down in editor 
 * creating first editor is slow..
+
+* connect to database in background
+
+* check preferences are being stored/restored properly after application exit
+
 * add timestamp column to sql history?
 
+* create plugin fragments for every database specific extension
 * add help documentation
 * create update manager 
 * create installer for standalone app
