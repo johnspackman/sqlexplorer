@@ -1,6 +1,5 @@
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
-
 /*
  * Copyright (C) 2002-2004 Andrea Mazzolini
  * andreamazzolini@users.sourceforge.net
@@ -22,51 +21,47 @@ package net.sourceforge.sqlexplorer.sqleditor.actions;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
+public class OpenFileAction extends AbstractEditorAction {
 
-public class OpenFileAction extends Action {
-	
-    private SQLEditor _txtComposite;
-    
-    private ImageDescriptor img = ImageDescriptor.createFromURL(SqlexplorerImages.getOpenFileIcon()); 
-    
-	public OpenFileAction(SQLEditor txtComposite){
-		_txtComposite=txtComposite;
-	}
-    
-	public  String getText() {
-         return Messages.getString("Open_1");   //$NON-NLS-1$
+    private ImageDescriptor img = ImageDescriptor.createFromURL(SqlexplorerImages.getOpenFileIcon());
+
+
+    public String getText() {
+        return Messages.getString("Open_1"); //$NON-NLS-1$
     }
+
 
     public void run() {
-    	
-        FileDialog dlg = new FileDialog(_txtComposite.getSite().getShell(), SWT.OPEN | SWT.MULTI);
-		
-        dlg.setFilterExtensions(new String[]{"*.sql;*.txt"});
-        
-		String path = dlg.open();
-		if(path != null) {
-            String[] files = dlg.getFileNames();            
-			_txtComposite.loadFiles(files, dlg.getFilterPath());
-		}
-				
-    }
-    
 
-	
-	public String getToolTipText(){
-		return Messages.getString("Open_2");   //$NON-NLS-1$
-	}
-	public ImageDescriptor getHoverImageDescriptor(){
-		return img;
+        FileDialog dlg = new FileDialog(_editor.getSite().getShell(), SWT.OPEN | SWT.MULTI);
+
+        dlg.setFilterExtensions(new String[] {"*.sql;*.txt"});
+
+        String path = dlg.open();
+        if (path != null) {
+            String[] files = dlg.getFileNames();
+            _editor.loadFiles(files, dlg.getFilterPath());
+        }
+
     }
-    public ImageDescriptor getImageDescriptor(){
-		return img;
+
+
+    public String getToolTipText() {
+        return Messages.getString("Open_2"); //$NON-NLS-1$
+    }
+
+
+    public ImageDescriptor getHoverImageDescriptor() {
+        return img;
+    }
+
+
+    public ImageDescriptor getImageDescriptor() {
+        return img;
     };
 }

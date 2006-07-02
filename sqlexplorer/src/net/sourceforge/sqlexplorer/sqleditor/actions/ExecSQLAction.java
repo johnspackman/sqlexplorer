@@ -26,16 +26,13 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Text;
 
-public class ExecSQLAction extends Action {
-
-    SQLEditor txtComp;
+public class ExecSQLAction extends AbstractEditorAction {
 
     private ImageDescriptor img = ImageDescriptor.createFromURL(SqlexplorerImages.getExecSQLIcon());
 
@@ -45,16 +42,12 @@ public class ExecSQLAction extends Action {
 
     private Text _resultLimit;
 
-
-    public ExecSQLAction(SQLEditor txtComp) {
-
-        this.txtComp = txtComp;
+    public ExecSQLAction() {
     }
-
 
     public ExecSQLAction(SQLEditor txtComp, SessionTreeNode node_) {
 
-        this.txtComp = txtComp;
+        _editor = txtComp;
         this.preferredNode = node_;
     }
 
@@ -90,18 +83,18 @@ public class ExecSQLAction extends Action {
 
             boolean warnNoLimit = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.WARN_IF_LARGE_LIMIT);
             int warnLimit = SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(IConstants.WARN_LIMIT);
-            
+
             if (warnNoLimit && (maxresults == 0 || maxresults > warnLimit)) {
 
                 final int largeResults = maxresults;
-                txtComp.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+                _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
                     public void run() {
-                      
-                        boolean okToExecute = MessageDialog.openConfirm(txtComp.getSite().getShell(),
-                                    Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Title"),
-                                    Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Message"));
-                        
+
+                        boolean okToExecute = MessageDialog.openConfirm(_editor.getSite().getShell(),
+                                Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Title"),
+                                Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Message"));
+
                         if (okToExecute) {
                             action.run(largeResults);
                         }
@@ -114,10 +107,10 @@ public class ExecSQLAction extends Action {
 
         } catch (final Exception e) {
 
-            txtComp.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+            _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
                 public void run() {
-                    MessageDialog.openError(txtComp.getSite().getShell(), Messages.getString("SQLEditor.LimitRows.Error.Title"), e.getMessage());
+                    MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("SQLEditor.LimitRows.Error.Title"), e.getMessage());
                 }
             });
 
@@ -134,25 +127,25 @@ public class ExecSQLAction extends Action {
     public void run(int maxRows) {
         SessionTreeNode runNode = null;
         if (preferredNode == null)
-            runNode = txtComp.getSessionTreeNode();
+            runNode = _editor.getSessionTreeNode();
         else
             runNode = preferredNode;
         if (runNode == null)
             return;
 
-        final SqlExecProgress sExecP = new SqlExecProgress(txtComp.getSQLToBeExecuted(), txtComp, maxRows, runNode);
+        final SqlExecProgress sExecP = new SqlExecProgress(_editor.getSQLToBeExecuted(), _editor, maxRows, runNode);
 
-        ProgressMonitorDialog pg = new ProgressMonitorDialog(txtComp.getSite().getShell());
+        ProgressMonitorDialog pg = new ProgressMonitorDialog(_editor.getSite().getShell());
         try {
             pg.run(true, true, sExecP);
         } catch (java.lang.Exception e) {
             SQLExplorerPlugin.error("Error executing the SQL statement ", e);
         }
         if (sExecP.isSqlError()) {
-            txtComp.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+            _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
                 public void run() {
-                    MessageDialog.openError(txtComp.getSite().getShell(), Messages.getString("Error..._2"), sExecP.getException().getMessage());
+                    MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("Error..._2"), sExecP.getException().getMessage());
 
                 }
             });

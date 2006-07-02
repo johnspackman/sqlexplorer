@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
@@ -37,12 +38,20 @@ import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModelChangedList
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.sqleditor.SQLTextViewer;
+import net.sourceforge.sqlexplorer.sqleditor.actions.AbstractEditorAction;
 import net.sourceforge.sqlexplorer.sqleditor.actions.ClearTextAction;
 import net.sourceforge.sqlexplorer.sqleditor.actions.ExecSQLAction;
 import net.sourceforge.sqlexplorer.sqleditor.actions.OpenFileAction;
 import net.sourceforge.sqlexplorer.sqleditor.actions.SaveFileAsAction;
+import net.sourceforge.sqlexplorer.util.TextUtil;
 
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.StatusLineManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -920,26 +929,28 @@ public class SQLEditor extends TextEditor {
         gid.verticalAlignment = GridData.BEGINNING;
         gid.heightHint = 25;
         toolBar.setLayoutData(gid);
-        _execSQLAction = new ExecSQLAction(this);
-        _openFileAction = new OpenFileAction(this);
-        _saveAsAction = new SaveFileAsAction(this);
-        _clearTextAction = new ClearTextAction(this);
+        _execSQLAction = new ExecSQLAction();
+        _execSQLAction.setEditor(this);
+        _openFileAction = new OpenFileAction();
+        _openFileAction.setEditor(this);
+        _saveAsAction = new SaveFileAsAction();
+        _saveAsAction.setEditor(this);
+        _clearTextAction = new ClearTextAction();
+        _clearTextAction.setEditor(this);
 
         toolBarMgr.add(_execSQLAction);
         toolBarMgr.add(_openFileAction);
         toolBarMgr.add(_saveAsAction);
         toolBarMgr.add(_clearTextAction);
 
-        // TODO add extensions to editor
-        /*IAction[] toolActions = SQLExplorerPlugin.getDefault().pluginManager.getEditorToolbarActions(this);
+        // load action extensions
+        IAction[] toolActions = getEditorActions();
         if (toolActions != null) {
             for (int i = 0; i < toolActions.length; i++)
                 toolBarMgr.add(toolActions[i]);
-        }*/
-        
+        }        
         
         toolBarMgr.update(true);
-
 
         
         ToolItem sep = new ToolItem(toolBar, SWT.SEPARATOR);
@@ -1206,6 +1217,86 @@ public class SQLEditor extends TextEditor {
     }
 
 
+    
+
+    /**
+     * Loop through all extensions and add the appropriate actions.
+     * 
+     * Actions are selected by database product name
+     * 
+     * @param nodes currently selected nodes
+     * @return array of actions
+     */
+    private IAction[] getEditorActions() {
+        
+        SessionTreeNode tree = getSessionTreeNode();
+        if (tree == null) {
+            return null;
+        }
+        String databaseProductName = tree.getRoot().getDatabaseProductName().toLowerCase().trim();        
+        List actions = new ArrayList();
+
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "editorAction");
+        IExtension[] extensions = point.getExtensions();
+
+        for (int i = 0; i < extensions.length; i++) {
+
+            IExtension e = extensions[i];
+
+            IConfigurationElement[] ces = e.getConfigurationElements();
+
+            for (int j = 0; j < ces.length; j++) {
+                try {
+                    
+                    boolean isValidProduct = false;
+                    
+                    String[] validProducts = ces[j].getAttribute("database-product-name").split(",");
+                    
+                    // check if action is valid for current database product
+                    for (int k = 0; k < validProducts.length; k++) {
+                        
+                        String product = validProducts[k].toLowerCase().trim();
+                        
+                        if (product.length() == 0) {
+                            continue;
+                        }
+                        
+                        if (product.equals("*")) {
+                            isValidProduct = true;
+                            break;
+                        }
+                                               
+                        String regex = TextUtil.replaceChar(product, '*', ".*");
+                        if (databaseProductName.matches(regex)) {
+                            isValidProduct = true;
+                            break;
+                        }
+                        
+                    }
+                    
+                    if (!isValidProduct) {
+                        continue;
+                    }
+                    
+                    
+                    AbstractEditorAction action = (AbstractEditorAction) ces[j].createExecutableExtension("class");
+                    action.setEditor(this);
+                    actions.add(action);
+
+                    
+                } catch (Throwable ex) {
+                    SQLExplorerPlugin.error("Could not create editor action", ex);
+                }
+            }
+        }
+
+        return (IAction[]) actions.toArray(new IAction[] {});
+    }
+
+    
+    
+    
     /**
      * Save editor content to file.
      * 

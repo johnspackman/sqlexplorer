@@ -18,38 +18,33 @@ package net.sourceforge.sqlexplorer.sqleditor.actions;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
- 
+
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
+public class SaveFileAsAction extends AbstractEditorAction {
 
-public class SaveFileAsAction extends Action {
-	
-    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getSaveFileAsIcon()); 
-	
-    private SQLEditor _editor;
+    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getSaveFileAsIcon());
 
-    public SaveFileAsAction(SQLEditor editor){
-		_editor = editor;
-	}
-    
-	public  String getText() {
-         return Messages.getString("SQLEditor.Actions.SaveAs");
+
+    public ImageDescriptor getImageDescriptor() {
+        return _image;
     }
+
+
+    public String getText() {
+        return Messages.getString("SQLEditor.Actions.SaveAs");
+    }
+
+
+    public String getToolTipText() {
+        return Messages.getString("SQLEditor.Actions.SaveAsToolTip"); //$NON-NLS-1$
+    }
+
 
     public void run() {
         _editor.doSaveAs();
-    }  
-	
-	public String getToolTipText(){
-		return Messages.getString("SQLEditor.Actions.SaveAsToolTip");  //$NON-NLS-1$
-	}
-
-    public ImageDescriptor getImageDescriptor(){
-		return _image;
     };
 }

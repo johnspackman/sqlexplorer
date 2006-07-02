@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2003 Luc Jouneau
- * ljouneau@yahoo.com
+ * Copyright (C) 2006 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,40 +16,35 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
-import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 
-public class ClearTextAction extends AbstractEditorAction {
 
-    private ImageDescriptor img = ImageDescriptor.createFromURL(SqlexplorerImages.getClearTextIcon());
+/**
+ * Abstract implementation for a sql editor actions.
+ * Extend this class to add new actions to the sql editor.
+ * 
+ * @author Davy Vanherbergen
+ *
+ */
+public abstract class AbstractEditorAction extends Action {
 
-
-    public String getText() {
-        return Messages.getString("Clear_1");
+    public abstract ImageDescriptor getImageDescriptor();
+    
+    public abstract String getText();
+    
+    public abstract String getToolTipText();
+    
+    public abstract void run();
+    
+    protected SQLEditor _editor;
+    
+    public final void setEditor(SQLEditor editor) {
+        _editor = editor;
     }
-
-
-    public void run() {
-        _editor.clearText();
-    }
-
-
-    public String getToolTipText() {
-        return Messages.getString("Clear_2");
-    }
-
-
-    public ImageDescriptor getHoverImageDescriptor() {
-        return img;
-    }
-
-
-    public ImageDescriptor getImageDescriptor() {
-        return img;
-    };
+    
 }
