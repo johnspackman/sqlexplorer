@@ -23,6 +23,7 @@ import net.sourceforge.sqlexplorer.dbstructure.DBTreeActionGroup;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeContentProvider;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeLabelProvider;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.TableColumnNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.ISessionTreeClosedListener;
 import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
@@ -122,7 +123,15 @@ public class DatabaseStructureView extends ViewPart {
 
                     // check if we have a valid selection
                     if (selection != null && (selection.getFirstElement() instanceof INode)) {
+                        
                         selectedNode = (INode) selection.getFirstElement();
+                        
+                        // if the selected node is a column node, we want to show it's parent instead
+                        // in the detail view.
+                        
+                        if (selectedNode instanceof TableColumnNode) {
+                            selectedNode = selectedNode.getParent();
+                        }
                     }
 
                 }
