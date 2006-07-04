@@ -69,6 +69,13 @@ public class DatabaseNode extends AbstractNode {
         _sessionNode = session;
         _alias = (SQLAlias) _sessionNode.getAlias();
 
+        SQLDatabaseMetaData metadata = _sessionNode.getConnection().getSQLMetaData();
+        
+        try {        
+            _databaseProductName = metadata.getDatabaseProductName();
+        } catch (Exception e) {
+            SQLExplorerPlugin.error("Error loading database product name.", e);
+        }
     }
 
 
@@ -89,9 +96,7 @@ public class DatabaseNode extends AbstractNode {
         SQLDatabaseMetaData metadata = _sessionNode.getConnection().getSQLMetaData();
 
         try {
-
-            _databaseProductName = metadata.getDatabaseProductName();
-            
+           
             if (metadata.supportsCatalogs()) {
 
                 _supportsCatalogs = true;
