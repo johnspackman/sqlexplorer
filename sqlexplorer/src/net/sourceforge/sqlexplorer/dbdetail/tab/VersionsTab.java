@@ -50,7 +50,7 @@ public class VersionsTab extends AbstractDataSetTab {
             
             setStatusMessage(Messages.getString("DatabaseDetailView.Tab.Versions.status") + " " + tableNode.getQualifiedName());
             
-            ResultSet resultSet = node.getSession().getSQLConnection().getSQLMetaData().getVersionColumns(tableNode.getTableInfo());   
+            ResultSet resultSet = node.getSession().getMetaData().getVersionColumns(tableNode.getTableInfo());   
             DataSet dataSet = new DataSet(null, resultSet, null);
             
             resultSet.close();

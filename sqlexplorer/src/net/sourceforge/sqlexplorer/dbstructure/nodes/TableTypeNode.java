@@ -96,7 +96,7 @@ public class TableTypeNode extends AbstractNode {
                 }
     
                 // get all relevant tables
-                tables = _sessionNode.getConnection().getSQLMetaData().getTables(catalogName, schemaName, "%", new String[] {_name});
+                tables = _sessionNode.getMetaData().getTables(catalogName, schemaName, "%", new String[] {_name});
 
             }
             

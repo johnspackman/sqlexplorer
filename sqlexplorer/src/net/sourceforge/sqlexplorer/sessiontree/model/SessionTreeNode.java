@@ -36,6 +36,7 @@ import net.sourceforge.sqlexplorer.sessiontree.model.utility.DictionaryLoader;
 import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.squirrel_sql.fw.sql.SQLDatabaseMetaData;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.util.ListenerList;
@@ -68,6 +69,8 @@ public class SessionTreeNode implements ISessionTreeNode {
 
     private RootSessionTreeNode _parent;
 
+    private SQLDatabaseMetaData _metaData = null;
+    
     final private String _password;
 
     Table table;
@@ -85,7 +88,8 @@ public class SessionTreeNode implements ISessionTreeNode {
         _parent = md.getRoot();
         _parent.add(this);
         _password = password;
-
+        _metaData = conn.getSQLMetaData();
+        
         _assistanceEnabled = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.SQL_ASSIST);
                
         if (_assistanceEnabled) {
@@ -95,6 +99,17 @@ public class SessionTreeNode implements ISessionTreeNode {
             
         }
             
+    }
+
+
+    
+    public SQLDatabaseMetaData getMetaData() {
+        
+        if (_metaData == null) {
+            _metaData = _connection.getSQLMetaData();
+        }
+        
+        return _metaData;
     }
 
 
@@ -190,11 +205,6 @@ public class SessionTreeNode implements ISessionTreeNode {
     }
 
 
-    public SQLConnection getConnection() {
-        return _connection;
-    }
-
-
     public String getCurrentConnectionPassword() {
         return _password;
     }
@@ -218,7 +228,7 @@ public class SessionTreeNode implements ISessionTreeNode {
     }
 
 
-    public SQLConnection getSQLConnection() {
+    public SQLConnection getConnection() {
         return _connection;
     }
 

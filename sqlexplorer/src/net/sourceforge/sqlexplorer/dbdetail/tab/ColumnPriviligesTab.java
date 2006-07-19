@@ -50,7 +50,7 @@ public class ColumnPriviligesTab extends AbstractDataSetTab {
             
             setStatusMessage(Messages.getString("DatabaseDetailView.Tab.ColumnPriviliges.status") + " " + tableNode.getQualifiedName());
             
-            ResultSet resultSet = node.getSession().getSQLConnection().getSQLMetaData().getColumnPrivileges(tableNode.getTableInfo());   
+            ResultSet resultSet = node.getSession().getMetaData().getColumnPrivileges(tableNode.getTableInfo());   
             DataSet dataSet = new DataSet(null, resultSet, new int[] {4,5,6,7,8});
             
             resultSet.close();

@@ -50,7 +50,7 @@ public class ColumnInfoTab extends AbstractDataSetTab {
             
             setStatusMessage(Messages.getString("DatabaseDetailView.Tab.ColumnInfo.status") + " " + tableNode.getQualifiedName());
             
-            ResultSet resultSet = node.getSession().getSQLConnection().getSQLMetaData().getColumns(tableNode.getTableInfo());
+            ResultSet resultSet = node.getSession().getMetaData().getColumns(tableNode.getTableInfo());
             DataSet dataSet = new DataSet(null, resultSet, new int[] {4,5,6,7,9,10,11,12,13,14,15,16,17,18});
             
             resultSet.close();

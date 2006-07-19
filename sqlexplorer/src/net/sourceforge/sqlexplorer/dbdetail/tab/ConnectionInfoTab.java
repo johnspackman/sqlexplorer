@@ -46,7 +46,7 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
 
         setStatusMessage(Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.status") + " " + node.getSession().toString());
 
-        SQLDatabaseMetaData sqlMetaData = node.getSession().getConnection().getSQLMetaData();
+        SQLDatabaseMetaData sqlMetaData = node.getSession().getMetaData();
         DatabaseMetaData jdbcMetaData = sqlMetaData.getJDBCMetaData();
 
         String[] header = new String[2];

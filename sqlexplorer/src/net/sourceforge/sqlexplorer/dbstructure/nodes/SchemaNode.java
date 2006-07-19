@@ -144,10 +144,10 @@ public class SchemaNode extends AbstractNode {
         try {
         	
         	ITableInfo[] tables = null;
-        	String[] tableTypes = _sessionNode.getConnection().getSQLMetaData().getTableTypes();
+        	String[] tableTypes = _sessionNode.getMetaData().getTableTypes();
         	
         	try {        		
-        		tables = _sessionNode.getConnection().getSQLMetaData().getTables(_name, _name, "%", tableTypes);
+        		tables = _sessionNode.getMetaData().getTables(_name, _name, "%", tableTypes);
         	} catch (Throwable e) {
         		_logger.debug("Loading all tables at once is not supported");
         	}

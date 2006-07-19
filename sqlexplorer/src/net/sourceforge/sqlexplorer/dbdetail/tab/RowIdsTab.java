@@ -50,7 +50,7 @@ public class RowIdsTab extends AbstractDataSetTab {
             
             setStatusMessage(Messages.getString("DatabaseDetailView.Tab.RowIds.status") + " " + tableNode.getQualifiedName());
             
-            ResultSet resultSet = node.getSession().getSQLConnection().getSQLMetaData().getBestRowIdentifier(tableNode.getTableInfo());   
+            ResultSet resultSet = node.getSession().getMetaData().getBestRowIdentifier(tableNode.getTableInfo());   
             DataSet dataSet = new DataSet(null, resultSet, null);
             
             resultSet.close();

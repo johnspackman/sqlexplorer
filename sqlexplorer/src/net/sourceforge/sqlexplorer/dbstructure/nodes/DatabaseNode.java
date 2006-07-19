@@ -69,7 +69,7 @@ public class DatabaseNode extends AbstractNode {
         _sessionNode = session;
         _alias = (SQLAlias) _sessionNode.getAlias();
 
-        SQLDatabaseMetaData metadata = _sessionNode.getConnection().getSQLMetaData();
+        SQLDatabaseMetaData metadata = _sessionNode.getMetaData();
         
         try {        
             _databaseProductName = metadata.getDatabaseProductName();
@@ -93,7 +93,7 @@ public class DatabaseNode extends AbstractNode {
             _filterExpressions = null;
         }
         
-        SQLDatabaseMetaData metadata = _sessionNode.getConnection().getSQLMetaData();
+        SQLDatabaseMetaData metadata = _sessionNode.getMetaData();
 
         try {
            

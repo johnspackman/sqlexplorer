@@ -158,7 +158,7 @@ public class TableNode extends AbstractNode {
         if (_columnNames.size() == 0) {
         
             try {
-                ResultSet resultSet = _sessionNode.getSQLConnection().getSQLMetaData().getColumns(_tableInfo);
+                ResultSet resultSet = _sessionNode.getMetaData().getColumns(_tableInfo);
                 while (resultSet.next()) {
                     _columnNames.add(resultSet.getString(4));
                 }

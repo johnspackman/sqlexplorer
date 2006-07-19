@@ -75,7 +75,7 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
         TableNode tableNode = (TableNode) _selectedNodes[0];
         ITableInfo info = tableNode.getTableInfo();
 
-        SQLDatabaseMetaData metaData = tableNode.getSession().getConnection().getSQLMetaData();
+        SQLDatabaseMetaData metaData = tableNode.getSession().getMetaData();
 
         ResultSet resultSet;
         StringBuffer buf = new StringBuffer(4 * 1024);
