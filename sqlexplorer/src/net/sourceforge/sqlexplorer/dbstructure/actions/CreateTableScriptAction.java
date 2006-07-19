@@ -93,8 +93,8 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
             rsPks.close();
 
             resultSet = metaData.getColumns(info);
-            String tableName = _selectedNodes[0].getParent().getQualifiedName();
-            buf.append("create table ");
+            String tableName = _selectedNodes[0].getQualifiedName();
+            buf.append("CREATE TABLE ");
             buf.append(tableName);
             buf.append("(");
 
