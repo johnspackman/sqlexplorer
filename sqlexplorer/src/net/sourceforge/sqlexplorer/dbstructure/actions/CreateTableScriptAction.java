@@ -136,10 +136,16 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
 
                 if (defaultValue != null && !defaultValue.equals("")) {
                     buf.append(" default ");
-                    if (!bNumeric)
+                    boolean isSystemValue = bNumeric; 
+                    
+                    if (defaultValue.equalsIgnoreCase("CURRENT_TIMESTAMP")) {
+                        isSystemValue = true;
+                    }
+                    
+                    if (!isSystemValue)
                         buf.append("'");
                     buf.append(defaultValue);
-                    if (!bNumeric)
+                    if (!isSystemValue)
                         buf.append("'");
 
                 }
