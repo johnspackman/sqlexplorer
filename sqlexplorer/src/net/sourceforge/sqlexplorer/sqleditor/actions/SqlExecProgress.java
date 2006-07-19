@@ -154,8 +154,12 @@ public class SqlExecProgress implements IRunnableWithProgress {
                     // save successfull query
                     SQLExplorerPlugin.getDefault().addSQLtoHistory(new SQLString(sql, sessionTreeNode.toString()));
                     
+                    stmt.close();
+                    
                     return result;
                 }
+                
+                stmt.close();
                 
             } else {
                 
