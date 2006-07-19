@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer.sqleditor.actions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -118,7 +119,7 @@ public class SqlExecProgress implements IRunnableWithProgress {
     }
 
 
-    private SQLResult processQuery(String sql, final IProgressMonitor monitor) {
+    private SQLResult processQuery(String sql, final IProgressMonitor monitor) throws SQLException {
 
         final long startTime = System.currentTimeMillis();
 
@@ -126,9 +127,9 @@ public class SqlExecProgress implements IRunnableWithProgress {
         result.setSqlStatement(sql);
         
         LocalThread lt = null;
-        try {
+        final Statement stmt = sessionTreeNode.getConnection().createStatement();
 
-            final Statement stmt = sessionTreeNode.getConnection().createStatement();
+        try {
 
             stmt.setMaxRows(maxRows);
             lt = new LocalThread(monitor, stmt);
@@ -185,6 +186,11 @@ public class SqlExecProgress implements IRunnableWithProgress {
             }
 
         } catch (final Throwable e) {
+            
+            if (stmt != null) {
+                stmt.close();
+            }
+            
             if (!monitor.isCanceled()) {
                 SQLExplorerPlugin.error("Error processing query ", e);
                 exception = e;
