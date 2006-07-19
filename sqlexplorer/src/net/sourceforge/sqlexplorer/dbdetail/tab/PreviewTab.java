@@ -66,6 +66,7 @@ public class PreviewTab extends AbstractDataSetTab {
               
             DataSet dataSet = new DataSet(null, resultSet, null);
             
+            statement.close();            
             resultSet.close();
             return dataSet;
         }

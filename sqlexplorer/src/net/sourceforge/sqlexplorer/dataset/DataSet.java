@@ -95,6 +95,8 @@ public class DataSet {
         ResultSet resultSet = statement.getResultSet();
 
         initialize(columnLabels, resultSet, relevantIndeces);
+        
+        statement.close();
     }
 
 
