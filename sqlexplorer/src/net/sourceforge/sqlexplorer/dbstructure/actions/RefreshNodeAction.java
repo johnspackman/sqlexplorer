@@ -81,9 +81,12 @@ public class RefreshNodeAction extends AbstractDBTreeContextAction {
             _selectedNodes[i].refresh();
         }
         
-        // refresh detail view
+        // refresh structure view
         DatabaseStructureView structureView = (DatabaseStructureView) SQLExplorerPlugin.getDefault().getWorkbench()
-        .getActiveWorkbenchWindow().getActivePage().findView(SqlexplorerViewConstants.SQLEXPLORER_DBSTRUCTURE);
+        .getActiveWorkbenchWindow().getActivePage().findView(SqlexplorerViewConstants.SQLEXPLORER_DBSTRUCTURE);       
+        _treeViewer.refresh();
+
+        // refresh detail view
         DatabaseDetailView detailView = (DatabaseDetailView) SQLExplorerPlugin.getDefault().getWorkbench()
         .getActiveWorkbenchWindow().getActivePage().findView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
         structureView.synchronizeDetailView(detailView);
