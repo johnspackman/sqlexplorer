@@ -22,9 +22,8 @@ TODO Priorities.
   implementation for TO_DATE('2000-01-01', 'YYYY-MM-DD') for example.
 
 == QUERY EXECUTION ==
-* make sql statements cancellable
 * add refresh action to sql result table
-* background processing for queries
+
 
 == DB SPECIFIC EXTENSIONS ==
 * create extension points for sql editor

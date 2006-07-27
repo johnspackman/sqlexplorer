@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2006 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,36 +19,54 @@
 
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
+import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.sqlpanel.SQLExecution;
+import net.sourceforge.sqlexplorer.util.QueryTokenizer;
 
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Text;
 
 public class ExecSQLAction extends AbstractEditorAction {
 
-    private ImageDescriptor img = ImageDescriptor.createFromURL(SqlexplorerImages.getExecSQLIcon());
-
-    SessionTreeNode preferredNode;
-
     private Button _limitResults;
 
     private Text _resultLimit;
 
+    private ImageDescriptor img = ImageDescriptor.createFromURL(SqlexplorerImages.getExecSQLIcon());
+
+    SessionTreeNode preferredNode;
+
+
     public ExecSQLAction() {
     }
+
 
     public ExecSQLAction(SQLEditor txtComp, SessionTreeNode node_) {
 
         _editor = txtComp;
         this.preferredNode = node_;
+    }
+
+
+    public ImageDescriptor getHoverImageDescriptor() {
+        return img;
+    }
+
+
+    public ImageDescriptor getImageDescriptor() {
+        return img;
     }
 
 
@@ -110,7 +128,7 @@ public class ExecSQLAction extends AbstractEditorAction {
             _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
                 public void run() {
-                    MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("SQLEditor.LimitRows.Error.Title"), e.getMessage());
+                    MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("SQLResultsView.Error.Title"), e.getMessage());
                 }
             });
 
@@ -118,13 +136,8 @@ public class ExecSQLAction extends AbstractEditorAction {
     }
 
 
-    public void setInputFields(Button limitResults, Text resultLimit) {
-        _limitResults = limitResults;
-        _resultLimit = resultLimit;
-    }
-
-
     public void run(int maxRows) {
+
         SessionTreeNode runNode = null;
         if (preferredNode == null)
             runNode = _editor.getSessionTreeNode();
@@ -133,33 +146,53 @@ public class ExecSQLAction extends AbstractEditorAction {
         if (runNode == null)
             return;
 
-        final SqlExecProgress sExecP = new SqlExecProgress(_editor.getSQLToBeExecuted(), _editor, maxRows, runNode);
+        Preferences prefs = SQLExplorerPlugin.getDefault().getPluginPreferences();
 
-        ProgressMonitorDialog pg = new ProgressMonitorDialog(_editor.getSite().getShell());
+        String queryDelimiter = prefs.getString(IConstants.SQL_QRY_DELIMITER);
+        String alternateDelimiter = prefs.getString(IConstants.SQL_ALT_QRY_DELIMITER);
+        String commentDelimiter = prefs.getString(IConstants.SQL_COMMENT_DELIMITER);
+
+        final long startTime = System.currentTimeMillis();
+
+        QueryTokenizer qt = new QueryTokenizer(_editor.getSQLToBeExecuted(), queryDelimiter, alternateDelimiter, commentDelimiter);
+        final List queryStrings = new ArrayList();
+        while (qt.hasQuery()) {
+            final String querySql = qt.nextQuery();
+            // ignore commented lines.
+            if (!querySql.startsWith("--")) {
+                queryStrings.add(querySql);
+            }
+        }
+
         try {
-            pg.run(true, true, sExecP);
-        } catch (java.lang.Exception e) {
-            SQLExplorerPlugin.error("Error executing the SQL statement ", e);
-        }
-        if (sExecP.isSqlError()) {
-            _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
-                public void run() {
-                    MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("Error..._2"), sExecP.getException().getMessage());
+            SqlResultsView resultsView = (SqlResultsView) _editor.getSite().getPage().showView(
+                    "net.sourceforge.sqlexplorer.plugin.views.SqlResultsView");
 
+            while (!queryStrings.isEmpty()) {
+
+                String querySql = (String) queryStrings.remove(0);
+
+                if (querySql != null) {
+                    resultsView.addSQLExecution(new SQLExecution(resultsView, _editor.getSQLToBeExecuted(), maxRows, runNode));
                 }
-            });
+            }
+
+            long endTime = System.currentTimeMillis();
+            String message = Messages.getString("SQLEditor.TotalTime.Prefix") + " " + (int) (endTime - startTime) + " "
+                    + Messages.getString("SQLEditor.TotalTime.Postfix");
+            _editor.setMessage(message);
+
+        } catch (Exception e) {
+            SQLExplorerPlugin.error("Error creating sql execution tab", e);
         }
+
     }
 
 
-    public ImageDescriptor getHoverImageDescriptor() {
-        return img;
-    }
-
-
-    public ImageDescriptor getImageDescriptor() {
-        return img;
+    public void setInputFields(Button limitResults, Text resultLimit) {
+        _limitResults = limitResults;
+        _resultLimit = resultLimit;
     };
 
 }

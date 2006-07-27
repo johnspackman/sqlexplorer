@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2006 Davy Vanherbergen
- * dvanherbergen@users.sourceforge.net
+ * Copyright (C) 2006 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,8 +19,8 @@
 package net.sourceforge.sqlexplorer.plugin.views;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dataset.DataSetTable;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.sqlpanel.SQLExecution;
 import net.sourceforge.sqlexplorer.sqlpanel.SQLResult;
 import net.sourceforge.sqlexplorer.sqlpanel.actions.CloseSQLResultTab;
 import net.sourceforge.sqlexplorer.util.TextUtil;
@@ -49,50 +49,21 @@ import org.eclipse.ui.part.ViewPart;
  */
 public class SqlResultsView extends ViewPart {
 
-    private Composite _parent;
+    private int _lastTabNumber = 0;
 
-    private TabFolder _tabFolder;
+    private Composite _parent;
 
     private SQLResult[] _results;
 
-    private int _lastTabNumber = 0;
+    private TabFolder _tabFolder;
 
 
     /**
-     * Initialize sql result view.
+     * Add a new SQL Execution Tab
      * 
-     * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
+     * @param sqlExecution
      */
-    public void createPartControl(Composite parent) {
-
-        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, SQLExplorerPlugin.PLUGIN_ID + ".SQLResultsView");
-        
-        _parent = parent;
-
-        // set default message
-        if (_results == null || _results.length == 0) {
-            setDefaultMessage();
-        }
-
-    }
-
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ui.IWorkbenchPart#setFocus()
-     */
-    public void setFocus() {
-
-    }
-
-
-    /**
-     * Add a new result tab folder
-     * 
-     * @param sqlResult
-     */
-    public void addSQLResult(SQLResult sqlResult) {
+    public void addSQLExecution(SQLExecution sqlExecution) {
 
         if (_tabFolder == null || _tabFolder.isDisposed()) {
 
@@ -113,7 +84,7 @@ public class SqlResultsView extends ViewPart {
         // set tab text & tooltip
         String labelText = "" + _lastTabNumber;
         tabItem.setText(labelText);
-        tabItem.setToolTipText(TextUtil.getWrappedText(sqlResult.getSqlStatement()));
+        tabItem.setToolTipText(TextUtil.getWrappedText(sqlExecution.getSqlStatement()));
 
         // create composite for our result
         Composite composite = new Composite(_tabFolder, SWT.NULL);
@@ -130,11 +101,18 @@ public class SqlResultsView extends ViewPart {
         composite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
         tabItem.setControl(composite);
+        tabItem.setData(sqlExecution);
 
         tabItem.addDisposeListener(new DisposeListener() {
 
             public void widgetDisposed(DisposeEvent e) {
-                
+
+                // stop all sql execution if still running
+                TabItem tabItem = (TabItem) e.getSource();
+                SQLExecution sqlExecution = (SQLExecution) tabItem.getData();
+                sqlExecution.stop();
+                tabItem.setData(null);
+
                 if (_tabFolder != null && !_tabFolder.isDisposed()) {
 
                     if (_tabFolder.getItemCount() == 0) {
@@ -142,25 +120,25 @@ public class SqlResultsView extends ViewPart {
                         clearParent();
                         setDefaultMessage();
                     }
-                    
+
                 } else if (_tabFolder.isDisposed()) {
                     clearParent();
                     setDefaultMessage();
                 }
+
             }
-            
+
         });
-        
-        
+
         // add sql statement, first create temp label to calculate correct size
 
-        String sqlStatement = sqlResult.getSqlStatement();
+        String sqlStatement = sqlExecution.getSqlStatement();
 
         int labelHeight = 60;
         int labelStyle = SWT.WRAP | SWT.MULTI;
 
         Text tmpLabel = new Text(composite, labelStyle);
-        tmpLabel.setText(TextUtil.removeLineBreaks(sqlResult.getSqlStatement()));
+        tmpLabel.setText(TextUtil.removeLineBreaks(sqlExecution.getSqlStatement()));
         tmpLabel.setLayoutData(new FillLayout());
         int parentWidth = _parent.getClientArea().width;
         Point idealSize = tmpLabel.computeSize(parentWidth - 30, SWT.DEFAULT);
@@ -177,10 +155,10 @@ public class SqlResultsView extends ViewPart {
 
         // now create real label
         // create spanned cell for table data
-        
+
         Composite headerComposite = new Composite(composite, SWT.FILL);
-        headerComposite.setLayoutData(new GridData(SWT.FILL,  SWT.TOP, true, false));     
-        
+        headerComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
         GridLayout hLayout = new GridLayout();
         hLayout.numColumns = 2;
         hLayout.marginLeft = 0;
@@ -188,9 +166,9 @@ public class SqlResultsView extends ViewPart {
         hLayout.verticalSpacing = 0;
         hLayout.marginWidth = 0;
         hLayout.marginHeight = 0;
-        
+
         headerComposite.setLayout(hLayout);
-        
+
         Text label = new Text(headerComposite, labelStyle);
         label.setEditable(false);
         label.setBackground(_parent.getBackground());
@@ -201,37 +179,24 @@ public class SqlResultsView extends ViewPart {
         labelGridData.heightHint = labelHeight;
         label.setLayoutData(labelGridData);
 
-       
         // add action bar
-        
+
         ToolBarManager toolBarMgr = new ToolBarManager(SWT.FLAT);
-        toolBarMgr.createControl(headerComposite);        
+        toolBarMgr.createControl(headerComposite);
         toolBarMgr.add(new CloseSQLResultTab(tabItem));
-        toolBarMgr.update(true);        
+        toolBarMgr.update(true);
         GridData gid = new GridData();
         gid.horizontalAlignment = SWT.RIGHT;
         gid.verticalAlignment = SWT.TOP;
-        toolBarMgr.getControl().setLayoutData(gid);     
+        toolBarMgr.getControl().setLayoutData(gid);
 
-   
-        
-        // add results table
-        
-        try {
-            String statusMessage = Messages.getString("SQLResultsView.Time.Prefix") + " " 
-                    + sqlResult.getExecutionTimeMillis() + " "  + Messages.getString("SQLResultsView.Time.Postfix");
-            new DataSetTable(composite, sqlResult.getDataSet(), statusMessage);
+        // add detail composite to show progress bar and results
+        Composite detailComposite = new Composite(composite, SWT.FILL);
+        detailComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        } catch (Exception e) {
-
-            // add message
-            String message = e.getMessage();
-            Label errorLabel = new Label(composite, SWT.FILL);
-            errorLabel.setText(message);
-            errorLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-
-            SQLExplorerPlugin.error("Error creating result tab", e);
-        }
+        sqlExecution.setComposite(detailComposite);
+        sqlExecution.setParentTab(tabItem);
+        sqlExecution.startExecution();
 
         // set new tab as the active one
         _tabFolder.setSelection(_tabFolder.getItemCount() - 1);
@@ -243,6 +208,41 @@ public class SqlResultsView extends ViewPart {
 
         // bring this view to top of the view stack
         getSite().getPage().bringToTop(this);
+
+    }
+
+
+    /**
+     * Remove all items from parent
+     */
+    private void clearParent() {
+
+        Control[] children = _parent.getChildren();
+        if (children != null) {
+            for (int i = 0; i < children.length; i++) {
+                children[i].dispose();
+            }
+        }
+
+        _lastTabNumber = 0;
+    }
+
+
+    /**
+     * Initialize sql result view.
+     * 
+     * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
+     */
+    public void createPartControl(Composite parent) {
+
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, SQLExplorerPlugin.PLUGIN_ID + ".SQLResultsView");
+
+        _parent = parent;
+
+        // set default message
+        if (_results == null || _results.length == 0) {
+            setDefaultMessage();
+        }
 
     }
 
@@ -266,18 +266,12 @@ public class SqlResultsView extends ViewPart {
     }
 
 
-    /**
-     * Remove all items from parent
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.IWorkbenchPart#setFocus()
      */
-    private void clearParent() {
+    public void setFocus() {
 
-        Control[] children = _parent.getChildren();
-        if (children != null) {
-            for (int i = 0; i < children.length; i++) {
-                children[i].dispose();
-            }
-        }
-
-        _lastTabNumber = 0;
     }
 }
