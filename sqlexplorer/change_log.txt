@@ -61,6 +61,7 @@ SQL Editor
 * file open dialog now allows loading of multiple files into editor
 * removed save prompt when sql editor is closed
 * ad-hoc override of sql result set limit in sql editor
+* autowrap is now available and enabled by default. Can be changed in preferences.
 
 Connection view
 * when new connection is made, a new SQL editor is automatically opened

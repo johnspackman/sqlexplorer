@@ -83,4 +83,5 @@ public interface IConstants {
     
     String DATASETRESULT_DATE_FORMAT = "DataSetResult.DateFormat";
 
+    String WORD_WRAP = "SQLEditor.AutoWrap";
 }

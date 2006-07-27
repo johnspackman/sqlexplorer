@@ -49,7 +49,8 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_QRY_DELIMITER),
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_ALT_QRY_DELIMITER),
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_COMMENT_DELIMITER),
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.INCLUDE_COLUMNS_IN_TREE)};
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.INCLUDE_COLUMNS_IN_TREE),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.WORD_WRAP)};
 
     private IntegerFieldEditor fPreviewRowCountEditor;
 
@@ -70,6 +71,8 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     Button fAssistance;
     
     Button _includeColumnsButton;
+    
+    Button _wordWrapButton;
 
     public GeneralPreferencePage(OverlayPreferenceStore fOverlayStore) {
         this.setTitle(Messages.getString("General_Preferences_1")); //$NON-NLS-1$
@@ -150,6 +153,14 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
         _commentDelimiterField.setTextLimit(4);
         _commentDelimiterField.setErrorMessage(Messages.getString("Preferences.SQLExplorer.CommentDelimiter.Error"));
         
+        
+        _wordWrapButton = new Button(colorComposite, SWT.CHECK);
+        _wordWrapButton.setText(Messages.getString("Preferences.SQLExplorer.WordWrap")); 
+        gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalAlignment = GridData.BEGINNING;
+        gd.horizontalSpan = 2;
+        _wordWrapButton.setLayoutData(gd);
+        
         fAutoCommitBox.addSelectionListener(new SelectionListener() {
 
             public void widgetDefaultSelected(SelectionEvent e) {
@@ -191,6 +202,16 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
 
             public void widgetSelected(SelectionEvent e) {
                 fOverlayStore.setValue(IConstants.INCLUDE_COLUMNS_IN_TREE, _includeColumnsButton.getSelection());
+            }
+        });
+        
+        _wordWrapButton.addSelectionListener(new SelectionListener() {
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+            }
+
+            public void widgetSelected(SelectionEvent e) {
+                fOverlayStore.setValue(IConstants.WORD_WRAP, _wordWrapButton.getSelection());
             }
         });
         
@@ -253,6 +274,13 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
 
             public void run() {
                 _includeColumnsButton.setSelection(fOverlayStore.getBoolean(IConstants.INCLUDE_COLUMNS_IN_TREE));
+            }
+        });
+        
+        _wordWrapButton.getDisplay().asyncExec(new Runnable() {
+
+            public void run() {
+                _wordWrapButton.setSelection(fOverlayStore.getBoolean(IConstants.WORD_WRAP));
             }
         });
 

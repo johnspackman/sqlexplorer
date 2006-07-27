@@ -1485,7 +1485,16 @@ public class SQLEditor extends TextEditor {
 
     public void createPartControl(Composite parent) {
         super.createPartControl(parent);
-        PlatformUI.getWorkbench().getHelpSystem().setHelp(getSourceViewer().getTextWidget(), SQLExplorerPlugin.PLUGIN_ID + ".SQLEditor");       
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(getSourceViewer().getTextWidget(), SQLExplorerPlugin.PLUGIN_ID + ".SQLEditor"); 
+        
+        Object adapter = getAdapter(org.eclipse.swt.widgets.Control.class);
+        if(adapter instanceof StyledText)
+        {
+            StyledText text = (StyledText)adapter;
+            text.setWordWrap(SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.WORD_WRAP));
+        }
+
+        
     }
 }
 

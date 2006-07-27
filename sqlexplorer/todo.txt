@@ -11,7 +11,6 @@ TODO Priorities.
 ^ creating first editor is a bit slow..
 
 == EDITOR STUFF ==
-* add autowrap to editor, just like the wordwrap feature in notepad
 * review/fix sql editor content assist
 * check preferences are being stored/restored properly after application exit
 * fix/check color coding/font settings
