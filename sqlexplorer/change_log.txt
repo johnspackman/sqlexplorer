@@ -52,6 +52,7 @@ SQL Results
 * sqlCompositeResultViewer replaced by DataSetTable
 * sql statements can now be cancelled
 * background processing for queries
+* when result table is selected, F5 re-executes sql
 
 SQL Editor
 * query/comment delimiters can now be set in preferences

@@ -213,9 +213,9 @@ public class SQLExecution {
      * Display SQL Results in result pane
      */
     private void displayResults() {
-
+       
         _resultsView.getSite().getShell().getDisplay().asyncExec(new Runnable() {
-
+            
             public void run() {
 
                 clearCanvas();
@@ -234,6 +234,8 @@ public class SQLExecution {
                             + Messages.getString("SQLResultsView.Time.Postfix");
                     new DataSetTable(_composite, _sqlResult.getDataSet(), statusMessage);
 
+                    _composite.setData("parenttab", _parentTab);
+                    
                 } catch (Exception e) {
 
                     // add message
@@ -251,7 +253,7 @@ public class SQLExecution {
             };
         });
     }
-
+   
 
     private void displayUpdateResults(final int count, final long duration) {
 
@@ -324,7 +326,7 @@ public class SQLExecution {
      * Start exection of sql statement
      */
     public void startExecution() {
-
+       
         // start progress bar
         displayProgress();
 

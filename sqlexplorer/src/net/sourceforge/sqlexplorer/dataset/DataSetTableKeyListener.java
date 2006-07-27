@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer.dataset;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbdetail.IDetailTab;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.sqlpanel.SQLExecution;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableCursor;
@@ -41,6 +42,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
@@ -164,6 +166,20 @@ public class DataSetTableKeyListener implements KeyListener {
                     _tab.refresh();
                 }
                 disposePopup();
+                
+                // refresh SQL Results
+                try {
+                    Object o = _parent.getData("parenttab");
+                    if (o != null) {
+                        SQLExecution sqlExec = (SQLExecution) ((TabItem)o).getData();
+                        if (sqlExec != null) {
+                            sqlExec.startExecution();
+                        }
+                    }
+                } catch (Exception e1) {
+                    SQLExplorerPlugin.error("Error refreshing", e1);
+                }
+
                 break;
 
             case SWT.ESC:

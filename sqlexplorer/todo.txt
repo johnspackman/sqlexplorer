@@ -21,9 +21,6 @@ TODO Priorities.
   These could be organized by type, e.g. functions, rules, hints, ...   This way, you wouldn't have to remember every db specific
   implementation for TO_DATE('2000-01-01', 'YYYY-MM-DD') for example.
 
-== QUERY EXECUTION ==
-* add refresh action to sql result table
-
 
 == DB SPECIFIC EXTENSIONS ==
 * create extension points for sql editor
