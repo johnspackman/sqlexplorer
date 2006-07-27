@@ -222,10 +222,7 @@ public class DataSet {
                     break;
 
                 case Types.DATE:
-                    _columnTypes[i] = TYPE_DATE;
-                    break;
-
-                case Types.TIMESTAMP:
+                case Types.TIMESTAMP:                    
                     _columnTypes[i] = TYPE_DATETIME;
                     break;
 
