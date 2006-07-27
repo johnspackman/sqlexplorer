@@ -174,7 +174,7 @@ public class ExecSQLAction extends AbstractEditorAction {
                 String querySql = (String) queryStrings.remove(0);
 
                 if (querySql != null) {
-                    resultsView.addSQLExecution(new SQLExecution(resultsView, _editor.getSQLToBeExecuted(), maxRows, runNode));
+                    resultsView.addSQLExecution(new SQLExecution(resultsView, querySql, maxRows, runNode));
                 }
             }
 
