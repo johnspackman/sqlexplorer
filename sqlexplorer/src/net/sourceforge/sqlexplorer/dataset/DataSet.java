@@ -267,6 +267,10 @@ public class DataSet {
                         row.setValue(i, resultSet.getString(relevantIndeces[i]));
                         break;
                 }
+                
+                if (resultSet.wasNull()) {
+                    row.setValue(i, null);
+                }
 
             }
             rows.add(row);
