@@ -19,33 +19,27 @@
 package net.sourceforge.sqlexplorer.dataset;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.TableCursor;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -72,7 +66,7 @@ public class DataSetTable {
      * @param dataSet content of table
      * @param info text displayed in bottem left corner under table
      */
-    public DataSetTable(Composite parent, DataSet dataSet, String info) throws Exception {
+    public DataSetTable(Composite parent, final DataSet dataSet, String info) throws Exception {
 
         Composite composite = new Composite(parent, SWT.FILL);
         
@@ -101,10 +95,37 @@ public class DataSetTable {
         }
         
         // create table structure
-        final TableViewer tableViewer = new TableViewer(composite, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+        final TableViewer tableViewer = new TableViewer(composite, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI | SWT.VIRTUAL);
         final Table table = tableViewer.getTable();
+        
         tableViewer.setColumnProperties(columnLabels);
-     
+        table.setItemCount(dataSet.getRows().length);
+
+        // create listener for sorting
+    	Listener sortListener = new Listener() {
+    		public void handleEvent(Event e) {
+    			
+    			// determine new sort column and direction
+    			TableColumn sortColumn = table.getSortColumn();
+    			TableColumn currentColumn = (TableColumn) e.widget;
+    			int dir = table.getSortDirection();
+    			if (sortColumn == currentColumn) {
+    				dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
+    			} else {
+    				table.setSortColumn(currentColumn);
+    				dir = SWT.UP;
+    			}
+    			
+    			// sort the data based on column and direction
+    			dataSet.sort(((Integer)currentColumn.getData("orignalColumnIndex")).intValue(), dir);
+    			
+    			// update data displayed in table
+    			table.setSortDirection(dir);
+    			table.clearAll();
+    		}
+    	};
+        
+        
         GridData tGridData = new GridData();
         tGridData.horizontalSpan = 2;
         tGridData.grabExcessHorizontalSpace = true;
@@ -124,59 +145,6 @@ public class DataSetTable {
         // store dataset for use in actions
         table.setData(dataSet);
         
-        // create sort images
-        final Image imgAsc = ImageDescriptor.createFromURL(SqlexplorerImages.getAscOrderIcon()).createImage();
-        final Image imgDesc = ImageDescriptor.createFromURL(SqlexplorerImages.getDescOrderIcon()).createImage();
-        
-        // add dispose listener for images
-        tableViewer.getControl().addDisposeListener(new DisposeListener() {
-            public void widgetDisposed(DisposeEvent e) {
-                imgAsc.dispose();
-                imgDesc.dispose();
-            }
-        });
-      
-       
-        // create listener for sorting
-        SelectionListener headerListener = new SelectionAdapter() {
-
-            public void widgetSelected(final SelectionEvent e) {
-                
-                BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
-                
-                    public void run() {
-                        DataSetTableSorter sorter = (DataSetTableSorter) tableViewer.getSorter();
-                        TableColumn column = ((TableColumn) e.widget);                
-                        int columnIndex = table.indexOf(column);                
-        
-                        if (columnIndex == sorter.getTopPriority()) {
-                            int k = sorter.reverseTopPriority();
-                            if (k == DataSetTableSorter.SORT_ASCENDING) {
-                                column.setImage(imgAsc);
-                            } else {
-                                column.setImage(imgDesc);
-                            }
-                        } else {
-                            sorter.setTopPriority(columnIndex);
-                            column.setImage(imgAsc);
-                        }
-        
-                        TableColumn[] columns = table.getColumns();
-                        for (int i = 0; i < columns.length; i++) {
-                            if (i != columnIndex && columns[i].getImage() != null) {
-                                columns[i].setImage(null);
-                            }
-                        }
-                        tableViewer.refresh();
-                        table.redraw();
-                        table.getParent().redraw();
-                    }
-                });
-            }
-        };
-        
-        
-        
         // add all column headers to our table
         for (int i = 0; i < columnLabels.length; i++) {
             
@@ -185,12 +153,12 @@ public class DataSetTable {
             column.setText(columnLabels[i]);
             column.setMoveable(true);
             column.setResizable(true);            
-            column.addSelectionListener(headerListener);
+            column.addListener(SWT.Selection, sortListener);
+            column.setData("orignalColumnIndex", new Integer(i));
         }
                      
         tableViewer.setContentProvider(new DataSetTableContentProvider());
         tableViewer.setLabelProvider(new DataSetTableLabelProvider());
-        tableViewer.setSorter(new DataSetTableSorter(dataSet));
         tableViewer.setInput(dataSet);
 
         // make columns full size

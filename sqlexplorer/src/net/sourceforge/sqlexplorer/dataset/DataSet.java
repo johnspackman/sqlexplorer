@@ -18,13 +18,20 @@
  */
 package net.sourceforge.sqlexplorer.dataset;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 /**
@@ -52,6 +59,14 @@ public class DataSet {
 
     private DataSetRow[] _rows;
 
+    private DataSetTableSorter _sorter;
+
+	// TODO move this to parent
+	private SimpleDateFormat _dateFormatter = new SimpleDateFormat(SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_FORMAT));
+
+	private DecimalFormat _decimalFormat = new DecimalFormat();
+
+	private boolean _formatDates = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.DATASETRESULT_FORMAT_DATES);
 
     /**
      * Hidden default constructor.
@@ -72,6 +87,7 @@ public class DataSet {
      */
     public DataSet(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws Exception {
 
+        _decimalFormat.setGroupingUsed(false);
         initialize(columnLabels, resultSet, relevantIndeces);
     }
 
@@ -89,6 +105,8 @@ public class DataSet {
      */
     public DataSet(String[] columnLabels, String sql, int[] relevantIndeces, SQLConnection connection) throws Exception {
 
+        _decimalFormat.setGroupingUsed(false);
+    	
         Statement statement = connection.createStatement();
 
         statement.execute(sql);
@@ -97,6 +115,8 @@ public class DataSet {
         initialize(columnLabels, resultSet, relevantIndeces);
         
         statement.close();
+        
+
     }
 
 
@@ -111,13 +131,14 @@ public class DataSet {
      */
     public DataSet(String[] columnLabels, String[][] data, int[] columnTypes) throws Exception {
 
+        _decimalFormat.setGroupingUsed(false);
         _columnLabels = columnLabels;
         _columnTypes = columnTypes;
 
         _rows = new DataSetRow[data.length];
 
         for (int i = 0; i < data.length; i++) {
-            _rows[i] = new DataSetRow(data[i]);
+            _rows[i] = new DataSetRow(data[i], this);
         }
     }
 
@@ -239,7 +260,7 @@ public class DataSet {
         List rows = new ArrayList(100);
         while (resultSet.next()) {
 
-            DataSetRow row = new DataSetRow(relevantIndeces.length);
+            DataSetRow row = new DataSetRow(relevantIndeces.length, this);
 
             for (int i = 0; i < relevantIndeces.length; i++) {
 
@@ -278,5 +299,47 @@ public class DataSet {
 
         _rows = (DataSetRow[]) rows.toArray(new DataSetRow[] {});
 
+    }
+    
+    
+    
+    /**
+     * Resort the data using the given column and sortdirection.
+     * @param columnIndex primary sort column index
+     * @param sortDirection SWT.UP | SWT.DOWN
+     */
+    public void sort(int columnIndex, int sortDirection) {
+    	
+    	if (_sorter == null) {
+    		_sorter = new DataSetTableSorter(this);
+    	}
+    	_sorter.setTopPriority(columnIndex, sortDirection);
+    	
+    	Arrays.sort(_rows, _sorter);
+    }
+    
+    
+    public String format(Object tmp) {
+
+        if (tmp != null) {
+            
+            Class clazz = tmp.getClass();
+            
+            // filter out scientific values
+            if (clazz == Double.class || clazz == Integer.class)  {                 
+                return _decimalFormat.format(tmp); 
+            } 
+            
+            // format dates
+            if (_formatDates && clazz == Timestamp.class) {                
+                return _dateFormatter.format(new java.util.Date(((Timestamp)tmp).getTime()));
+            }
+            if (_formatDates && clazz == Date.class) {                
+                return _dateFormatter.format(new java.util.Date(((Date)tmp).getTime()));
+            }
+            
+            return tmp.toString();
+        }
+        return "<null>";
     }
 }

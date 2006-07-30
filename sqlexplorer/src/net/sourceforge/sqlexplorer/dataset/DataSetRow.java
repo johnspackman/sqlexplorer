@@ -18,13 +18,6 @@
  */
 package net.sourceforge.sqlexplorer.dataset;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-
-import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 /**
  * DataSetRow, represents one row in a dataSet.
@@ -35,20 +28,16 @@ public class DataSetRow {
 
     private Object[] _values;
 
-    private DecimalFormat _decimalFormat = new DecimalFormat();
-    
-    private SimpleDateFormat _dateFormatter = new SimpleDateFormat(SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_FORMAT)); 
-    
-    private boolean _formatDates = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.DATASETRESULT_FORMAT_DATES);
+    private DataSet _parent;
     
     /**
      * Create new DataSetRow with columnCount values
      * 
      * @param columnCount number of columns
      */
-    public DataSetRow(int columnCount) {
+    public DataSetRow(int columnCount, DataSet parent) {
         _values = new Object[columnCount];
-        _decimalFormat.setGroupingUsed(false);
+        _parent = parent;
     }
 
 
@@ -57,8 +46,9 @@ public class DataSetRow {
      * 
      * @param values
      */
-    public DataSetRow(String[] values) {
+    public DataSetRow(String[] values, DataSet parent) {
         _values = values;
+        _parent = parent;
     }
 
 
@@ -69,27 +59,7 @@ public class DataSetRow {
      */
     public String getStringValue(int column) {
 
-        Object tmp = _values[column];
-        if (tmp != null) {
-            
-            Class clazz = tmp.getClass();
-            
-            // filter out scientific values
-            if (clazz == Double.class || clazz == Integer.class)  {                 
-                return _decimalFormat.format(tmp); 
-            } 
-            
-            // format dates
-            if (_formatDates && clazz == Timestamp.class) {                
-                return _dateFormatter.format(new java.util.Date(((Timestamp)tmp).getTime()));
-            }
-            if (_formatDates && clazz == Date.class) {                
-                return _dateFormatter.format(new java.util.Date(((Date)tmp).getTime()));
-            }
-            
-            return tmp.toString();
-        }
-        return "<null>";
+        return _parent.format(_values[column]);
     }
 
     

@@ -21,42 +21,30 @@ package net.sourceforge.sqlexplorer.dataset;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Comparator;
 
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.swt.SWT;
 
 
 /**
- * DataSetTableSorter. Sorts dataset table.  Based on original SQLTableSorter from 
- * Andrea Mazzolini.
+ * DataSetTableSorter. 
  * 
  * @author Davy Vanherbergen
  */
-public class DataSetTableSorter extends ViewerSorter {
-
-    
-    public final static int SORT_ASCENDING = 1;
-
-    public final static int SORT_DEFAULT = 0;
-
-    public final static int SORT_DESCENDING = -1;
-
-    
+public class DataSetTableSorter implements Comparator {
+   
     
     public DataSetTableSorter(DataSet dataSet) {
         
         _columnTypes = dataSet.getColumnTypes();        
         _priorities = new int[_columnTypes.length];
         _directions = new int[_columnTypes.length];
-        _defaultDirections = new int[_columnTypes.length];
-        _defaultPriorities = new int[_columnTypes.length];
 
         for (int i = 0; i < _columnTypes.length; i++) {
-            _defaultDirections[i] = SORT_DEFAULT;
-            _defaultPriorities[i] = i;
+        	_directions[i] = SWT.NONE;
+            _priorities[i] = i;
         }
 
-        resetState();
     }
     
 
@@ -65,17 +53,13 @@ public class DataSetTableSorter extends ViewerSorter {
 
     protected int[] _directions;
 
-    protected int[] _defaultDirections;
-
-    protected int[] _defaultPriorities;
-
     protected int _columnTypes[];
 
 
     /**
      * @param column
      */
-    public void setTopPriority(int priority) {
+    public void setTopPriority(int priority, int direction) {
 
         if (priority < 0 || priority >= _priorities.length)
             return;
@@ -89,7 +73,6 @@ public class DataSetTableSorter extends ViewerSorter {
         }
 
         if (index == -1) {
-            resetState();
             return;
         }
 
@@ -98,40 +81,14 @@ public class DataSetTableSorter extends ViewerSorter {
             _priorities[i] = _priorities[i - 1];
         }
         _priorities[0] = priority;
-        _directions[priority] = SORT_ASCENDING;
+        _directions[priority] = direction;
     }
 
 
-    public void resetState() {
-        _priorities = _defaultPriorities;
-        _directions = _defaultDirections;
-    }
 
 
-    /**
-     * 
-     */
-    public int reverseTopPriority() {
-        
-        if (_directions[_priorities[0]] == SORT_DEFAULT) {
-            _directions[_priorities[0]] = SORT_ASCENDING;
-        } else {
-            _directions[_priorities[0]] *= -1;    
-        }
-        
-        return _directions[_priorities[0]];
-    }
 
-
-    /**
-     * @return int
-     */
-    public int getTopPriority() {
-        return _priorities[0];
-    }
-
-
-    public int compare(Viewer viewer, Object e1, Object e2) {
+    public int compare(Object e1, Object e2) {
         return compareColumnValue((DataSetRow) e1, (DataSetRow) e2, 0);
     }
 
@@ -148,7 +105,7 @@ public class DataSetTableSorter extends ViewerSorter {
 
         switch (_columnTypes[columnNumber]) {
             case DataSet.TYPE_STRING:
-                result = collator.compare(m1.getStringValue(columnNumber), m2.getStringValue(columnNumber));
+                result = m1.getStringValue(columnNumber).compareTo(m2.getStringValue(columnNumber));
                 break;
                 
             case DataSet.TYPE_DOUBLE:
@@ -253,7 +210,11 @@ public class DataSetTableSorter extends ViewerSorter {
         if (result == 0) {
             return compareColumnValue(m1, m2, depth + 1);
         }
-        return result * direction;
+        
+        if (direction == SWT.DOWN) {
+        	return result * -1;
+        }
+        return result;
     }
 
 }

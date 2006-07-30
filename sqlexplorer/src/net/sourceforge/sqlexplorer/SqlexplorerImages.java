@@ -80,11 +80,7 @@ public class SqlexplorerImages {
         return URLUtil.getResourceURL("icons/app_obj.gif");
     }
 
-
-    public static final URL getAscOrderIcon() {
-        return URLUtil.getResourceURL("icons/sort_asc.gif");
-    }
-    
+   
     public static final URL getWizardLogo() {
         return URLUtil.getResourceURL("icons/logowiz.gif");
     }
@@ -188,12 +184,6 @@ public class SqlexplorerImages {
     public static final URL getDeleteIcon() {
         return URLUtil.getResourceURL("icons/remove_att.gif");
     }
-
-
-    public static final URL getDescOrderIcon() {
-        return URLUtil.getResourceURL("icons/sort_desc.gif");
-    }
-
 
     public static final URL getDriverIcon() {
         return URLUtil.getResourceURL("icons/feature_obj.gif");
