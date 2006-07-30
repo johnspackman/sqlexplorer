@@ -199,7 +199,7 @@ public class SQLExecution {
         pbLayout.marginWidth = 5;
         pbComposite.setLayout(pbLayout);
         pbComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        ProgressBar pb = new ProgressBar(pbComposite, SWT.HORIZONTAL | SWT.SMOOTH | SWT.INDETERMINATE | SWT.BORDER);
+        ProgressBar pb = new ProgressBar(pbComposite, SWT.HORIZONTAL | SWT.INDETERMINATE | SWT.BORDER);
         pb.setVisible(true);
         pb.setEnabled(true);
 
