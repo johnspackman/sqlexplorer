@@ -199,24 +199,11 @@
    </extension>
 
    <extension
-         id="sqlexplorerApp"
-         name="SQL Explorer Plugin"
+         id="application"
          point="org.eclipse.core.runtime.applications">
       <application>
          <run class="net.sourceforge.sqlexplorer.rcp.SQLExplorerApplication"/>
       </application>
-   </extension>
-   <extension
-         id="sqlexplorerproduct"
-         name="SQL Explorer Client"
-         point="org.eclipse.core.runtime.products">
-      <product
-            application="net.sourceforge.sqlexplorer.sqlexplorerApp"
-            name="SQL Explorer">
-         <property
-               name="windowImages"
-               value="icons/logo16.gif,icons/logo32.gif"/>
-      </product>
    </extension>
 
    <extension-point id="nodeContextAction" name="Database Structure Node Context Menu Action" schema="schema/nodeContextAction.exsd"/>
@@ -278,11 +265,12 @@
             name="Copy Table Action"/>            
    </extension>
    <extension
-         id="application"
+         id="product"
+         name="SQL Explorer"
          point="org.eclipse.core.runtime.products">
       <product
             application="net.sourceforge.sqlexplorer.application"
-            name="application">
+            name="SQL Explorer">
          <property
                name="windowImages"
                value="icons/logo16.gif,icons/logo32.gif"/>

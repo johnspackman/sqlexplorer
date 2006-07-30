@@ -43,6 +43,9 @@ DataSet
 * columns in dataset table are moveable
 * when datasettable widget is active, it can be refreshed by pressing F5
 * dates can be formatted based on setting in preferences.ini
+* moved formatting of rows to parent class to reduce numbers of objects created
+* changed table to virtual table to improve rendering performance
+* F5 refreshes table
 
 SQL Results
 * sql query is displayed on sql result tabs

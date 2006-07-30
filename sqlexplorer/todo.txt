@@ -6,9 +6,9 @@ TODO Priorities.
 ? Just an idea at this point..
 
 == STARTUP PERFORMANCE ==
-* connect to database in background
-* make dictionary persistent, and only update on request (by right-clicking and choosing refresh in db structure view)
+^ make dictionary persistent, and only update on request (by right-clicking and choosing refresh in db structure view)
 ^ creating first editor is a bit slow..
+^ connect to database in background
 
 == EDITOR STUFF ==
 * review/fix sql editor content assist
