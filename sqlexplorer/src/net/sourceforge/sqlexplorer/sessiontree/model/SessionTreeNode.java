@@ -39,7 +39,7 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDatabaseMetaData;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.util.ListenerList;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.swt.widgets.Table;
 
 /**

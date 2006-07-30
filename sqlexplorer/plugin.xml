@@ -89,7 +89,6 @@
             extensions="sql"
             icon="icons/editor.gif"
             class="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor"
-            contributorClass="net.sourceforge.sqlexplorer.plugin.editors.SQLEditorActionContributor"
             id="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor">
       </editor>
    </extension>

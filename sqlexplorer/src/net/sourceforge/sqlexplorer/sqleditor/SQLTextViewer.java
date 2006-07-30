@@ -26,7 +26,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.DefaultInformationControl;
-import org.eclipse.jface.text.DefaultUndoManager;
+import org.eclipse.jface.text.TextViewerUndoManager;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.IInformationControl;
@@ -68,7 +68,7 @@ public class SQLTextViewer extends SourceViewer {
 
     SQLSourceViewerConfiguration configuration;
 
-    DefaultUndoManager undoManager = new DefaultUndoManager(50);
+    TextViewerUndoManager undoManager = new TextViewerUndoManager(50);
 
 
     public void setDocument(IDocument dc) {

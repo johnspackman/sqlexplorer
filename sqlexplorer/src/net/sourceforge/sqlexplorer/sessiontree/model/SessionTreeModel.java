@@ -22,7 +22,7 @@ package net.sourceforge.sqlexplorer.sessiontree.model;
  */
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.util.ListenerList;
+import org.eclipse.core.runtime.ListenerList;
 
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
