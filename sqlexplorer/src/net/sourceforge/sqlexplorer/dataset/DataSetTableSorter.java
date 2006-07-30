@@ -100,111 +100,59 @@ public class DataSetTableSorter implements Comparator {
         int columnNumber = _priorities[depth];
         int direction = _directions[columnNumber];
         int result = 0;
-        String v1 = m1.getStringValue(columnNumber);
-        String v2 = m2.getStringValue(columnNumber);
 
+        // check for null values
+        Object o1 = m1.getObjectValue(columnNumber);
+        Object o2 = m2.getObjectValue(columnNumber);        
+        
+        // sort based on null values
+    	if (o1 == null || o2 == null) {
+    		if (o1 == null && o2 != null) {
+    			result = 1;
+    		} else if (o1 != null && o2 == null) {
+    			result = -1;
+    		} else {
+    			result = 0;
+    		}
+    		
+            if (result == 0) {
+                return compareColumnValue(m1, m2, depth + 1);
+            }
+            
+            if (direction == SWT.DOWN) {
+            	return result * -1;
+            }
+            return result;
+    	}
+        
+    	
+    	// sort on non-null values
+    	
         switch (_columnTypes[columnNumber]) {
-            case DataSet.TYPE_STRING:
-                result = m1.getStringValue(columnNumber).compareTo(m2.getStringValue(columnNumber));
+            
+        	case DataSet.TYPE_STRING:            	
+            	result = ((String)o1).compareTo((String)o2);
                 break;
                 
             case DataSet.TYPE_DOUBLE:
-                double d1 = 0;
-                double d2 = 0;
-                try {
-                    d1 = Double.parseDouble(v1);
-                } catch (Exception e) {
-                }
-                try {
-                    d2 = Double.parseDouble(v2);
-                } catch (Exception e) {
-                }
-                if (d1 == d2)
-                    result = 0;
-                else if (d1 > d2)
-                    result = 1;
-                else
-                    result = -1;
+            	result = ((Double)o1).compareTo((Double)o2);
                 break;
-            case DataSet.TYPE_INTEGER:
-                v1 = m1.getStringValue(columnNumber);
-                v2 = m2.getStringValue(columnNumber);
 
-                long l1 = 0;
-                long l2 = 0;
-                try {
-                    l1 = Long.parseLong(v1);
-                } catch (Exception e) {
-                }
-                try {
-                    l2 = Long.parseLong(v2);
-                } catch (Exception e) {
-                }
-                if (l1 == l2) {
-                    result = 0;
-                } else if (l1 > l2) {
-                    result = 1;
-                } else {
-                    result = -1;
-                }
-                break;
-                
+            case DataSet.TYPE_INTEGER:
+            	result = ((Long)o1).compareTo((Long)o2);
+                break;               
             
             case DataSet.TYPE_DATE:
-                try {
-                    Date dt1 = (Date) m1.getObjectValue(columnNumber);
-                    Date dt2 = (Date) m2.getObjectValue(columnNumber);
-                    if (dt1 == null && dt2 == null) {
-                        result = 0;
-                    } 
-                    if (dt2 == null) {
-                        result = 1;
-                    } else if (dt1 == null) {
-                        result = -1;
-                    } else {
-                        result = dt1.compareTo(dt2);
-                    }
-                } catch (Exception e) {
+            	result = ((Date)o1).compareTo((Date)o2);
+                break;               
 
-                }
-
-                break;
             case DataSet.TYPE_DATETIME:
-                try {
-                    Timestamp t1 = (Timestamp) m1.getObjectValue(columnNumber);
-                    Timestamp t2 = (Timestamp) m2.getObjectValue(columnNumber);
-                    if (t1 == null && t2 == null) {
-                        result = 0;
-                    }
-                    if (t2 == null) {
-                        result = 1;
-                    } else if (t1 == null) {
-                        result = -1;
-                    } else {
-                        result = t1.compareTo(t2);
-                    }
-                } catch (Exception e) {
+            	result = ((Timestamp)o1).compareTo((Timestamp)o2);
+                break;               
 
-                }
-                break;
             case DataSet.TYPE_TIME:
-                try {
-                    Time t11 = (Time) m1.getObjectValue(columnNumber);
-                    Time t22 = (Time) m2.getObjectValue(columnNumber);
-                    if (t11 == null && t22 == null) {
-                        result = 0;
-                    }
-                    if (t22 == null) {
-                        result = 1;
-                    } else if (t11 == null) {
-                        result = -1;
-                    } else {
-                        result = t11.compareTo(t22);
-                    }
-                } catch (Exception e) {
-
-                }
-                break;
+            	result = ((Time)o1).compareTo((Time)o2);
+                break;   
         }
 
         if (result == 0) {

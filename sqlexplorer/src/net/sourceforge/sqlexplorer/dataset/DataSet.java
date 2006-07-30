@@ -257,7 +257,7 @@ public class DataSet {
         }
 
         // create rows
-        List rows = new ArrayList(100);
+        ArrayList rows = new ArrayList(100);
         while (resultSet.next()) {
 
             DataSetRow row = new DataSetRow(relevantIndeces.length, this);
@@ -270,7 +270,7 @@ public class DataSet {
                         row.setValue(i, resultSet.getString(relevantIndeces[i]));
                         break;
                     case TYPE_INTEGER:
-                        row.setValue(i, new Integer(resultSet.getInt(relevantIndeces[i])));
+                        row.setValue(i, new Long(resultSet.getInt(relevantIndeces[i])));
                         break;
                     case TYPE_DOUBLE:
                         row.setValue(i, new Double(resultSet.getDouble(relevantIndeces[i])));
@@ -307,8 +307,8 @@ public class DataSet {
      * Resort the data using the given column and sortdirection.
      * @param columnIndex primary sort column index
      * @param sortDirection SWT.UP | SWT.DOWN
-     */
-    public void sort(int columnIndex, int sortDirection) {
+     */    
+	public void sort(int columnIndex, int sortDirection) {
     	
     	if (_sorter == null) {
     		_sorter = new DataSetTableSorter(this);
@@ -320,7 +320,7 @@ public class DataSet {
     
     
     public String format(Object tmp) {
-
+  	   	
         if (tmp != null) {
             
             Class clazz = tmp.getClass();
