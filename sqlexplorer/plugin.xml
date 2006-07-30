@@ -274,6 +274,9 @@
          <property
                name="windowImages"
                value="icons/logo16.gif,icons/logo32.gif"/>
+         <property
+               name="startupProgressRect"
+               value="0,0,200,10"/>
       </product>
    </extension>
 </plugin>

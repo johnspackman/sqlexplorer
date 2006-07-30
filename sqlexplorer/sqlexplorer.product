@@ -3,15 +3,16 @@
 
 <product name="SQL Explorer" id="net.sourceforge.sqlexplorer.product" application="net.sourceforge.sqlexplorer.application" useFeatures="false">
 
+
    <configIni use="custom" path="/sqlexplorer/config.ini"/>
 
    <launcherArgs>
-      <programArgs>-debug
--clean</programArgs>
    </launcherArgs>
 
    <windowImages i16="/sqlexplorer/icons/logo16.gif" i32="/sqlexplorer/icons/logo32.gif"/>
 
+   <splash
+      location="net.sourceforge.sqlexplorer" />
    <launcher name="sqlexplorer">
       <linux icon="/sqlexplorer/icons/logo48.xpm"/>
       <macosx icon="/sqlexplorer/icons/logo256.icns"/>
@@ -21,6 +22,7 @@
          <bmp/>
       </win>
    </launcher>
+
 
    <plugins>
       <plugin id="com.ibm.icu"/>
