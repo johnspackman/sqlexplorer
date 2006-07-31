@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -119,22 +120,15 @@ public class DataSetTableKeyListener implements KeyListener {
                     Clipboard clipBoard = new Clipboard(Display.getCurrent());
                     TextTransfer textTransfer = TextTransfer.getInstance();
 
-                    int rowIndex = _table.getSelectionIndex();
-
-                    if (rowIndex != -1) {
-
-                        int columnIndex = _cursor.getColumn();
-
-                        DataSet dataSet = (DataSet) _table.getData();
-                        if (dataSet == null) {
-                            return;
-                        }
-
-                        DataSetRow[] rows = dataSet.getRows();
-                        DataSetRow row = rows[rowIndex];
-
-                        clipBoard.setContents(new Object[] {row.getStringValue(columnIndex)}, new Transfer[] {textTransfer});
+                    TableItem[] items = _table.getSelection();
+                    
+                    if (items == null || items.length == 0) {
+                        return;
                     }
+                               
+                    int columnIndex = _cursor.getColumn();      
+                    clipBoard.setContents(new Object[] {items[0].getText(columnIndex)}, new Transfer[] {textTransfer});
+
 
                 } catch (Exception ex) {
                     SQLExplorerPlugin.error("Error exporting cell to clipboard ", ex);

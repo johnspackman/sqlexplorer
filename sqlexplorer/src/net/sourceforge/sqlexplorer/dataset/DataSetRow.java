@@ -28,16 +28,13 @@ public class DataSetRow {
 
     private Object[] _values;
 
-    private DataSet _parent;
-    
     /**
      * Create new DataSetRow with columnCount values
      * 
      * @param columnCount number of columns
      */
-    public DataSetRow(int columnCount, DataSet parent) {
+    public DataSetRow(int columnCount) {
         _values = new Object[columnCount];
-        _parent = parent;
     }
 
 
@@ -46,23 +43,11 @@ public class DataSetRow {
      * 
      * @param values
      */
-    public DataSetRow(String[] values, DataSet parent) {
+    public DataSetRow(String[] values) {
         _values = values;
-        _parent = parent;
     }
 
 
-    /**
-     * Returns string representation for value of given column.
-     * 
-     * @param column first column is 0
-     */
-    public String getStringValue(int column) {
-
-        return _parent.format(_values[column]);
-    }
-
-    
     /**
      * Returns value of given column.
      * 

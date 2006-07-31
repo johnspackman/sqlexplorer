@@ -20,7 +20,6 @@ package net.sourceforge.sqlexplorer.dataset.actions;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
-import net.sourceforge.sqlexplorer.dataset.DataSetRow;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -77,16 +76,10 @@ public class CopyCellAction extends AbstractDataSetTableContextAction {
             if (items == null || items.length == 0) {
                 return;
             }
-            
-            DataSetRow row = (DataSetRow) items[0].getData();
-            
-            if (row == null) {
-                return;
-            }
-            
+                       
             int columnIndex = _cursor.getColumn();           
 
-            clipBoard.setContents(new Object[] {row.getStringValue(columnIndex)}, new Transfer[] {textTransfer});
+            clipBoard.setContents(new Object[] {items[0].getText(columnIndex)}, new Transfer[] {textTransfer});
 
         } catch (Exception e) {
             SQLExplorerPlugin.error("Error exporting cell to clipboard ", e);

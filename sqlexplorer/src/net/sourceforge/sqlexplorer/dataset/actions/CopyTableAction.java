@@ -22,7 +22,6 @@ import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
-import net.sourceforge.sqlexplorer.dataset.DataSetRow;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -31,6 +30,7 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.TableItem;
 
 /**
  * Copy an entire datasettable to the clipboard.
@@ -85,11 +85,12 @@ public class CopyTableAction extends AbstractDataSetTableContextAction {
                     boolean includeColumnNames = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.CLIP_EXPORT_COLUMNS);
                     
                     
+                    TableItem[] items = _table.getItems();                    
                     DataSet dataSet = (DataSet) _table.getData();
-                    if (dataSet == null) {
+                    
+                    if (items == null || dataSet == null) {
                         return;
                     }
-                    DataSetRow[] rows = dataSet.getRows();
                     
                     // export column names
                     if (includeColumnNames) {
@@ -103,12 +104,11 @@ public class CopyTableAction extends AbstractDataSetTableContextAction {
                     }
 
                     // export column data
-                    for (int i = 0; i < rows.length; i++) {
-                        
-                        DataSetRow row = (DataSetRow) rows[i];
-                        
-                        for (int j = 0; j < row.length(); j++) {
-                            buffer.append(row.getStringValue(j));
+                    int columnCount = _table.getColumnCount();
+                    for (int i = 0; i < items.length; i++) {
+                                               
+                        for (int j = 0; j < columnCount; j++) {
+                            buffer.append(items[i].getText(j));
                             buffer.append(columnSeparator);
                         }
                         buffer.append(lineSeparator);
