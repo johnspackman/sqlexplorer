@@ -10,6 +10,9 @@ TODO Priorities.
 ^ creating first editor is a bit slow..
 ^ connect to database in background
 
+== DATASET ==
+* group all export options into one submenu
+
 == EDITOR STUFF ==
 * review/fix sql editor content assist
 * check preferences are being stored/restored properly after application exit

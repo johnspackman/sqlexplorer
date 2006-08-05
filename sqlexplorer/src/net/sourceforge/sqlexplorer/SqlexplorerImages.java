@@ -239,6 +239,12 @@ public class SqlexplorerImages {
     }
 
 
+    public static final URL getExportIcon() {
+
+        return URLUtil.getResourceURL("icons/ExportData.gif");
+    }
+
+
     public static final URL getExportToClipBoardIcon() {
 
         return URLUtil.getResourceURL("icons/copy_edit.gif");

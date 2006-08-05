@@ -152,8 +152,6 @@ public class ExecSQLAction extends AbstractEditorAction {
         String alternateDelimiter = prefs.getString(IConstants.SQL_ALT_QRY_DELIMITER);
         String commentDelimiter = prefs.getString(IConstants.SQL_COMMENT_DELIMITER);
 
-        final long startTime = System.currentTimeMillis();
-
         QueryTokenizer qt = new QueryTokenizer(_editor.getSQLToBeExecuted(), queryDelimiter, alternateDelimiter, commentDelimiter);
         final List queryStrings = new ArrayList();
         while (qt.hasQuery()) {

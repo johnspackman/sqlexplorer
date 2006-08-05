@@ -260,9 +260,22 @@
             id="sqlexplorer.dataset.actions.CopyCellAction"
             name="Copy Cell Action"/>
       <action
-            class="net.sourceforge.sqlexplorer.dataset.actions.CopyTableAction"
-            id="sqlexplorer.dataset.actions.CopyTableAction"
-            name="Copy Table Action"/>            
+            class="net.sourceforge.sqlexplorer.dataset.actions.CopyColumnNameAction"
+            id="sqlexplorer.dataset.actions.CopyColumnNameAction"
+            name="Copy Column Name Action"/>            
+      <action
+            class="net.sourceforge.sqlexplorer.dataset.actions.ExportXLSAction"
+            id="sqlexplorer.dataset.actions.ExportXLSAction"
+            name="Export\XLS File"/>            
+      <action
+            class="net.sourceforge.sqlexplorer.dataset.actions.ExportCSVAction"
+            id="sqlexplorer.dataset.actions.ExportCSVAction"
+            name="Export\CSV File"/>
+      <action
+            class="net.sourceforge.sqlexplorer.dataset.actions.ExportHTMLAction"
+            id="sqlexplorer.dataset.actions.ExportHTMLAction"
+            name="Export\HTML File"/>
+
    </extension>
    <extension
          id="product"

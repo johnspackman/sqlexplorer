@@ -50,6 +50,7 @@ DataSet
 * moved formatting of rows to parent class to reduce numbers of objects created
 * changed table to virtual table to improve rendering performance
 * F5 refreshes table
+* added csv, xls and html export options
 
 SQL Results
 * sql query is displayed on sql result tabs

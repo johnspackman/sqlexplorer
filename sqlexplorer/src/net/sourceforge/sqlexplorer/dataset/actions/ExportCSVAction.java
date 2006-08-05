@@ -18,18 +18,22 @@
  */
 package net.sourceforge.sqlexplorer.dataset.actions;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.TableItem;
 
 /**
@@ -37,9 +41,9 @@ import org.eclipse.swt.widgets.TableItem;
  * 
  * @author Davy Vanherbergen
  */
-public class CopyTableAction extends AbstractDataSetTableContextAction {
+public class ExportCSVAction extends AbstractDataSetTableContextAction {
 
-    private static final ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getExportToClipBoardIcon());
+    private static final ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getExportIcon());
 
 
     /*
@@ -48,7 +52,7 @@ public class CopyTableAction extends AbstractDataSetTableContextAction {
      * @see org.eclipse.jface.action.IAction#getText()
      */
     public String getText() {
-        return Messages.getString("DataSetTable.Actions.CopyTable");
+        return Messages.getString("DataSetTable.Actions.ExportCSV");
     }
 
 
@@ -68,23 +72,36 @@ public class CopyTableAction extends AbstractDataSetTableContextAction {
      */
     public void run() {
 
+        FileDialog fileDialog = new FileDialog(_table.getShell(), SWT.SAVE);        
+        String[] filterExtensions = new String[] {"*.csv"};
+        fileDialog.setFilterExtensions(filterExtensions);       
+        
+        final String fileName = fileDialog.open();
+        if (fileName == null && fileName.trim().length() == 0) {
+            return;
+        }
+        
         BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
 
             public void run() {
 
                 try {
 
-                    // create clipboard
-                    Clipboard clipBoard = new Clipboard(Display.getCurrent());
-                    TextTransfer textTransfer = TextTransfer.getInstance();
+                    File file = new File(fileName);
+
+                    if (file.exists()) {
+                        // overwrite existing files
+                        file.delete();
+                    }
+                    
+                    file.createNewFile();
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
                     StringBuffer buffer = new StringBuffer("");
                     
                     // get preferences
-                    String lineSeparator = System.getProperty("line.separator");
                     String columnSeparator = SQLExplorerPlugin.getDefault().getPreferenceStore().getString(IConstants.CLIP_EXPORT_SEPARATOR);
                     boolean includeColumnNames = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.CLIP_EXPORT_COLUMNS);
-                    
-                    
+                                       
                     TableItem[] items = _table.getItems();                    
                     DataSet dataSet = (DataSet) _table.getData();
                     
@@ -100,25 +117,34 @@ public class CopyTableAction extends AbstractDataSetTableContextAction {
                             buffer.append(columnNames[i]);
                             buffer.append(columnSeparator);
                         }
-                        buffer.append(lineSeparator);
+                        writer.write(buffer.toString(), 0, buffer.length());
+                        writer.newLine();
                     }
 
                     // export column data
                     int columnCount = _table.getColumnCount();
                     for (int i = 0; i < items.length; i++) {
-                                               
+                                           
+                        buffer = new StringBuffer("");
+                        
                         for (int j = 0; j < columnCount; j++) {
                             buffer.append(items[i].getText(j));
                             buffer.append(columnSeparator);
                         }
-                        buffer.append(lineSeparator);
+                        writer.write(buffer.toString(), 0, buffer.length());
+                        writer.newLine();
                     }
 
-                    // put all on clipboard
-                    clipBoard.setContents(new Object[] {buffer.toString()}, new Transfer[] {textTransfer});
+                    writer.close();
 
-                } catch (Exception e) {
-                    SQLExplorerPlugin.error("Error exporting to clipboard ", e);
+
+                } catch (final Exception e) {
+                    _table.getShell().getDisplay().asyncExec(new Runnable() {
+
+                        public void run() {
+                            MessageDialog.openError(_table.getShell(), Messages.getString("SQLResultsView.Error.Export.Title"), e.getMessage());
+                        }
+                    });
                 }
             }
         });
