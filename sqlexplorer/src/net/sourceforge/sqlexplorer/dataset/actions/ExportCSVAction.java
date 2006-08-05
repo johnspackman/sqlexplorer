@@ -52,7 +52,7 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
      * @see org.eclipse.jface.action.IAction#getText()
      */
     public String getText() {
-        return Messages.getString("DataSetTable.Actions.ExportCSV");
+        return Messages.getString("DataSetTable.Actions.Export.CSV");
     }
 
 

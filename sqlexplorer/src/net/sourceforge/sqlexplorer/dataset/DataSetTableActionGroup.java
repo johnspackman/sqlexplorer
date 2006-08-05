@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.dataset;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.actions.AbstractDataSetTableContextAction;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
@@ -27,6 +28,8 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.custom.TableCursor;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.actions.ActionGroup;
@@ -65,6 +68,8 @@ public class DataSetTableActionGroup extends ActionGroup {
         IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "dataSetTableContextAction");
         IExtension[] extensions = point.getExtensions();
 
+        // add basic actions
+        
         for (int i = 0; i < extensions.length; i++) {
 
             IExtension e = extensions[i];
@@ -74,20 +79,60 @@ public class DataSetTableActionGroup extends ActionGroup {
             for (int j = 0; j < ces.length; j++) {
                 try {
                     
-                    // check if the action thinks it is suitable..
-                    AbstractDataSetTableContextAction action = (AbstractDataSetTableContextAction) ces[j].createExecutableExtension("class");
-                    action.setTable(_table);
-                    action.setTableCursor(_cursor);
-                    if (action.isAvailable()) {
-                        menu.add(action);
-                    }
+                    String group = ces[j].getAttribute("group");
+                    if (group == null || !group.equalsIgnoreCase("export")) {
                     
+                        // check if the action thinks it is suitable..
+                        AbstractDataSetTableContextAction action = (AbstractDataSetTableContextAction) ces[j].createExecutableExtension("class");
+                        action.setTable(_table);
+                        action.setTableCursor(_cursor);
+                        if (action.isAvailable()) {
+                            menu.add(action);
+                        }
+                    }
+                        
                 } catch (Throwable ex) {
                     SQLExplorerPlugin.error("Could not create menu action", ex);
                 }
             }
         }
 
+        menu.add(new Separator());
+        
+        // add export options
+        
+        
+        MenuManager subMenu = new MenuManager(Messages.getString("DataSetTable.Actions.ExportSubMenu"));    
+
+        for (int i = 0; i < extensions.length; i++) {
+
+            IExtension e = extensions[i];
+
+            IConfigurationElement[] ces = e.getConfigurationElements();
+
+            for (int j = 0; j < ces.length; j++) {
+                try {
+                    
+                    String group = ces[j].getAttribute("group");
+                    if (group != null || group.equalsIgnoreCase("export")) {
+                    
+                        // check if the action thinks it is suitable..
+                        AbstractDataSetTableContextAction action = (AbstractDataSetTableContextAction) ces[j].createExecutableExtension("class");
+                        action.setTable(_table);
+                        action.setTableCursor(_cursor);
+                        if (action.isAvailable()) {
+                            subMenu.add(action);
+                        }
+                    }
+                        
+                } catch (Throwable ex) {
+                    SQLExplorerPlugin.error("Could not create menu action", ex);
+                }
+            }
+        }
+        
+        menu.add(subMenu);
+        
     }
 
 

@@ -264,15 +264,18 @@
             id="sqlexplorer.dataset.actions.CopyColumnNameAction"
             name="Copy Column Name Action"/>            
       <action
-            class="net.sourceforge.sqlexplorer.dataset.actions.ExportXLSAction"
-            id="sqlexplorer.dataset.actions.ExportXLSAction"
-            name="Export\XLS File"/>            
-      <action
             class="net.sourceforge.sqlexplorer.dataset.actions.ExportCSVAction"
+            group="export"
             id="sqlexplorer.dataset.actions.ExportCSVAction"
-            name="Export\CSV File"/>
+            name="Export\CSV File"/>            
+      <action
+            class="net.sourceforge.sqlexplorer.dataset.actions.ExportXLSAction"
+            group="export"
+            id="sqlexplorer.dataset.actions.ExportXLSAction"
+            name="Export\XLS File"/>
       <action
             class="net.sourceforge.sqlexplorer.dataset.actions.ExportHTMLAction"
+            group="export"
             id="sqlexplorer.dataset.actions.ExportHTMLAction"
             name="Export\HTML File"/>
 

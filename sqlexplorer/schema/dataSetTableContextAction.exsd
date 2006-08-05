@@ -41,6 +41,13 @@
                </appInfo>
             </annotation>
          </attribute>
+         <attribute name="group" type="string">
+            <annotation>
+               <documentation>
+                  Use &apos;export&apos; to include action in export submenu
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 

@@ -52,7 +52,7 @@ public class ExportHTMLAction extends AbstractDataSetTableContextAction {
      * @see org.eclipse.jface.action.IAction#getText()
      */
     public String getText() {
-        return Messages.getString("DataSetTable.Actions.ExportHTML");
+        return Messages.getString("DataSetTable.Actions.Export.HTML");
     }
 
 

@@ -52,7 +52,7 @@ public class ExportXLSAction extends AbstractDataSetTableContextAction {
      * @see org.eclipse.jface.action.IAction#getText()
      */
     public String getText() {
-        return Messages.getString("DataSetTable.Actions.ExportXLS");
+        return Messages.getString("DataSetTable.Actions.Export.XLS");
     }
 
 
