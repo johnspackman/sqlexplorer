@@ -16,22 +16,14 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package net.sourceforge.sqlexplorer.dataset;
-
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-
-import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+package net.sourceforge.sqlexplorer.history;
 
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 /**
- * Label Provider for DataSet.
+ * Label Provider for SQLHistory.
  * 
  * @author Davy Vanherbergen
  */
@@ -39,22 +31,7 @@ import org.eclipse.swt.graphics.Image;
  * @author Davy Vanherbergen
  * 
  */
-public class DataSetTableLabelProvider implements ITableLabelProvider {
-
-    private SimpleDateFormat _dateFormatter = new SimpleDateFormat(
-            SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_FORMAT));
-
-    private DecimalFormat _decimalFormat = new DecimalFormat();
-
-    private boolean _formatDates = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(
-            IConstants.DATASETRESULT_FORMAT_DATES);
-
-
-    public DataSetTableLabelProvider() {
-
-        _decimalFormat.setGroupingUsed(false);
-    }
-
+public class SQLHistoryLabelProvider implements ITableLabelProvider {
 
     /*
      * (non-Javadoc)
@@ -99,30 +76,20 @@ public class DataSetTableLabelProvider implements ITableLabelProvider {
      */
     public String getColumnText(Object element, int columnIndex) {
 
-        DataSetRow row = (DataSetRow) element;
+        SQLHistoryElement el = (SQLHistoryElement) element;
 
-        Object tmp = row.getObjectValue(columnIndex);
-
-        if (tmp != null) {
-
-            Class clazz = tmp.getClass();
-
-            // filter out scientific values
-            if (clazz == Double.class || clazz == Integer.class) {
-                return _decimalFormat.format(tmp);
-            }
-
-            // format dates
-            if (_formatDates && clazz == Timestamp.class) {
-                return _dateFormatter.format(new java.util.Date(((Timestamp) tmp).getTime()));
-            }
-            if (_formatDates && clazz == Date.class) {
-                return _dateFormatter.format(new java.util.Date(((Date) tmp).getTime()));
-            }
-
-            return tmp.toString();
+        switch (columnIndex) {
+            case 0:
+                return el.getSingleLineText();
+            case 1:
+                return el.getFormattedTime();
+            case 2:
+                return el.getSessionName();
+            case 3:
+                return "" + el.getExecutionCount();
+            default:
+                return "error";
         }
-        return "<null>";
 
     }
 

@@ -27,7 +27,6 @@ import net.sourceforge.sqlexplorer.dataset.DataSetTable;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
-import net.sourceforge.sqlexplorer.util.SQLString;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -71,7 +70,7 @@ public class SQLExecution {
                         _sqlResult.setExecutionTimeMillis(endTime - startTime);
 
                         // save successfull query
-                        SQLExplorerPlugin.getDefault().addSQLtoHistory(new SQLString(_sqlStatement, _session.toString()));
+                        SQLExplorerPlugin.getDefault().getSQLHistory().addSQL(_sqlStatement, _session.toString());
 
                         _stmt.close();
 
@@ -90,7 +89,7 @@ public class SQLExecution {
                     _stmt.close();
 
                     // save successfull query
-                    SQLExplorerPlugin.getDefault().addSQLtoHistory(new SQLString(_sqlStatement, _session.toString()));
+                    SQLExplorerPlugin.getDefault().getSQLHistory().addSQL(_sqlStatement, _session.toString());
                 }
 
                 _stmt = null;
@@ -108,17 +107,17 @@ public class SQLExecution {
                 }
 
                 _stmt = null;
-                
-                final Shell shell = _resultsView.getSite().getShell(); 
+
+                final Shell shell = _resultsView.getSite().getShell();
                 shell.getDisplay().asyncExec(new Runnable() {
 
                     public void run() {
+
                         clearCanvas();
-                        MessageDialog.openError(shell, Messages.getString("SQLResultsView.Error.Title"),
-                                e.getMessage());
+                        MessageDialog.openError(shell, Messages.getString("SQLResultsView.Error.Title"), e.getMessage());
                         if (_parentTab != null) {
                             _parentTab.dispose();
-                        }                        
+                        }
                     }
                 });
 
@@ -160,6 +159,9 @@ public class SQLExecution {
      */
     private void clearCanvas() {
 
+        // restore correct label
+        _parentTab.setText((String) _parentTab.getData("tabLabel"));
+
         Control[] children = _composite.getChildren();
 
         if (children != null) {
@@ -168,6 +170,7 @@ public class SQLExecution {
                 children[i].dispose();
             }
         }
+
     }
 
 
@@ -177,6 +180,9 @@ public class SQLExecution {
     private void displayProgress() {
 
         clearCanvas();
+
+        // set label to running
+        _parentTab.setText(Messages.getString("SQLResultsView.Running"));
 
         GridLayout gLayout = new GridLayout();
         gLayout.numColumns = 2;
@@ -213,9 +219,9 @@ public class SQLExecution {
      * Display SQL Results in result pane
      */
     private void displayResults() {
-       
+
         _resultsView.getSite().getShell().getDisplay().asyncExec(new Runnable() {
-            
+
             public void run() {
 
                 clearCanvas();
@@ -230,12 +236,13 @@ public class SQLExecution {
                 _composite.setLayout(gLayout);
 
                 try {
-                    String statusMessage = Messages.getString("SQLResultsView.Time.Prefix") + " " + _sqlResult.getExecutionTimeMillis() + " "
+                    String statusMessage = Messages.getString("SQLResultsView.Time.Prefix") + " "
+                            + _sqlResult.getExecutionTimeMillis() + " "
                             + Messages.getString("SQLResultsView.Time.Postfix");
                     new DataSetTable(_composite, _sqlResult.getDataSet(), statusMessage);
 
                     _composite.setData("parenttab", _parentTab);
-                    
+
                 } catch (Exception e) {
 
                     // add message
@@ -253,7 +260,7 @@ public class SQLExecution {
             };
         });
     }
-   
+
 
     private void displayUpdateResults(final int count, final long duration) {
 
@@ -308,16 +315,19 @@ public class SQLExecution {
      * @return Returns the sqlStatement.
      */
     public String getSqlStatement() {
+
         return _sqlStatement;
     }
 
 
     public void setComposite(Composite composite) {
+
         _composite = composite;
     }
 
 
     public void setParentTab(TabItem parentTab) {
+
         _parentTab = parentTab;
     }
 
@@ -326,7 +336,7 @@ public class SQLExecution {
      * Start exection of sql statement
      */
     public void startExecution() {
-       
+
         // start progress bar
         displayProgress();
 

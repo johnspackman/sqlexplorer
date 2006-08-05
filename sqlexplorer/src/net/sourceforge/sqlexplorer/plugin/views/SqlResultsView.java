@@ -80,10 +80,11 @@ public class SqlResultsView extends ViewPart {
         // create tab
         _lastTabNumber = _lastTabNumber + 1;
         final TabItem tabItem = new TabItem(_tabFolder, SWT.NULL);
-
+        
         // set tab text & tooltip
         String labelText = "" + _lastTabNumber;
         tabItem.setText(labelText);
+        tabItem.setData("tabLabel", labelText);        
         tabItem.setToolTipText(TextUtil.getWrappedText(sqlExecution.getSqlStatement()));
 
         // create composite for our result

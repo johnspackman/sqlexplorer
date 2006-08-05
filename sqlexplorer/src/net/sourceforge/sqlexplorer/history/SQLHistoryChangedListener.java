@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) SQL Explorer Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,14 +15,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package net.sourceforge.sqlexplorer.plugin;
+package net.sourceforge.sqlexplorer.history;
 
-/**
- * @author Andrea Mazzolini
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-public interface SqlHistoryChangedListener {
+public interface SQLHistoryChangedListener {
 	public void changed();
 }

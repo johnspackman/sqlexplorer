@@ -21,14 +21,17 @@ import net.sourceforge.sqlexplorer.AliasModel;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLAlias;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
+import net.sourceforge.sqlexplorer.history.SQLHistory;
+import net.sourceforge.sqlexplorer.history.SQLHistoryChangedListener;
+import net.sourceforge.sqlexplorer.history.SQLHistoryElement;
+import net.sourceforge.sqlexplorer.history.SQLHistoryLabelProvider;
+import net.sourceforge.sqlexplorer.history.SQLHistorySearchListener;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.SqlHistoryChangedListener;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
 import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
-import net.sourceforge.sqlexplorer.util.SQLString;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.eclipse.jface.action.Action;
@@ -42,7 +45,6 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -50,6 +52,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
@@ -61,13 +65,16 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
@@ -80,19 +87,9 @@ import org.eclipse.ui.part.ViewPart;
  * 
  * @modified Davy Vanherbergen
  */
-public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListener {
+public class SQLHistoryView extends ViewPart implements SQLHistoryChangedListener {
 
-    private TableViewer _tableViewer;
-
-    private Table _table;
-
-    private Shell _tipShell;
-
-    private Widget _tipWidget;
-
-    private Label _tipLabelText;
-
-    private Point _tipPosition;
+    private ImageDescriptor _imageCopy = ImageDescriptor.createFromURL(SqlexplorerImages.getCopyIcon());
 
     private ImageDescriptor _imageOpenInEditor = ImageDescriptor.createFromURL(SqlexplorerImages.getSqlEditorIcon());
 
@@ -100,7 +97,39 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 
     private ImageDescriptor _imageRemoveAll = ImageDescriptor.createFromURL(SqlexplorerImages.getRemoveAllIcon());
 
-    private ImageDescriptor _imageCopy = ImageDescriptor.createFromURL(SqlexplorerImages.getCopyIcon());
+    private Text _searchBox;
+
+    private Table _table;
+
+    private TableViewer _tableViewer;
+
+    private Label _tipLabelText;
+
+    private Point _tipPosition;
+
+    private Shell _tipShell;
+
+    private Widget _tipWidget;
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.sqlexplorer.plugin.SqlHistoryChangedListener#changed()
+     */
+    public void changed() {
+
+        _tableViewer.getTable().getDisplay().asyncExec(new Runnable() {
+
+            public void run() {
+
+                SQLHistory history = (SQLHistory) _tableViewer.getInput();
+                _tableViewer.setItemCount(history.getEntryCount());
+                _tableViewer.refresh();
+            }
+        });
+
+    }
 
 
     /*
@@ -110,25 +139,66 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
      */
     public void createPartControl(final Composite parent) {
 
-        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, SQLExplorerPlugin.PLUGIN_ID + ".SQLHistoryView"); 
-        
-        SQLExplorerPlugin.getDefault().addListener(this);
-        _tableViewer = new TableViewer(parent, SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION);
-        _table = _tableViewer.getTable();
-        _table.setHeaderVisible(true);
-        _table.setLinesVisible(true);
+        final SQLHistory history = SQLExplorerPlugin.getDefault().getSQLHistory();
 
-        _tableViewer.setLabelProvider(new LabelProvider());
+        history.sort(1, SWT.DOWN);
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, SQLExplorerPlugin.PLUGIN_ID + ".SQLHistoryView");
 
-        _tableViewer.setContentProvider(new IStructuredContentProvider() {
+        history.addListener(this);
 
-            public Object[] getElements(Object inputElement) {
-                return SQLExplorerPlugin.getDefault().getSQLHistory().toArray();
+        Composite composite = new Composite(parent, SWT.NULL);
+        GridLayout layout = new GridLayout();
+        layout.numColumns = 1;
+        layout.marginLeft = 0;
+        layout.horizontalSpacing = 0;
+        layout.verticalSpacing = 2;
+        layout.marginWidth = 0;
+        layout.marginHeight = 0;
+
+        composite.setLayout(layout);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+        // add search box
+        _searchBox = new Text(composite, SWT.BORDER);
+        _searchBox.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        _searchBox.setText(Messages.getString("SQLHistoryView.SearchText"));
+        _searchBox.selectAll();
+
+        SQLHistorySearchListener searchListener = new SQLHistorySearchListener(history);
+        _searchBox.addModifyListener(searchListener);
+        _searchBox.addMouseListener(new MouseAdapter() {
+
+            public void mouseDown(MouseEvent e) {
+
+                Text searchbox = (Text) e.widget;
+                if (searchbox.getText() != null
+                        && searchbox.getText().equals(Messages.getString("SQLHistoryView.SearchText"))) {
+                    searchbox.setText("");
+                }
             }
 
+        });
+
+        _tableViewer = new TableViewer(composite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI
+                | SWT.VIRTUAL);
+
+        _table = _tableViewer.getTable();
+        _table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        _table.setHeaderVisible(true);
+        _table.setLinesVisible(true);
+        _table.setItemCount(history.getEntryCount());
+
+        _tableViewer.setLabelProvider(new SQLHistoryLabelProvider());
+        _tableViewer.setContentProvider(new IStructuredContentProvider() {
 
             public void dispose() {
 
+            }
+
+
+            public Object[] getElements(Object inputElement) {
+
+                return SQLExplorerPlugin.getDefault().getSQLHistory().toArray();
             }
 
 
@@ -137,14 +207,87 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
             }
         });
 
-        _tableViewer.setInput(this);
-        TableColumn tc = new TableColumn(_table, SWT.NULL);
-        tc.setText(Messages.getString("SQLHistoryView.ColumnLabel"));
-        TableLayout tableLayout = new TableLayout();
+        _tableViewer.setInput(history);
 
-        tableLayout.addColumnData(new ColumnWeightData(1, 100, true));
+        // create listener for sorting
+        Listener sortListener = new Listener() {
+
+            public void handleEvent(Event e) {
+
+                // determine new sort column and direction
+                TableColumn sortColumn = _table.getSortColumn();
+                TableColumn currentColumn = (TableColumn) e.widget;
+                int dir = _table.getSortDirection();
+                if (sortColumn == currentColumn) {
+                    dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
+                } else {
+                    _table.setSortColumn(currentColumn);
+                    dir = SWT.UP;
+                }
+
+                sortColumn = _table.getSortColumn();
+                TableColumn[] cols = _table.getColumns();
+                for (int i = 0; i < cols.length; i++) {
+                    if (cols[i] == sortColumn) {
+                        history.sort(i, dir);
+                        break;
+                    }
+                }
+
+                // update data displayed in table
+                _table.setSortDirection(dir);
+                _tableViewer.refresh();
+            }
+        };
+
+        String[] columnLabels = new String[] {Messages.getString("SQLHistoryView.Column.SQL"),
+                Messages.getString("SQLHistoryView.Column.Time"),
+                Messages.getString("SQLHistoryView.Column.Connection"),
+                Messages.getString("SQLHistoryView.Column.Executions")};
+
+        _tableViewer.setColumnProperties(columnLabels);
+
+        // add all column headers to our table
+        for (int i = 0; i < columnLabels.length; i++) {
+
+            // add column header
+            TableColumn column = new TableColumn(_table, SWT.LEFT);
+            column.setText(columnLabels[i]);
+            column.setMoveable(false);
+            column.setResizable(true);
+            column.addListener(SWT.Selection, sortListener);
+        }
+
+        _tableViewer.refresh();
+
+        // add sizing weights to the different columns
+        TableLayout tableLayout = new TableLayout();
+        tableLayout.addColumnData(new ColumnWeightData(7, 150));
+        tableLayout.addColumnData(new ColumnWeightData(2, 120));
+        tableLayout.addColumnData(new ColumnWeightData(1, 50));
+        tableLayout.addColumnData(new ColumnWeightData(1, 50));
+
         _table.setLayout(tableLayout);
         _table.layout();
+
+        // redraw table if view is resized
+        parent.addControlListener(new ControlAdapter() {
+
+            public void controlResized(ControlEvent e) {
+
+                super.controlResized(e);
+
+                // reset weights in case of view resizing
+                TableLayout tableLayout = new TableLayout();
+                tableLayout.addColumnData(new ColumnWeightData(7, 150));
+                tableLayout.addColumnData(new ColumnWeightData(2, 120));
+                tableLayout.addColumnData(new ColumnWeightData(1, 50));
+                tableLayout.addColumnData(new ColumnWeightData(1, 50));
+
+                _table.setLayout(tableLayout);
+            }
+
+        });
 
         // add context menus
         final MenuManager menuMgr = new MenuManager("#HistoryPopupMenu");
@@ -153,26 +296,29 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
         // add 'open in editor' action
         final Action openInEditorAction = new Action() {
 
-            public String getText() {
-                return Messages.getString("SQLHistoryView.OpenInEditor");
-            }
+            public ImageDescriptor getImageDescriptor() {
 
-
-            public ImageDescriptor getImageDescriptor() {                
                 return _imageOpenInEditor;
             }
 
 
+            public String getText() {
+
+                return Messages.getString("SQLHistoryView.OpenInEditor");
+            }
+
+
             public void run() {
+
                 try {
                     TableItem[] ti = _tableViewer.getTable().getSelection();
                     if (ti == null || ti.length < 1)
                         return;
 
-                    SQLString sqlString = (SQLString) ti[0].getData();
+                    SQLHistoryElement sqlHistoryElement = (SQLHistoryElement) ti[0].getData();
                     SessionTreeNode querySession = null;
 
-                    if (sqlString.getSessionName() != null) {
+                    if (sqlHistoryElement.getSessionName() != null) {
 
                         // check if we have an active session for this query
 
@@ -181,7 +327,7 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                         if (sessions != null) {
                             for (int i = 0; i < sessions.length; i++) {
                                 SessionTreeNode session = (SessionTreeNode) sessions[i];
-                                if (session.toString().equalsIgnoreCase(sqlString.getSessionName())) {
+                                if (session.toString().equalsIgnoreCase(sqlHistoryElement.getSessionName())) {
                                     querySession = session;
                                     break;
                                 }
@@ -193,37 +339,40 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 
                             boolean okToOpen = MessageDialog.openConfirm(getSite().getShell(),
                                     Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Title"),
-                                    Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Message.Prefix") + " " + sqlString.getSessionName()
+                                    Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Message.Prefix") + " "
+                                            + sqlHistoryElement.getSessionName()
                                             + Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Message.Postfix"));
 
                             if (okToOpen) {
 
                                 // create new connection..
                                 AliasModel aliasModel = SQLExplorerPlugin.getDefault().getAliasModel();
-                                SQLAlias al = (SQLAlias) aliasModel.getAliasByName(sqlString.getSessionName());
-    
+                                SQLAlias al = (SQLAlias) aliasModel.getAliasByName(sqlHistoryElement.getSessionName());
+
                                 if (al != null) {
                                     OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(
-                                            _tableViewer.getTable().getShell(), al, SQLExplorerPlugin.getDefault().getDriverModel(),
+                                            _tableViewer.getTable().getShell(), al,
+                                            SQLExplorerPlugin.getDefault().getDriverModel(),
                                             SQLExplorerPlugin.getDefault().getPreferenceStore(),
                                             SQLExplorerPlugin.getDefault().getSQLDriverManager());
                                     openDlgAction.run();
                                 }
-    
+
                                 // find new session
                                 sessions = sessionRoot.getChildren();
                                 if (sessions != null) {
                                     for (int i = 0; i < sessions.length; i++) {
                                         SessionTreeNode session = (SessionTreeNode) sessions[i];
-                                        if (session.toString().equalsIgnoreCase(sqlString.getSessionName())) {
+                                        if (session.toString().equalsIgnoreCase(sqlHistoryElement.getSessionName())) {
                                             querySession = session;
                                             break;
                                         }
                                     }
                                 }
-                                
+
                                 // refresh connection view
-                                ConnectionsView connView = (ConnectionsView) getSite().getPage().findView(SqlexplorerViewConstants.SQLEXPLORER_CONNECTIONS);
+                                ConnectionsView connView = (ConnectionsView) getSite().getPage().findView(
+                                        SqlexplorerViewConstants.SQLEXPLORER_CONNECTIONS);
 
                                 if (connView != null) {
                                     connView.getTreeViewer().refresh();
@@ -233,7 +382,8 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                         }
                     }
 
-                    SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getNextElement() + ").sql");
+                    SQLEditorInput input = new SQLEditorInput("SQL Editor ("
+                            + SQLExplorerPlugin.getDefault().getNextElement() + ").sql");
                     input.setSessionNode(querySession);
                     IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
                     if (page == null) {
@@ -241,9 +391,8 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                     }
                     SQLEditor editorPart = (SQLEditor) page.openEditor((IEditorInput) input,
                             "net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
-                    editorPart.setText(sqlString.getText());
-                   
-                    
+                    editorPart.setText(sqlHistoryElement.getRawSQLString());
+
                 } catch (Throwable e) {
                     SQLExplorerPlugin.error("Error creating sql editor", e);
                 }
@@ -256,6 +405,7 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
         _tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 
             public void doubleClick(DoubleClickEvent event) {
+
                 openInEditorAction.run();
             }
         });
@@ -263,19 +413,26 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
         // add remove from history action
         menuMgr.add(new Action() {
 
+            public ImageDescriptor getImageDescriptor() {
+
+                return _imageRemove;
+            }
+
+
             public String getText() {
+
                 return Messages.getString("SQLHistoryView.RemoveFromHistory");
             }
 
-            public ImageDescriptor getImageDescriptor() {                
-                return _imageRemove;
-            }
-            
+
             public void run() {
+
                 try {
-                    int i = _tableViewer.getTable().getSelectionIndex();
+                    Table table = _tableViewer.getTable();
+                    int i = table.getSelectionIndex();
                     if (i >= 0) {
-                        SQLExplorerPlugin.getDefault().getSQLHistory().remove(i);
+                        SQLExplorerPlugin.getDefault().getSQLHistory().remove(
+                                (SQLHistoryElement) table.getItem(i).getData());
                         changed();
                     }
 
@@ -288,19 +445,24 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
         // add clear history action
         menuMgr.add(new Action() {
 
+            public ImageDescriptor getImageDescriptor() {
+
+                return _imageRemoveAll;
+            }
+
+
             public String getText() {
+
                 return Messages.getString("SQLHistoryView.ClearHistory");
             }
 
-            public ImageDescriptor getImageDescriptor() {                
-                return _imageRemoveAll;
-            }
 
             public void run() {
 
                 try {
 
-                    boolean ok = MessageDialog.openConfirm(getSite().getShell(), Messages.getString("SQLHistoryView.ClearHistory"),
+                    boolean ok = MessageDialog.openConfirm(getSite().getShell(),
+                            Messages.getString("SQLHistoryView.ClearHistory"),
                             Messages.getString("SQLHistoryView.ClearHistory.Confirm"));
 
                     if (ok) {
@@ -315,20 +477,24 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 
         // add seperator
         menuMgr.add(new Separator());
-        
+
         // add copy to clipboard action
         menuMgr.add(new Action() {
 
+            public ImageDescriptor getImageDescriptor() {
+
+                return _imageCopy;
+            }
+
+
             public String getText() {
+
                 return Messages.getString("SQLHistoryView.CopyToClipboard");
             }
 
 
-            public ImageDescriptor getImageDescriptor() {                
-                return _imageCopy;
-            }
-            
             public void run() {
+
                 try {
                     TableItem[] ti = _tableViewer.getTable().getSelection();
                     if (ti == null || ti.length < 1)
@@ -337,9 +503,9 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                     TextTransfer textTransfer = TextTransfer.getInstance();
 
                     Object data = ti[0].getData();
-                    SQLString mls = (SQLString) data;
+                    SQLHistoryElement mls = (SQLHistoryElement) data;
 
-                    cb.setContents(new Object[] {mls.getText()}, new Transfer[] {textTransfer});
+                    cb.setContents(new Object[] {mls.getRawSQLString()}, new Transfer[] {textTransfer});
 
                 } catch (Throwable e) {
                     SQLExplorerPlugin.error("Error copying to clipboard", e);
@@ -350,6 +516,7 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
         menuMgr.addMenuListener(new IMenuListener() {
 
             public void menuAboutToShow(IMenuManager manager) {
+
                 TableItem[] ti = _tableViewer.getTable().getSelection();
                 MenuItem[] items = menuMgr.getMenu().getItems();
                 if (ti == null || ti.length < 1) {
@@ -373,9 +540,11 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                 // delete entry
                 if (e.keyCode == SWT.DEL) {
                     try {
-                        int i = _tableViewer.getTable().getSelectionIndex();
+                        Table table = _tableViewer.getTable();
+                        int i = table.getSelectionIndex();
                         if (i >= 0) {
-                            SQLExplorerPlugin.getDefault().getSQLHistory().remove(i);
+                            SQLExplorerPlugin.getDefault().getSQLHistory().remove(
+                                    (SQLHistoryElement) table.getItem(i).getData());
                             changed();
                         }
 
@@ -409,6 +578,7 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
         _table.addMouseListener(new MouseAdapter() {
 
             public void mouseDown(MouseEvent e) {
+
                 if (_tipShell.isVisible()) {
                     _tipShell.setVisible(false);
                     _tipWidget = null;
@@ -419,6 +589,7 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
         _table.addMouseTrackListener(new MouseTrackAdapter() {
 
             public void mouseExit(MouseEvent e) {
+
                 if (_tipShell.isVisible())
                     _tipShell.setVisible(false);
                 _tipWidget = null;
@@ -431,6 +602,7 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
              * @see org.eclipse.swt.events.MouseTrackListener#mouseHover(org.eclipse.swt.events.MouseEvent)
              */
             public void mouseHover(MouseEvent event) {
+
                 Point pt = new Point(event.x, event.y);
                 Widget widget = event.widget;
                 TableItem tableItem = null;
@@ -452,8 +624,8 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
                 _tipWidget = widget;
                 _tipPosition = _table.toDisplay(pt);
 
-                SQLString sqlString = (SQLString) tableItem.getData();
-                String text = TextUtil.getWrappedText(sqlString.getText());
+                SQLHistoryElement sqlString = (SQLHistoryElement) tableItem.getData();
+                String text = TextUtil.getWrappedText(sqlString.getRawSQLString());
 
                 if (text == null || text.equals("")) {
                     _tipWidget = null;
@@ -468,6 +640,36 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
 
             }
         });
+
+        composite.layout();
+        parent.layout();
+
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.IWorkbenchPart#dispose()
+     */
+    public void dispose() {
+
+        super.dispose();
+        SQLExplorerPlugin.getDefault().getSQLHistory().removeListener(this);
+
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.IWorkbenchPart#setFocus()
+     */
+    public void setFocus() {
+
+        // set focus to the search box
+        _searchBox.setFocus();
+
     }
 
 
@@ -479,6 +681,7 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
      * @return the top-left location for a hovering box
      */
     private void setHoverLocation(Shell shell, Point position, int labelHeight) {
+
         Rectangle displayBounds = shell.getDisplay().getBounds();
         Rectangle shellBounds = shell.getBounds();
         shellBounds.x = Math.max(Math.min(position.x, displayBounds.width - shellBounds.width), 0);
@@ -489,44 +692,6 @@ public class SQLHistoryView extends ViewPart implements SqlHistoryChangedListene
         }
 
         shell.setBounds(shellBounds);
-    }
-
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ui.IWorkbenchPart#setFocus()
-     */
-    public void setFocus() {
-        _tableViewer.getTable().setFocus();
-
-    }
-
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ui.IWorkbenchPart#dispose()
-     */
-    public void dispose() {
-        SQLExplorerPlugin.getDefault().removeListener(this);
-        super.dispose();
-    }
-
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see net.sourceforge.sqlexplorer.plugin.SqlHistoryChangedListener#changed()
-     */
-    public void changed() {
-        _tableViewer.getTable().getDisplay().asyncExec(new Runnable() {
-
-            public void run() {
-                _tableViewer.refresh();
-            }
-        });
-
     }
 
 }

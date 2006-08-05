@@ -29,12 +29,13 @@ TODO Priorities.
 ^ create plugin fragment for ..
 
 == SQL HISTORY ==
-^ add timestamp column to sql history?
-? add full text search capability to sql history?
+? create extension points for context actions
+? create coolbar
 
 == GENERAL ==
 * create website
 * add help documentation
+* add 'do not ask again' to some of the prompts
 ^ create installer for standalone app
 ^ create update manager 
 
