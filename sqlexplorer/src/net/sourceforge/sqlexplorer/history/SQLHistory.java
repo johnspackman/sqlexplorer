@@ -92,6 +92,8 @@ public class SQLHistory {
      */
     public void addSQL(String rawSqlString, String sessionName) {
 
+        System.out.println("before add: " + _history.size());
+        
         if (rawSqlString.equalsIgnoreCase("commit")) {
             return;
         }
@@ -108,6 +110,9 @@ public class SQLHistory {
             }
         }
         _history.add(0, new SQLHistoryElement(rawSqlString, sessionName));
+        
+        System.out.println("after add: " + _history.size());
+        
         refreshHistoryView();
     }
 
@@ -118,6 +123,7 @@ public class SQLHistory {
     public void clear() {
 
         _history.clear();
+        refreshHistoryView();
     }
 
 
@@ -203,8 +209,10 @@ public class SQLHistory {
     /**
      * Update the view to show changed history
      */
-    private void refreshHistoryView() {
+    public void refreshHistoryView() {
 
+        filter();
+        
         Object[] ls = _listeners.getListeners();
         for (int i = 0; i < ls.length; ++i) {
             try {
@@ -300,7 +308,26 @@ public class SQLHistory {
     public int setQryString(String qry) {
 
         _qry = qry.trim().toLowerCase();
+        if (_qry != null && _qry.trim().length() == 0) {
+            _qry = null;
+        }
+        
+        refreshHistoryView();
 
+        return _filteredHistory.size();
+    }
+
+    
+    /**
+     * Filter based on query string
+     */
+    private void filter() {
+
+        if (_qry == null || _qry.trim().length() == 0) {
+            _qry = null;
+            return;
+        }
+        
         _filteredHistory = new ArrayList();
         String[] keyword = _qry.split(" ");
 
@@ -326,12 +353,7 @@ public class SQLHistory {
                 _filteredHistory.add(el);
             }
         }
-
-        refreshHistoryView();
-
-        return _filteredHistory.size();
     }
-
 
     /**
      * Change sorting.

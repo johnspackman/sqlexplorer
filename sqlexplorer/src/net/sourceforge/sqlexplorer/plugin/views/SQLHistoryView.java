@@ -17,30 +17,24 @@
  */
 package net.sourceforge.sqlexplorer.plugin.views;
 
-import net.sourceforge.sqlexplorer.AliasModel;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SQLAlias;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.history.SQLHistory;
 import net.sourceforge.sqlexplorer.history.SQLHistoryChangedListener;
 import net.sourceforge.sqlexplorer.history.SQLHistoryElement;
 import net.sourceforge.sqlexplorer.history.SQLHistoryLabelProvider;
 import net.sourceforge.sqlexplorer.history.SQLHistorySearchListener;
+import net.sourceforge.sqlexplorer.history.actions.AppendToEditorAction;
+import net.sourceforge.sqlexplorer.history.actions.ClearHistoryAction;
+import net.sourceforge.sqlexplorer.history.actions.CopyStatementAction;
+import net.sourceforge.sqlexplorer.history.actions.OpenInEditorAction;
+import net.sourceforge.sqlexplorer.history.actions.RemoveFromHistoryAction;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
-import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -49,9 +43,6 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.KeyAdapter;
@@ -76,8 +67,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
@@ -88,14 +77,6 @@ import org.eclipse.ui.part.ViewPart;
  * @modified Davy Vanherbergen
  */
 public class SQLHistoryView extends ViewPart implements SQLHistoryChangedListener {
-
-    private ImageDescriptor _imageCopy = ImageDescriptor.createFromURL(SqlexplorerImages.getCopyIcon());
-
-    private ImageDescriptor _imageOpenInEditor = ImageDescriptor.createFromURL(SqlexplorerImages.getSqlEditorIcon());
-
-    private ImageDescriptor _imageRemove = ImageDescriptor.createFromURL(SqlexplorerImages.getRemoveIcon());
-
-    private ImageDescriptor _imageRemoveAll = ImageDescriptor.createFromURL(SqlexplorerImages.getRemoveAllIcon());
 
     private Text _searchBox;
 
@@ -123,7 +104,7 @@ public class SQLHistoryView extends ViewPart implements SQLHistoryChangedListene
 
             public void run() {
 
-                SQLHistory history = (SQLHistory) _tableViewer.getInput();
+                SQLHistory history = SQLExplorerPlugin.getDefault().getSQLHistory();          
                 _tableViewer.setItemCount(history.getEntryCount());
                 _tableViewer.refresh();
             }
@@ -294,110 +275,9 @@ public class SQLHistoryView extends ViewPart implements SQLHistoryChangedListene
         Menu historyContextMenu = menuMgr.createContextMenu(_table);
 
         // add 'open in editor' action
-        final Action openInEditorAction = new Action() {
-
-            public ImageDescriptor getImageDescriptor() {
-
-                return _imageOpenInEditor;
-            }
-
-
-            public String getText() {
-
-                return Messages.getString("SQLHistoryView.OpenInEditor");
-            }
-
-
-            public void run() {
-
-                try {
-                    TableItem[] ti = _tableViewer.getTable().getSelection();
-                    if (ti == null || ti.length < 1)
-                        return;
-
-                    SQLHistoryElement sqlHistoryElement = (SQLHistoryElement) ti[0].getData();
-                    SessionTreeNode querySession = null;
-
-                    if (sqlHistoryElement.getSessionName() != null) {
-
-                        // check if we have an active session for this query
-
-                        RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
-                        Object[] sessions = sessionRoot.getChildren();
-                        if (sessions != null) {
-                            for (int i = 0; i < sessions.length; i++) {
-                                SessionTreeNode session = (SessionTreeNode) sessions[i];
-                                if (session.toString().equalsIgnoreCase(sqlHistoryElement.getSessionName())) {
-                                    querySession = session;
-                                    break;
-                                }
-                            }
-                        }
-
-                        // check if we need to open new connection
-                        if (querySession == null) {
-
-                            boolean okToOpen = MessageDialog.openConfirm(getSite().getShell(),
-                                    Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Title"),
-                                    Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Message.Prefix") + " "
-                                            + sqlHistoryElement.getSessionName()
-                                            + Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Message.Postfix"));
-
-                            if (okToOpen) {
-
-                                // create new connection..
-                                AliasModel aliasModel = SQLExplorerPlugin.getDefault().getAliasModel();
-                                SQLAlias al = (SQLAlias) aliasModel.getAliasByName(sqlHistoryElement.getSessionName());
-
-                                if (al != null) {
-                                    OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(
-                                            _tableViewer.getTable().getShell(), al,
-                                            SQLExplorerPlugin.getDefault().getDriverModel(),
-                                            SQLExplorerPlugin.getDefault().getPreferenceStore(),
-                                            SQLExplorerPlugin.getDefault().getSQLDriverManager());
-                                    openDlgAction.run();
-                                }
-
-                                // find new session
-                                sessions = sessionRoot.getChildren();
-                                if (sessions != null) {
-                                    for (int i = 0; i < sessions.length; i++) {
-                                        SessionTreeNode session = (SessionTreeNode) sessions[i];
-                                        if (session.toString().equalsIgnoreCase(sqlHistoryElement.getSessionName())) {
-                                            querySession = session;
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                // refresh connection view
-                                ConnectionsView connView = (ConnectionsView) getSite().getPage().findView(
-                                        SqlexplorerViewConstants.SQLEXPLORER_CONNECTIONS);
-
-                                if (connView != null) {
-                                    connView.getTreeViewer().refresh();
-                                }
-                            }
-
-                        }
-                    }
-
-                    SQLEditorInput input = new SQLEditorInput("SQL Editor ("
-                            + SQLExplorerPlugin.getDefault().getNextElement() + ").sql");
-                    input.setSessionNode(querySession);
-                    IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-                    if (page == null) {
-                        return;
-                    }
-                    SQLEditor editorPart = (SQLEditor) page.openEditor((IEditorInput) input,
-                            "net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
-                    editorPart.setText(sqlHistoryElement.getRawSQLString());
-
-                } catch (Throwable e) {
-                    SQLExplorerPlugin.error("Error creating sql editor", e);
-                }
-            }
-        };
+        final OpenInEditorAction openInEditorAction = new OpenInEditorAction();
+        openInEditorAction.setTable(_table);
+        openInEditorAction.setHistory(history);
 
         menuMgr.add(openInEditorAction);
 
@@ -410,108 +290,33 @@ public class SQLHistoryView extends ViewPart implements SQLHistoryChangedListene
             }
         });
 
+        // add append to editor action
+        AppendToEditorAction appendToEditorAction = new AppendToEditorAction();
+        appendToEditorAction.setTable(_table);
+        appendToEditorAction.setHistory(history);        
+        menuMgr.add(appendToEditorAction);
+        
         // add remove from history action
-        menuMgr.add(new Action() {
-
-            public ImageDescriptor getImageDescriptor() {
-
-                return _imageRemove;
-            }
-
-
-            public String getText() {
-
-                return Messages.getString("SQLHistoryView.RemoveFromHistory");
-            }
-
-
-            public void run() {
-
-                try {
-                    Table table = _tableViewer.getTable();
-                    int i = table.getSelectionIndex();
-                    if (i >= 0) {
-                        SQLExplorerPlugin.getDefault().getSQLHistory().remove(
-                                (SQLHistoryElement) table.getItem(i).getData());
-                        changed();
-                    }
-
-                } catch (Throwable e) {
-                    SQLExplorerPlugin.error("Error removing item from clipboard", e);
-                }
-            }
-        });
+        final RemoveFromHistoryAction removeFromHistoryAction = new RemoveFromHistoryAction();
+        removeFromHistoryAction.setTable(_table);
+        removeFromHistoryAction.setHistory(history);        
+        menuMgr.add(removeFromHistoryAction);
 
         // add clear history action
-        menuMgr.add(new Action() {
-
-            public ImageDescriptor getImageDescriptor() {
-
-                return _imageRemoveAll;
-            }
-
-
-            public String getText() {
-
-                return Messages.getString("SQLHistoryView.ClearHistory");
-            }
-
-
-            public void run() {
-
-                try {
-
-                    boolean ok = MessageDialog.openConfirm(getSite().getShell(),
-                            Messages.getString("SQLHistoryView.ClearHistory"),
-                            Messages.getString("SQLHistoryView.ClearHistory.Confirm"));
-
-                    if (ok) {
-                        SQLExplorerPlugin.getDefault().getSQLHistory().clear();
-                        changed();
-                    }
-                } catch (Throwable e) {
-                    SQLExplorerPlugin.error("Error clearing sql history", e);
-                }
-            }
-        });
+        ClearHistoryAction clearHistoryAction = new ClearHistoryAction();
+        clearHistoryAction.setTable(_table);
+        clearHistoryAction.setHistory(history);        
+        menuMgr.add(clearHistoryAction);
 
         // add seperator
         menuMgr.add(new Separator());
 
         // add copy to clipboard action
-        menuMgr.add(new Action() {
-
-            public ImageDescriptor getImageDescriptor() {
-
-                return _imageCopy;
-            }
-
-
-            public String getText() {
-
-                return Messages.getString("SQLHistoryView.CopyToClipboard");
-            }
-
-
-            public void run() {
-
-                try {
-                    TableItem[] ti = _tableViewer.getTable().getSelection();
-                    if (ti == null || ti.length < 1)
-                        return;
-                    Clipboard cb = new Clipboard(Display.getCurrent());
-                    TextTransfer textTransfer = TextTransfer.getInstance();
-
-                    Object data = ti[0].getData();
-                    SQLHistoryElement mls = (SQLHistoryElement) data;
-
-                    cb.setContents(new Object[] {mls.getRawSQLString()}, new Transfer[] {textTransfer});
-
-                } catch (Throwable e) {
-                    SQLExplorerPlugin.error("Error copying to clipboard", e);
-                }
-            }
-        });
+        CopyStatementAction copyAction = new CopyStatementAction();
+        copyAction.setTable(_table);
+        copyAction.setHistory(history);        
+        menuMgr.add(copyAction);
+        
         _table.setMenu(historyContextMenu);
         menuMgr.addMenuListener(new IMenuListener() {
 
@@ -539,18 +344,7 @@ public class SQLHistoryView extends ViewPart implements SQLHistoryChangedListene
 
                 // delete entry
                 if (e.keyCode == SWT.DEL) {
-                    try {
-                        Table table = _tableViewer.getTable();
-                        int i = table.getSelectionIndex();
-                        if (i >= 0) {
-                            SQLExplorerPlugin.getDefault().getSQLHistory().remove(
-                                    (SQLHistoryElement) table.getItem(i).getData());
-                            changed();
-                        }
-
-                    } catch (Throwable t) {
-                        SQLExplorerPlugin.error("Error removing item from clipboard", t);
-                    }
+                    removeFromHistoryAction.run();
                 }
             }
 

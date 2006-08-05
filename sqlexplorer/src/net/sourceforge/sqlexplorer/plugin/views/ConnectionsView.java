@@ -28,6 +28,8 @@ import net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAct
 import net.sourceforge.sqlexplorer.connections.actions.NewAliasAction;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
+import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModelChangedListener;
+import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 
 import org.eclipse.jface.action.IMenuListener;
@@ -44,13 +46,13 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
-public class ConnectionsView extends ViewPart {
+public class ConnectionsView extends ViewPart implements SessionTreeModelChangedListener {
 
-    private TreeViewer _treeViewer;
+    private AliasModel _aliasModel;
 
     private DriverModel _driverModel;
 
-    private AliasModel _aliasModel;
+    private TreeViewer _treeViewer;
 
 
     /**
@@ -60,13 +62,15 @@ public class ConnectionsView extends ViewPart {
 
         PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, SQLExplorerPlugin.PLUGIN_ID + ".AliasView");
 
+        SQLExplorerPlugin.getDefault().stm.addListener(this);
+
         _driverModel = SQLExplorerPlugin.getDefault().getDriverModel();
         _aliasModel = SQLExplorerPlugin.getDefault().getAliasModel();
 
         // create outline
         _treeViewer = new TreeViewer(parent, SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
         getSite().setSelectionProvider(_treeViewer);
-        
+
         // create action bar
         IToolBarManager toolBarMgr = getViewSite().getActionBars().getToolBarManager();
 
@@ -88,13 +92,15 @@ public class ConnectionsView extends ViewPart {
         _treeViewer.addDoubleClickListener(new IDoubleClickListener() {
 
             public void doubleClick(DoubleClickEvent event) {
+
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                 if (selection != null) {
                     if (selection.getFirstElement() instanceof ISQLAlias) {
 
                         SQLAlias al = (SQLAlias) selection.getFirstElement();
-                        OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(_treeViewer.getTree().getShell(),
-                                al, _driverModel, SQLExplorerPlugin.getDefault().getPreferenceStore(),
+                        OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(
+                                _treeViewer.getTree().getShell(), al, _driverModel,
+                                SQLExplorerPlugin.getDefault().getPreferenceStore(),
                                 SQLExplorerPlugin.getDefault().getSQLDriverManager());
                         openDlgAction.run();
                         _treeViewer.refresh();
@@ -113,12 +119,32 @@ public class ConnectionsView extends ViewPart {
         menuManager.addMenuListener(new IMenuListener() {
 
             public void menuAboutToShow(IMenuManager manager) {
+
                 actionGroup.fillContextMenu(manager);
             }
         });
 
         parent.layout();
 
+    }
+
+
+    public void dispose() {
+
+        SQLExplorerPlugin.getDefault().stm.removeListener(this);
+        super.dispose();
+    }
+
+
+    public TreeViewer getTreeViewer() {
+
+        return _treeViewer;
+    }
+
+
+    public void modelChanged(SessionTreeNode newNode) {
+
+        _treeViewer.refresh();
     }
 
 
@@ -129,11 +155,4 @@ public class ConnectionsView extends ViewPart {
 
     }
 
-
-    
-    public TreeViewer getTreeViewer() {
-        return _treeViewer;
-    }
-
-    
 }

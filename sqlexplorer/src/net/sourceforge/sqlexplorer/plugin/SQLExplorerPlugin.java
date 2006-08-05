@@ -61,7 +61,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 
     public SessionTreeModel stm = new SessionTreeModel();
 
-    private static SQLHistory _history = null;
+    private SQLHistory _history = null;
 
     private static final Log _logger = LogFactory.getLog(SQLExplorerPlugin.class);
 
