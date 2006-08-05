@@ -144,7 +144,13 @@ public class ConnectionsView extends ViewPart implements SessionTreeModelChanged
 
     public void modelChanged(SessionTreeNode newNode) {
 
-        _treeViewer.refresh();
+        getSite().getShell().getDisplay().asyncExec(new Runnable() {
+
+            public void run() {
+                _treeViewer.refresh();
+            }
+        });
+        
     }
 
 
