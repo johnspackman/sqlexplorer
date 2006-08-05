@@ -28,7 +28,7 @@ public class TextUtil {
             return null;
         }
         String tmp = input.replaceAll(NEWLINE_EXPR, " ");
-        tmp = input.replaceAll(TAB_EXPR, " ");
+        tmp = tmp.replaceAll(TAB_EXPR, " ");
         return tmp.replaceAll(RETURN_EXPR, "");
     }
     
