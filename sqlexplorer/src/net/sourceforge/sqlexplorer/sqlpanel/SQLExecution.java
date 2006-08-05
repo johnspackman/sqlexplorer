@@ -25,6 +25,7 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dataset.DataSetTable;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
@@ -48,7 +49,7 @@ public class SQLExecution {
         public void run() {
 
             final long startTime = System.currentTimeMillis();
-
+            
             try {
 
                 _stmt = _session.getConnection().createStatement();
@@ -63,7 +64,7 @@ public class SQLExecution {
 
                         // create new dataset from results
                         DataSet dataSet = new DataSet(null, rs, null);
-                        long endTime = System.currentTimeMillis();
+                        final long endTime = System.currentTimeMillis();
 
                         // update sql result
                         _sqlResult.setDataSet(dataSet);
@@ -77,23 +78,54 @@ public class SQLExecution {
                         // show results..
                         displayResults();
 
+                        // update text on editor
+                        _composite.getDisplay().asyncExec(new Runnable() {
+
+                            public void run() {
+                                String message = Messages.getString("SQLEditor.TotalTime.Prefix") + " " + (int) (endTime - startTime) + " "
+                                + Messages.getString("SQLEditor.TotalTime.Postfix");
+                                if (_editor != null) {
+                                    _editor.setMessage(message);
+                                }                         
+                            }
+                        }
+                        );
                     }
 
                     _stmt.close();
 
                 } else {
 
-                    long endTime = System.currentTimeMillis();
-                    displayUpdateResults(_stmt.getUpdateCount(), endTime - startTime);
+                    final long endTime = System.currentTimeMillis();
+                    final int updateCount = _stmt.getUpdateCount();
+                                                           
+                    // update text on editor
+                    _composite.getDisplay().asyncExec(new Runnable() {
 
+                        public void run() {
+                            String message = "" + updateCount + " " + Messages.getString("SQLEditor.Update.Prefix") + " " + (int) (endTime - startTime) + " "
+                            + Messages.getString("SQLEditor.Update.Postfix");
+                            if (_editor != null) {
+                                _editor.setMessage(message);
+                            }
+                            
+                            // close tab
+                            _parentTab.dispose();
+                        }
+                    }
+                    );
+                    
                     _stmt.close();
 
                     // save successfull query
                     SQLExplorerPlugin.getDefault().getSQLHistory().addSQL(_sqlStatement, _session.toString());
+
                 }
 
                 _stmt = null;
 
+
+                
             } catch (final Exception e) {
 
                 SQLExplorerPlugin.error("Error executing statement.", e);
@@ -144,9 +176,11 @@ public class SQLExecution {
 
     private Statement _stmt;
 
+    private SQLEditor _editor;
 
-    public SQLExecution(SqlResultsView resultsView, String sqlString, int maxRows, SessionTreeNode sessionTreeNode) {
+    public SQLExecution(SQLEditor editor, SqlResultsView resultsView, String sqlString, int maxRows, SessionTreeNode sessionTreeNode) {
 
+        _editor = editor;
         _sqlStatement = sqlString;
         _maxRows = maxRows;
         _session = sessionTreeNode;
@@ -261,54 +295,6 @@ public class SQLExecution {
         });
     }
 
-
-    private void displayUpdateResults(final int count, final long duration) {
-
-        _resultsView.getSite().getShell().getDisplay().asyncExec(new Runnable() {
-
-            public void run() {
-
-                clearCanvas();
-
-                try {
-
-                    GridLayout gLayout = new GridLayout();
-                    gLayout.numColumns = 2;
-                    gLayout.marginLeft = 0;
-                    gLayout.horizontalSpacing = 0;
-                    gLayout.verticalSpacing = 0;
-                    gLayout.marginWidth = 0;
-                    gLayout.marginHeight = 50;
-                    _composite.setLayout(gLayout);
-
-                    Group group = new Group(_composite, SWT.NULL);
-                    group.setLayout(new GridLayout());
-                    group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-                    group.setText(Messages.getString("SQLResultsView.Executed"));
-
-                    Composite pbComposite = new Composite(group, SWT.FILL);
-                    GridLayout pbLayout = new GridLayout();
-                    pbLayout.marginHeight = 2;
-                    pbLayout.marginWidth = 5;
-                    pbComposite.setLayout(pbLayout);
-                    pbComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
-                    String message = "" + count + " records updated in " + duration + " ms.";
-                    Label errorLabel = new Label(pbComposite, SWT.FILL);
-                    errorLabel.setText(message);
-                    errorLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-
-                    pbComposite.layout();
-                    _composite.layout();
-                    _composite.redraw();
-
-                } catch (Exception e) {
-                    SQLExplorerPlugin.error("Error dsiplaying update results.", e);
-                }
-
-            };
-        });
-    }
 
 
     /**

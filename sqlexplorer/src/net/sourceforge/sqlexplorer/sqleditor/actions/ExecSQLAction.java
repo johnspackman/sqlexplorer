@@ -174,14 +174,9 @@ public class ExecSQLAction extends AbstractEditorAction {
                 String querySql = (String) queryStrings.remove(0);
 
                 if (querySql != null) {
-                    resultsView.addSQLExecution(new SQLExecution(resultsView, querySql, maxRows, runNode));
+                    resultsView.addSQLExecution(new SQLExecution(_editor, resultsView, querySql, maxRows, runNode));
                 }
             }
-
-            long endTime = System.currentTimeMillis();
-            String message = Messages.getString("SQLEditor.TotalTime.Prefix") + " " + (int) (endTime - startTime) + " "
-                    + Messages.getString("SQLEditor.TotalTime.Postfix");
-            _editor.setMessage(message);
 
         } catch (Exception e) {
             SQLExplorerPlugin.error("Error creating sql execution tab", e);
