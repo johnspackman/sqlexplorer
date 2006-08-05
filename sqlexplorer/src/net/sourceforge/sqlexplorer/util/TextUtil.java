@@ -22,6 +22,9 @@ public class TextUtil {
      * @return cleaned string
      */
     public static String removeLineBreaks(String input) {
+        if (input == null) {
+            return null;
+        }
         String tmp = input.replaceAll(NEWLINE_EXPR, " ");
         return tmp.replaceAll(RETURN_EXPR, "");
     }

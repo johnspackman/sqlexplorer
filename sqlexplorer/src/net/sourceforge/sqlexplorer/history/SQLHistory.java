@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.ApplicationFiles;
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.core.runtime.ListenerList;
@@ -59,7 +60,10 @@ public class SQLHistory {
 
     private static final String TIME_HINT_MARKER = "#TH#";
 
-
+    private int _autoSaveAfterCount = SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(IConstants.HISTORY_AUTOSAVE_AFTER);
+    
+    private int _queriesAdded = 0;
+    
     /**
      * Default constructor. Initializes history with statements from file.
      */
@@ -92,9 +96,9 @@ public class SQLHistory {
      */
     public void addSQL(String rawSqlString, String sessionName) {
 
-        System.out.println("before add: " + _history.size());
-        
-        if (rawSqlString.equalsIgnoreCase("commit")) {
+        if (rawSqlString == null
+            || rawSqlString.equalsIgnoreCase("commit")
+            || rawSqlString.trim().length() == 0) {
             return;
         }
 
@@ -111,11 +115,27 @@ public class SQLHistory {
         }
         _history.add(0, new SQLHistoryElement(rawSqlString, sessionName));
         
-        System.out.println("after add: " + _history.size());
-        
         refreshHistoryView();
+        
+        // check if we need to save the history
+        _queriesAdded++;
+        checkAutoSave();
     }
 
+    
+    /**
+     * Save the history if a number of statements have been executed.
+     */
+    private void checkAutoSave() {
+                
+        if (_autoSaveAfterCount > 0 && _queriesAdded >= _autoSaveAfterCount) {            
+            _queriesAdded = 0;
+            save();
+        }
+        
+        
+    }
+    
 
     /**
      * Clear all elements from SQL History
@@ -191,7 +211,9 @@ public class SQLHistory {
                         query = query.replaceAll(NEWLINE_REPLACEMENT, NEWLINE_SEPARATOR);
                     }
 
-                    _history.add(new SQLHistoryElement(query, sessionHint, time, executions));
+                    if (query != null && query.trim().length() != 0) {
+                        _history.add(new SQLHistoryElement(query, sessionHint, time, executions));
+                    }
 
                 }
                 currentLine = reader.readLine();
@@ -253,10 +275,6 @@ public class SQLHistory {
      */
     public void save() {
 
-        if (true) {
-            return;
-        }
-
         try {
 
             File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME);
@@ -314,7 +332,11 @@ public class SQLHistory {
         
         refreshHistoryView();
 
-        return _filteredHistory.size();
+        if (_qry == null) {
+            return _history.size();
+        } else {
+            return _filteredHistory.size();
+        }
     }
 
     

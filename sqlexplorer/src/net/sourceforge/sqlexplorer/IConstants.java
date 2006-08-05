@@ -73,6 +73,8 @@ public interface IConstants {
     /** The color key for database tables column names */
     String SQL_COLUMS = "SQLEditor.ColumnsColor";
 
+    String HISTORY_AUTOSAVE_AFTER = "SQLHistory.AutoSaveAfterXXStatements"; 
+    
     /**
      * The color key for everthing in SQL code for which no other color is
      * specified.

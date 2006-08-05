@@ -29,7 +29,7 @@ TODO Priorities.
 ^ create plugin fragment for ..
 
 == SQL HISTORY ==
-? create extension points for context actions
+? create extension point for context actions
 ? create coolbar
 
 == GENERAL ==
