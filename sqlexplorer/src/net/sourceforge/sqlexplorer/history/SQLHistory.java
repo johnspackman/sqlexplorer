@@ -56,6 +56,10 @@ public class SQLHistory {
 
     private static final String NEWLINE_SEPARATOR = System.getProperty("line.separator");
 
+    private static final String TAB_REPLACEMENT = "#T#";
+
+    private static final String TAB_SEPARATOR = "\\t";
+    
     private static final String SESSION_HINT_MARKER = "#SH#";
 
     private static final String TIME_HINT_MARKER = "#TH#";
@@ -209,6 +213,7 @@ public class SQLHistory {
 
                         // clean up query
                         query = query.replaceAll(NEWLINE_REPLACEMENT, NEWLINE_SEPARATOR);
+                        query = query.replaceAll(TAB_REPLACEMENT, " ");
                     }
 
                     if (query != null && query.trim().length() != 0) {
@@ -299,6 +304,7 @@ public class SQLHistory {
                 SQLHistoryElement el = (SQLHistoryElement) it.next();
                 String qry = el.getRawSQLString();
                 qry = qry.replaceAll(NEWLINE_SEPARATOR, NEWLINE_REPLACEMENT);
+                qry = qry.replaceAll(TAB_SEPARATOR, TAB_REPLACEMENT);
 
                 String sessionHint = el.getSessionName();
 

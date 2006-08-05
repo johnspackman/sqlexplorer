@@ -16,6 +16,8 @@ public class TextUtil {
     
     private static final String RETURN_EXPR = "\\r";
     
+    private static final String TAB_EXPR = "\\t";
+    
     
     /**
      * Clear all linebreaks and carriage returns from input text.
@@ -26,6 +28,7 @@ public class TextUtil {
             return null;
         }
         String tmp = input.replaceAll(NEWLINE_EXPR, " ");
+        tmp = input.replaceAll(TAB_EXPR, " ");
         return tmp.replaceAll(RETURN_EXPR, "");
     }
     
