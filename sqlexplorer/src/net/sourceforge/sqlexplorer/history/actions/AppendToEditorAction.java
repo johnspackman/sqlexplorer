@@ -34,6 +34,16 @@ public class AppendToEditorAction extends AbstractHistoryContextAction {
         if (ti == null || ti.length == 0) {
             return false;
         }
+        
+        IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        if (page == null) {
+            return false;
+        }
+        SQLEditor editorPart = (SQLEditor) page.getActiveEditor();
+        
+        if (editorPart == null) {
+            return false;
+        }
         return true;
     }
 
