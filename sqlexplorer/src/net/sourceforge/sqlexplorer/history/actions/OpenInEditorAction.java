@@ -19,10 +19,10 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 
-
 public class OpenInEditorAction extends AbstractHistoryContextAction {
 
-    private ImageDescriptor _imageOpenInEditor = ImageDescriptor.createFromURL(SqlexplorerImages.getSqlEditorIcon());
+    private ImageDescriptor _imageOpenInEditor = ImageDescriptor.createFromURL(SqlexplorerImages.getOpenSQLIcon());
+
 
     public ImageDescriptor getImageDescriptor() {
 
@@ -36,6 +36,16 @@ public class OpenInEditorAction extends AbstractHistoryContextAction {
     }
 
 
+    public boolean isEnabled() {
+
+        TableItem[] ti = _table.getSelection();
+        if (ti == null || ti.length == 0) {
+            return false;
+        }
+        return true;
+    }
+
+
     public void run() {
 
         try {
@@ -43,15 +53,16 @@ public class OpenInEditorAction extends AbstractHistoryContextAction {
             if (ti == null || ti.length == 0) {
                 return;
             }
-            
-            String queryDelimiter = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.SQL_QRY_DELIMITER);            
+
+            String queryDelimiter = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(
+                    IConstants.SQL_QRY_DELIMITER);
             StringBuffer copiedText = new StringBuffer();
-            
+
             for (int i = 0; i < ti.length; i++) {
-                
+
                 SQLHistoryElement el = (SQLHistoryElement) ti[i].getData();
                 copiedText.append(el.getRawSQLString());
-                
+
                 if (ti.length > 0) {
                     copiedText.append(queryDelimiter);
                     copiedText.append("\n");
@@ -94,8 +105,7 @@ public class OpenInEditorAction extends AbstractHistoryContextAction {
 
                         if (al != null) {
                             OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(
-                                    _table.getShell(), al,
-                                    SQLExplorerPlugin.getDefault().getDriverModel(),
+                                    _table.getShell(), al, SQLExplorerPlugin.getDefault().getDriverModel(),
                                     SQLExplorerPlugin.getDefault().getPreferenceStore(),
                                     SQLExplorerPlugin.getDefault().getSQLDriverManager());
                             openDlgAction.run();
@@ -118,8 +128,8 @@ public class OpenInEditorAction extends AbstractHistoryContextAction {
                 }
             }
 
-            SQLEditorInput input = new SQLEditorInput("SQL Editor ("
-                    + SQLExplorerPlugin.getDefault().getNextElement() + ").sql");
+            SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getNextElement()
+                    + ").sql");
             input.setSessionNode(querySession);
             IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
             if (page == null) {

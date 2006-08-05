@@ -13,11 +13,11 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableItem;
 
-
 public class CopyStatementAction extends AbstractHistoryContextAction {
-    
+
     private ImageDescriptor _imageCopy = ImageDescriptor.createFromURL(SqlexplorerImages.getCopyIcon());
-    
+
+
     public ImageDescriptor getImageDescriptor() {
 
         return _imageCopy;
@@ -30,6 +30,16 @@ public class CopyStatementAction extends AbstractHistoryContextAction {
     }
 
 
+    public boolean isEnabled() {
+
+        TableItem[] ti = _table.getSelection();
+        if (ti == null || ti.length == 0) {
+            return false;
+        }
+        return true;
+    }
+
+
     public void run() {
 
         try {
@@ -37,21 +47,22 @@ public class CopyStatementAction extends AbstractHistoryContextAction {
             if (ti == null || ti.length == 0) {
                 return;
             }
-            
-            String queryDelimiter = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.SQL_QRY_DELIMITER);            
+
+            String queryDelimiter = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(
+                    IConstants.SQL_QRY_DELIMITER);
             StringBuffer copiedText = new StringBuffer();
-            
+
             for (int i = 0; i < ti.length; i++) {
-                
+
                 SQLHistoryElement el = (SQLHistoryElement) ti[i].getData();
                 copiedText.append(el.getRawSQLString());
-                
+
                 if (ti.length > 0) {
                     copiedText.append(queryDelimiter);
                     copiedText.append("\n");
                 }
             }
-            
+
             Clipboard cb = new Clipboard(Display.getCurrent());
             TextTransfer textTransfer = TextTransfer.getInstance();
             cb.setContents(new Object[] {copiedText.toString()}, new Transfer[] {textTransfer});
@@ -60,4 +71,5 @@ public class CopyStatementAction extends AbstractHistoryContextAction {
             SQLExplorerPlugin.error("Error copying to clipboard", e);
         }
     }
+
 }

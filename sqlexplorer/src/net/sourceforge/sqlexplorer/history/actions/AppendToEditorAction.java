@@ -11,9 +11,10 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPage;
 
-
 public class AppendToEditorAction extends AbstractHistoryContextAction {
-    private ImageDescriptor _imageOpenInEditor = ImageDescriptor.createFromURL(SqlexplorerImages.getSqlEditorIcon());
+
+    private ImageDescriptor _imageOpenInEditor = ImageDescriptor.createFromURL(SqlexplorerImages.getAppendToEditor());
+
 
     public ImageDescriptor getImageDescriptor() {
 
@@ -27,6 +28,16 @@ public class AppendToEditorAction extends AbstractHistoryContextAction {
     }
 
 
+    public boolean isEnabled() {
+
+        TableItem[] ti = _table.getSelection();
+        if (ti == null || ti.length == 0) {
+            return false;
+        }
+        return true;
+    }
+
+
     public void run() {
 
         try {
@@ -34,16 +45,17 @@ public class AppendToEditorAction extends AbstractHistoryContextAction {
             if (ti == null || ti.length == 0) {
                 return;
             }
-            
-            String queryDelimiter = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.SQL_QRY_DELIMITER);            
+
+            String queryDelimiter = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(
+                    IConstants.SQL_QRY_DELIMITER);
             StringBuffer copiedText = new StringBuffer();
-            
+
             for (int i = 0; i < ti.length; i++) {
-                
+
                 SQLHistoryElement el = (SQLHistoryElement) ti[i].getData();
                 copiedText.append(el.getRawSQLString());
                 copiedText.append(queryDelimiter);
-                
+
                 if (ti.length > 1) {
                     copiedText.append("\n");
                 }

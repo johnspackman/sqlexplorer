@@ -25,19 +25,34 @@ public class RemoveFromHistoryAction extends AbstractHistoryContextAction {
     }
 
 
+    public boolean isEnabled() {
+
+        TableItem[] ti = _table.getSelection();
+        if (ti == null || ti.length == 0) {
+            return false;
+        }
+        return true;
+    }
+
+
     public void run() {
 
         try {
             TableItem[] selections = _table.getSelection();
             if (selections != null && selections.length != 0) {
                 for (int i = 0; i < selections.length; i++) {
-                    _history.remove((SQLHistoryElement) selections[i].getData());
+                    SQLHistoryElement el = (SQLHistoryElement) selections[i].getData();
+                    if (el != null) {
+                        _history.remove(el);
+                    }
                 }
             }
             _table.deselectAll();
+            setEnabled(false);
 
         } catch (Throwable e) {
             SQLExplorerPlugin.error("Error removing item from clipboard", e);
         }
     }
+
 }

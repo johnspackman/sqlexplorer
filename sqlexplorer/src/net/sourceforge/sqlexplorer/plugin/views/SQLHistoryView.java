@@ -23,22 +23,22 @@ import net.sourceforge.sqlexplorer.history.SQLHistoryChangedListener;
 import net.sourceforge.sqlexplorer.history.SQLHistoryElement;
 import net.sourceforge.sqlexplorer.history.SQLHistoryLabelProvider;
 import net.sourceforge.sqlexplorer.history.SQLHistorySearchListener;
-import net.sourceforge.sqlexplorer.history.actions.AppendToEditorAction;
-import net.sourceforge.sqlexplorer.history.actions.ClearHistoryAction;
-import net.sourceforge.sqlexplorer.history.actions.CopyStatementAction;
 import net.sourceforge.sqlexplorer.history.actions.OpenInEditorAction;
 import net.sourceforge.sqlexplorer.history.actions.RemoveFromHistoryAction;
+import net.sourceforge.sqlexplorer.history.actions.SQLHistoryActionGroup;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -60,7 +60,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -104,7 +103,7 @@ public class SQLHistoryView extends ViewPart implements SQLHistoryChangedListene
 
             public void run() {
 
-                SQLHistory history = SQLExplorerPlugin.getDefault().getSQLHistory();          
+                SQLHistory history = SQLExplorerPlugin.getDefault().getSQLHistory();
                 _tableViewer.setItemCount(history.getEntryCount());
                 _tableViewer.refresh();
             }
@@ -162,6 +161,7 @@ public class SQLHistoryView extends ViewPart implements SQLHistoryChangedListene
 
         _tableViewer = new TableViewer(composite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI
                 | SWT.VIRTUAL);
+        getSite().setSelectionProvider(_tableViewer);
 
         _table = _tableViewer.getTable();
         _table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -270,18 +270,39 @@ public class SQLHistoryView extends ViewPart implements SQLHistoryChangedListene
 
         });
 
+        // create action bar
+        final IToolBarManager toolBarMgr = getViewSite().getActionBars().getToolBarManager();
+
+        final SQLHistoryActionGroup actionGroup = new SQLHistoryActionGroup(history, _tableViewer, toolBarMgr);
+
+        _tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            public void selectionChanged(SelectionChangedEvent event) {
+
+                actionGroup.refresh();
+                toolBarMgr.update(true);
+            }
+        });
+
         // add context menus
         final MenuManager menuMgr = new MenuManager("#HistoryPopupMenu");
+        menuMgr.setRemoveAllWhenShown(true);
+
         Menu historyContextMenu = menuMgr.createContextMenu(_table);
+        _table.setMenu(historyContextMenu);
 
-        // add 'open in editor' action
-        final OpenInEditorAction openInEditorAction = new OpenInEditorAction();
-        openInEditorAction.setTable(_table);
-        openInEditorAction.setHistory(history);
+        menuMgr.addMenuListener(new IMenuListener() {
 
-        menuMgr.add(openInEditorAction);
+            public void menuAboutToShow(IMenuManager manager) {
+
+                toolBarMgr.markDirty();
+                actionGroup.fillContextMenu(manager);
+            }
+        });
 
         // also add action as default when an entry is doubleclicked.
+        final OpenInEditorAction openInEditorAction = new OpenInEditorAction();
+        openInEditorAction.setTableViewer(_tableViewer);
         _tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 
             public void doubleClick(DoubleClickEvent event) {
@@ -290,54 +311,9 @@ public class SQLHistoryView extends ViewPart implements SQLHistoryChangedListene
             }
         });
 
-        // add append to editor action
-        AppendToEditorAction appendToEditorAction = new AppendToEditorAction();
-        appendToEditorAction.setTable(_table);
-        appendToEditorAction.setHistory(history);        
-        menuMgr.add(appendToEditorAction);
-        
-        // add remove from history action
-        final RemoveFromHistoryAction removeFromHistoryAction = new RemoveFromHistoryAction();
-        removeFromHistoryAction.setTable(_table);
-        removeFromHistoryAction.setHistory(history);        
-        menuMgr.add(removeFromHistoryAction);
-
-        // add clear history action
-        ClearHistoryAction clearHistoryAction = new ClearHistoryAction();
-        clearHistoryAction.setTable(_table);
-        clearHistoryAction.setHistory(history);        
-        menuMgr.add(clearHistoryAction);
-
-        // add seperator
-        menuMgr.add(new Separator());
-
-        // add copy to clipboard action
-        CopyStatementAction copyAction = new CopyStatementAction();
-        copyAction.setTable(_table);
-        copyAction.setHistory(history);        
-        menuMgr.add(copyAction);
-        
-        _table.setMenu(historyContextMenu);
-        menuMgr.addMenuListener(new IMenuListener() {
-
-            public void menuAboutToShow(IMenuManager manager) {
-
-                TableItem[] ti = _tableViewer.getTable().getSelection();
-                MenuItem[] items = menuMgr.getMenu().getItems();
-                if (ti == null || ti.length < 1) {
-                    for (int i = 0; i < items.length; i++) {
-                        items[i].setEnabled(false);
-                    }
-                } else {
-                    for (int i = 0; i < items.length; i++) {
-                        items[i].setEnabled(true);
-                    }
-                }
-
-            }
-        });
-
         // add remove action on delete key
+        final RemoveFromHistoryAction removeFromHistoryAction = new RemoveFromHistoryAction();
+        removeFromHistoryAction.setTableViewer(_tableViewer);
         _table.addKeyListener(new KeyAdapter() {
 
             public void keyReleased(KeyEvent e) {
@@ -351,7 +327,6 @@ public class SQLHistoryView extends ViewPart implements SQLHistoryChangedListene
         });
 
         // Set multi-line tooltip
-
         final Display display = parent.getDisplay();
         _tipShell = new Shell(parent.getShell(), SWT.ON_TOP);
         GridLayout gridLayout = new GridLayout();
@@ -434,6 +409,8 @@ public class SQLHistoryView extends ViewPart implements SQLHistoryChangedListene
 
             }
         });
+
+        _tableViewer.setSelection(null);
 
         composite.layout();
         parent.layout();

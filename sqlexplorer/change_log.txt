@@ -23,6 +23,7 @@ SQL History
 * added timestamp column to sql history
 * added text search capability to sql history
 * history autosaves based after 15 statements (defined in preferences.ini)
+* added action bar
 
 Database Structure
 * split of database structure view into database structure view and database detail view

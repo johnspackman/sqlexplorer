@@ -30,7 +30,6 @@ TODO Priorities.
 
 == SQL HISTORY ==
 ? create extension point for context actions
-? create coolbar
 
 == GENERAL ==
 * create website

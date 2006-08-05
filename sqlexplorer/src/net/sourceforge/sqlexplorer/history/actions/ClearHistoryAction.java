@@ -35,6 +35,7 @@ public class ClearHistoryAction extends AbstractHistoryContextAction {
             if (ok) {
                 _history.clear();
                 _table.deselectAll();
+                setEnabled(false);
             }
         } catch (Throwable e) {
             SQLExplorerPlugin.error("Error clearing sql history", e);
