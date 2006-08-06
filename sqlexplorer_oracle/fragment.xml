@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<fragment>
+   <extension
+         id="EditorActions"
+         point="net.sourceforge.sqlexplorer.editorAction">
+      <action
+            class="net.sourceforge.sqlexplorer.oracle.actions.ExplainAction"
+            database-product-name="Oracle*"
+            id="net.sourceforge.sqlexplorer.oracle.actions.explainplan"
+            name="Explain Plan"/>
+   </extension>
+
+</fragment>
