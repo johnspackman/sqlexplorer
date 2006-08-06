@@ -11,7 +11,7 @@ TODO Priorities.
 ^ connect to database in background
 
 == DATASET ==
-* group all export options into one submenu
+^ add export option: insert statement file
 
 == EDITOR STUFF ==
 * review/fix sql editor content assist

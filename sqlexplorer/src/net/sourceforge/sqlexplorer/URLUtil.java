@@ -23,6 +23,8 @@ import java.net.URL;
 
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
+import org.eclipse.core.runtime.Platform;
+
 public class URLUtil {
 
     private URLUtil() {
@@ -74,4 +76,25 @@ public class URLUtil {
         return baseURL;
     }
 
+    
+    /**
+     * Return a URL to a file located in your plugin fragment
+     * @param yourPluginId e.g net.sourceforge.sqlexplorer.oracle
+     * @param filePath path to file within your fragment e.g. icons/test.gif
+     * @return URL to the file.
+     */
+    public static URL getFragmentURL(String yourPluginId, String filePath) {
+        
+        URL url = null;
+        
+        try {
+            URL baseURL = Platform.getBundle(yourPluginId).getEntry("/");
+            url = new URL(baseURL, filePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+     
+        return url;
+    }
+    
 }

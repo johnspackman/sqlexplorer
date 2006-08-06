@@ -158,25 +158,25 @@ public class SQLExecution {
         }
     }
 
-    private Composite _composite;
+    protected Composite _composite;
 
-    private int _maxRows;
+    protected int _maxRows;
 
-    private TabItem _parentTab;
+    protected TabItem _parentTab;
 
-    private SqlResultsView _resultsView;
+    protected SqlResultsView _resultsView;
 
-    private SessionTreeNode _session;
+    protected SessionTreeNode _session;
 
-    private LocalThread _sqlExecutionThread;
+    protected LocalThread _sqlExecutionThread;
 
-    SQLResult _sqlResult;
+    protected SQLResult _sqlResult;
 
-    private String _sqlStatement;
+    protected String _sqlStatement;
 
-    private Statement _stmt;
+    protected Statement _stmt;
 
-    private SQLEditor _editor;
+    protected SQLEditor _editor;
 
     public SQLExecution(SQLEditor editor, SqlResultsView resultsView, String sqlString, int maxRows, SessionTreeNode sessionTreeNode) {
 
@@ -191,7 +191,7 @@ public class SQLExecution {
     /**
      * Clear progress bar or results.
      */
-    private void clearCanvas() {
+    protected void clearCanvas() {
 
         // restore correct label
         _parentTab.setText((String) _parentTab.getData("tabLabel"));
@@ -211,7 +211,7 @@ public class SQLExecution {
     /**
      * Display progress bar on tab until results are ready.
      */
-    private void displayProgress() {
+    protected void displayProgress() {
 
         clearCanvas();
 
@@ -252,7 +252,7 @@ public class SQLExecution {
     /**
      * Display SQL Results in result pane
      */
-    private void displayResults() {
+    protected void displayResults() {
 
         _resultsView.getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
