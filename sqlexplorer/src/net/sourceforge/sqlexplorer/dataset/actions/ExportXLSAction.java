@@ -146,8 +146,6 @@ public class ExportXLSAction extends AbstractDataSetTableContextAction {
 
                     writer.write("</table>");
                     writer.newLine();
-                    writer.write("</html>");
-                    writer.newLine();
                     
                     writer.close();
 
