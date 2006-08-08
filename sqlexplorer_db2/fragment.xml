@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<fragment>
+   <extension
+         id="EditorActions"
+         point="net.sourceforge.sqlexplorer.editorAction">
+      <action
+            class="net.sourceforge.sqlexplorer.db2.actions.ExplainAction"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.actions.explainplan"
+            name="sqlexplorer_db2.action1"/>
+   </extension>
+
+</fragment>
