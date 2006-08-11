@@ -39,6 +39,11 @@ public class SaveFileAsAction extends AbstractEditorAction {
     }
 
 
+    public boolean isEnabled() {
+        return true;
+    }
+
+
     public String getToolTipText() {
         return Messages.getString("SQLEditor.Actions.SaveAsToolTip"); //$NON-NLS-1$
     }

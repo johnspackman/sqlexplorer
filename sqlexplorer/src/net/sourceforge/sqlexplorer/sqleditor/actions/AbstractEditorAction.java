@@ -46,5 +46,10 @@ public abstract class AbstractEditorAction extends Action {
     public final void setEditor(SQLEditor editor) {
         _editor = editor;
     }
+
+    public boolean isEnabled() {
+
+        return (_editor.getSessionTreeNode() != null);
+    }
     
 }

@@ -19,10 +19,16 @@ package net.sourceforge.sqlexplorer.sqleditor.actions;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.text.Document;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
@@ -35,6 +41,9 @@ public class OpenFileAction extends AbstractEditorAction {
         return Messages.getString("Open_1"); //$NON-NLS-1$
     }
 
+    public boolean isEnabled() {
+        return true;
+    }
 
     public void run() {
 
@@ -45,14 +54,66 @@ public class OpenFileAction extends AbstractEditorAction {
         String path = dlg.open();
         if (path != null) {
             String[] files = dlg.getFileNames();
-            _editor.loadFiles(files, dlg.getFilterPath());
+            loadFiles(files, dlg.getFilterPath());
         }
 
     }
 
 
+    /**
+     * Load one or more files into the editor.
+     * 
+     * @param files string[] of relative file paths
+     * @param filePath path where all files are found
+     */
+    public void loadFiles(String[] files, String filePath) {
+
+        BufferedReader reader = null;
+
+        try {
+
+            StringBuffer all = new StringBuffer();
+            String str = null;
+            String delimiter = _editor.sqlTextViewer.getTextWidget().getLineDelimiter();
+
+            for (int i = 0; i < files.length; i++) {
+
+                String path = "";
+                if (filePath != null) {
+                    path += filePath + File.separator;
+                }
+                path += files[i];
+
+                reader = new BufferedReader(new FileReader(path));
+
+                while ((str = reader.readLine()) != null) {
+                    all.append(str);
+                    all.append(delimiter);
+                }
+
+                if (files.length > 1) {
+                    all.append(delimiter);
+                }
+            }
+
+            _editor.sqlTextViewer.setDocument(new Document(all.toString()));
+
+        } catch (Throwable e) {
+            SQLExplorerPlugin.error("Error loading document", e);
+
+        } finally {
+            try {
+                reader.close();
+            } catch (java.io.IOException e) {
+                // noop
+            }
+        }
+
+    }
+    
+    
     public String getToolTipText() {
-        return Messages.getString("Open_2"); //$NON-NLS-1$
+        return Messages.getString("Open_2"); 
     }
 
 

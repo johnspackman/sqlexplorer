@@ -71,8 +71,15 @@ public class DatabaseNode extends AbstractNode {
 
         SQLDatabaseMetaData metadata = _sessionNode.getMetaData();
         
-        try {        
+        try {
+            if (metadata.supportsCatalogs()) {
+                _supportsCatalogs = true;
+            }
+            if (metadata.supportsSchemas()) {
+                _supportsSchemas = true;
+            }
             _databaseProductName = metadata.getDatabaseProductName();
+            
         } catch (Exception e) {
             SQLExplorerPlugin.error("Error loading database product name.", e);
         }
@@ -97,9 +104,8 @@ public class DatabaseNode extends AbstractNode {
 
         try {
            
-            if (metadata.supportsCatalogs()) {
+            if (_supportsCatalogs) {
 
-                _supportsCatalogs = true;
                 final String[] catalogs = metadata.getCatalogs();
                 for (int i = 0; i < catalogs.length; ++i) {
                     if (!isExcludedByFilter(catalogs[i])) {
@@ -107,9 +113,8 @@ public class DatabaseNode extends AbstractNode {
                     }
                 }
 
-            } else if (metadata.supportsSchemas()) {
+            } else if (_supportsSchemas) {
 
-                _supportsSchemas = true;
                 final String[] schemas = metadata.getSchemas();
                 for (int i = 0; i < schemas.length; ++i) {
                     if (!isExcludedByFilter(schemas[i])) {

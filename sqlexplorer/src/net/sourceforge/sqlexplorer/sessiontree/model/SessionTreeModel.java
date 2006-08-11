@@ -88,6 +88,7 @@ public class SessionTreeModel implements ISessionTreeNode{
 			try{
 				((SessionTreeModelChangedListener)ls[i]).modelChanged(stn);
 			}catch(Throwable e){
+                e.printStackTrace();
 			}
 			
 		}

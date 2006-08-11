@@ -26,7 +26,6 @@ import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqlpanel.SQLExecution;
@@ -35,35 +34,13 @@ import net.sourceforge.sqlexplorer.util.QueryTokenizer;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Text;
 
 public class ExecSQLAction extends AbstractEditorAction {
 
-    private Button _limitResults;
-
-    private Text _resultLimit;
-
     private ImageDescriptor img = ImageDescriptor.createFromURL(SqlexplorerImages.getExecSQLIcon());
-
-    SessionTreeNode preferredNode;
-
 
     public ExecSQLAction() {
     }
-
-
-    public ExecSQLAction(SQLEditor txtComp, SessionTreeNode node_) {
-
-        _editor = txtComp;
-        this.preferredNode = node_;
-    }
-
-
-    public ImageDescriptor getHoverImageDescriptor() {
-        return img;
-    }
-
 
     public ImageDescriptor getImageDescriptor() {
         return img;
@@ -71,28 +48,44 @@ public class ExecSQLAction extends AbstractEditorAction {
 
 
     public String getText() {
-        return Messages.getString("Execute_SQL_2");
+        return Messages.getString("SQLEditor.Actions.Execute");
     }
 
 
     public String getToolTipText() {
-        return Messages.getString("Execute_SQL_3");
+        return Messages.getString("SQLEditor.Actions.Execute.ToolTip");
     }
 
 
     public void run() {
 
-        if (_limitResults == null || _resultLimit == null) {
+        if (_editor.getLimitResults() == null || _editor.getMaxResultField() == null) {
             return;
         }
 
         int maxresults = 0;
         try {
-            if (_limitResults.getSelection()) {
-                String tmp = _resultLimit.getText();
-                maxresults = Integer.parseInt(tmp);
+            if (_editor.getLimitResults().getSelection()) {
+                String tmp = _editor.getMaxResultField().getText();
+                if (tmp != null && tmp.trim().length() != 0) {
+                    maxresults = Integer.parseInt(tmp);
+                }
             }
+        } catch (final Exception e) {
 
+            _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+
+                public void run() {
+                    MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("SQLEditor.Error.InvalidRowLimit.Title"), 
+                            Messages.getString("SQLEditor.Error.InvalidRowLimit.") + " " + e.getMessage());
+                }
+            });
+
+            return;
+        }
+        
+        try {
+            
             if (maxresults < 0) {
                 throw new Exception(Messages.getString("SQLEditor.LimitRows.Error"));
             }
@@ -136,13 +129,10 @@ public class ExecSQLAction extends AbstractEditorAction {
     }
 
 
-    public void run(int maxRows) {
+    protected void run(int maxRows) {
 
-        SessionTreeNode runNode = null;
-        if (preferredNode == null)
-            runNode = _editor.getSessionTreeNode();
-        else
-            runNode = preferredNode;
+        SessionTreeNode runNode = _editor.getSessionTreeNode();
+      
         if (runNode == null)
             return;
 
@@ -182,10 +172,5 @@ public class ExecSQLAction extends AbstractEditorAction {
 
     }
 
-
-    public void setInputFields(Button limitResults, Text resultLimit) {
-        _limitResults = limitResults;
-        _resultLimit = resultLimit;
-    };
 
 }

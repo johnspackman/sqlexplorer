@@ -18,13 +18,10 @@
  */
 package net.sourceforge.sqlexplorer.plugin.editors;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.List;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
@@ -38,26 +35,13 @@ import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModelChangedList
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.sqleditor.SQLTextViewer;
-import net.sourceforge.sqlexplorer.sqleditor.actions.AbstractEditorAction;
-import net.sourceforge.sqlexplorer.sqleditor.actions.ClearTextAction;
 import net.sourceforge.sqlexplorer.sqleditor.actions.ExecSQLAction;
-import net.sourceforge.sqlexplorer.sqleditor.actions.OpenFileAction;
-import net.sourceforge.sqlexplorer.sqleditor.actions.SaveFileAsAction;
-import net.sourceforge.sqlexplorer.util.TextUtil;
+import net.sourceforge.sqlexplorer.sqleditor.actions.SQLEditorToolBar;
 
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.StatusLineManager;
-import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.DocumentEvent;
@@ -78,6 +62,8 @@ import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.VerifyKeyListener;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
@@ -88,8 +74,6 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
@@ -100,18 +84,14 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPartListener;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
@@ -145,6 +125,7 @@ public class SQLEditor extends TextEditor {
 
 
         private void activateCursor(ISourceViewer viewer) {
+
             StyledText text = viewer.getTextWidget();
             if (text == null || text.isDisposed())
                 return;
@@ -156,11 +137,13 @@ public class SQLEditor extends TextEditor {
 
 
         public void deactivate() {
+
             deactivate(false);
         }
 
 
         public void deactivate(boolean redrawAll) {
+
             if (!fActive)
                 return;
 
@@ -175,6 +158,7 @@ public class SQLEditor extends TextEditor {
          * @see org.eclipse.jface.text.IDocumentListener#documentAboutToBeChanged(org.eclipse.jface.text.DocumentEvent)
          */
         public void documentAboutToBeChanged(DocumentEvent event) {
+
             if (fActive && fActiveRegion != null) {
                 fRememberedPosition = new Position(fActiveRegion.getOffset(), fActiveRegion.getLength());
                 try {
@@ -192,6 +176,7 @@ public class SQLEditor extends TextEditor {
          * @see org.eclipse.jface.text.IDocumentListener#documentChanged(org.eclipse.jface.text.DocumentEvent)
          */
         public void documentChanged(DocumentEvent event) {
+
             if (fRememberedPosition != null && !fRememberedPosition.isDeleted()) {
                 event.getDocument().removePosition(fRememberedPosition);
                 fActiveRegion = new Region(fRememberedPosition.getOffset(), fRememberedPosition.getLength());
@@ -204,6 +189,7 @@ public class SQLEditor extends TextEditor {
                     widget.getDisplay().asyncExec(new Runnable() {
 
                         public void run() {
+
                             deactivate();
                         }
                     });
@@ -219,6 +205,7 @@ public class SQLEditor extends TextEditor {
          * @see org.eclipse.swt.events.FocusListener#focusGained(org.eclipse.swt.events.FocusEvent)
          */
         public void focusGained(FocusEvent e) {
+
         }
 
 
@@ -228,6 +215,7 @@ public class SQLEditor extends TextEditor {
          * @see org.eclipse.swt.events.FocusListener#focusLost(org.eclipse.swt.events.FocusEvent)
          */
         public void focusLost(FocusEvent e) {
+
             deactivate();
 
         }
@@ -259,6 +247,7 @@ public class SQLEditor extends TextEditor {
 
 
         private IRegion getCurrentTextRegion(ISourceViewer viewer) {
+
             if (viewer == null)
                 return null;
             Dictionary dictionary = ((SQLTextViewer) viewer).dictionary;
@@ -302,6 +291,7 @@ public class SQLEditor extends TextEditor {
 
 
         private Point getMaximumLocation(StyledText text, int offset, int length) {
+
             Point maxLocation = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
 
             for (int i = 0; i <= length; i++) {
@@ -318,6 +308,7 @@ public class SQLEditor extends TextEditor {
 
 
         private Point getMinimumLocation(StyledText text, int offset, int length) {
+
             Point minLocation = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
             for (int i = 0; i <= length; i++) {
@@ -376,6 +367,7 @@ public class SQLEditor extends TextEditor {
 
 
         private boolean includes(IRegion region, IRegion position) {
+
             return position.getOffset() >= region.getOffset()
                     && position.getOffset() + position.getLength() <= region.getOffset() + region.getLength();
         }
@@ -388,6 +380,7 @@ public class SQLEditor extends TextEditor {
          *      org.eclipse.jface.text.IDocument)
          */
         public void inputDocumentAboutToBeChanged(IDocument oldInput, IDocument newInput) {
+
             if (oldInput == null)
                 return;
             deactivate();
@@ -402,6 +395,7 @@ public class SQLEditor extends TextEditor {
          *      org.eclipse.jface.text.IDocument)
          */
         public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
+
             if (newInput == null)
                 return;
             newInput.addDocumentListener(this);
@@ -440,6 +434,7 @@ public class SQLEditor extends TextEditor {
          * @see org.eclipse.swt.events.KeyListener#keyPressed(org.eclipse.swt.events.KeyEvent)
          */
         public void keyPressed(KeyEvent event) {
+
             if (fActive) {
                 deactivate();
                 return;
@@ -461,6 +456,7 @@ public class SQLEditor extends TextEditor {
          * @see org.eclipse.swt.events.KeyListener#keyReleased(org.eclipse.swt.events.KeyEvent)
          */
         public void keyReleased(KeyEvent e) {
+
             if (!fActive)
                 return;
 
@@ -475,6 +471,7 @@ public class SQLEditor extends TextEditor {
          * @see org.eclipse.swt.events.MouseListener#mouseDoubleClick(org.eclipse.swt.events.MouseEvent)
          */
         public void mouseDoubleClick(MouseEvent e) {
+
         }
 
 
@@ -484,6 +481,7 @@ public class SQLEditor extends TextEditor {
          * @see org.eclipse.swt.events.MouseListener#mouseDown(org.eclipse.swt.events.MouseEvent)
          */
         public void mouseDown(MouseEvent event) {
+
             if (!fActive)
                 return;
 
@@ -505,6 +503,7 @@ public class SQLEditor extends TextEditor {
          * @see org.eclipse.swt.events.MouseMoveListener#mouseMove(org.eclipse.swt.events.MouseEvent)
          */
         public void mouseMove(MouseEvent event) {
+
             if (event.widget instanceof Control && !((Control) event.widget).isFocusControl()) {
                 deactivate();
                 return;
@@ -550,6 +549,7 @@ public class SQLEditor extends TextEditor {
          * @see org.eclipse.swt.events.MouseListener#mouseUp(org.eclipse.swt.events.MouseEvent)
          */
         public void mouseUp(MouseEvent e) {
+
             if (!fActive)
                 return;
 
@@ -567,13 +567,16 @@ public class SQLEditor extends TextEditor {
                 BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
 
                     public void run() {
+
                         try {
                             DatabaseStructureView structureView = (DatabaseStructureView) SQLEditor.this.getEditorSite().getWorkbenchWindow().getActivePage().findView(
                                     SqlexplorerViewConstants.SQLEXPLORER_DBSTRUCTURE);
                             if (structureView != null) {
-                                SQLEditor.this.getEditorSite().getWorkbenchWindow().getActivePage().bringToTop(structureView);
+                                SQLEditor.this.getEditorSite().getWorkbenchWindow().getActivePage().bringToTop(
+                                        structureView);
                                 // TODO figure out what this is for...
-                               // structureView.selectNode(sessionTreeNode, activeTableNode);
+                                // structureView.selectNode(sessionTreeNode,
+                                // activeTableNode);
                             }
 
                         } catch (Exception e1) {
@@ -593,6 +596,7 @@ public class SQLEditor extends TextEditor {
          * @see org.eclipse.swt.events.PaintListener#paintControl(org.eclipse.swt.events.PaintEvent)
          */
         public void paintControl(PaintEvent event) {
+
             if (fActiveRegion == null)
                 return;
 
@@ -648,11 +652,13 @@ public class SQLEditor extends TextEditor {
          * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
          */
         public void propertyChange(PropertyChangeEvent event) {
+
             // noop
         }
 
 
         private void repairRepresentation() {
+
             repairRepresentation(false);
         }
 
@@ -696,6 +702,7 @@ public class SQLEditor extends TextEditor {
 
 
         private void resetCursor(ISourceViewer viewer) {
+
             StyledText text = viewer.getTextWidget();
             if (text != null && !text.isDisposed())
                 text.setCursor(null);
@@ -779,6 +786,7 @@ public class SQLEditor extends TextEditor {
 
 
         private void updateColor(ISourceViewer viewer) {
+
             if (fColor != null)
                 fColor.dispose();
 
@@ -792,22 +800,12 @@ public class SQLEditor extends TextEditor {
 
     }
 
-    public static final String[] SUPPORTED_FILETYPES = new String[] {"*.txt", "*.sql", "*.*"};
+    private SQLEditorToolBar _editorToolBar;
 
-    private ClearTextAction _clearTextAction;
+    private Button _limitResults;
 
-    private ExecSQLAction _execSQLAction;
+    private Text _maxResultField;
 
-    private OpenFileAction _openFileAction;
-
-    private SaveFileAsAction _saveAsAction;
-
-    Combo catalogCombo;
-
-    Combo combo;
-
-    IntegerFieldEditor _maxResultField;
-    
     SQLEditorSessionListener listener;
 
     private MouseClickListener mcl = new MouseClickListener();
@@ -824,6 +822,8 @@ public class SQLEditor extends TextEditor {
 
     IPreferenceStore store;
 
+    public static final String[] SUPPORTED_FILETYPES = new String[] {"*.txt", "*.sql", "*.*"};
+
 
     public SQLEditor() {
 
@@ -832,57 +832,11 @@ public class SQLEditor extends TextEditor {
     }
 
 
-    public void buildCombo(final SessionTreeModel stm) {
-        this.getSite().getShell().getDisplay().asyncExec(new Runnable() {
-
-            public void run() {
-                try {
-                    combo.removeAll();
-                    catalogCombo.removeAll();
-                    final SessionTreeNode[] sessionNodes = stm.getRoot().getSessionTreeNodes();
-                    combo.add("");
-                    boolean found = false;
-                    for (int i = 0; i < sessionNodes.length; i++) {
-                        combo.add(sessionNodes[i].toString());
-                        if (sessionTreeNode == sessionNodes[i]) {
-                            combo.select(combo.getItemCount() - 1);
-                            found = true;
-                        }
-
-                    }
-                    if (!found) {
-                        sessionTreeNode = null;
-                        setNewDictionary(null);
-                        catalogCombo.setVisible(false);
-                    }
-                    if (found) {
-                        if (sessionTreeNode.supportsCatalogs()) {
-                            catalogCombo.setVisible(true);
-                            String catalogs[] = sessionTreeNode.getCatalogs();
-                            String currentCatalog = sessionTreeNode.getCatalog();
-                            for (int i = 0; i < catalogs.length; i++) {
-                                catalogCombo.add(catalogs[i]);
-                                if (currentCatalog.equals(catalogs[i])) {
-                                    catalogCombo.select(catalogCombo.getItemCount() - 1);
-                                }
-                            }
-                        } else {
-                            catalogCombo.setVisible(false);
-                        }
-                    }
-                    _execSQLAction.setEnabled(found);
-
-                } catch (Throwable e) {
-                }
-            }
-        });
-    }
-
-
     /**
      * 
      */
     public void clearText() {
+
         sqlTextViewer.clearText();
 
     }
@@ -899,6 +853,7 @@ public class SQLEditor extends TextEditor {
         Action action = new Action("Auto-Completion") {
 
             public void run() {
+
                 sqlTextViewer.showAssistance();
             }
         };
@@ -906,148 +861,75 @@ public class SQLEditor extends TextEditor {
         // This action definition is associated with the accelerator Ctrl+Space
         action.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
         setAction("ContentAssistProposal", action);
-//        _execSQLAction.setActionDefinitionId("net.sourceforge.sqlexplorer.sqlrun");
-//        setAction("SQL Run", _execSQLAction);
 
     }
 
 
-    protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int style) {
+    public void createPartControl(Composite parent) {
+
+        super.createPartControl(parent);
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(getSourceViewer().getTextWidget(),
+                SQLExplorerPlugin.PLUGIN_ID + ".SQLEditor");
+
+        Object adapter = getAdapter(org.eclipse.swt.widgets.Control.class);
+        if (adapter instanceof StyledText) {
+            StyledText text = (StyledText) adapter;
+            text.setWordWrap(SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.WORD_WRAP));
+        }
+
+    }
+
+
+    protected ISourceViewer createSourceViewer(final Composite parent, IVerticalRuler ruler, int style) {
 
         parent.setLayout(new FillLayout());
-        Composite myParent = new Composite(parent, SWT.NONE);
+        final Composite myParent = new Composite(parent, SWT.NONE);
 
         GridLayout layout = new GridLayout();
         layout.marginHeight = layout.marginWidth = layout.horizontalSpacing = layout.verticalSpacing = 0;
         myParent.setLayout(layout);
 
-        ToolBarManager toolBarMgr = new ToolBarManager(SWT.FLAT);
-        ToolBar toolBar = toolBarMgr.createControl(myParent);
+        // create tool bar
 
-        GridData gid = new GridData();
-        gid.horizontalAlignment = GridData.FILL;
-        gid.verticalAlignment = GridData.BEGINNING;
-        gid.heightHint = 25;
-        toolBar.setLayoutData(gid);
-        _execSQLAction = new ExecSQLAction();
-        _execSQLAction.setEditor(this);
-        _openFileAction = new OpenFileAction();
-        _openFileAction.setEditor(this);
-        _saveAsAction = new SaveFileAsAction();
-        _saveAsAction.setEditor(this);
-        _clearTextAction = new ClearTextAction();
-        _clearTextAction.setEditor(this);
-
-        toolBarMgr.add(_execSQLAction);
-        toolBarMgr.add(_openFileAction);
-        toolBarMgr.add(_saveAsAction);
-        toolBarMgr.add(_clearTextAction);
-
-        // load action extensions
-        IAction[] toolActions = getEditorActions();
-        if (toolActions != null) {
-            for (int i = 0; i < toolActions.length; i++)
-                toolBarMgr.add(toolActions[i]);
-        }        
-        
-        toolBarMgr.update(true);
-
-        
-        ToolItem sep = new ToolItem(toolBar, SWT.SEPARATOR);
-        ToolItem sep2 = new ToolItem(toolBar, SWT.SEPARATOR);
-        
-        
-        combo = new Combo(toolBar, SWT.READ_ONLY);
-        catalogCombo = new Combo(toolBar, SWT.READ_ONLY);
+        _editorToolBar = new SQLEditorToolBar(myParent, this);
         listener = new SQLEditorSessionListener(this);
         stm.addListener(listener);
-        buildCombo(stm);
-        combo.setToolTipText("Choose Connection");
-        combo.setSize(200, combo.getSize().y);
-        // combo.pack ();
-        combo.addSelectionListener(new SelectionListener() {
 
-            public void widgetDefaultSelected(SelectionEvent e) {
-            }
+        // create divider line
 
+        Composite div1 = new Composite(myParent, SWT.NONE);
+        GridData lgid = new GridData();
+        lgid.grabExcessHorizontalSpace = true;
+        lgid.horizontalAlignment = GridData.FILL;
+        lgid.heightHint = 1;
+        lgid.verticalIndent = 1;
+        div1.setLayoutData(lgid);
+        div1.setBackground(getSite().getShell().getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
 
-            public void widgetSelected(SelectionEvent e) {
-                int selIndex = combo.getSelectionIndex();
-                if (selIndex == 0) {
-                    _execSQLAction.setEnabled(false);
-                    sessionTreeNode = null;
-                    catalogCombo.setVisible(false);
-                } else {
-                    sessionTreeNode = SQLExplorerPlugin.getDefault().stm.getRoot().getSessionTreeNodes()[selIndex - 1];
-                }
-                if (sessionTreeNode != null) {
-                    _execSQLAction.setEnabled(true);
-                    setNewDictionary(sessionTreeNode.getDictionary());
-                    if (sessionTreeNode.supportsCatalogs()) {
-                        catalogCombo.setVisible(true);
-                        catalogCombo.removeAll();
-                        String catalogs[] = sessionTreeNode.getCatalogs();
+        // create text viewer
 
-                        String currentCatalog = sessionTreeNode.getCatalog();
-                        for (int i = 0; i < catalogs.length; i++) {
-                            catalogCombo.add(catalogs[i]);
-                            if (currentCatalog.equals(catalogs[i])) {
-                                catalogCombo.select(catalogCombo.getItemCount() - 1);
-                            }
-                        }
-                    } else {
-                        catalogCombo.setVisible(false);
-
-                    }
-                } else {
-                    setNewDictionary(null);
-                    _execSQLAction.setEnabled(false);
-                }
-
-            }
-        });
-        catalogCombo.setToolTipText("Choose Catalog");
-        catalogCombo.setSize(200, catalogCombo.getSize().y);
-        catalogCombo.addSelectionListener(new SelectionListener() {
-
-            public void widgetDefaultSelected(SelectionEvent arg0) {
-            }
-
-
-            public void widgetSelected(SelectionEvent arg0) {
-                int selIndex = catalogCombo.getSelectionIndex();
-                String newCat = catalogCombo.getItem(selIndex);
-                if (sessionTreeNode != null) {
-                    try {
-                        sessionTreeNode.setCatalog(newCat);
-                    } catch (Exception e1) {
-                        SQLExplorerPlugin.error("Error changing catalog", e1);
-                    }
-                }
-            }
-        });
-        sep.setWidth(combo.getSize().x);
-        sep.setControl(combo);
-        sep2.setWidth(catalogCombo.getSize().x);
-        sep2.setControl(catalogCombo);
-
-        toolBar.pack();
-
-        toolBar.update();
-
-        gid = new GridData();
+        GridData gid = new GridData();
         gid.grabExcessHorizontalSpace = gid.grabExcessVerticalSpace = true;
         gid.horizontalAlignment = gid.verticalAlignment = GridData.FILL;
 
         sqlTextViewer = new SQLTextViewer(myParent, style, store, null, ruler);
         sqlTextViewer.getControl().setLayoutData(gid);
-        
-        
-        
+
+        // create bottom divider line
+
+        Composite div2 = new Composite(myParent, SWT.NONE);
+        lgid = new GridData();
+        lgid.grabExcessHorizontalSpace = true;
+        lgid.horizontalAlignment = GridData.FILL;
+        lgid.heightHint = 1;
+        lgid.verticalIndent = 0;
+        div2.setLayoutData(lgid);
+        div2.setBackground(getSite().getShell().getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
+
         // create bottom status bar
-        
+
         Composite statusBar = new Composite(myParent, SWT.NULL);
-       
+
         GridLayout statusBarLayout = new GridLayout();
         statusBarLayout.numColumns = 3;
         statusBarLayout.verticalSpacing = 0;
@@ -1061,142 +943,101 @@ public class SQLEditor extends TextEditor {
 
         statusBar.setLayout(statusBarLayout);
 
-        GridData statusBarGridData = new GridData(SWT.FILL, SWT.BOTTOM, true, false);     
+        GridData statusBarGridData = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
         statusBarGridData.verticalIndent = 0;
         statusBarGridData.horizontalIndent = 0;
         statusBar.setLayoutData(statusBarGridData);
-      
+
         // add status line manager
-        
+
         statusMgr = new StatusLineManager();
         statusMgr.createControl(statusBar);
-     
+
         GridData c1Grid = new GridData();
         c1Grid.horizontalAlignment = SWT.FILL;
         c1Grid.verticalAlignment = SWT.BOTTOM;
         c1Grid.grabExcessHorizontalSpace = true;
         c1Grid.grabExcessVerticalSpace = false;
         statusMgr.getControl().setLayoutData(c1Grid);
-     
+
         // add checkbox for limiting results
-    
+
         GridData c2Grid = new GridData();
         c2Grid.horizontalAlignment = SWT.RIGHT;
         c2Grid.verticalAlignment = SWT.CENTER;
         c2Grid.grabExcessHorizontalSpace = false;
         c2Grid.grabExcessVerticalSpace = false;
-        
+
         final Button limitResults = new Button(statusBar, SWT.CHECK);
+        _limitResults = limitResults;
         limitResults.setText(Messages.getString("SQLEditor.LimitRows"));
         limitResults.setSelection(true);
         limitResults.setLayoutData(c2Grid);
-        
+
         // add input field for result limit
-        
+
         GridData c3Grid = new GridData();
         c3Grid.horizontalAlignment = SWT.RIGHT;
         c3Grid.verticalAlignment = SWT.CENTER;
         c3Grid.grabExcessHorizontalSpace = false;
         c3Grid.grabExcessVerticalSpace = false;
         c3Grid.widthHint = 30;
-        
+
         final Text maxResultText = new Text(statusBar, SWT.BORDER | SWT.SINGLE);
+        _maxResultField = maxResultText;
         maxResultText.setText(store.getString(IConstants.MAX_SQL_ROWS));
         maxResultText.setLayoutData(c3Grid);
 
-        
-        _execSQLAction.setInputFields(limitResults, maxResultText);
-        
         limitResults.addMouseListener(new MouseAdapter() {
 
             // enable/disable input field when checkbox is clicked
             public void mouseUp(MouseEvent e) {
+
                 maxResultText.setEnabled(limitResults.getSelection());
             }
         });
-        
+
+        final SQLEditor thisEditor = this;
         sqlTextViewer.getTextWidget().addVerifyKeyListener(new VerifyKeyListener() {
 
+            private ExecSQLAction _execSQLAction = new ExecSQLAction();
+
+
             public void verifyKey(VerifyEvent event) {
+
                 if (event.stateMask == SWT.CTRL && event.keyCode == 13) {
                     event.doit = false;
-                    
-                    int maxresults = 0;
-                    try {
-                        if (limitResults.getSelection()) {
-                            String tmp = maxResultText.getText();
-                            maxresults = Integer.parseInt(tmp);
-                        }
-                        
-                        if (maxresults < 0) {
-                            throw new Exception(Messages.getString("SQLEditor.LimitRows.Error"));
-                        }
-                        
-                        if (maxresults == 0 || maxresults > 2000) {                            
-                            boolean okToExecute = MessageDialog.openConfirm(getSite().getShell(), 
-                                    Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Title") , 
-                                    Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Message"));
-                            if (!okToExecute) {
-                                return;
-                            }
-                            
-                        }                        
-                        
-                        _execSQLAction.run(maxresults);
-                        
-                    } catch (Exception e) {
-                        MessageDialog.openError(getSite().getShell(), Messages.getString("SQLEditor.LimitRows.Error.Title") , e.getMessage());
-                    }
-                    
+                    _execSQLAction.setEditor(thisEditor);
+                    _execSQLAction.run();
                 }
             }
         });
-        
-        
+
         statusBar.layout();
         myParent.layout();
-        
+
         IDocument dc = new Document();
         sqlTextViewer.setDocument(dc);
         if (sessionTreeNode != null)
             setNewDictionary(sessionTreeNode.getDictionary());
-        partListener = new IPartListener() {
 
-            public void partActivated(IWorkbenchPart part) {
-                if (part == SQLEditor.this) {
-                    if (sessionTreeNode != null) {
-                        if (sessionTreeNode.supportsCatalogs()) {
-                            String catalog = sessionTreeNode.getCatalog();
-                            String catalogs[] = catalogCombo.getItems();
-                            for (int i = 0; i < catalogs.length; i++) {
-                                if (catalog.equals(catalogs[i])) {
-                                    catalogCombo.select(i);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+        mcl.install(sqlTextViewer);
+
+        ControlListener resizeListener = new ControlListener() {
+
+            public void controlMoved(ControlEvent e) {
+
             }
 
 
-            public void partBroughtToTop(IWorkbenchPart part) {
-            }
+            public void controlResized(ControlEvent e) {
 
-
-            public void partClosed(IWorkbenchPart part) {
-            }
-
-
-            public void partDeactivated(IWorkbenchPart part) {
-            }
-
-
-            public void partOpened(IWorkbenchPart part) {
+                myParent.layout(true);
+                parent.layout(true);
             }
         };
-        getEditorSite().getPage().addPartListener(partListener);
-        mcl.install(sqlTextViewer);
+
+        _editorToolBar.addResizeListener(resizeListener);
 
         return sqlTextViewer;
 
@@ -1209,6 +1050,7 @@ public class SQLEditor extends TextEditor {
      * @see org.eclipse.ui.IWorkbenchPart#dispose()
      */
     public void dispose() {
+
         if (partListener != null)
             getEditorSite().getPage().removePartListener(partListener);
         stm.removeListener(listener);
@@ -1217,86 +1059,6 @@ public class SQLEditor extends TextEditor {
     }
 
 
-    
-
-    /**
-     * Loop through all extensions and add the appropriate actions.
-     * 
-     * Actions are selected by database product name
-     * 
-     * @param nodes currently selected nodes
-     * @return array of actions
-     */
-    private IAction[] getEditorActions() {
-        
-        SessionTreeNode tree = getSessionTreeNode();
-        if (tree == null) {
-            return null;
-        }
-        String databaseProductName = tree.getRoot().getDatabaseProductName().toLowerCase().trim();        
-        List actions = new ArrayList();
-
-        IExtensionRegistry registry = Platform.getExtensionRegistry();
-        IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "editorAction");
-        IExtension[] extensions = point.getExtensions();
-
-        for (int i = 0; i < extensions.length; i++) {
-
-            IExtension e = extensions[i];
-
-            IConfigurationElement[] ces = e.getConfigurationElements();
-
-            for (int j = 0; j < ces.length; j++) {
-                try {
-                    
-                    boolean isValidProduct = false;
-                    
-                    String[] validProducts = ces[j].getAttribute("database-product-name").split(",");
-                    
-                    // check if action is valid for current database product
-                    for (int k = 0; k < validProducts.length; k++) {
-                        
-                        String product = validProducts[k].toLowerCase().trim();
-                        
-                        if (product.length() == 0) {
-                            continue;
-                        }
-                        
-                        if (product.equals("*")) {
-                            isValidProduct = true;
-                            break;
-                        }
-                                               
-                        String regex = TextUtil.replaceChar(product, '*', ".*");
-                        if (databaseProductName.matches(regex)) {
-                            isValidProduct = true;
-                            break;
-                        }
-                        
-                    }
-                    
-                    if (!isValidProduct) {
-                        continue;
-                    }
-                    
-                    
-                    AbstractEditorAction action = (AbstractEditorAction) ces[j].createExecutableExtension("class");
-                    action.setEditor(this);
-                    actions.add(action);
-
-                    
-                } catch (Throwable ex) {
-                    SQLExplorerPlugin.error("Could not create editor action", ex);
-                }
-            }
-        }
-
-        return (IAction[]) actions.toArray(new IAction[] {});
-    }
-
-    
-    
-    
     /**
      * Save editor content to file.
      * 
@@ -1333,25 +1095,28 @@ public class SQLEditor extends TextEditor {
         } catch (Exception e) {
 
             SQLExplorerPlugin.error("Couldn't save sql history.", e);
-            MessageDialog.openError(getSite().getShell(), Messages.getString("SQLEditor.SaveAsDialog.Error"), e.getMessage());
+            MessageDialog.openError(getSite().getShell(), Messages.getString("SQLEditor.SaveAsDialog.Error"),
+                    e.getMessage());
         }
 
     }
 
 
-    protected void editorContextMenuAboutToShow(IMenuManager menu) {
-        super.editorContextMenuAboutToShow(menu);
+    public SQLEditorToolBar getEditorToolBar() {
 
-        // TODO implement
-        
-/*        IContributionItem[] iContributionItems = SQLExplorerPlugin.getDefault().pluginManager.getEditorContextMenuActions(this);
-        if (iContributionItems != null && iContributionItems.length > 0) {
-            menu.add(new Separator());
+        return _editorToolBar;
+    }
 
-            for (int i = 0; i < iContributionItems.length; i++) {
-                menu.add(iContributionItems[i]);
-            }
-        }*/
+
+    public Button getLimitResults() {
+
+        return _limitResults;
+    }
+
+
+    public Text getMaxResultField() {
+
+        return _maxResultField;
     }
 
 
@@ -1359,11 +1124,13 @@ public class SQLEditor extends TextEditor {
      * @return
      */
     public SessionTreeNode getSessionTreeNode() {
+
         return sessionTreeNode;
     }
 
 
     public String getSQLToBeExecuted() {
+
         String sql = sqlTextViewer.getTextWidget().getSelectionText();
         if (sql == null || sql.trim().length() == 0) {
             sql = sqlTextViewer.getTextWidget().getText();
@@ -1374,6 +1141,7 @@ public class SQLEditor extends TextEditor {
 
 
     ISourceViewer getViewer() {
+
         return getSourceViewer();
     }
 
@@ -1385,6 +1153,7 @@ public class SQLEditor extends TextEditor {
      *      org.eclipse.ui.IEditorInput)
      */
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+
         super.init(site, input);
         if (input instanceof SQLEditorInput) {
             SQLEditorInput sqlInput = (SQLEditorInput) input;
@@ -1402,73 +1171,40 @@ public class SQLEditor extends TextEditor {
      * @see org.eclipse.ui.ISaveablePart#isSaveOnCloseNeeded()
      */
     public boolean isSaveOnCloseNeeded() {
+
         return false;
     }
 
 
-    /**
-     * Load one or more files into the editor.
-     * 
-     * @param files string[] of relative file paths
-     * @param filePath path where all files are found
-     */
-    public void loadFiles(String[] files, String filePath) {
-
-        BufferedReader reader = null;
-
-        try {
-
-            StringBuffer all = new StringBuffer();
-            String str = null;
-            String delimiter = sqlTextViewer.getTextWidget().getLineDelimiter();
-
-            for (int i = 0; i < files.length; i++) {
-
-                String path = "";
-                if (filePath != null) {
-                    path += filePath + File.separator;
-                }
-                path += files[i];
-
-                reader = new BufferedReader(new FileReader(path));
-
-                while ((str = reader.readLine()) != null) {
-                    all.append(str);
-                    all.append(delimiter);
-                }
-
-                if (files.length > 1) {
-                    all.append(delimiter);
-                }
-            }
-
-            sqlTextViewer.setDocument(new Document(all.toString()));
-
-        } catch (Throwable e) {
-            SQLExplorerPlugin.error("Error loading document", e);
-
-        } finally {
-            try {
-                reader.close();
-            } catch (java.io.IOException e) {
-                // noop
-            }
-        }
-
-    }
-
-
     public void setMessage(String s) {
+
         statusMgr.setMessage(s);
     }
 
 
-    public void setNewDictionary(Dictionary dictionary) {
-        if (sqlTextViewer != null) {
-            sqlTextViewer.setNewDictionary(dictionary);
-            sqlTextViewer.refresh();
-        }
+    public void setNewDictionary(final Dictionary dictionary) {
 
+        getSite().getShell().getDisplay().asyncExec(new Runnable() {
+
+            public void run() {
+
+                if (sqlTextViewer != null) {
+                    sqlTextViewer.setNewDictionary(dictionary);
+                    sqlTextViewer.refresh();
+                }
+            }
+        });
+    }
+
+
+    public void setSessionTreeNode(SessionTreeNode pSessionTreeNode) {
+
+        this.sessionTreeNode = pSessionTreeNode;
+        if (sessionTreeNode != null) {
+            setNewDictionary(sessionTreeNode.getDictionary());
+        } else {
+            setNewDictionary(null);
+        }
     }
 
 
@@ -1476,35 +1212,23 @@ public class SQLEditor extends TextEditor {
      * @param txt
      */
     public void setText(String txt) {
+
         IDocument dc = new Document(txt);
         sqlTextViewer.setDocument(dc);
         if (sessionTreeNode != null)
             setNewDictionary(sessionTreeNode.getDictionary());
 
     }
-
-    public void createPartControl(Composite parent) {
-        super.createPartControl(parent);
-        PlatformUI.getWorkbench().getHelpSystem().setHelp(getSourceViewer().getTextWidget(), SQLExplorerPlugin.PLUGIN_ID + ".SQLEditor"); 
-        
-        Object adapter = getAdapter(org.eclipse.swt.widgets.Control.class);
-        if(adapter instanceof StyledText)
-        {
-            StyledText text = (StyledText)adapter;
-            text.setWordWrap(SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.WORD_WRAP));
-        }
-
-        
-    }
 }
 
 class SQLEditorSessionListener implements SessionTreeModelChangedListener {
 
-    SQLEditor editor;
+    SQLEditor sqlEditor;
 
 
-    public SQLEditorSessionListener(SQLEditor editor) {
-        this.editor = editor;
+    public SQLEditorSessionListener(SQLEditor pSqlEditor) {
+
+        this.sqlEditor = pSqlEditor;
     }
 
 
@@ -1514,7 +1238,27 @@ class SQLEditorSessionListener implements SessionTreeModelChangedListener {
      * @see net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModelChangedListener#modelChanged()
      */
     public void modelChanged(SessionTreeNode nd) {
-        editor.buildCombo(SQLExplorerPlugin.getDefault().stm);
+
+        SessionTreeNode[] sessionNodes = SQLExplorerPlugin.getDefault().stm.getRoot().getSessionTreeNodes();
+
+        boolean sessionFound = false;
+        for (int i = 0; i < sessionNodes.length; i++) {
+            if (sqlEditor.sessionTreeNode == sessionNodes[i]) {
+                sessionFound = true;
+            }
+        }
+
+        if (!sessionFound) {
+
+            sqlEditor.setSessionTreeNode(null);
+            // do full refresh of toolbar
+            sqlEditor.getEditorToolBar().refresh(true);
+
+        } else {
+
+            // only update the combo selection
+            sqlEditor.getEditorToolBar().refresh(false);
+        }
 
     }
 }

@@ -38,6 +38,9 @@ public class ClearTextAction extends AbstractEditorAction {
         _editor.clearText();
     }
 
+    public boolean isEnabled() {
+        return true;
+    }
 
     public String getToolTipText() {
         return Messages.getString("Clear_2");
