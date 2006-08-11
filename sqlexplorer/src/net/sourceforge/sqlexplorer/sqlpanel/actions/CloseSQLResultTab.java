@@ -22,6 +22,8 @@ import net.sourceforge.sqlexplorer.SqlexplorerImages;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TabItem;
 
 public class CloseSQLResultTab extends Action {
@@ -51,7 +53,13 @@ public class CloseSQLResultTab extends Action {
 	
     
 	public void run() {
-		tabItem.dispose();
+        
+        BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+
+            public void run() {
+                tabItem.dispose();
+            }
+        });
     }
 	
 	public ImageDescriptor getHoverImageDescriptor(){
