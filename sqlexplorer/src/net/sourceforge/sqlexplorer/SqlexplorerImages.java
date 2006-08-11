@@ -227,6 +227,18 @@ public class SqlexplorerImages {
     }
 
 
+    public static final URL getEditorCommitIcon() {
+
+        return URLUtil.getResourceURL("icons/editor_commit.gif");
+    }
+
+
+    public static final URL getEditorRollbackIcon() {
+
+        return URLUtil.getResourceURL("icons/editor_rollback.gif");
+    }
+
+
     public static final URL getErrorDriver() {
 
         return URLUtil.getResourceURL("icons/disabled_co.gif");

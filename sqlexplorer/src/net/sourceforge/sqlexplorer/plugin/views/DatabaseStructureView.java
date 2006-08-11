@@ -24,6 +24,7 @@ import net.sourceforge.sqlexplorer.dbstructure.DBTreeContentProvider;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeLabelProvider;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableColumnNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.ISessionTreeClosedListener;
 import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
@@ -40,6 +41,10 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -67,6 +72,7 @@ public class DatabaseStructureView extends ViewPart {
 
     private Composite _parent;
 
+
     /**
      * Initializes the view and creates the root tabfolder that holds all the
      * sessions.
@@ -75,10 +81,11 @@ public class DatabaseStructureView extends ViewPart {
      */
     public void createPartControl(Composite parent) {
 
-        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, SQLExplorerPlugin.PLUGIN_ID + ".DatabaseStructureView");
-        
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent,
+                SQLExplorerPlugin.PLUGIN_ID + ".DatabaseStructureView");
+
         _parent = parent;
-        
+
         // load all open sessions
         RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
         Object[] sessions = sessionRoot.getChildren();
@@ -123,12 +130,13 @@ public class DatabaseStructureView extends ViewPart {
 
                     // check if we have a valid selection
                     if (selection != null && (selection.getFirstElement() instanceof INode)) {
-                        
+
                         selectedNode = (INode) selection.getFirstElement();
-                        
-                        // if the selected node is a column node, we want to show it's parent instead
+
+                        // if the selected node is a column node, we want to
+                        // show it's parent instead
                         // in the detail view.
-                        
+
                         if (selectedNode instanceof TableColumnNode) {
                             selectedNode = selectedNode.getParent();
                         }
@@ -136,11 +144,9 @@ public class DatabaseStructureView extends ViewPart {
 
                 }
 
-                detailView.setSelectedNode(selectedNode);                
+                detailView.setSelectedNode(selectedNode);
             }
         });
-        
-        
 
     }
 
@@ -151,6 +157,7 @@ public class DatabaseStructureView extends ViewPart {
      * @see org.eclipse.ui.IWorkbenchPart#setFocus()
      */
     public void setFocus() {
+
         // we don't need to do anything here..
     }
 
@@ -163,7 +170,8 @@ public class DatabaseStructureView extends ViewPart {
     public void dispose() {
 
         // refresh detail view
-        DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
+        DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(
+                SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
 
         if (detailView != null) {
             detailView.setSelectedNode(null);
@@ -180,7 +188,7 @@ public class DatabaseStructureView extends ViewPart {
     public void addSession(SessionTreeNode sessionTreeNode) {
 
         if (_tabFolder == null || _tabFolder.isDisposed()) {
-            
+
             clearParent();
 
             // create tab folder for different sessions
@@ -190,20 +198,20 @@ public class DatabaseStructureView extends ViewPart {
             _tabFolder.addSelectionListener(new SelectionAdapter() {
 
                 public void widgetSelected(SelectionEvent e) {
-                    
+
                     // set the selected node in the detail view.
-                    DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
+                    DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(
+                            SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
                     synchronizeDetailView(detailView);
                 }
 
             });
-            
+
             _parent.layout();
             _parent.redraw();
-        
+
         }
-        
-        
+
         // create tab
         final TabItem tabItem = new TabItem(_tabFolder, SWT.NULL);
 
@@ -217,7 +225,41 @@ public class DatabaseStructureView extends ViewPart {
         tabItem.setControl(composite);
 
         // create outline
-        TreeViewer treeViewer = new TreeViewer(composite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI | SWT.BORDER);
+        final TreeViewer treeViewer = new TreeViewer(composite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI | SWT.BORDER);
+
+        // add drag support
+        Transfer[] transfers = new Transfer[] {TableNodeTransfer.getInstance()};
+        treeViewer.addDragSupport(DND.DROP_COPY, transfers, new DragSourceListener() {
+
+            public void dragStart(DragSourceEvent event) {
+
+                event.doit = !treeViewer.getSelection().isEmpty();
+                if (event.doit) {
+                    Object sel = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
+                    if (!(sel instanceof TableNode)) {
+                        event.doit = false;
+                    } else {
+                        TableNode tn = (TableNode) sel;
+                        TableNodeTransfer.getInstance().setSelection(tn);
+                        if (!tn.isTable())
+                            event.doit = false;
+                    }
+                }
+            }
+
+
+            public void dragSetData(DragSourceEvent event) {
+
+                Object sel = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
+                event.data = sel;
+            }
+
+
+            public void dragFinished(DragSourceEvent event) {
+
+                TableNodeTransfer.getInstance().setSelection(null);
+            }
+        });
 
         // use hash lookup to improve performance
         treeViewer.setUseHashlookup(true);
@@ -229,13 +271,15 @@ public class DatabaseStructureView extends ViewPart {
         // set input session
         treeViewer.setInput(sessionTreeNode.dbModel);
 
-        // add selection change listener, so we can update detail view as required.
+        // add selection change listener, so we can update detail view as
+        // required.
         treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
             public void selectionChanged(SelectionChangedEvent ev) {
-            	
+
                 // set the selected node in the detail view.
-                DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
+                DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(
+                        SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
                 synchronizeDetailView(detailView);
             }
         });
@@ -244,23 +288,23 @@ public class DatabaseStructureView extends ViewPart {
         treeViewer.addDoubleClickListener(new IDoubleClickListener() {
 
             public void doubleClick(DoubleClickEvent event) {
-                
+
                 try {
                     // find view
-                    DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
+                    DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(
+                            SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
                     if (detailView == null) {
                         getSite().getPage().showView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
                     }
-                   getSite().getPage().bringToTop(detailView);
-                   synchronizeDetailView(detailView);
+                    getSite().getPage().bringToTop(detailView);
+                    synchronizeDetailView(detailView);
                 } catch (Exception e) {
                     // fail silent
-                }                
+                }
             }
-            
+
         });
-        
-        
+
         // store tree for later use.
         tabItem.setData(treeViewer);
 
@@ -268,19 +312,20 @@ public class DatabaseStructureView extends ViewPart {
         sessionTreeNode.addListener(new ISessionTreeClosedListener() {
 
             public void sessionTreeClosed() {
-                
+
                 // if it is the last session, clear detail tab
                 if (tabItem.getParent().getItemCount() == 1) {
-                    
-                    DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
+
+                    DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(
+                            SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
                     if (detailView != null) {
                         detailView.setSelectedNode(null);
-                    }             
-                    
+                    }
+
                     setDefaultMessage();
-                    
+
                 } else {
-                
+
                     // remove tab
                     tabItem.setData(null);
                     tabItem.dispose();
@@ -292,7 +337,8 @@ public class DatabaseStructureView extends ViewPart {
         _tabFolder.setSelection(_tabFolder.getItemCount() - 1);
 
         // update detail view
-        DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
+        DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(
+                SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
 
         if (detailView != null) {
 
@@ -321,37 +367,37 @@ public class DatabaseStructureView extends ViewPart {
         menuManager.addMenuListener(new IMenuListener() {
 
             public void menuAboutToShow(IMenuManager manager) {
+
                 actionGroup.fillContextMenu(manager);
             }
         });
     }
 
 
-    
     /**
-     * Set a default message, this method is called
-     * when no sessions are available for viewing.
+     * Set a default message, this method is called when no sessions are
+     * available for viewing.
      */
     private void setDefaultMessage() {
-        
+
         clearParent();
-        
+
         // add message
         String message = Messages.getString("DatabaseStructureView.NoSession");
         Label label = new Label(_parent, SWT.FILL);
         label.setText(message);
         label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-        
+
         _parent.layout();
         _parent.redraw();
     }
-    
-    
+
+
     /**
      * Remove all items from parent
      */
     private void clearParent() {
-        
+
         Control[] children = _parent.getChildren();
         if (children != null) {
             for (int i = 0; i < children.length; i++) {

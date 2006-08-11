@@ -34,6 +34,8 @@ public class SQLEditorToolBar {
 
     private AbstractEditorAction _clearTextAction;
 
+    private AbstractEditorAction _commitAction;
+
     private CoolBar _coolBar;
 
     private CoolBarManager _coolBarMgr;
@@ -47,6 +49,8 @@ public class SQLEditorToolBar {
     private ToolBarManager _extensionToolBarMgr;
 
     private AbstractEditorAction _openFileAction;
+
+    private AbstractEditorAction _rollbackAction;
 
     private AbstractEditorAction _saveAsAction;
 
@@ -80,6 +84,10 @@ public class SQLEditorToolBar {
 
         _execSQLAction = new ExecSQLAction();
         _execSQLAction.setEditor(_editor);
+        _commitAction = new CommitAction();
+        _commitAction.setEditor(_editor);
+        _rollbackAction = new RollbackAction();
+        _rollbackAction.setEditor(_editor);
         _openFileAction = new OpenFileAction();
         _openFileAction.setEditor(_editor);
         _saveAsAction = new SaveFileAsAction();
@@ -88,6 +96,8 @@ public class SQLEditorToolBar {
         _clearTextAction.setEditor(_editor);
 
         _defaultToolBarMgr.add(_execSQLAction);
+        _defaultToolBarMgr.add(_commitAction);
+        _defaultToolBarMgr.add(_rollbackAction);
         _defaultToolBarMgr.add(_openFileAction);
         _defaultToolBarMgr.add(_saveAsAction);
         _defaultToolBarMgr.add(_clearTextAction);
@@ -231,6 +241,8 @@ public class SQLEditorToolBar {
 
                     // reset actions
                     _execSQLAction.setEnabled(_execSQLAction.isEnabled());
+                    _commitAction.setEnabled(_commitAction.isEnabled());
+                    _rollbackAction.setEnabled(_rollbackAction.isEnabled());
 
                     // rebuild extension toolbar
                     createExtensionActions(_extensionToolBarMgr);
