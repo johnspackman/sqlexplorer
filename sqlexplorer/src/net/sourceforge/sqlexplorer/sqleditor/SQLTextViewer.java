@@ -26,7 +26,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.DefaultInformationControl;
-import org.eclipse.jface.text.TextViewerUndoManager;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.IInformationControl;
@@ -35,6 +34,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.TextViewerUndoManager;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.source.IAnnotationHover;
@@ -91,6 +91,7 @@ public class SQLTextViewer extends SourceViewer {
 
 
     public SQLTextViewer(Composite parent, int style, IPreferenceStore store, final Dictionary dictionary, IVerticalRuler ruler) {
+       
         super(parent, ruler, style);
         this.store = store;
         this.dictionary = dictionary;
@@ -139,6 +140,7 @@ public class SQLTextViewer extends SourceViewer {
         if (fInformationPresenter != null)
             fInformationPresenter.install(this);
 
+
         this.setAnnotationHover(new IAnnotationHover() {
 
             public String getHoverInfo(ISourceViewer sourceViewer, int lineNumber) {
@@ -178,20 +180,28 @@ public class SQLTextViewer extends SourceViewer {
 
 
     public void setNewDictionary(Dictionary newDictionary) {
-        if (dictionary != null && contentAssistant != null)
-            contentAssistant.uninstall();
+        
         dictionary = newDictionary;
+
+        if (contentAssistant != null) {
+            contentAssistant.uninstall();
+            contentAssistant = null;
+        }
 
         sqlTextTools = new SQLTextTools(store, dictionary);
         configuration = new SQLSourceViewerConfiguration(sqlTextTools);
-        //
+
         fPresentationReconciler = configuration.getPresentationReconciler(null);
 
-        if (fPresentationReconciler != null)
+        if (fPresentationReconciler != null) {
             fPresentationReconciler.install(this);
-        contentAssistant = configuration.getContentAssistant(null);
-        if (contentAssistant != null) {
-            contentAssistant.install(this);
+        }
+        
+        if (dictionary != null) {
+                 contentAssistant = configuration.getContentAssistant(null);
+                 if (contentAssistant != null) {
+                     contentAssistant.install(this);
+                 }
         }
     }
 

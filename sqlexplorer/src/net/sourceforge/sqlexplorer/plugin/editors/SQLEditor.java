@@ -574,9 +574,6 @@ public class SQLEditor extends TextEditor {
                             if (structureView != null) {
                                 SQLEditor.this.getEditorSite().getWorkbenchWindow().getActivePage().bringToTop(
                                         structureView);
-                                // TODO figure out what this is for...
-                                // structureView.selectNode(sessionTreeNode,
-                                // activeTableNode);
                             }
 
                         } catch (Exception e1) {
@@ -824,11 +821,13 @@ public class SQLEditor extends TextEditor {
 
     public static final String[] SUPPORTED_FILETYPES = new String[] {"*.txt", "*.sql", "*.*"};
 
-
+    private boolean _enableContentAssist = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.SQL_ASSIST);
+    
     public SQLEditor() {
 
         store = SQLExplorerPlugin.getDefault().getPreferenceStore();
         setPreferenceStore(store);
+
     }
 
 
@@ -850,10 +849,14 @@ public class SQLEditor extends TextEditor {
     protected void createActions() {
 
         super.createActions();
+        
+        if (!_enableContentAssist) {
+            return;
+        }
+        
         Action action = new Action("Auto-Completion") {
 
             public void run() {
-
                 sqlTextViewer.showAssistance();
             }
         };
@@ -868,6 +871,7 @@ public class SQLEditor extends TextEditor {
     public void createPartControl(Composite parent) {
 
         super.createPartControl(parent);
+        
         PlatformUI.getWorkbench().getHelpSystem().setHelp(getSourceViewer().getTextWidget(),
                 SQLExplorerPlugin.PLUGIN_ID + ".SQLEditor");
 
@@ -881,7 +885,7 @@ public class SQLEditor extends TextEditor {
 
 
     protected ISourceViewer createSourceViewer(final Composite parent, IVerticalRuler ruler, int style) {
-
+       
         parent.setLayout(new FillLayout());
         final Composite myParent = new Composite(parent, SWT.NONE);
 
@@ -895,6 +899,7 @@ public class SQLEditor extends TextEditor {
         listener = new SQLEditorSessionListener(this);
         stm.addListener(listener);
 
+       
         // create divider line
 
         Composite div1 = new Composite(myParent, SWT.NONE);
@@ -906,15 +911,21 @@ public class SQLEditor extends TextEditor {
         div1.setLayoutData(lgid);
         div1.setBackground(getSite().getShell().getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
 
+        
         // create text viewer
 
         GridData gid = new GridData();
         gid.grabExcessHorizontalSpace = gid.grabExcessVerticalSpace = true;
         gid.horizontalAlignment = gid.verticalAlignment = GridData.FILL;
 
-        sqlTextViewer = new SQLTextViewer(myParent, style, store, null, ruler);
+        Dictionary dictionary = null;
+        if (sessionTreeNode != null && _enableContentAssist) {
+            dictionary = sessionTreeNode.getDictionary();
+        }
+        sqlTextViewer = new SQLTextViewer(myParent, style, store, dictionary, ruler);
         sqlTextViewer.getControl().setLayoutData(gid);
 
+        
         // create bottom divider line
 
         Composite div2 = new Composite(myParent, SWT.NONE);
@@ -997,6 +1008,7 @@ public class SQLEditor extends TextEditor {
             }
         });
 
+        
         final SQLEditor thisEditor = this;
         sqlTextViewer.getTextWidget().addVerifyKeyListener(new VerifyKeyListener() {
 
@@ -1015,11 +1027,10 @@ public class SQLEditor extends TextEditor {
 
         statusBar.layout();
         myParent.layout();
-
+        
+        
         IDocument dc = new Document();
         sqlTextViewer.setDocument(dc);
-        if (sessionTreeNode != null)
-            setNewDictionary(sessionTreeNode.getDictionary());
 
         mcl.install(sqlTextViewer);
 
@@ -1039,6 +1050,7 @@ public class SQLEditor extends TextEditor {
 
         _editorToolBar.addResizeListener(resizeListener);
 
+        
         return sqlTextViewer;
 
     }
@@ -1153,14 +1165,15 @@ public class SQLEditor extends TextEditor {
      *      org.eclipse.ui.IEditorInput)
      */
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-
+       
         super.init(site, input);
+        
         if (input instanceof SQLEditorInput) {
             SQLEditorInput sqlInput = (SQLEditorInput) input;
             sessionTreeNode = sqlInput.getSessionNode();
-            if (sessionTreeNode != null)
-                setNewDictionary(sessionTreeNode.getDictionary());
         }
+        
+
     }
 
 
@@ -1183,28 +1196,33 @@ public class SQLEditor extends TextEditor {
 
 
     public void setNewDictionary(final Dictionary dictionary) {
-
+        
         getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
             public void run() {
-
+                               
                 if (sqlTextViewer != null) {
                     sqlTextViewer.setNewDictionary(dictionary);
                     sqlTextViewer.refresh();
                 }
+                
             }
         });
+        
+
+
     }
 
 
     public void setSessionTreeNode(SessionTreeNode pSessionTreeNode) {
-
+       
         this.sessionTreeNode = pSessionTreeNode;
-        if (sessionTreeNode != null) {
+        if (sessionTreeNode != null && _enableContentAssist) {
             setNewDictionary(sessionTreeNode.getDictionary());
         } else {
             setNewDictionary(null);
         }
+        
     }
 
 
@@ -1215,8 +1233,6 @@ public class SQLEditor extends TextEditor {
 
         IDocument dc = new Document(txt);
         sqlTextViewer.setDocument(dc);
-        if (sessionTreeNode != null)
-            setNewDictionary(sessionTreeNode.getDictionary());
 
     }
 }
