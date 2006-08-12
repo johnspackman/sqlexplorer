@@ -62,7 +62,7 @@ public class OpenPasswordConnectDialogAction extends Action {
 		
 		String user = alias.getUserName();
 		String pswd = alias.getPassword();
-		boolean autoCommit = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.AUTO_COMMIT);
+		boolean autoCommit = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.AUTO_COMMIT);
 		boolean commitOnClose = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.COMMIT_ON_CLOSE);		
 				
 		if (!alias.isAutoLogon()) {
@@ -82,7 +82,7 @@ public class OpenPasswordConnectDialogAction extends Action {
 		try{
 			LoggingProgress lp=new LoggingProgress(dmgr,dv,alias,user,pswd);
 			ProgressMonitorDialog pg=new ProgressMonitorDialog(shell);
-			pg.run(true, false, lp);
+			pg.run(true, true, lp);
 			if(lp.isOk()){
 				SQLConnection conn=lp.getConn();
 				
