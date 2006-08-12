@@ -117,6 +117,10 @@ public class OpenPasswordConnectDialogAction extends Action {
                 }
                 
 			}else{
+                SQLConnection conn=lp.getConn();
+                if (conn != null) {
+                    conn.close();
+                }
 				MessageDialog.openError(shell,Messages.getString("Error..._4"),lp.getError());
 			}
 
