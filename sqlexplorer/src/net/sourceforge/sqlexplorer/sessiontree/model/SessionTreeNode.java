@@ -38,6 +38,8 @@ import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDatabaseMetaData;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.swt.widgets.Table;
@@ -76,7 +78,7 @@ public class SessionTreeNode implements ISessionTreeNode {
     Table table;
 
     private long _created;
-
+    
     public SessionTreeNode(final SQLConnection conn, ISQLAlias alias, SessionTreeModel md, IProgressMonitor monitor, final String password)
             throws InterruptedException {
         
@@ -88,7 +90,6 @@ public class SessionTreeNode implements ISessionTreeNode {
         _parent = md.getRoot();
         _parent.add(this);
         _password = password;
-        _metaData = conn.getSQLMetaData();
         
         _assistanceEnabled = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.SQL_ASSIST);
                
