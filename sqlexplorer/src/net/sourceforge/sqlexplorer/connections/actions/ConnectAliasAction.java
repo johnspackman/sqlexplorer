@@ -20,9 +20,9 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.util.Iterator;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLAlias;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.Display;
  */
 public class ConnectAliasAction extends AbstractConnectionTreeAction {
 
-    ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getConnectSessionIcon());
+    ImageDescriptor _image = ImageUtil.getDescriptor("Images.ConnectSessionIcon");
 
     public ImageDescriptor getHoverImageDescriptor() {
         return _image;

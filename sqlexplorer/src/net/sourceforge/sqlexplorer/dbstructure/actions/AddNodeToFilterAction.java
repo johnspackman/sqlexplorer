@@ -22,9 +22,9 @@ package net.sourceforge.sqlexplorer.dbstructure.actions;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLAlias;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
@@ -36,7 +36,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
  */
 public class AddNodeToFilterAction extends AbstractDBTreeContextAction {
 
-    private static final ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getFilterIcon());
+    private static final ImageDescriptor _image = ImageUtil.getDescriptor("Images.FilterIcon");
 
 
     /**

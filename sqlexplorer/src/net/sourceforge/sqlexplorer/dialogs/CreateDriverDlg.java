@@ -26,9 +26,9 @@ import java.sql.Driver;
 import java.util.StringTokenizer;
 
 import net.sourceforge.sqlexplorer.DriverModel;
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.MyURLClassLoader;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.squirrel_sql.fw.persist.ValidationException;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
@@ -37,7 +37,6 @@ import net.sourceforge.squirrel_sql.fw.util.DuplicateObjectException;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -48,6 +47,8 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -144,11 +145,18 @@ public class CreateDriverDlg extends TitleAreaDialog {
             setMessage(Messages.getString("DriverDialog.Copy.Message"));
         }
 
-        Image image = ImageDescriptor.createFromURL(SqlexplorerImages.getWizardLogo()).createImage();
+        Image image = ImageUtil.getImage("Images.WizardLogo");
         if (image != null) {
             setTitleImage(image);
         }
 
+        contents.addDisposeListener(new DisposeListener() {
+
+            public void widgetDisposed(DisposeEvent e) {
+                ImageUtil.disposeImage("Images.WizardLogo");                
+            }            
+        });
+        
         return contents;
     }
 

@@ -55,26 +55,8 @@ public class URLUtil {
     private static URL baseURL;
 
 
-    public static URL getPluggableFile(String file) {
-        if (!initialized)
-            init();
-
-        URL url = null;
-        try {
-
-            url = new URL(getBaseURL(), file);
-        } catch (Throwable e) {
-        }
-
-        return url;
-    }
 
 
-    public static URL getBaseURL() {
-        if (!initialized)
-            init();
-        return baseURL;
-    }
 
     
     /**
@@ -83,7 +65,7 @@ public class URLUtil {
      * @param filePath path to file within your fragment e.g. icons/test.gif
      * @return URL to the file.
      */
-    public static URL getFragmentURL(String yourPluginId, String filePath) {
+    public static URL getFragmentResourceURL(String yourPluginId, String filePath) {
         
         URL url = null;
         

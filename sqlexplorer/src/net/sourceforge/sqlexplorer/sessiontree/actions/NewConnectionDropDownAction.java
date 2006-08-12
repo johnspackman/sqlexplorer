@@ -5,15 +5,15 @@
 package net.sourceforge.sqlexplorer.sessiontree.actions;
 
 import net.sourceforge.sqlexplorer.AliasModel;
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuCreator;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
@@ -31,7 +31,7 @@ public class NewConnectionDropDownAction extends Action implements IMenuCreator,
     public NewConnectionDropDownAction() {
         setText(Messages.getString("ConnectionsView.Actions.NewConnection"));
         setToolTipText(Messages.getString("ConnectionsView.Actions.NewConnectionToolTip"));
-        setImageDescriptor(ImageDescriptor.createFromURL(SqlexplorerImages.getNewConnectionIcon()));
+        setImageDescriptor(ImageUtil.getDescriptor("Images.NewConnectionIcon"));
         setMenuCreator(this);
     }
 

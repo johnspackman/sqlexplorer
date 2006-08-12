@@ -18,9 +18,8 @@
  */
 package net.sourceforge.sqlexplorer.plugin.wizards;
 
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
+import net.sourceforge.sqlexplorer.ImageUtil;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
@@ -56,7 +55,12 @@ public class NewSQLEditorWizard extends Wizard implements INewWizard {
 	}
 
     public Image getDefaultPageImage() {
-        return ImageDescriptor.createFromURL(SqlexplorerImages.getWizardLogo()).createImage();
+        return ImageUtil.getImage("Images.WizardLogo");
+    }
+
+    public void dispose() {
+        super.dispose();
+        ImageUtil.disposeImage("Images.WizardLogo");
     }
 
 

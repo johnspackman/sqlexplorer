@@ -25,7 +25,6 @@ TODO Priorities.
 
 
 == DB SPECIFIC EXTENSIONS ==
-* create extension points for sql editor
 * write doc on how to create db specific plugin fragments
 ^ create plugin fragment for Oracle
 ^ create plugin fragment for DB2

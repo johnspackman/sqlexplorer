@@ -20,8 +20,8 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.util.Iterator;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.views.ConnectionsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
@@ -38,7 +38,7 @@ import org.eclipse.ui.IViewPart;
  */
 public class RollbackAction extends AbstractConnectionTreeAction implements IViewActionDelegate {
 
-    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getRollbackIcon());
+    private ImageDescriptor _image = ImageUtil.getDescriptor("Images.RollbackIcon");
 
 
     public void init(IViewPart view) {

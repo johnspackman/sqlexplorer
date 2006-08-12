@@ -1,8 +1,8 @@
 package net.sourceforge.sqlexplorer.history.actions;
 
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.history.SQLHistoryElement;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 public class CopyStatementAction extends AbstractHistoryContextAction {
 
-    private ImageDescriptor _imageCopy = ImageDescriptor.createFromURL(SqlexplorerImages.getCopyIcon());
+    private ImageDescriptor _imageCopy = ImageUtil.getDescriptor("Images.CopyIcon");
 
 
     public ImageDescriptor getImageDescriptor() {

@@ -23,8 +23,8 @@ import java.io.File;
 import java.io.FileWriter;
 
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
@@ -43,7 +43,7 @@ import org.eclipse.swt.widgets.TableItem;
  */
 public class ExportXLSAction extends AbstractDataSetTableContextAction {
 
-    private static final ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getExportIcon());
+    private static final ImageDescriptor _image = ImageUtil.getDescriptor("Images.ExportIcon");
 
 
     /*

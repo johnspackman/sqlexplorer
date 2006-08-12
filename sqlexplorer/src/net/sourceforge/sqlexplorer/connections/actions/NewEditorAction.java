@@ -20,9 +20,9 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.util.Iterator;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLAlias;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
@@ -47,9 +47,9 @@ import org.eclipse.ui.IWorkbenchPage;
  */
 public class NewEditorAction extends AbstractConnectionTreeAction implements IViewActionDelegate {
 
-    ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getOpenSQLIcon());
+    ImageDescriptor _image = ImageUtil.getDescriptor("Images.OpenSQLIcon");
 
-    ImageDescriptor _disabledImage = ImageDescriptor.createFromURL(SqlexplorerImages.getAliasIcon());
+    ImageDescriptor _disabledImage = ImageUtil.getDescriptor("Images.AliasIcon");
 
 
     public ImageDescriptor getHoverImageDescriptor() {

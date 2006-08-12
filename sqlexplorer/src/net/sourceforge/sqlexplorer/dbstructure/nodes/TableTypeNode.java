@@ -19,10 +19,6 @@
 
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.graphics.Image;
-
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
@@ -54,6 +50,7 @@ public class TableTypeNode extends AbstractNode {
         _parent = parent;
         _name = name;
 
+        _imageKey = "Images.TableObjectNodeIcon";
     }
     
     /**
@@ -120,13 +117,7 @@ public class TableTypeNode extends AbstractNode {
         return _name + "_TYPE";
     }
     
-    
-    /* (non-Javadoc)
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getImage()
-     */
-    public Image getImage() {        
-        return ImageDescriptor.createFromURL(SqlexplorerImages.getTableObjectNodeIcon()).createImage();
-    }
+
 
     /* (non-Javadoc)
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getQualifiedName()

@@ -25,8 +25,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.Collator;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.URLUtil;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
@@ -130,21 +130,16 @@ class AboutItem {
 
     AboutItem(TabItem item, Composite parent) {
 
-        try {
-            logoImage = new Image(parent.getDisplay(), SqlexplorerImages.getLogo().openStream());
-        } catch (java.io.IOException e) {
-
-            SQLExplorerPlugin.error("Error Getting the logo image ", e); //$NON-NLS-1$
-        }
+        logoImage = ImageUtil.getImage("Images.Logo");
+        
 
         parent.addDisposeListener(new DisposeListener() {
 
             public void widgetDisposed(DisposeEvent event) {
-                if (logoImage != null) {
-                    logoImage.dispose();
-                }
+                ImageUtil.disposeImage("Images.Logo");
             }
         });
+        
         Composite cmp = new Composite(parent, SWT.NULL);
         item.setControl(cmp);
         GridLayout lay = new GridLayout();

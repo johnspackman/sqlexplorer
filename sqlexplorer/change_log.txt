@@ -10,6 +10,7 @@ General
 * background processing for dictionary loading
 * removed deprecated methods
 * Connection dialog is now resizable
+* moved all image definitions into properties file
 
 SQL History
 * only successfull queries are stored
@@ -70,6 +71,7 @@ SQL Editor
 * removed save prompt when sql editor is closed
 * ad-hoc override of sql result set limit in sql editor
 * autowrap is now available and enabled by default. Can be changed in preferences.
+* action bar is now resizable coolbar with extension point for new actions
 
 Connection view
 * when new connection is made, a new SQL editor is automatically opened

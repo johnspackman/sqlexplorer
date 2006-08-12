@@ -24,13 +24,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
-
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.graphics.Image;
 
 public class TableNode extends AbstractNode {
 
@@ -56,6 +52,7 @@ public class TableNode extends AbstractNode {
         _name = name;
         _includeColumns = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.INCLUDE_COLUMNS_IN_TREE);
 
+        _imageKey = "Images.TableNodeIcon";
     }
 
 
@@ -140,14 +137,6 @@ public class TableNode extends AbstractNode {
     }
 
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getImage()
-     */
-    public Image getImage() {
-        return ImageDescriptor.createFromURL(SqlexplorerImages.getTableNodeIcon()).createImage();
-    }
 
 
     /**

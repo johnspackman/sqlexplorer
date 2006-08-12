@@ -21,8 +21,8 @@ package net.sourceforge.sqlexplorer.dbstructure.actions;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
@@ -42,7 +42,7 @@ import org.eclipse.ui.IWorkbenchPage;
  */
 public class CreateTableScriptAction extends AbstractDBTreeContextAction {
 
-    private static final ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getTableIcon());
+    private static final ImageDescriptor _image = ImageUtil.getDescriptor("Images.TableIcon");
 
 
     /**

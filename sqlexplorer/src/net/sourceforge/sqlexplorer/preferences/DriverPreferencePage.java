@@ -21,14 +21,11 @@ package net.sourceforge.sqlexplorer.preferences;
  **********************************************************************
  */
 
-import java.util.HashMap;
-import java.util.Iterator;
-
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.IdentifierFactory;
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.dialogs.CreateDriverDlg;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
@@ -394,30 +391,28 @@ class DriverContentProvider implements IStructuredContentProvider {
 
 class DriverLabelProvider extends LabelProvider implements ITableLabelProvider {
 
-    private HashMap imageCache = new HashMap(11);
-
 
     DriverLabelProvider() {
     };
 
-    ImageDescriptor okDescriptor = ImageDescriptor.createFromURL(SqlexplorerImages.getOkDriver());
-
-    ImageDescriptor errDescriptor = ImageDescriptor.createFromURL(SqlexplorerImages.getErrorDriver());
-
 
     public Image getColumnImage(Object element, int i) {
         ISQLDriver dv = (ISQLDriver) element;
-        ImageDescriptor descriptor = null;
-        if (dv.isJDBCDriverClassLoaded() == true)
-            descriptor = okDescriptor;
-        else
-            descriptor = errDescriptor;
-        Image image = (Image) imageCache.get(descriptor);
-        if (image == null) {
-            image = descriptor.createImage();
-            imageCache.put(descriptor, image);
+        
+        if (dv.isJDBCDriverClassLoaded() == true) {
+            return ImageUtil.getImage("Images.OkDriver");
+        } else {
+            return ImageUtil.getImage("Images.ErrorDriver");
         }
-        return image;
+    }
+
+
+    public void dispose() {
+        
+        super.dispose();
+        ImageUtil.disposeImage("Images.OkDriver");    
+        ImageUtil.disposeImage("Images.ErrorDriver");
+        
     }
 
 
@@ -430,15 +425,6 @@ class DriverLabelProvider extends LabelProvider implements ITableLabelProvider {
     public boolean isLabelProperty(Object element, String property) {
         return true;
     }
-
-
-    public void dispose() {
-        for (Iterator i = imageCache.values().iterator(); i.hasNext();) {
-            ((Image) i.next()).dispose();
-        }
-        imageCache.clear();
-    }
-
 
     public void removeListener(ILabelProviderListener listener) {
     }

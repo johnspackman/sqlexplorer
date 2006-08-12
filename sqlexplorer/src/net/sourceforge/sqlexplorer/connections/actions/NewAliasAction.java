@@ -21,9 +21,9 @@ package net.sourceforge.sqlexplorer.connections.actions;
 import net.sourceforge.sqlexplorer.AliasModel;
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IdentifierFactory;
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLAlias;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.dialogs.CreateAliasDlg;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Display;
  */
 public class NewAliasAction extends AbstractConnectionTreeAction {
 
-    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getAliasWizard());
+    private ImageDescriptor _image = ImageUtil.getDescriptor("Images.AliasWizard");
 
 
     public String getToolTipText() {

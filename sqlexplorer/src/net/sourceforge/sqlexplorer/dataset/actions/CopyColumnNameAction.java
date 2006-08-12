@@ -18,8 +18,8 @@
  */
 package net.sourceforge.sqlexplorer.dataset.actions;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -37,7 +37,7 @@ import org.eclipse.swt.widgets.TableItem;
  */
 public class CopyColumnNameAction extends AbstractDataSetTableContextAction {
 
-    private static final ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getExportToClipBoardIcon());
+    private static final ImageDescriptor _image = ImageUtil.getDescriptor("Images.ExportToClipBoardIcon");
 
 
     /*

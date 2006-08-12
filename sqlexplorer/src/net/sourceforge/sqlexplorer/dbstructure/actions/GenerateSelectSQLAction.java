@@ -22,8 +22,8 @@ package net.sourceforge.sqlexplorer.dbstructure.actions;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableColumnNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
@@ -43,7 +43,7 @@ import org.eclipse.ui.IWorkbenchPage;
  */
 public class GenerateSelectSQLAction extends AbstractDBTreeContextAction {
 
-    private static final ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getSqlEditorIcon());
+    private static final ImageDescriptor _image = ImageUtil.getDescriptor("Images.SqlEditorIcon");
 
 
     /**

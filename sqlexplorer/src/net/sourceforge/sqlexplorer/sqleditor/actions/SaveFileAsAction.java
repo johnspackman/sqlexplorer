@@ -19,14 +19,14 @@ package net.sourceforge.sqlexplorer.sqleditor.actions;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
 public class SaveFileAsAction extends AbstractEditorAction {
 
-    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getSaveFileAsIcon());
+    private ImageDescriptor _image = ImageUtil.getDescriptor("Images.SaveFileAsIcon");
 
 
     public ImageDescriptor getImageDescriptor() {

@@ -20,8 +20,8 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.util.Iterator;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.views.ConnectionsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
@@ -38,9 +38,9 @@ import org.eclipse.ui.IViewPart;
  */
 public class CloseConnectionAction extends AbstractConnectionTreeAction implements IViewActionDelegate {
 
-    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getCloseConnIcon());
+    private ImageDescriptor _image = ImageUtil.getDescriptor("Images.CloseConnIcon");
 
-    private ImageDescriptor _disabledImage = ImageDescriptor.createFromURL(SqlexplorerImages.getDisabledCloseConnIcon());
+    private ImageDescriptor _disabledImage = ImageUtil.getDescriptor("Images.DisabledCloseConnIcon");
 
 
     public void init(IViewPart view) {

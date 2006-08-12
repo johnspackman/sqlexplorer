@@ -21,9 +21,9 @@ package net.sourceforge.sqlexplorer.connections.actions;
 import java.util.Iterator;
 
 import net.sourceforge.sqlexplorer.AliasModel;
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLAlias;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 
@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Display;
  */
 public class DeleteAliasAction extends AbstractConnectionTreeAction {
 
-    ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getDeleteAlias());
+    ImageDescriptor _image = ImageUtil.getDescriptor("Images.DeleteAlias");
 
     public String getToolTipText() {
         return Messages.getString("ConnectionsView.Actions.DeleteAliasToolTip");

@@ -1,7 +1,7 @@
 package net.sourceforge.sqlexplorer.history.actions;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.history.SQLHistoryElement;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 public class RemoveFromHistoryAction extends AbstractHistoryContextAction {
 
-    private ImageDescriptor _imageRemove = ImageDescriptor.createFromURL(SqlexplorerImages.getRemoveIcon());
+    private ImageDescriptor _imageRemove = ImageUtil.getDescriptor("Images.RemoveIcon");
 
 
     public ImageDescriptor getImageDescriptor() {

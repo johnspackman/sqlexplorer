@@ -2,9 +2,9 @@ package net.sourceforge.sqlexplorer.history.actions;
 
 import net.sourceforge.sqlexplorer.AliasModel;
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLAlias;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.history.SQLHistoryElement;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
@@ -21,7 +21,7 @@ import org.eclipse.ui.IWorkbenchPage;
 
 public class OpenInEditorAction extends AbstractHistoryContextAction {
 
-    private ImageDescriptor _imageOpenInEditor = ImageDescriptor.createFromURL(SqlexplorerImages.getOpenSQLIcon());
+    private ImageDescriptor _imageOpenInEditor = ImageUtil.getDescriptor("Images.OpenSQLIcon");
 
 
     public ImageDescriptor getImageDescriptor() {

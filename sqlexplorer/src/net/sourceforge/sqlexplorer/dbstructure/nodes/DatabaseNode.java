@@ -24,7 +24,6 @@ import java.util.List;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLAlias;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.util.TextUtil;
@@ -35,8 +34,6 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.graphics.Image;
 
 /**
  * Root node for a database. ChildNodes can be filtered based on expressions in
@@ -83,6 +80,8 @@ public class DatabaseNode extends AbstractNode {
         } catch (Exception e) {
             SQLExplorerPlugin.error("Error loading database product name.", e);
         }
+        
+        _imageKey = "Images.DatabaseIcon";
     }
 
 
@@ -316,13 +315,6 @@ public class DatabaseNode extends AbstractNode {
         return _databaseProductName;
     }
 
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getImage()
-     */
-    public Image getImage() {        
-        return ImageDescriptor.createFromURL(SqlexplorerImages.getDatabaseIcon()).createImage();
-    }
     
     /* (non-Javadoc)
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()

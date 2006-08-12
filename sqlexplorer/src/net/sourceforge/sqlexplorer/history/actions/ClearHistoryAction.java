@@ -1,7 +1,7 @@
 package net.sourceforge.sqlexplorer.history.actions;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -9,7 +9,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 public class ClearHistoryAction extends AbstractHistoryContextAction {
 
-    private ImageDescriptor _imageRemoveAll = ImageDescriptor.createFromURL(SqlexplorerImages.getRemoveAllIcon());
+    private ImageDescriptor _imageRemoveAll = ImageUtil.getDescriptor("Images.RemoveAllIcon");
 
 
     public ImageDescriptor getImageDescriptor() {

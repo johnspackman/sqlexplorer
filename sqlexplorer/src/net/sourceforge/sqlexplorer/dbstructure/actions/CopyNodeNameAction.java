@@ -19,8 +19,8 @@
 
 package net.sourceforge.sqlexplorer.dbstructure.actions;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.dnd.Clipboard;
@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Display;
  */
 public class CopyNodeNameAction extends AbstractDBTreeContextAction {
 
-    private static final ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getCopyAlias());
+    private static final ImageDescriptor _image = ImageUtil.getDescriptor("Images.CopyAlias");
 
 
     /**

@@ -23,14 +23,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -41,11 +40,22 @@ import org.eclipse.swt.graphics.Image;
  */
 public class ConnectionTreeLabelProvider extends LabelProvider {
 
-    private Image _inactiveAliasImage = ImageDescriptor.createFromURL(SqlexplorerImages.getAliasIcon()).createImage();
+    private Image _inactiveAliasImage = ImageUtil.getImage("Images.AliasIcon");
 
-    private Image _activeAliasImage = ImageDescriptor.createFromURL(SqlexplorerImages.getConnectedAliasIcon()).createImage();
+    private Image _activeAliasImage = ImageUtil.getImage("Images.ConnectedAliasIcon");
 
-    private Image _sessionImage = ImageDescriptor.createFromURL(SqlexplorerImages.getConnectionIcon()).createImage();
+    private Image _sessionImage = ImageUtil.getImage("Images.ConnectionIcon");
+
+
+    public void dispose() {
+        
+        super.dispose();
+        
+        ImageUtil.disposeImage("Images.AliasIcon");
+        ImageUtil.disposeImage("Images.ConnectedAliasIcon");
+        ImageUtil.disposeImage("Images.ConnectionIcon");
+        
+    }
 
 
     /**

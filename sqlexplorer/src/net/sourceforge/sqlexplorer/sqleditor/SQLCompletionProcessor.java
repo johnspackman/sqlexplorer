@@ -26,7 +26,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableTypeNode;
@@ -153,11 +153,11 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
         this.dictionary = dictionary;
 
         try {
-            colImage = new Image(null, SqlexplorerImages.getColumnIcon().openStream());
-            tableImage = new Image(null, SqlexplorerImages.getTableIcon().openStream());
-            viewImage = new Image(null, SqlexplorerImages.getViewIcon().openStream());
-            keywordImage = new Image(null, SqlexplorerImages.getKeywordIcon().openStream());
-            catalogImage = new Image(null, SqlexplorerImages.getDatabaseNodeIcon().openStream());
+            colImage = ImageUtil.getImage("Images.ColumnIcon");
+            tableImage = ImageUtil.getImage("TableIcon");
+            viewImage = ImageUtil.getImage("ViewIcon");
+            keywordImage = ImageUtil.getImage("KeywordIcon");
+            catalogImage = ImageUtil.getImage("DatabaseNodeIcon");
         } catch (Throwable e) {
             SQLExplorerPlugin.error("Error creating images", e); //$NON-NLS-1$
         }
@@ -378,46 +378,13 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
 
 
     public void dispose() {
-        if (catalogImage != null) {
-            try {
-                catalogImage.dispose();
-                catalogImage = null;
-            } catch (Throwable e) {
-                SQLExplorerPlugin.error("Error disposing images", e);
-            }
-        }
-        if (keywordImage != null) {
-            try {
-                keywordImage.dispose();
-                keywordImage = null;
-            } catch (Throwable e) {
-                SQLExplorerPlugin.error("Error disposing images", e);
-            }
-        }
-        if (colImage != null) {
-            try {
-                colImage.dispose();
-                colImage = null;
-            } catch (Throwable e) {
-                SQLExplorerPlugin.error("Error disposing images", e);
-            }
-        }
-        if (tableImage != null) {
-            try {
-                tableImage.dispose();
-                tableImage = null;
-            } catch (Throwable e) {
-                SQLExplorerPlugin.error("Error disposing images", e);
-            }
-        }
-        if (viewImage != null) {
-            try {
-                viewImage.dispose();
-                viewImage = null;
-            } catch (Throwable e) {
-                SQLExplorerPlugin.error("Error disposing images", e);
-            }
-        }
+        
+        ImageUtil.disposeImage("Images.ColumnIcon");
+        ImageUtil.disposeImage("TableIcon");
+        ImageUtil.disposeImage("ViewIcon");
+        ImageUtil.disposeImage("KeywordIcon");
+        ImageUtil.disposeImage("DatabaseNodeIcon");
+        
     }
 
 

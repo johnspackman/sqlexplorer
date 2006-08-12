@@ -19,14 +19,14 @@
 
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
 public class ClearTextAction extends AbstractEditorAction {
 
-    private ImageDescriptor img = ImageDescriptor.createFromURL(SqlexplorerImages.getClearTextIcon());
+    private ImageDescriptor img = ImageUtil.getDescriptor("Images.ClearTextIcon");
 
 
     public String getText() {

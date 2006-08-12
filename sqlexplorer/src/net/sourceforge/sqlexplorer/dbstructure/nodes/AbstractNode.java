@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer.dbstructure.nodes;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
@@ -49,6 +50,7 @@ public abstract class AbstractNode implements INode {
 
     private boolean _childrenLoaded = false;
 
+    protected String _imageKey;
 
     /*
      * (non-Javadoc)
@@ -85,9 +87,9 @@ public abstract class AbstractNode implements INode {
      * Override this method to change the image that is displayed for this node
      * in the database structure outline.
      */
-    public Image getImage() {
+    public final Image getImage() {
 
-        return null;
+        return ImageUtil.getImage(_imageKey);
     }
 
 

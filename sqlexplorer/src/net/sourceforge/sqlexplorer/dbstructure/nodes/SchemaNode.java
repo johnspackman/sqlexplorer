@@ -19,7 +19,6 @@
 
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.util.TextUtil;
@@ -32,8 +31,6 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.graphics.Image;
 
 public class SchemaNode extends AbstractNode {
 
@@ -53,6 +50,7 @@ public class SchemaNode extends AbstractNode {
         _parent = parent;
         _name = name;
 
+        _imageKey = "Images.SchemaNodeIcon";
     }
     
     
@@ -179,13 +177,6 @@ public class SchemaNode extends AbstractNode {
         return "schema";
     }
 
-    
-    /* (non-Javadoc)
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getImage()
-     */
-    public Image getImage() {        
-        return ImageDescriptor.createFromURL(SqlexplorerImages.getSchemaNodeIcon()).createImage();
-    }
     
     /* (non-Javadoc)
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()

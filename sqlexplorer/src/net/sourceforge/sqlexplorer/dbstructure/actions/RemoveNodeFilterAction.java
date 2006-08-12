@@ -19,11 +19,11 @@
 
 package net.sourceforge.sqlexplorer.dbstructure.actions;
 
-import org.eclipse.jface.resource.ImageDescriptor;
-
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLAlias;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
+
+import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
  * Refresh this node from the alias metadata filter.
@@ -33,7 +33,7 @@ import net.sourceforge.sqlexplorer.SqlexplorerImages;
  */
 public class RemoveNodeFilterAction extends AbstractDBTreeContextAction {
 
-    private static final ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getFilterIcon());
+    private static final ImageDescriptor _image = ImageUtil.getDescriptor("Images.FilterIcon");
 
 
     /**

@@ -19,8 +19,8 @@
 
 package net.sourceforge.sqlexplorer.dbstructure.actions;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.dbdetail.DetailTabManager;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -38,7 +38,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
  */
 public class RefreshNodeAction extends AbstractDBTreeContextAction {
 
-    private static final ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getRefreshIcon());
+    private static final ImageDescriptor _image = ImageUtil.getDescriptor("Images.RefreshIcon");
     
     /**
      * Custom image for refresh action

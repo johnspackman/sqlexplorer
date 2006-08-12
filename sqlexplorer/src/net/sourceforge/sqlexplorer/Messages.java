@@ -43,4 +43,14 @@ public class Messages {
             return '!' + key + '!';
         }
     }
+    
+    
+    public static String getString(String bundleName, String key) {
+        try {
+            ResourceBundle bundle = ResourceBundle.getBundle(bundleName);
+            return bundle.getString(key);
+        } catch (MissingResourceException e) {
+            return '!' + key + '!';
+        }
+    }
 }

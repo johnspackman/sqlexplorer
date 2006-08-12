@@ -22,21 +22,20 @@ package net.sourceforge.sqlexplorer.dialogs;
 //
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.ImageDescriptor;
-//import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-//import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -96,10 +95,18 @@ public class PasswordConnDlg extends TitleAreaDialog {
         setTitle(Messages.getString("Connection_4")); //$NON-NLS-1$
         setMessage(Messages.getString("Insert_Password_1")); //$NON-NLS-1$
 
-        Image image = ImageDescriptor.createFromURL(SqlexplorerImages.getWizardLogo()).createImage();
+        Image image = ImageUtil.getImage("Images.WizardLogo");
         if (image != null) {
             setTitleImage(image);
         }
+        
+        contents.addDisposeListener(new DisposeListener() {
+
+            public void widgetDisposed(DisposeEvent e) {
+                ImageUtil.disposeImage("Images.WizardLogo");                
+            }            
+        });
+        
         return contents;
     }
 

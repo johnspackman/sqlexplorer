@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
@@ -37,7 +37,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 public class ExecSQLAction extends AbstractEditorAction {
 
-    private ImageDescriptor img = ImageDescriptor.createFromURL(SqlexplorerImages.getExecSQLIcon());
+    private ImageDescriptor img = ImageUtil.getDescriptor("Images.ExecSQLIcon");
 
     public ExecSQLAction() {
     }

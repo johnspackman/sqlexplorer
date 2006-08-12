@@ -18,8 +18,8 @@
  */
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -30,7 +30,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
  */
 public class RollbackAction extends AbstractEditorAction {
 
-    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getEditorRollbackIcon());
+    private ImageDescriptor _image = ImageUtil.getDescriptor("Images.EditorRollbackIcon");
 
 
     public ImageDescriptor getImageDescriptor() {

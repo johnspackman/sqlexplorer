@@ -18,7 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.plugin.actions;
 
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.dialogs.AboutDlg;
 
 import org.eclipse.jface.action.Action;
@@ -36,7 +36,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
  */
 public class About extends Action implements IWorkbenchWindowActionDelegate {
 
-    private ImageDescriptor _image = ImageDescriptor.createFromURL(SqlexplorerImages.getAboutIcon());
+    private ImageDescriptor _image = ImageUtil.getDescriptor("Images.AboutDialog");
     
     private Shell _shell = null;
     

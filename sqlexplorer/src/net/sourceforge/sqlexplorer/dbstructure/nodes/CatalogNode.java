@@ -18,7 +18,6 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.util.TextUtil;
@@ -31,8 +30,6 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.graphics.Image;
 
 /**
  * Database catalog node.
@@ -57,6 +54,7 @@ public class CatalogNode extends AbstractNode {
         _parent = parent;
         _name = name;
 
+        _imageKey = "Images.CatalogNodeIcon";
     }
 
     
@@ -181,13 +179,6 @@ public class CatalogNode extends AbstractNode {
         return "catalog";
     }
 
-    
-    /* (non-Javadoc)
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getImage()
-     */
-    public Image getImage() {        
-        return ImageDescriptor.createFromURL(SqlexplorerImages.getCatalogNodeIcon()).createImage();
-    }
 
     /* (non-Javadoc)
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()

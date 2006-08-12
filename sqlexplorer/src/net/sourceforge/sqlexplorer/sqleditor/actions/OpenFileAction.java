@@ -23,8 +23,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 public class OpenFileAction extends AbstractEditorAction {
 
-    private ImageDescriptor img = ImageDescriptor.createFromURL(SqlexplorerImages.getOpenFileIcon());
+    private ImageDescriptor img = ImageUtil.getDescriptor("Images.OpenFileIcon");
 
 
     public String getText() {

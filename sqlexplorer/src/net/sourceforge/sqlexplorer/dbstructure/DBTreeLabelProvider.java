@@ -18,10 +18,9 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure;
 
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -32,9 +31,18 @@ import org.eclipse.swt.graphics.Image;
  */
 public class DBTreeLabelProvider extends LabelProvider {
 
-    private static final Image _defaultNodeImage = ImageDescriptor.createFromURL(SqlexplorerImages.getDefaultNodeIcon()).createImage();
+    private Image _defaultNodeImage = ImageUtil.getImage("Images.DefaultNodeIcon");
 
-    private static final Image _defaultParentNodeImage = ImageDescriptor.createFromURL(SqlexplorerImages.getDefaultParentNodeIcon()).createImage();
+    private Image _defaultParentNodeImage = ImageUtil.getImage("Images.DefaultParentNodeIcon");
+
+
+    public void dispose() {
+
+        super.dispose();
+        ImageUtil.disposeImage("Images.DefaultNodeIcon");
+        ImageUtil.disposeImage("Images.DefaultParentNodeIcon");
+        
+    }
 
 
     /**

@@ -17,8 +17,8 @@ package net.sourceforge.sqlexplorer.sqlpanel.actions;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.TabItem;
 
 public class CloseSQLResultTab extends Action {
 
-	private ImageDescriptor img=ImageDescriptor.createFromURL(SqlexplorerImages.getCloseIcon());	
+	private ImageDescriptor img=ImageUtil.getDescriptor("Images.CloseIcon");
 	/**
 	 * Holds a reference to the TableItem we should close
 	 */

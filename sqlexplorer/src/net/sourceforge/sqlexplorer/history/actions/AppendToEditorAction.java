@@ -1,8 +1,8 @@
 package net.sourceforge.sqlexplorer.history.actions;
 
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.history.SQLHistoryElement;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
@@ -13,7 +13,7 @@ import org.eclipse.ui.IWorkbenchPage;
 
 public class AppendToEditorAction extends AbstractHistoryContextAction {
 
-    private ImageDescriptor _imageOpenInEditor = ImageDescriptor.createFromURL(SqlexplorerImages.getAppendToEditor());
+    private ImageDescriptor _imageOpenInEditor = ImageUtil.getDescriptor("Images.AppendToEditor");
 
 
     public ImageDescriptor getImageDescriptor() {

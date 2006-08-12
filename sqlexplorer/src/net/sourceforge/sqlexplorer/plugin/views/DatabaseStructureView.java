@@ -228,6 +228,7 @@ public class DatabaseStructureView extends ViewPart {
         final TreeViewer treeViewer = new TreeViewer(composite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI | SWT.BORDER);
 
         // add drag support
+        // TODO improve drag support options
         Transfer[] transfers = new Transfer[] {TableNodeTransfer.getInstance()};
         treeViewer.addDragSupport(DND.DROP_COPY, transfers, new DragSourceListener() {
 
@@ -256,7 +257,7 @@ public class DatabaseStructureView extends ViewPart {
 
 
             public void dragFinished(DragSourceEvent event) {
-
+                System.out.println("$drag finished");
                 TableNodeTransfer.getInstance().setSelection(null);
             }
         });

@@ -18,11 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
-import net.sourceforge.sqlexplorer.SqlexplorerImages;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
-
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.graphics.Image;
 
 
 /**
@@ -43,6 +39,8 @@ public class TableColumnNode extends AbstractNode {
         _parent = node;
         _sessionNode = session;               
         _name = name;        
+        
+        _imageKey = "Images.ColumnNodeIcon";
     }
 
     /* (non-Javadoc)
@@ -52,14 +50,7 @@ public class TableColumnNode extends AbstractNode {
         return "column";
     }
 
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getImage()
-     */
-    public Image getImage() {        
-        return ImageDescriptor.createFromURL(SqlexplorerImages.getColumnNodeIcon()).createImage();
-    }
-    
+   
     
     /* (non-Javadoc)
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
