@@ -154,10 +154,10 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
 
         try {
             colImage = ImageUtil.getImage("Images.ColumnIcon");
-            tableImage = ImageUtil.getImage("TableIcon");
-            viewImage = ImageUtil.getImage("ViewIcon");
-            keywordImage = ImageUtil.getImage("KeywordIcon");
-            catalogImage = ImageUtil.getImage("DatabaseNodeIcon");
+            tableImage = ImageUtil.getImage("Images.TableIcon");
+            viewImage = ImageUtil.getImage("Images.TableIcon");
+            keywordImage = ImageUtil.getImage("Images.TableIcon");
+            catalogImage = ImageUtil.getImage("Images.DatabaseNodeIcon");
         } catch (Throwable e) {
             SQLExplorerPlugin.error("Error creating images", e); //$NON-NLS-1$
         }
@@ -380,10 +380,10 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
     public void dispose() {
         
         ImageUtil.disposeImage("Images.ColumnIcon");
-        ImageUtil.disposeImage("TableIcon");
-        ImageUtil.disposeImage("ViewIcon");
-        ImageUtil.disposeImage("KeywordIcon");
-        ImageUtil.disposeImage("DatabaseNodeIcon");
+        ImageUtil.disposeImage("Images.TableIcon");
+        ImageUtil.disposeImage("Images.TableIcon");
+        ImageUtil.disposeImage("Images.TableIcon");
+        ImageUtil.disposeImage("Images.DatabaseNodeIcon");
         
     }
 
