@@ -47,9 +47,11 @@ public abstract class AbstractEditorAction extends Action {
         _editor = editor;
     }
 
-    public boolean isEnabled() {
+    public boolean isDisabled() {
 
-        return (_editor.getSessionTreeNode() != null);
+        boolean active = _editor.getSessionTreeNode() != null;
+        System.out.println("active-> " + active);
+        return !active;
     }
     
 }

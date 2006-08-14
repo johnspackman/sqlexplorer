@@ -55,13 +55,13 @@ public class CommitAction extends AbstractEditorAction {
      * Action is available when session doesn't have autocommit
      * 
      */
-    public boolean isEnabled() {
+    public boolean isDisabled() {
 
         if (_editor.getSessionTreeNode() == null) {
-            return false;
+            return true;
         }
 
-        return !_editor.getSessionTreeNode().isAutoCommitMode();
+        return _editor.getSessionTreeNode().isAutoCommitMode();
     }
 
 

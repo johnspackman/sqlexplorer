@@ -95,12 +95,7 @@ public class SQLEditorToolBar {
         _clearTextAction = new ClearTextAction();
         _clearTextAction.setEditor(_editor);
 
-        _defaultToolBarMgr.add(_execSQLAction);
-        _defaultToolBarMgr.add(_commitAction);
-        _defaultToolBarMgr.add(_rollbackAction);
-        _defaultToolBarMgr.add(_openFileAction);
-        _defaultToolBarMgr.add(_saveAsAction);
-        _defaultToolBarMgr.add(_clearTextAction);
+        addDefaultActions(_defaultToolBarMgr);
 
         // initialize extension actions
 
@@ -153,7 +148,24 @@ public class SQLEditorToolBar {
 
     }
 
+    private void addDefaultActions(ToolBarManager mgr) {
 
+        mgr.removeAll();
+
+        _execSQLAction.setEnabled(!_execSQLAction.isDisabled());
+        _commitAction.setEnabled(!_commitAction.isDisabled());
+        _rollbackAction.setEnabled(!_rollbackAction.isDisabled());
+        
+        mgr.add(_execSQLAction);
+        mgr.add(_commitAction);
+        mgr.add(_rollbackAction);
+        mgr.add(_openFileAction);
+        mgr.add(_saveAsAction);
+        mgr.add(_clearTextAction);
+
+    }
+    
+    
     /**
      * Loop through all extensions and add the appropriate actions.
      * 
@@ -240,10 +252,9 @@ public class SQLEditorToolBar {
                 if (sessionChanged) {
 
                     // reset actions
-                    _execSQLAction.setEnabled(_execSQLAction.isEnabled());
-                    _commitAction.setEnabled(_commitAction.isEnabled());
-                    _rollbackAction.setEnabled(_rollbackAction.isEnabled());
-
+                    addDefaultActions(_defaultToolBarMgr);
+                    _defaultToolBarMgr.update(true);
+                    
                     // rebuild extension toolbar
                     createExtensionActions(_extensionToolBarMgr);
                     _extensionToolBarMgr.update(true);
@@ -261,6 +272,7 @@ public class SQLEditorToolBar {
                 }
 
                 _coolBarMgr.update(true);
+                _coolBar.update();
             }
         });
     }
