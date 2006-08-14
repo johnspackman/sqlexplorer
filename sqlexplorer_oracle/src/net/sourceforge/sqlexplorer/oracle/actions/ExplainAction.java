@@ -42,7 +42,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
  */
 public class ExplainAction extends AbstractEditorAction {
 
-    private static ImageDescriptor _image = ImageDescriptor.createFromURL(URLUtil.getFragmentURL("net.sourceforge.sqlexplorer.oracle", "icons/explain.gif"));
+    private static ImageDescriptor _image = ImageDescriptor.createFromURL(URLUtil.getFragmentResourceURL("net.sourceforge.sqlexplorer.oracle", "icons/explain.gif"));
 
 
     /*
@@ -83,6 +83,7 @@ public class ExplainAction extends AbstractEditorAction {
             return;
         }
 
+       
         Preferences prefs = SQLExplorerPlugin.getDefault().getPluginPreferences();
 
         String queryDelimiter = prefs.getString(IConstants.SQL_QRY_DELIMITER);
@@ -159,7 +160,7 @@ public class ExplainAction extends AbstractEditorAction {
                 String querySql = (String) queryStrings.remove(0);
 
                 if (querySql != null) {
-                    resultsView.addSQLExecution(new ExplainExecution(_editor, resultsView, querySql, 0, runNode));
+                    resultsView.addSQLExecution(new ExplainExecution(_editor, resultsView, querySql, runNode));
                 }
             }
 

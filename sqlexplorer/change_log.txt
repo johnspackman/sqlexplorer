@@ -11,6 +11,7 @@ General
 * removed deprecated methods
 * Connection dialog is now resizable
 * moved all image definitions into properties file
+* database connecting is now cancellable
 
 SQL History
 * only successfull queries are stored

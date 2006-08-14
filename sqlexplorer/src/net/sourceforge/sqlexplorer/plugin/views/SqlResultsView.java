@@ -20,13 +20,14 @@ package net.sourceforge.sqlexplorer.plugin.views;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sqlpanel.SQLExecution;
+import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 import net.sourceforge.sqlexplorer.sqlpanel.SQLResult;
 import net.sourceforge.sqlexplorer.sqlpanel.actions.CloseSQLResultTab;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Point;
@@ -35,6 +36,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -59,11 +61,11 @@ public class SqlResultsView extends ViewPart {
 
 
     /**
-     * Add a new SQL Execution Tab
+     * Add a new (SQL) Execution Tab
      * 
-     * @param sqlExecution
+     * @param AbstractSQLExecution
      */
-    public void addSQLExecution(SQLExecution sqlExecution) {
+    public void addSQLExecution(AbstractSQLExecution sqlExecution) {
 
         if (_tabFolder == null || _tabFolder.isDisposed()) {
 
@@ -80,11 +82,11 @@ public class SqlResultsView extends ViewPart {
         // create tab
         _lastTabNumber = _lastTabNumber + 1;
         final TabItem tabItem = new TabItem(_tabFolder, SWT.NULL);
-        
+
         // set tab text & tooltip
         String labelText = "" + _lastTabNumber;
         tabItem.setText(labelText);
-        tabItem.setData("tabLabel", labelText);        
+        tabItem.setData("tabLabel", labelText);
         tabItem.setToolTipText(TextUtil.getWrappedText(sqlExecution.getSqlStatement()));
 
         // create composite for our result
@@ -106,27 +108,32 @@ public class SqlResultsView extends ViewPart {
 
         tabItem.addDisposeListener(new DisposeListener() {
 
-            public void widgetDisposed(DisposeEvent e) {
+            public void widgetDisposed(final DisposeEvent e) {
 
-                // stop all sql execution if still running
-                TabItem tabItem = (TabItem) e.getSource();
-                SQLExecution sqlExecution = (SQLExecution) tabItem.getData();
-                sqlExecution.stop();
-                tabItem.setData(null);
+                BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
 
-                if (_tabFolder != null && !_tabFolder.isDisposed()) {
+                    public void run() {
 
-                    if (_tabFolder.getItemCount() == 0) {
-                        // this is last tab..
-                        clearParent();
-                        setDefaultMessage();
+                        // stop all sql execution if still running
+                        TabItem tabItem = (TabItem) e.getSource();
+                        AbstractSQLExecution sqlExecution = (AbstractSQLExecution) tabItem.getData();
+                        sqlExecution.stop();
+                        tabItem.setData(null);
+
+                        if (_tabFolder != null && !_tabFolder.isDisposed()) {
+
+                            if (_tabFolder.getItemCount() == 0) {
+                                // this is last tab..
+                                clearParent();
+                                setDefaultMessage();
+                            }
+
+                        } else if (_tabFolder.isDisposed()) {
+                            clearParent();
+                            setDefaultMessage();
+                        }
                     }
-
-                } else if (_tabFolder.isDisposed()) {
-                    clearParent();
-                    setDefaultMessage();
-                }
-
+                });
             }
 
         });
