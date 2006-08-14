@@ -1203,7 +1203,9 @@ public class SQLEditor extends TextEditor {
                                
                 if (sqlTextViewer != null) {
                     sqlTextViewer.setNewDictionary(dictionary);
-                    sqlTextViewer.refresh();
+                    if (sessionTreeNode != null) {
+                        sqlTextViewer.refresh();
+                    }
                 }
                 
             }
