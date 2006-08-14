@@ -48,6 +48,10 @@ public class TextUtil {
      */
     public static String getWrappedText(String input, int maxWidth) {
               
+        if (input == null) {
+            return "";
+        }
+        
         String[] text = input.split(NEWLINE_EXPR);
         String wrappedText = "";
         
