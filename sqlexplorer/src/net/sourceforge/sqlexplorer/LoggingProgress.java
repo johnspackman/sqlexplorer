@@ -32,6 +32,23 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 
 public class LoggingProgress implements IRunnableWithProgress {
 
+    private class LocalThread extends Thread {
+
+        public void run() {
+
+               try {
+                   
+                    conn = _driverMgr.getConnection(driver, alias, user, pswd);
+                } catch (Throwable e) {
+                    th = e;
+                    error = e.getMessage();
+                    SQLExplorerPlugin.error("Error logging to database", e);
+
+                }
+        }
+    }
+    
+    
     /**
      * @see org.eclipse.jface.operation.IRunnableWithProgress#run(IProgressMonitor)
      */
@@ -51,6 +68,7 @@ public class LoggingProgress implements IRunnableWithProgress {
 
     Throwable th;
 
+    private boolean _isCancelled = false;
 
     public LoggingProgress(SQLDriverManager dm, ISQLDriver dv, ISQLAlias al, String user, String pswd) {
 
@@ -66,7 +84,36 @@ public class LoggingProgress implements IRunnableWithProgress {
         monitor.setTaskName(Messages.getString("Logging_to_database..._1"));
         monitor.beginTask(Messages.getString("Logging_to_database..._1"), IProgressMonitor.UNKNOWN);
         try {
-            conn = _driverMgr.getConnection(driver, alias, user, pswd);
+            
+            LocalThread myThread = new LocalThread();
+            myThread.start();
+            
+            while (true) {
+                
+                if (monitor.isCanceled()) {
+                    if (myThread.isAlive()) {
+                        myThread.interrupt();
+                    }
+                    _isCancelled = true;
+                    th = null;
+                    if (conn != null) {
+                        conn.close();
+                    }
+                    conn = null;
+                    
+                    break;
+                }
+                
+                if (th != null) {
+                    conn = null;
+                    break;
+                }
+                
+                if (conn != null && !myThread.isAlive()) {
+                    break;
+                }
+            }
+            
             monitor.done();
         } catch (Throwable e) {
             th = e;
@@ -91,4 +138,7 @@ public class LoggingProgress implements IRunnableWithProgress {
         return ((th == null) ? true : false);
     }
 
+    public boolean isCancelled() {
+        return _isCancelled;
+    }
 }

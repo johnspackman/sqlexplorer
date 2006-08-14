@@ -83,6 +83,11 @@ public class OpenPasswordConnectDialogAction extends Action {
 			LoggingProgress lp=new LoggingProgress(dmgr,dv,alias,user,pswd);
 			ProgressMonitorDialog pg=new ProgressMonitorDialog(shell);
 			pg.run(true, true, lp);
+            
+            if (lp.isCancelled()) {
+                return;
+            }
+            
 			if(lp.isOk()){
 				SQLConnection conn=lp.getConn();
 				
