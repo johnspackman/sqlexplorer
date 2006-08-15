@@ -50,7 +50,6 @@ public abstract class AbstractEditorAction extends Action {
     public boolean isDisabled() {
 
         boolean active = _editor.getSessionTreeNode() != null;
-        System.out.println("active-> " + active);
         return !active;
     }
     
