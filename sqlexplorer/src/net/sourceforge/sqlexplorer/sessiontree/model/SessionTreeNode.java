@@ -410,6 +410,8 @@ public class SessionTreeNode implements ISessionTreeNode {
 
     public synchronized void setCatalog(String cat) throws SQLException {
         
+        _interactiveConnection.setCatalog(cat);
+        
         if (_connectionNumberQueue.size() == 0 && !_backgroundConnectionInUse) {
             // nothing is happening, so we can change immediately
             _backgroundConnection.setCatalog(cat);

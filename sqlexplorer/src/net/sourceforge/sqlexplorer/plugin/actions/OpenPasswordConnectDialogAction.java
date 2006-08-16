@@ -22,7 +22,7 @@ package net.sourceforge.sqlexplorer.plugin.actions;
 
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.LoggingProgress;
+import net.sourceforge.sqlexplorer.LoginProgress;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.RetrievingTableDataProgress;
 import net.sourceforge.sqlexplorer.dialogs.PasswordConnDlg;
@@ -32,7 +32,7 @@ import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
-import net.sourceforge.squirrel_sql.fw.sql.SQLDriverManager;
+import net.sourceforge.sqlexplorer.SQLDriverManager;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -80,7 +80,7 @@ public class OpenPasswordConnectDialogAction extends Action {
 			
 		ISQLDriver dv=driverModel.getDriver(alias.getDriverIdentifier());
 		try{
-			LoggingProgress lp=new LoggingProgress(dmgr,dv,alias,user,pswd);
+			LoginProgress lp=new LoginProgress(dmgr,dv,alias,user,pswd);
 			ProgressMonitorDialog pg=new ProgressMonitorDialog(shell);
 			pg.run(true, true, lp);
             
