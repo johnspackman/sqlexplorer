@@ -37,14 +37,14 @@ public class RetrievingTableDataProgress implements IRunnableWithProgress {
     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
         monitor.setTaskName(Messages.getString("RetrievingTableDataProgress.Getting_Database_Structure_Data_1"));
         try {
-            sessionNode = sessionTreeModel.createSessionTreeNode(conn, alias, monitor, pswd);
+            sessionNode = sessionTreeModel.createSessionTreeNode(_connections, alias, monitor, pswd);
         } finally {
             monitor.done();
         }
 
     }
 
-    SQLConnection conn;
+    SQLConnection[] _connections;
 
     ISQLAlias alias;
 
@@ -55,9 +55,9 @@ public class RetrievingTableDataProgress implements IRunnableWithProgress {
     SessionTreeNode sessionNode;
 
 
-    public RetrievingTableDataProgress(SQLConnection conn, ISQLAlias alias, SessionTreeModel sessionTreeModel, String pswd) {
+    public RetrievingTableDataProgress(SQLConnection[] conn, ISQLAlias alias, SessionTreeModel sessionTreeModel, String pswd) {
 
-        this.conn = conn;
+        _connections = conn;
         this.alias = alias;
         this.sessionTreeModel = sessionTreeModel;
         this.pswd = pswd;

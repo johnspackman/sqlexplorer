@@ -85,7 +85,7 @@ public class ExplainExecution extends AbstractSQLExecution {
         _resultsView = resultsView;
         _sqlResult = new SQLResult();
         _sqlResult.setSqlStatement(_sqlStatement);
-
+        
         // set initial message
         setProgressMessage(Messages.getString("SQLResultsView.ConnectionWait"));
     }
@@ -238,7 +238,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 
             int id_ = new Random().nextInt(1000);
 
-            _prepStmt = _session.getConnection().prepareStatement(
+            _prepStmt = _connection.prepareStatement(
                     "delete from SYSTOOLS.explain_statement where queryno = ? ");
             _prepStmt.setInt(1, id_);
             _prepStmt.executeUpdate();
@@ -249,7 +249,7 @@ public class ExplainExecution extends AbstractSQLExecution {
                 return;
             }
             
-            _stmt = _session.getConnection().createStatement();
+            _stmt = _connection.createStatement();
             _stmt.execute("EXPLAIN PLAN SET queryno = " + id_ + " FOR " + _sqlStatement);
             _stmt.close();
             _stmt = null;
@@ -258,7 +258,7 @@ public class ExplainExecution extends AbstractSQLExecution {
                 return;
             }
             
-            _prepStmt = _session.getConnection().prepareStatement(
+            _prepStmt = _connection.prepareStatement(
                     "SELECT O.Operator_ID as id, S2.Target_ID as parent_id, O.Operator_Type, "
                             + "S.OBJECT_SCHEMA, EOB.OBJECT_TYPE, S.Object_Name, O.CPU_COST,  "
                             + "CAST(O.Total_Cost AS INTEGER) Cost FROM SYSTOOLS.EXPLAIN_OPERATOR O "

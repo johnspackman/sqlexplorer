@@ -44,7 +44,7 @@ public class RowCountTab extends AbstractDataSetTab {
             setStatusMessage(Messages.getString("DatabaseDetailView.Tab.RowCount.status") + " " + tableNode.getQualifiedName());
         }
         
-        return new DataSet(null, "select count(*) from " + nodeName, null, getNode().getSession().getConnection());
+        return new DataSet(null, "select count(*) from " + nodeName, null, getNode().getSession().getInteractiveConnection());
     }
  
 }

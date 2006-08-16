@@ -88,14 +88,18 @@ public class OpenPasswordConnectDialogAction extends Action {
                 return;
             }
             
+            SQLConnection[] connections = lp.getConnections();
+            
 			if(lp.isOk()){
-				SQLConnection conn=lp.getConn();
 				
-				conn.setAutoCommit(autoCommit);
-				if(autoCommit==false){
-					conn.setCommitOnClose(commitOnClose);
-				}
-				RetrievingTableDataProgress rtdp=new RetrievingTableDataProgress(conn,alias,SQLExplorerPlugin.getDefault().stm,pswd);
+                for (int i = 0; i < connections.length; i++) {
+                    connections[i].setAutoCommit(autoCommit);
+                    if(autoCommit==false){
+                        connections[i].setCommitOnClose(commitOnClose);
+                    }    
+                }
+				
+				RetrievingTableDataProgress rtdp=new RetrievingTableDataProgress(connections,alias,SQLExplorerPlugin.getDefault().stm,pswd);
 				ProgressMonitorDialog pg2=new ProgressMonitorDialog(shell);
 				pg2.run(true,true,rtdp);
                 
@@ -122,15 +126,18 @@ public class OpenPasswordConnectDialogAction extends Action {
                 }
                 
 			}else{
-                SQLConnection conn=lp.getConn();
-                if (conn != null) {
-                    conn.close();
+                
+                for (int i = 0; i < connections.length; i++) {
+                    if (connections[i] != null) {
+                        connections[i].close();
+                    }
                 }
+                
 				MessageDialog.openError(shell,Messages.getString("Error..._4"),lp.getError());
 			}
 
 		}catch(java.lang.Exception e){
-			SQLExplorerPlugin.error("Error Logging ",e); //$NON-NLS-1$
+			SQLExplorerPlugin.error("Error Logging ",e); 
 		}
 		
 

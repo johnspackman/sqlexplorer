@@ -73,7 +73,7 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
             data[7][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.AutocommitMode");
             try {data[7][1] = "" + jdbcMetaData.getConnection().getAutoCommit();} catch (Throwable e) {}
             data[8][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.CommitOnClose");            
-            try {data[8][1] = "" + node.getSession().getConnection().getCommitOnClose();} catch (Throwable e) {}            
+            try {data[8][1] = "" + node.getSession().getInteractiveConnection().getCommitOnClose();} catch (Throwable e) {}            
             data[9][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.ProceduresCallable");
             try {data[9][1] = "" + jdbcMetaData.allProceduresAreCallable();} catch (Throwable e) {}
             data[10][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.TablesSelectable");

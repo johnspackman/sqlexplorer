@@ -85,7 +85,7 @@ public class ExplainExecution extends AbstractSQLExecution {
         _resultsView = resultsView;
         _sqlResult = new SQLResult();
         _sqlResult.setSqlStatement(_sqlStatement);
-
+        
         // set initial message
         setProgressMessage(Messages.getString("SQLResultsView.ConnectionWait"));
     }
@@ -237,7 +237,7 @@ public class ExplainExecution extends AbstractSQLExecution {
                 return;
             }
             
-            _stmt = _session.getConnection().createStatement();
+            _stmt = _connection.createStatement();
             String id_ = Integer.toHexString(new Random().nextInt()).toUpperCase();
             _stmt.execute("delete plan_table where statement_id='" + id_ + "'");
             _stmt.close();
@@ -247,7 +247,7 @@ public class ExplainExecution extends AbstractSQLExecution {
                 return;
             }
             
-            _stmt = _session.getConnection().createStatement();
+            _stmt = _connection.createStatement();
             _stmt.execute("EXPLAIN PLAN SET statement_id = '" + id_ + "' FOR " + _sqlStatement);
             _stmt.close();
             _stmt = null;
@@ -256,7 +256,7 @@ public class ExplainExecution extends AbstractSQLExecution {
                 return;
             }
             
-            _prepStmt = _session.getConnection().prepareStatement(
+            _prepStmt = _connection.prepareStatement(
                     "select "
                             + "object_type,operation,options,object_owner,object_name,optimizer,cardinality ,cost,id,parent_id "
                             + " from " + " plan_table " + " start with id = 0 and statement_id=? "

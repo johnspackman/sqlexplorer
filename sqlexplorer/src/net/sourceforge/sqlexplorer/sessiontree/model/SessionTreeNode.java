@@ -38,6 +38,8 @@ import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDatabaseMetaData;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.swt.widgets.Table;
@@ -49,39 +51,58 @@ import org.eclipse.swt.widgets.Table;
  */
 public class SessionTreeNode implements ISessionTreeNode {
 
-    private SQLConnection _connection;
-
-    private IIdentifier _id = IdentifierFactory.getInstance().createIdentifier();
-
     private ISQLAlias _alias;
 
     boolean _assistanceEnabled;
 
-    public DatabaseModel dbModel;
+    private SQLConnection _backgroundConnection;
+
+    private SQLConnection _interactiveConnection;
+    
+    private boolean _backgroundConnectionInUse = false;
+
+    private List _connectionNumberQueue = new ArrayList();
+
+    private long _created;
 
     private Dictionary _dictionary = new Dictionary();
 
+    private IIdentifier _id = IdentifierFactory.getInstance().createIdentifier();
+
     private ListenerList _listeners = new ListenerList();
 
-    private ArrayList ls = new ArrayList(10);
+    private SQLDatabaseMetaData _metaData = null;
 
     private SessionTreeModel _model;
+    
+    private int _nextConnectionNumber = 0;
 
     private RootSessionTreeNode _parent;
 
-    private SQLDatabaseMetaData _metaData = null;
-    
     final private String _password;
-
-    Table table;
-
-    private long _created;
     
-    public SessionTreeNode(final SQLConnection conn, ISQLAlias alias, SessionTreeModel md, IProgressMonitor monitor, final String password)
+    public DatabaseModel dbModel;
+       
+    private ArrayList ls = new ArrayList(10);
+    
+    Table table;
+    
+    private static final int COMMIT_REQUEST = -1;
+    
+    private static final int ROLLBACK_REQUEST = -2;
+    
+    private static final int CATALOG_CHANGE_REQUEST = -3;
+    
+    private String _newCatalog;
+    
+    private static final Log _logger = LogFactory.getLog(SessionTreeNode.class);
+    
+    public SessionTreeNode(final SQLConnection[] conn, ISQLAlias alias, SessionTreeModel md, IProgressMonitor monitor, final String password)
             throws InterruptedException {
         
         _created = System.currentTimeMillis();
-        _connection = conn;
+        _interactiveConnection = conn[0];
+        _backgroundConnection = conn[1];
         _alias = alias;
         dbModel = new DatabaseModel(this);
         _model = md;
@@ -100,28 +121,25 @@ public class SessionTreeNode implements ISessionTreeNode {
             
     }
 
-
-    
-    public SQLDatabaseMetaData getMetaData() {
-        
-        if (_metaData == null) {
-            _metaData = _connection.getSQLMetaData();
-        }
-        
-        return _metaData;
-    }
-
-
     public void add(ISessionTreeNode n) {
         ls.add(n);
     }
-
+    
+    
+    
+    /**
+     * Returns an SQLConnection. This connection should only
+     * be used to execute statements in the UI thread.
+     */
+    public SQLConnection getInteractiveConnection() {
+    
+        return _interactiveConnection;
+    }
 
     public void addListener(ISessionTreeClosedListener listener) {
         _listeners.add(listener);
     }
-
-
+    
     public void close() {
 
         // store dictionary
@@ -143,17 +161,32 @@ public class SessionTreeNode implements ISessionTreeNode {
         }
         _model.modelChanged(null);
         try {
-            _connection.close();
+            _interactiveConnection.close();
         } catch (Throwable e) {
-            SQLExplorerPlugin.error("Error closing database _connection ", e);
+            SQLExplorerPlugin.error("Error closing interactive database connection", e);
+        }
+        try {
+            _backgroundConnection.close();
+        } catch (Throwable e) {
+            SQLExplorerPlugin.error("Error closing background database connection", e);
         }
 
     }
-
-
-    public void commit() {
+    
+   
+    
+    public synchronized void commit() {
         try {
-            _connection.commit();
+            
+            if (_connectionNumberQueue.size() == 0 && !_backgroundConnectionInUse) {
+                // nothing is happening, so we can commit immediately
+                _backgroundConnection.commit();
+            } else {
+                // there are still queries in the queue, so we add the commit
+                // request to the end of the queue.
+                _connectionNumberQueue.add(new Integer(COMMIT_REQUEST));
+            }
+            
         } catch (Throwable e) {
             SQLExplorerPlugin.error("Error committing ", e);
         }
@@ -169,7 +202,7 @@ public class SessionTreeNode implements ISessionTreeNode {
     public String getCatalog() {
         String cat = "";
         try {
-            cat = _connection.getCatalog();
+            cat = _interactiveConnection.getCatalog();
         } catch (Throwable e) {
         }
         return cat;
@@ -204,6 +237,14 @@ public class SessionTreeNode implements ISessionTreeNode {
     }
 
 
+    /**
+     * @return time this session was created
+     */
+    public long getCreated() {
+        return _created;
+    }
+
+
     public String getCurrentConnectionPassword() {
         return _password;
     }
@@ -219,6 +260,16 @@ public class SessionTreeNode implements ISessionTreeNode {
     }
 
 
+    public SQLDatabaseMetaData getMetaData() {
+        
+        if (_metaData == null) {
+            _metaData = _interactiveConnection.getSQLMetaData();
+        }
+        
+        return _metaData;
+    }
+
+
     /**
      * @see org.gnu.amaz.ISessionTreeNode#getParent()
      */
@@ -227,38 +278,108 @@ public class SessionTreeNode implements ISessionTreeNode {
     }
 
 
-    public SQLConnection getConnection() {
-        return _connection;
+    /**
+     * Get the connection with queue number 'number'.  This method will
+     * return null until the queue number has been reached and the connection 
+     * is available.
+     */
+    public synchronized SQLConnection getQueuedConnection(Integer number) {
+        
+        if (_backgroundConnectionInUse || number == null) {
+            return null;
+        }
+        
+        Integer currentNumber = (Integer) _connectionNumberQueue.get(0);
+        
+        if (currentNumber.intValue() == number.intValue()) {
+            _backgroundConnectionInUse = true;
+            _logger.debug("Connection " + number + " acquired.");
+            return _backgroundConnection;
+        }
+
+        return null;
+        
+    }
+
+
+    public synchronized Integer getQueuedConnectionNumber() {
+        
+        Integer number = new Integer(_nextConnectionNumber);
+        _connectionNumberQueue.add(number);
+        _nextConnectionNumber++;
+        return number;
+        
+    }
+
+
+
+    public DatabaseNode getRoot() {
+        return dbModel.getRoot();
     }
 
 
     public boolean isAutoCommitMode() {
         boolean result = false;
         try {
-            result = _connection.getAutoCommit();
+            result = _interactiveConnection.getAutoCommit();
         } catch (Throwable e) {
         }
         return result;
     }
 
 
+    /**
+     * Release the currently active connection so we can move on to the next one.
+     */
+    public synchronized void releaseQueuedConnection(Integer number) {
+        
+        if (number == null) {
+            return;
+        }
+        
+
+        if (_connectionNumberQueue.indexOf(number) == 0) {
+            // release current connection
+            _backgroundConnectionInUse = false;
+            _connectionNumberQueue.remove(0);
+            _logger.debug("Connection " + number + " released.");
+            
+            // check for pending commit or rollback requests
+
+            while (_connectionNumberQueue.size() > 0) {
+                int nextNumber = ((Integer) _connectionNumberQueue.get(0)).intValue();
+                try {
+                    if (nextNumber == COMMIT_REQUEST) {
+                        _logger.debug("Committing.");
+                        _connectionNumberQueue.remove(0);
+                        _backgroundConnection.commit();
+                    } else if (nextNumber == ROLLBACK_REQUEST) {
+                        _logger.debug("Rolling back.");
+                        _connectionNumberQueue.remove(0);
+                        _backgroundConnection.rollback();                        
+                    } else if (nextNumber == CATALOG_CHANGE_REQUEST) {
+                        _logger.debug("Changing catalog.");
+                        _connectionNumberQueue.remove(0);
+                        _backgroundConnection.setCatalog(_newCatalog);
+                    } else {
+                        break;
+                    }
+                } catch (Exception e) {
+                    _logger.error("Couldn't perform commit/rollback or catalog change.", e);
+                }
+            }
+            
+        } else {
+            // remove pending queue number
+            _connectionNumberQueue.remove(number);
+            _logger.debug("Connection request " + number + " removed from queue.");
+        }
+     
+    }
+
+
     public void remove(ISessionTreeNode n) {
         ls.remove(n);
-    }
-
-
-    public void rollback() {
-        try {
-            _connection.rollback();
-        } catch (Throwable e) {
-            SQLExplorerPlugin.error("Error rollbacking ", e);
-
-        }
-    }
-
-
-    public void setCatalog(String cat) throws SQLException {
-        _connection.getConnection().setCatalog(cat);
     }
 
 
@@ -268,16 +389,46 @@ public class SessionTreeNode implements ISessionTreeNode {
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
 
+    public synchronized void rollback() {
+        try {
+            
+            if (_connectionNumberQueue.size() == 0 && !_backgroundConnectionInUse) {
+                // nothing is happening, so we can rollback immediately
+                _backgroundConnection.rollback();
+            } else {
+                // there are still queries in the queue, so we add the rollback
+                // request to the end of the queue.
+                _connectionNumberQueue.add(new Integer(ROLLBACK_REQUEST));
+            }
+            
+        } catch (Throwable e) {
+            SQLExplorerPlugin.error("Error rollbacking ", e);
+
+        }
+    }
+
+
+    public synchronized void setCatalog(String cat) throws SQLException {
+        
+        if (_connectionNumberQueue.size() == 0 && !_backgroundConnectionInUse) {
+            // nothing is happening, so we can change immediately
+            _backgroundConnection.setCatalog(cat);
+        } else {
+            // there are still queries in the queue, so we add the rollback
+            // request to the end of the queue.
+            _newCatalog = cat;
+            _connectionNumberQueue.add(new Integer(CATALOG_CHANGE_REQUEST));
+        }
+
+    }
+
+
     public boolean supportsCatalogs() {
         return getRoot().supportsCatalogs();
     }
 
 
-    public DatabaseNode getRoot() {
-        return dbModel.getRoot();
-    }
-
-
+    
     /**
      * Returns connection alias name
      * 
@@ -291,15 +442,6 @@ public class SessionTreeNode implements ISessionTreeNode {
             SQLExplorerPlugin.error("Error getting the alias name ", e);
             return "";
         }
-    }
-
-
-    
-    /**
-     * @return time this session was created
-     */
-    public long getCreated() {
-        return _created;
     }
 
     

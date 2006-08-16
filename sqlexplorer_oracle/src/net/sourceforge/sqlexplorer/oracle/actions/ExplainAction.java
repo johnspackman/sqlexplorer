@@ -31,6 +31,7 @@ import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqleditor.actions.AbstractEditorAction;
 import net.sourceforge.sqlexplorer.util.QueryTokenizer;
+import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -102,7 +103,7 @@ public class ExplainAction extends AbstractEditorAction {
 
         // check if we can run explain plans
         try {
-            Statement st = runNode.getConnection().createStatement();
+            Statement st = runNode.getInteractiveConnection().createStatement();
             boolean createPlanTable = false;
             boolean notFoundTable = true;
             try {
@@ -123,9 +124,17 @@ public class ExplainAction extends AbstractEditorAction {
             }
     
             if (notFoundTable && createPlanTable) {
-                st = runNode.getConnection().createStatement();
+                
+                SQLConnection conn = runNode.getInteractiveConnection(); 
+                st = conn.createStatement();
+                
                 try {
                     st.execute(createPlanTableScript);
+                    
+                    if (!conn.getAutoCommit()) {
+                        conn.commit();
+                    }
+                    
                 } catch (Throwable e) {
                     SQLExplorerPlugin.error("Error creating the plan table", e);
                     MessageDialog.openError(null, "Table not created",

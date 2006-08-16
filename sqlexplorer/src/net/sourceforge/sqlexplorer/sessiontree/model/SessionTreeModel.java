@@ -60,7 +60,7 @@ public class SessionTreeModel implements ISessionTreeNode{
 	 * @param conn
 	 * @param alias
 	 */
-	public SessionTreeNode createSessionTreeNode(SQLConnection conn, ISQLAlias alias,IProgressMonitor monitor, String pswd) throws InterruptedException {
+	public SessionTreeNode createSessionTreeNode(SQLConnection[] conn, ISQLAlias alias,IProgressMonitor monitor, String pswd) throws InterruptedException {
 
 		SessionTreeNode node = null;
 		try{

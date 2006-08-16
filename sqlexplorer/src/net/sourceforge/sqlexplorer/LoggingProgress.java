@@ -27,6 +27,8 @@ import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
@@ -38,7 +40,13 @@ public class LoggingProgress implements IRunnableWithProgress {
 
                try {
                    
-                    conn = _driverMgr.getConnection(driver, alias, user, pswd);
+                   long start = System.currentTimeMillis();
+                    _interActiveConnection = _driverMgr.getConnection(driver, alias, user, pswd);
+                    _logger.debug("# " + (System.currentTimeMillis() - start) + " ms to open interactive connection.");
+                    start = System.currentTimeMillis();
+                    _backgroundConnection = _driverMgr.getConnection(driver, alias, user, pswd);
+                    _logger.debug("# " + (System.currentTimeMillis() - start) + " ms to open background connection.");
+                    
                 } catch (Throwable e) {
                     th = e;
                     error = e.getMessage();
@@ -48,6 +56,7 @@ public class LoggingProgress implements IRunnableWithProgress {
         }
     }
     
+    private static final Log _logger = LogFactory.getLog(LoggingProgress.class);
     
     /**
      * @see org.eclipse.jface.operation.IRunnableWithProgress#run(IProgressMonitor)
@@ -64,7 +73,9 @@ public class LoggingProgress implements IRunnableWithProgress {
 
     String error;
 
-    SQLConnection conn;
+    private SQLConnection _interActiveConnection;
+    
+    private SQLConnection _backgroundConnection;
 
     Throwable th;
 
@@ -96,22 +107,29 @@ public class LoggingProgress implements IRunnableWithProgress {
                     }
                     _isCancelled = true;
                     th = null;
-                    if (conn != null) {
-                        conn.close();
+                    if (_interActiveConnection != null) {
+                        _interActiveConnection.close();
                     }
-                    conn = null;
+                    _interActiveConnection = null;
+                    if (_backgroundConnection != null) {
+                        _backgroundConnection.close();
+                    }
+                    _backgroundConnection = null;
                     
                     break;
                 }
                 
                 if (th != null) {
-                    conn = null;
+                    _interActiveConnection = null;
+                    _backgroundConnection = null;
                     break;
                 }
                 
-                if (conn != null && !myThread.isAlive()) {
+                if (_interActiveConnection != null && _backgroundConnection != null && !myThread.isAlive()) {
                     break;
                 }
+                          
+                Thread.sleep(100);
             }
             
             monitor.done();
@@ -124,8 +142,8 @@ public class LoggingProgress implements IRunnableWithProgress {
     }
 
 
-    public SQLConnection getConn() {
-        return conn;
+    public SQLConnection[] getConnections() {
+        return new SQLConnection[] {_interActiveConnection, _backgroundConnection};
     }
 
 

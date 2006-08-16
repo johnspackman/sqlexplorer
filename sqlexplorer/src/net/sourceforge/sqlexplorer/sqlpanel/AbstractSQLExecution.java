@@ -23,6 +23,7 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -40,17 +41,29 @@ public abstract class AbstractSQLExecution {
 
     private class LocalThread extends Thread {
 
-       
         public void run() {
 
             try {
-                               
-                if (!_isCancelled) {
+
+                while (_connection == null) {
+
+                    if (_isCancelled) {
+                        break;
+                    }
+                    _connection = _session.getQueuedConnection(_connectionNumber);
+
+                    if (_connection == null) {
+                        sleep(100);
+                    }
+                }
+
+                if ((!_isCancelled) && _connection != null) {
                     doExecution();
                 }
+
             } catch (final Exception e) {
 
-                if (!(e instanceof java.sql.SQLException)) {
+                if (!(e instanceof java.sql.SQLException || e instanceof InterruptedException)) {
                     // only log non-sql errors
                     SQLExplorerPlugin.error("Error executing.", e);
                 }
@@ -61,18 +74,27 @@ public abstract class AbstractSQLExecution {
                     public void run() {
 
                         clearCanvas();
-                        MessageDialog.openError(shell, Messages.getString("SQLResultsView.Error.Title"), e.getMessage());
+                        if (!(e instanceof InterruptedException)) {
+                            MessageDialog.openError(shell, Messages.getString("SQLResultsView.Error.Title"),
+                                    e.getMessage());
+                        }
                         if (_parentTab != null) {
                             _parentTab.dispose();
                         }
                     }
                 });
 
+            } finally {
+
+                _session.releaseQueuedConnection(_connectionNumber);
+                _connection = null;
+
             }
         }
     }
-    
-    
+
+    private Integer _connectionNumber;
+
     protected boolean _isCancelled = false;
 
     protected Composite _composite;
@@ -92,8 +114,10 @@ public abstract class AbstractSQLExecution {
     protected SessionTreeNode _session;
 
     protected String _sqlStatement;
-    
-   
+
+    protected SQLConnection _connection;
+
+
     /**
      * Clear progress bar or results.
      */
@@ -102,11 +126,11 @@ public abstract class AbstractSQLExecution {
         if (_parentTab == null || _parentTab.isDisposed()) {
             return;
         }
-        
+
         if (_isCancelled) {
             return;
         }
-        
+
         // restore correct label
         _parentTab.setText((String) _parentTab.getData("tabLabel"));
 
@@ -123,9 +147,6 @@ public abstract class AbstractSQLExecution {
     }
 
 
-
-    
-    
     /**
      * Display progress bar on tab until results are ready.
      */
@@ -167,21 +188,23 @@ public abstract class AbstractSQLExecution {
     }
 
 
-
-
-    protected abstract void doExecution() throws Exception ;
+    /**
+     * Main execution method. This method is called from a background thread.
+     * 
+     * @throws Exception
+     */
+    protected abstract void doExecution() throws Exception;
 
 
     /**
-     * This method will be called right before the background execution is
-     * interrupted and the tab will be disposed. Do any cleanups required in
-     * here.
+     * This method will be called from the UI thread when execution is cancelled
+     * and the tab will be disposed. Do any cleanups required in here.
      */
     protected abstract void doStop() throws Exception;
 
 
     public final String getSqlStatement() {
-    
+
         return _sqlStatement;
     }
 
@@ -205,9 +228,11 @@ public abstract class AbstractSQLExecution {
 
         _progressMessage = progressMessage;
         if (_group != null) {
-            
+
             _resultsView.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+
                 public void run() {
+
                     _group.setText(_progressMessage);
                     _group.redraw();
                 }
@@ -221,6 +246,8 @@ public abstract class AbstractSQLExecution {
      */
     public final void startExecution() {
 
+        _connectionNumber = _session.getQueuedConnectionNumber();
+        
         // start progress bar
         displayProgress();
 
@@ -237,25 +264,22 @@ public abstract class AbstractSQLExecution {
     public final void stop() {
 
         try {
-                    
+
             _isCancelled = true;
 
             doStop();
-                        
+
         } catch (final Exception e) {
-                    
+
             final Shell shell = _resultsView.getSite().getShell();
             shell.getDisplay().asyncExec(new Runnable() {
 
                 public void run() {
+
                     MessageDialog.openError(shell, Messages.getString("SQLResultsView.Error.Title"), e.getMessage());
                 }
             });
 
-        }
-        
-        if (_executionThread != null && _executionThread.isAlive()) {
-            _executionThread.interrupt();
         }
 
     }

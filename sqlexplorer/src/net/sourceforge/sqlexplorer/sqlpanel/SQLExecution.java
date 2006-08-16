@@ -114,8 +114,8 @@ public class SQLExecution extends AbstractSQLExecution {
         final long startTime = System.currentTimeMillis();
 
         try {
-
-            _stmt = _session.getConnection().createStatement();
+            
+            _stmt = _connection.createStatement();
             
             setProgressMessage(Messages.getString("SQLResultsView.Executing"));
             

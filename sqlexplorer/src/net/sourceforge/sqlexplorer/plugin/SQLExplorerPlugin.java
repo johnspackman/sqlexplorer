@@ -158,15 +158,18 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
             if (alias.isConnectAtStartup()) {
                 try {
                     ISQLDriver dv = driverModel.getDriver(alias.getDriverIdentifier());
-                    final SQLConnection conn = _driverMgr.getConnection(dv, alias, alias.getUserName(),
+                    SQLConnection iConn = _driverMgr.getConnection(dv, alias, alias.getUserName(),
+                            alias.getPassword());
+                    SQLConnection bgConn = _driverMgr.getConnection(dv, alias, alias.getUserName(),
                             alias.getPassword());
 
+                    final SQLConnection[] conns = new SQLConnection[] {iConn, bgConn};
                     Display.getDefault().asyncExec(new Runnable() {
 
                         public void run() {
 
                             try {
-                                stm.createSessionTreeNode(conn, alias, null, alias.getPassword());
+                                stm.createSessionTreeNode(conns, alias, null, alias.getPassword());
                             } catch (InterruptedException e) {
                                 throw new RuntimeException();
                             }
