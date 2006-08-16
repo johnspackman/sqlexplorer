@@ -19,6 +19,8 @@
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 
 import net.sourceforge.sqlexplorer.ImageUtil;
@@ -73,6 +75,19 @@ public abstract class AbstractNode implements INode {
 
         if (!_childrenLoaded) {
             load();
+            Collections.sort(_children, new Comparator() {
+
+                public int compare(Object arg0, Object arg1) {
+
+                    if (arg0 == null || arg1 == null) {
+                        return 0;
+                    }
+                    INode node0 = (INode) arg0;
+                    INode node1 = (INode) arg1;
+                    return node0.getName().compareTo(node1.getName());
+                }
+                
+            });
         }
 
         if (_children.size() == 0) {
