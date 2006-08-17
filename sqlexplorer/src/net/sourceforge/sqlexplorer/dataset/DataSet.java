@@ -41,6 +41,8 @@ public class DataSet {
     public static final int TYPE_DOUBLE = 1;
 
     public static final int TYPE_INTEGER = 2;
+    
+    public static final int TYPE_LONG = 6;
 
     public static final int TYPE_STRING = 0;
 
@@ -212,7 +214,6 @@ public class DataSet {
                 case Types.INTEGER:
                 case Types.SMALLINT:
                 case Types.TINYINT:
-                case Types.BIGINT:
                     _columnTypes[i] = TYPE_INTEGER;
                     break;
 
@@ -233,6 +234,10 @@ public class DataSet {
                     _columnTypes[i] = TYPE_TIME;
                     break;
 
+                case Types.BIGINT:
+                    _columnTypes[i] = TYPE_LONG;
+                    break;
+                    
                 default:
                     _columnTypes[i] = TYPE_STRING;
             }
@@ -265,6 +270,9 @@ public class DataSet {
                         break;
                     case TYPE_TIME:
                         row.setValue(i, resultSet.getTime(relevantIndeces[i]));
+                        break;
+                    case TYPE_LONG:
+                        row.setValue(i, new Long(resultSet.getLong(relevantIndeces[i])));
                         break;
                     default:
                         row.setValue(i, resultSet.getString(relevantIndeces[i]));

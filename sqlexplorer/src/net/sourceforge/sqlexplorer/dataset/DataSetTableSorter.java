@@ -138,6 +138,7 @@ public class DataSetTableSorter implements Comparator {
             	result = ((Double)o1).compareTo((Double)o2);
                 break;
 
+            case DataSet.TYPE_LONG:                
             case DataSet.TYPE_INTEGER:
             	result = ((Long)o1).compareTo((Long)o2);
                 break;               
