@@ -20,6 +20,7 @@ package net.sourceforge.sqlexplorer.dataset;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.actions.AbstractDataSetTableContextAction;
+import net.sourceforge.sqlexplorer.dataset.actions.CopyTableAction;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -46,6 +47,8 @@ public class DataSetTableActionGroup extends ActionGroup {
 
     private TableCursor _cursor;
     
+    private CopyTableAction _copyTableAction;
+    
     /**
      * Construct a new action group for a given Table
      * 
@@ -55,6 +58,10 @@ public class DataSetTableActionGroup extends ActionGroup {
     public DataSetTableActionGroup(Table table, TableCursor cursor) {
         _table = table;
         _cursor = cursor;
+        
+        _copyTableAction = new CopyTableAction();
+        _copyTableAction.setTable(_table);
+        _copyTableAction.setTableCursor(_cursor);
     }
 
 
@@ -114,7 +121,7 @@ public class DataSetTableActionGroup extends ActionGroup {
                 try {
                     
                     String group = ces[j].getAttribute("group");
-                    if (group != null || group.equalsIgnoreCase("export")) {
+                    if (group != null && group.equalsIgnoreCase("export")) {
                     
                         // check if the action thinks it is suitable..
                         AbstractDataSetTableContextAction action = (AbstractDataSetTableContextAction) ces[j].createExecutableExtension("class");
@@ -133,6 +140,8 @@ public class DataSetTableActionGroup extends ActionGroup {
         
         menu.add(subMenu);
         
+        menu.add(new Separator());
+        menu.add(_copyTableAction);
     }
 
 
