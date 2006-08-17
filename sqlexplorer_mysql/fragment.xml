@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<fragment>
+   <extension
+         point="net.sourceforge.sqlexplorer.nodeDetailTab">
+      <detailtab
+            class="net.sourceforge.sqlexplorer.mysql.tabs.ProcessTab"
+            database-product-name="MySQL*"
+            id="net.sourceforge.sqlexplorer.mysql.processTab"
+            name="Process List"
+            node-type="database"/>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.mysql.tabs.OpenTablesTab"
+            database-product-name="MySQL*"
+            id="net.sourceforge.sqlexplorer.mysql.openTablesTab"
+            name="Open Tables"
+            node-type="catalog"/>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.mysql.tabs.StatusTab"
+            database-product-name="MySQL*"
+            id="net.sourceforge.sqlexplorer.mysql.statusTab"
+            name="Database Status"
+            node-type="database"/>            
+   </extension>
+   <extension
+         point="net.sourceforge.sqlexplorer.nodeContextAction">
+      <action
+            class="net.sourceforge.sqlexplorer.mysql.actions.CreateTableScriptAction"
+            database-product-name="MySQL*"
+            icon="icons/create_table.gif"
+            id="net.sourceforge.sqlexplorer.mysql.createTableScript"
+            name="Create Table Script"
+            node-type="table"/>
+   </extension>
+
+</fragment>
