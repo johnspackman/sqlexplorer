@@ -21,7 +21,6 @@ package net.sourceforge.sqlexplorer.sqleditor.actions;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.resource.ImageDescriptor;
 
 
 /**
@@ -32,9 +31,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
  *
  */
 public abstract class AbstractEditorAction extends Action {
-
-    public abstract ImageDescriptor getImageDescriptor();
-    
+   
     public abstract String getText();
     
     public abstract String getToolTipText();

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.URLUtil;
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.db2.actions.explain.ExplainExecution;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
@@ -35,7 +35,6 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
  * @author Davy Vanherbergen
@@ -43,27 +42,13 @@ import org.eclipse.jface.resource.ImageDescriptor;
  */
 public class ExplainAction extends AbstractEditorAction {
 
-    private static ImageDescriptor _image = ImageDescriptor.createFromURL(URLUtil.getFragmentResourceURL("net.sourceforge.sqlexplorer.db2", "icons/explain.gif"));
-
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see net.sourceforge.sqlexplorer.sqleditor.actions.AbstractEditorAction#getImageDescriptor()
-     */
-    public ImageDescriptor getImageDescriptor() {
-        
-        return _image;
-    }
-
-
     /*
      * (non-Javadoc)
      * 
      * @see net.sourceforge.sqlexplorer.sqleditor.actions.AbstractEditorAction#getText()
      */
     public String getText() {
-        return "Show DB2 Explain Plan";
+        return Messages.getString("db2.editor.actions.explain");
     }
 
 
@@ -111,8 +96,8 @@ public class ExplainAction extends AbstractEditorAction {
                 notFoundTable = false;
                 rs.close();
             } catch (Throwable e) {
-                createPlanTable = MessageDialog.openQuestion(null, "Plan Table not found",
-                        "Plan table not found. Do you want to create a new one?");
+                createPlanTable = MessageDialog.openQuestion(null, Messages.getString("db2.editor.actions.explain.notFound.Title"),
+                        Messages.getString("db2.editor.actions.explain.notFound"));
             } finally {
                 try {
                     st.close();
@@ -141,8 +126,8 @@ public class ExplainAction extends AbstractEditorAction {
                     
                 } catch (Throwable e) {
                     SQLExplorerPlugin.error("Error creating the plan table", e);
-                    MessageDialog.openError(null, "Table not created",
-                            "Error creating the plan table. It's impossible do create the explain plan.");
+                    MessageDialog.openError(null, Messages.getString("db2.editor.actions.explain.createError.Title"),
+                            Messages.getString("db2.editor.actions.explain.createError"));
                     try {
                         st.close();
                     } catch (Throwable e1) {

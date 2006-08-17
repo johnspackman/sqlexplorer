@@ -7,6 +7,7 @@
       <action
             class="net.sourceforge.sqlexplorer.oracle.actions.ExplainAction"
             database-product-name="Oracle*"
+            icon="icons/explain.gif"
             id="net.sourceforge.sqlexplorer.oracle.actions.explainplan"
             name="Explain Plan"/>
    </extension>

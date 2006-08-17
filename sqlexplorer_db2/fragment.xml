@@ -7,8 +7,9 @@
       <action
             class="net.sourceforge.sqlexplorer.db2.actions.ExplainAction"
             database-product-name="DB2*"
+            icon="icons/explain.gif"
             id="net.sourceforge.sqlexplorer.db2.actions.explainplan"
-            name="sqlexplorer_db2.action1"/>
+            name="net.sourceforge.sqlexplorer.db2.explainaction"/>
    </extension>
 
 </fragment>

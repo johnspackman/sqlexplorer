@@ -3,6 +3,7 @@ package net.sourceforge.sqlexplorer.sqleditor.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
@@ -199,7 +200,9 @@ public class SQLEditorToolBar {
                     boolean isValidProduct = false;
 
                     String[] validProducts = ces[j].getAttribute("database-product-name").split(",");
-
+                    String imagePath = ces[j].getAttribute("icon");
+                    String id = ces[j].getAttribute("id");
+                    
                     // check if action is valid for current database product
                     for (int k = 0; k < validProducts.length; k++) {
 
@@ -228,6 +231,12 @@ public class SQLEditorToolBar {
 
                     AbstractEditorAction action = (AbstractEditorAction) ces[j].createExecutableExtension("class");
                     action.setEditor(_editor);
+                    
+                    String fragmentId = id.substring(0, id.indexOf('.', 28));
+                    if (imagePath != null && imagePath.trim().length() != 0) {
+                        action.setImageDescriptor(ImageUtil.getFragmentDescriptor(fragmentId, imagePath));
+                    }
+                    
                     actions.add(action);
 
                 } catch (Throwable ex) {
