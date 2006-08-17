@@ -48,8 +48,6 @@ public class RowIdsTab extends AbstractDataSetTab {
         if (node instanceof TableNode) {
             TableNode tableNode = (TableNode) node;
             
-            setStatusMessage(Messages.getString("DatabaseDetailView.Tab.RowIds.status") + " " + tableNode.getQualifiedName());
-            
             ResultSet resultSet = node.getSession().getMetaData().getBestRowIdentifier(tableNode.getTableInfo());   
             DataSet dataSet = new DataSet(null, resultSet, null);
             
@@ -60,4 +58,7 @@ public class RowIdsTab extends AbstractDataSetTab {
         return null;
     }
     
+    public String getStatusMessage() {
+        return Messages.getString("DatabaseDetailView.Tab.RowIds.status") + " " + getNode().getQualifiedName();
+    }
 }

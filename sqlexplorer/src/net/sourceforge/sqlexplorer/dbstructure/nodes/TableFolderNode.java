@@ -30,7 +30,7 @@ import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
  * @author Davy Vanherbergen
  * 
  */
-public class TableTypeNode extends AbstractNode {
+public class TableFolderNode extends AbstractNode {
 
     /** all catalog/schema tables */
     private ITableInfo[] _allTables;
@@ -43,7 +43,7 @@ public class TableTypeNode extends AbstractNode {
      * @param name of this node
      * @param sessionNode session for this node
      */
-    public TableTypeNode(INode parent, String name, SessionTreeNode sessionNode, ITableInfo[] tables) {
+    public TableFolderNode(INode parent, String name, SessionTreeNode sessionNode, ITableInfo[] tables) {
         
         _allTables = tables;
         _sessionNode = sessionNode;
@@ -110,11 +110,11 @@ public class TableTypeNode extends AbstractNode {
     }
 
     /**
-     * Returns the type for this node.  The type is always suffixed with "_GROUP".   
+     * Returns the type for this node.  The type is always suffixed with "_FOLDER".   
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
      */
     public String getType() {
-        return _name + "_TYPE";
+        return _name + "_FOLDER";
     }
     
 

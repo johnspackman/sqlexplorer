@@ -61,6 +61,10 @@ public class ImageUtil {
 
         try {
 
+            if (propertyName == null) {
+                return null;
+            }
+            
             // get image path
             String path = Messages.getString(propertyName);
 
@@ -81,37 +85,24 @@ public class ImageUtil {
     }
 
 
-    /**
-     * Create an image descriptor for the given image property in the
-     * text.properties file.
-     * 
-     * @param bundleName e.g. net.sourceforge.sqlexplorer.oracle.text
-     * @param propertyName
-     * @return
-     */
-    public static ImageDescriptor getDescriptor(String bundleName, String propertyName) {
-
+    public static ImageDescriptor getFragmentDescriptor(String fragmentId, String path) {
+        
         try {
 
-            // get image path
-            String path = Messages.getString(bundleName, propertyName);
-
             if (path == null || path.trim().length() == 0) {
-                SQLExplorerPlugin.error("Missing image path for " + propertyName, null);
                 return null;
             }
-
+            
             // create image
-            URL url = URLUtil.getResourceURL(path);
+            URL url = URLUtil.getFragmentResourceURL(fragmentId, path);
             return ImageDescriptor.createFromURL(url);
 
         } catch (Exception e) {
-            SQLExplorerPlugin.error("Couldn't create image for " + propertyName, e);
+            SQLExplorerPlugin.error("Couldn't create image for " + fragmentId + ": " + path, e);
             return null;
         }
-
+        
     }
-
 
     /**
      * Get an image object from cache or create one if it doesn't exist yet.

@@ -50,9 +50,7 @@ public class PreviewTab extends AbstractDataSetTab {
         
         if (node instanceof TableNode) {
             TableNode tableNode = (TableNode) node;
-            
-            setStatusMessage(Messages.getString("DatabaseDetailView.Tab.Preview.status") + " " + tableNode.getQualifiedName());
-            
+
             int maxResults = SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(IConstants.PRE_ROW_COUNT);
             if (maxResults == 0) {
                 maxResults = 50;
@@ -74,4 +72,8 @@ public class PreviewTab extends AbstractDataSetTab {
         return null;
     }
     
+    
+    public String getStatusMessage() {
+        return Messages.getString("DatabaseDetailView.Tab.Preview.status") + " " + getNode().getQualifiedName();
+    }
 }

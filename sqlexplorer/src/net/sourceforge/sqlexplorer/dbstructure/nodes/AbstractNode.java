@@ -52,7 +52,7 @@ public abstract class AbstractNode implements INode {
 
     private boolean _childrenLoaded = false;
 
-    protected String _imageKey;
+    protected String _imageKey = "Images.DefaultNodeImage";
 
     /*
      * (non-Javadoc)
@@ -82,9 +82,14 @@ public abstract class AbstractNode implements INode {
                     if (arg0 == null || arg1 == null) {
                         return 0;
                     }
-                    INode node0 = (INode) arg0;
-                    INode node1 = (INode) arg1;
-                    return node0.getName().compareTo(node1.getName());
+                    String name0 = ((INode) arg0).getName();
+                    String name1 = ((INode) arg1).getName();
+                    
+                    if (name0 == null || name1 == null) {
+                        return 0;
+                    }
+                    
+                    return name0.compareTo(name1);
                 }
                 
             });
@@ -104,6 +109,9 @@ public abstract class AbstractNode implements INode {
      */
     public final Image getImage() {
 
+        if (_imageKey == null) {
+            return null;
+        }
         return ImageUtil.getImage(_imageKey);
     }
 
@@ -113,7 +121,7 @@ public abstract class AbstractNode implements INode {
      * structure outline for this node.
      */
     public String getLabelText() {
-        return _name;
+        return getName();
     }
 
 
@@ -170,7 +178,7 @@ public abstract class AbstractNode implements INode {
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        return _name;
+        return getName();
     }
 
 
@@ -273,6 +281,9 @@ public abstract class AbstractNode implements INode {
      * @return simple name for this node.
      */
     public final String getName() {
+        if (_name == null) {
+            return "<null>";
+        }
         return _name;
     }
     
@@ -288,7 +299,7 @@ public abstract class AbstractNode implements INode {
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
      */
     public String getQualifiedName() {        
-        return _name;
+        return getName();
     }
     
     

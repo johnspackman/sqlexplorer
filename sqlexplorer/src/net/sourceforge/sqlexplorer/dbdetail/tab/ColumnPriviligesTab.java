@@ -47,9 +47,7 @@ public class ColumnPriviligesTab extends AbstractDataSetTab {
         
         if (node instanceof TableNode) {
             TableNode tableNode = (TableNode) node;
-            
-            setStatusMessage(Messages.getString("DatabaseDetailView.Tab.ColumnPriviliges.status") + " " + tableNode.getQualifiedName());
-            
+
             ResultSet resultSet = node.getSession().getMetaData().getColumnPrivileges(tableNode.getTableInfo());   
             DataSet dataSet = new DataSet(null, resultSet, new int[] {4,5,6,7,8});
             
@@ -59,5 +57,8 @@ public class ColumnPriviligesTab extends AbstractDataSetTab {
         
         return null;
     }
-    
+ 
+    public String getStatusMessage() {
+        return Messages.getString("DatabaseDetailView.Tab.ColumnPriviliges.status") + " " + getNode().getQualifiedName();
+    }
 }

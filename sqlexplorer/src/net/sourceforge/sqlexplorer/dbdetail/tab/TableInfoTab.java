@@ -47,9 +47,6 @@ public class TableInfoTab extends AbstractDataSetTab {
         if (node instanceof TableNode) {
             TableNode tableNode = (TableNode) node;
             
-            
-            setStatusMessage(Messages.getString("DatabaseDetailView.Tab.Info.status") + " " + tableNode.getQualifiedName());
-            
             ITableInfo tableInfo = tableNode.getTableInfo();
                        
             String[] header = new String[2];
@@ -83,4 +80,8 @@ public class TableInfoTab extends AbstractDataSetTab {
         return null;
     }
     
+    
+    public String getStatusMessage() {
+        return Messages.getString("DatabaseDetailView.Tab.Info.status") + " " + getNode().getQualifiedName();
+    }
 }

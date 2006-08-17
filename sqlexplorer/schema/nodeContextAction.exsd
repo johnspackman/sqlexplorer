@@ -17,21 +17,21 @@
          </documentation>
       </annotation>
       <complexType>
-         <attribute name="name" type="string" use="required" value="myAction">
+         <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
                   Name of the extension action.
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="id" type="string" use="required" value="myActionId">
+         <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
                   Identifier of the extension action.
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="class" type="string" use="required" value="">
+         <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
                   A fully qualified name of a class which extends &lt;samp&gt;net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction&lt;/samp&gt;
@@ -41,14 +41,14 @@
                </appInfo>
             </annotation>
          </attribute>
-         <attribute name="database-product-name" type="string" use="required" value="*">
+         <attribute name="database-product-name" type="string" use="required">
             <annotation>
                <documentation>
                   Name of database for which this action is valid as seen in the Database Product Name property in the Connection Info view.  &apos;*&apos; can be used as a wildcard.  Use a comma seperated list to specify multiple databases.
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="node-type" type="string" use="required" value="table">
+         <attribute name="node-type" type="string" use="required">
             <annotation>
                <documentation>
                   Target node type for this action.  Valid target types include:&lt;br&gt;
@@ -59,6 +59,16 @@
 &lt;samp&gt;table&lt;/samp&gt; - menu will be available for table nodes&lt;br&gt;
 Use a comma seperated list to specifiy multiple types.
                </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="icon" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="resource"/>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>

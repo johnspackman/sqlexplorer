@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -122,15 +123,17 @@ public class DBTreeActionGroup extends ActionGroup {
             IExtension e = extensions[i];
 
             IConfigurationElement[] ces = e.getConfigurationElements();
-
+            
             for (int j = 0; j < ces.length; j++) {
                 try {
                     
                     boolean isValidProduct = false;
                     boolean isValidNodeType = false;
                     
+                    String id = ces[j].getAttribute("id");
                     String[] validProducts = ces[j].getAttribute("database-product-name").split(",");
                     String[] validNodeTypes = ces[j].getAttribute("node-type").split(",");
+                    String imagePath = ces[j].getAttribute("icon");
                     
                     // check if action is valid for current database product
                     for (int k = 0; k < validProducts.length; k++) {
@@ -187,7 +190,13 @@ public class DBTreeActionGroup extends ActionGroup {
                     // check if the action thinks it is suitable..
                     AbstractDBTreeContextAction action = (AbstractDBTreeContextAction) ces[j].createExecutableExtension("class");
                     action.setSelectedNodes(nodes);
-                    action.setTreeViewer(_treeViewer);                    
+                    action.setTreeViewer(_treeViewer);             
+                    
+                    String fragmentId = id.substring(0, id.indexOf('.', 28));
+                    
+                    if (imagePath != null && imagePath.trim().length() != 0) {
+                        action.setImageDescriptor(ImageUtil.getFragmentDescriptor(fragmentId, imagePath));
+                    }
                     
                     if (action.isAvailable()) {
                         actions.add(action);

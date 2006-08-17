@@ -161,7 +161,7 @@ public class CatalogNode extends AbstractNode {
                 if (childNode != null) {
                     addChildNode(childNode);
                 } else {
-                    addChildNode(new TableTypeNode(this, tableTypes[i], _sessionNode, tables));    
+                    addChildNode(new TableFolderNode(this, tableTypes[i], _sessionNode, tables));    
                 }
             }
             

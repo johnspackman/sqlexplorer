@@ -22,35 +22,61 @@ package net.sourceforge.sqlexplorer;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+
+import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
+
 /**
  * This class manages the string bundle
  */
 public class Messages {
 
-    private static final String BUNDLE_NAME = "net.sourceforge.sqlexplorer.text";
+    private static final String BUNDLE_NAME = ".text";
 
-    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
-
-
+    private static ResourceBundle[] resources = null;
+    
     private Messages() {
     }
 
 
     public static String getString(String key) {
-        try {
-            return RESOURCE_BUNDLE.getString(key);
-        } catch (MissingResourceException e) {
-            return '!' + key + '!';
+        
+        if (resources == null) {
+            
+            // initialize resources
+            
+            Bundle mainPlugin = SQLExplorerPlugin.getDefault().getBundle();
+            Bundle[] fragments = Platform.getFragments(mainPlugin);
+            
+            if (fragments == null) {
+                fragments = new Bundle[0];
+            }
+            
+            resources = new ResourceBundle[fragments.length + 1];
+            
+            resources[0] = ResourceBundle.getBundle(mainPlugin.getSymbolicName() + BUNDLE_NAME);
+            
+            for (int i = 0; i < fragments.length; i++) {            
+                try {
+                    resources[i + 1] = ResourceBundle.getBundle(fragments[i].getSymbolicName() + BUNDLE_NAME);
+                } catch (Exception e) {
+                    SQLExplorerPlugin.error("No text.properties found for: " + fragments[i].getBundleId(), e);
+                }
+            }
         }
+        
+        for (int i = 0; i < resources.length; i++) {
+            
+            try {
+                return resources[i].getString(key);
+            } catch (MissingResourceException e) {
+                // noop
+            }            
+        }
+        
+        return '!' + key + '!';
     }
     
     
-    public static String getString(String bundleName, String key) {
-        try {
-            ResourceBundle bundle = ResourceBundle.getBundle(bundleName);
-            return bundle.getString(key);
-        } catch (MissingResourceException e) {
-            return '!' + key + '!';
-        }
-    }
 }

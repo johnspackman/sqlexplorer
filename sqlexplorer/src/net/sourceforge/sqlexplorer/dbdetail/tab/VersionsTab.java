@@ -48,8 +48,6 @@ public class VersionsTab extends AbstractDataSetTab {
         if (node instanceof TableNode) {
             TableNode tableNode = (TableNode) node;
             
-            setStatusMessage(Messages.getString("DatabaseDetailView.Tab.Versions.status") + " " + tableNode.getQualifiedName());
-            
             ResultSet resultSet = node.getSession().getMetaData().getVersionColumns(tableNode.getTableInfo());   
             DataSet dataSet = new DataSet(null, resultSet, null);
             
@@ -60,4 +58,8 @@ public class VersionsTab extends AbstractDataSetTab {
         return null;
     }
     
+    
+    public String getStatusMessage() {
+        return Messages.getString("DatabaseDetailView.Tab.Versions.status") + " " + getNode().getQualifiedName();
+    }
 }

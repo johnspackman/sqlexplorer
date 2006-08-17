@@ -47,9 +47,7 @@ public class PrimaryKeysTab extends AbstractDataSetTab {
         
         if (node instanceof TableNode) {
             TableNode tableNode = (TableNode) node;
-            
-            setStatusMessage(Messages.getString("DatabaseDetailView.Tab.ColumnInfo.status") + " " + tableNode.getQualifiedName());
-            
+
             ResultSet resultSet = node.getSession().getMetaData().getPrimaryKeys(tableNode.getTableInfo());   
             DataSet dataSet = new DataSet(null, resultSet, new int[] {4,5,6});
             
@@ -60,4 +58,7 @@ public class PrimaryKeysTab extends AbstractDataSetTab {
         return null;
     }
     
+    public String getStatusMessage() {
+        return Messages.getString("DatabaseDetailView.Tab.ColumnInfo.status") + " " + getNode().getQualifiedName();
+    }
 }

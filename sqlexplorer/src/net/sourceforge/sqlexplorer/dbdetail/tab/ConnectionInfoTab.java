@@ -35,7 +35,10 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
         return Messages.getString("DatabaseDetailView.Tab.ConnectionInfo");
     }
 
-
+    public String getStatusMessage() {
+        return Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.status") + " " + getNode().getSession().toString();
+    }
+    
     public DataSet getDataSet() throws Exception {
 
         INode node = getNode();
@@ -43,8 +46,6 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
         if (node == null) {
             return null;
         }
-
-        setStatusMessage(Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.status") + " " + node.getSession().toString());
 
         SQLDatabaseMetaData sqlMetaData = node.getSession().getMetaData();
         DatabaseMetaData jdbcMetaData = sqlMetaData.getJDBCMetaData();

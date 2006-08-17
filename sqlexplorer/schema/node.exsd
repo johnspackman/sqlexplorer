@@ -132,8 +132,8 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         Even though the table-type needs to match the database specific table types liek &apos;TABLE&apos;, &apos;VIEW&apos;, etc.. the node itself should always return type + &quot;_TYPE&quot; in the getType() method.
-For example, a custom view node would be defined with table-type = VIEW and in the node itself, the method getType() will return &quot;VIEW_TYPE&quot;.  This is to allow extension actions to find the correct node to act upon.
+         Even though the table-type needs to match the database specific table types like &apos;TABLE&apos;, &apos;VIEW&apos;, etc.. the node itself should always return type + &quot;_FOLDER&quot; in the getType() method.
+For example, a custom view node would be defined with table-type = VIEW and in the node itself, the method getType() will return &quot;VIEW_FOLDER&quot;.  This is to allow extension actions to find the correct node to act upon.
       </documentation>
    </annotation>
 

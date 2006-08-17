@@ -47,9 +47,7 @@ public class ImportedKeysTab extends AbstractDataSetTab {
         
         if (node instanceof TableNode) {
             TableNode tableNode = (TableNode) node;
-            
-            setStatusMessage(Messages.getString("DatabaseDetailView.Tab.ImportedKeys.status") + " " + tableNode.getQualifiedName());
-            
+
             ResultSet resultSet = node.getSession().getMetaData().getImportedKeys(tableNode.getTableInfo());   
             DataSet dataSet = new DataSet(null, resultSet, new int[] {3,4,8,9,10,11,12,13,14});
             
@@ -60,4 +58,7 @@ public class ImportedKeysTab extends AbstractDataSetTab {
         return null;
     }
     
+    public String getStatusMessage() {
+        return Messages.getString("DatabaseDetailView.Tab.ImportedKeys.status") + " " + getNode().getQualifiedName();
+    }
 }

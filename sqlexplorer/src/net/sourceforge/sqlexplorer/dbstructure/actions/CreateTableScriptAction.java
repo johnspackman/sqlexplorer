@@ -179,7 +179,7 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
      */
     public boolean isAvailable() {
 
-        if (_selectedNodes.length == 1 && _selectedNodes[0].getType().equalsIgnoreCase("table")) {
+        if (_selectedNodes.length != 0) {
             return true;
         }
         return false;

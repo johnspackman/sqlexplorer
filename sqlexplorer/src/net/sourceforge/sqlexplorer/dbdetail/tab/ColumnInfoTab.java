@@ -48,8 +48,6 @@ public class ColumnInfoTab extends AbstractDataSetTab {
         if (node instanceof TableNode) {
             TableNode tableNode = (TableNode) node;
             
-            setStatusMessage(Messages.getString("DatabaseDetailView.Tab.ColumnInfo.status") + " " + tableNode.getQualifiedName());
-            
             ResultSet resultSet = node.getSession().getMetaData().getColumns(tableNode.getTableInfo());
             DataSet dataSet = new DataSet(null, resultSet, new int[] {4,5,6,7,9,10,11,12,13,14,15,16,17,18});
             
@@ -58,6 +56,10 @@ public class ColumnInfoTab extends AbstractDataSetTab {
         }
         
         return null;
+    }
+
+    public String getStatusMessage() {
+        return Messages.getString("DatabaseDetailView.Tab.ColumnInfo.status") + " " + getNode().getQualifiedName();
     }
     
 }

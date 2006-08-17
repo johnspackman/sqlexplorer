@@ -29,7 +29,7 @@ import java.util.TreeSet;
 import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.TableTypeNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.TableFolderNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 
@@ -343,7 +343,7 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
                     for (int j = 0; j < ls.size(); j++) {
                         TableNode tbNode = (TableNode) ls.get(j);
                         Image tmpImage = null;
-                        TableTypeNode totn = (TableTypeNode) tbNode.getParent();
+                        TableFolderNode totn = (TableFolderNode) tbNode.getParent();
 
                         INode catSchema = (INode) totn.getParent();
                         if (catSchema == node) {

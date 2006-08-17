@@ -17,9 +17,7 @@ import org.eclipse.swt.widgets.Label;
 public abstract class AbstractDataSetTab extends AbstractTab {
    
     private DataSet _dataSet;
-    
-    private String _statusMessage;
-    
+      
     protected static final Log _logger = LogFactory.getLog(AbstractDataSetTab.class);
     
     private Composite _composite;    
@@ -99,19 +97,9 @@ public abstract class AbstractDataSetTab extends AbstractTab {
         _composite.redraw();
     }
 
-    
+       
     /**
-     * Set status message.
-     * @param message String
+     * Implement this method to add a status message on the bottom of the dataset tab.
      */
-    public final void setStatusMessage(String message) {
-        _statusMessage = message;
-    }
-    
-    /* (non-Javadoc)
-     * @see net.sourceforge.sqlexplorer.dbdetail.IDetailTab#getStatusMessage()
-     */
-    public final String getStatusMessage() {
-        return _statusMessage;
-    }
+    public abstract String getStatusMessage();
 }
