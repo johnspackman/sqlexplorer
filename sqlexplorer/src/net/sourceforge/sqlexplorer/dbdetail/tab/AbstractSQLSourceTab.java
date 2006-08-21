@@ -1,4 +1,7 @@
-package net.sourceforge.sqlexplorer.dbstructure.nodes;
+/**
+ * 
+ */
+package net.sourceforge.sqlexplorer.dbdetail.tab;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,12 +11,22 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 
-public abstract class AbstractSQLFolderNode extends AbstractFolderNode {
+/**
+ * @author k709335
+ *
+ */
+public abstract class AbstractSQLSourceTab extends AbstractSourceTab {
+
+    public abstract String getSQL();
+    
+    public abstract Object[] getSQLParameters();
 
 
-    public final void loadChildren() {
-
-        SQLConnection connection = getSession().getInteractiveConnection();
+    public String getSource() {
+        
+        String source = null;
+        
+        SQLConnection connection = getNode().getSession().getInteractiveConnection();
         ResultSet rs = null;
         Statement stmt = null;
         PreparedStatement pStmt = null;
@@ -47,20 +60,17 @@ public abstract class AbstractSQLFolderNode extends AbstractFolderNode {
                 rs = pStmt.executeQuery();
             }
         
-            
+            source = "";
             while (rs.next()) {
                 
-                String name = rs.getString(1);
-                ObjectNode node = new ObjectNode(name, getChildType(), this, _image);
-                
-                addChildNode(node);
+                source = source + rs.getString(1);
             }
             
             rs.close();
             
         } catch (Exception e) {
             
-            SQLExplorerPlugin.error("Couldn't load children for: " + getName(), e);
+            SQLExplorerPlugin.error("Couldn't load source for: " + getNode().getName(), e);
             
         } finally {
             
@@ -77,17 +87,9 @@ public abstract class AbstractSQLFolderNode extends AbstractFolderNode {
                 } catch (Exception e) {
                     SQLExplorerPlugin.error("Error closing statement", e);
                 }
-            }            
+            }         
         }
-        
+        return source;
     }
-
-    public abstract String getChildType();
-    
-    public abstract Object[] getSQLParameters();
-    
-    public abstract String getSQL();
-    
-    public abstract String getName();
     
 }

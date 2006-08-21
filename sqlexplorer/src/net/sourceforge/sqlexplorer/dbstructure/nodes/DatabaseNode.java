@@ -178,10 +178,12 @@ public class DatabaseNode extends AbstractNode {
                             continue;
                         }
                         
+                        String type = ces[j].getAttribute("table-type").trim();
                         
                         AbstractNode childNode = (AbstractNode) ces[j].createExecutableExtension("class");                        
                         childNode.setParent(this);
                         childNode.setSession(_sessionNode);
+                        childNode.setType(type);
                         
                         addChildNode(childNode);
                         

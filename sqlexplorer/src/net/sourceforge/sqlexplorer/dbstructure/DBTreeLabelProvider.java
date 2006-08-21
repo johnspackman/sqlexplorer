@@ -36,6 +36,8 @@ public class DBTreeLabelProvider extends LabelProvider {
     private Image _defaultParentNodeImage = ImageUtil.getImage("Images.DefaultParentNodeIcon");
 
 
+    
+    
     public void dispose() {
 
         super.dispose();
@@ -54,7 +56,13 @@ public class DBTreeLabelProvider extends LabelProvider {
     public Image getImage(Object element) {
 
         INode node = (INode) element;
-
+   
+        // return expanded image if node is expanded and we have an image
+        if (node.isExpanded() && node.getExpandedImage() != null 
+                && node.getChildNodes() != null && node.getChildNodes().length != 0) {
+            return node.getExpandedImage();
+        }
+        
         // return custom image
         if (node.getImage() != null) {
             return node.getImage();

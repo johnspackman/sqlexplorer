@@ -49,6 +49,17 @@ public interface INode {
     public Image getImage();
 
 
+    public String getSchemaOrCatalogName();
+    
+    /**
+     * The returned image is displayed in the database structure outline for
+     * this node when the node is expanded.
+     * 
+     * @return Image to be used for this node.
+     */
+    public Image getExpandedImage();
+    
+    
     /**
      * @return Text that is displayed for this node in the treeviewer.
      */
@@ -114,4 +125,14 @@ public interface INode {
      * @return Simple name for this node.
      */
     public String getName();
+ 
+    /**
+     * Set expanded state of element
+     */
+    public void setExpanded(boolean expanded);
+    
+    /**
+     * @return true if node is expanded.
+     */
+    public boolean isExpanded();
 }

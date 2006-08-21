@@ -1,9 +1,12 @@
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
+import org.eclipse.swt.graphics.Image;
+
 
 public class ObjectNode extends AbstractNode {
 
     private String _type;
+    
     
     /**
      * Hidden default constructor.
@@ -12,16 +15,14 @@ public class ObjectNode extends AbstractNode {
         
     }
     
-    public ObjectNode(String type) {
+    public ObjectNode(String name, String type, INode parent, Image image) {
         _type = type;
+        _name = name;
+        _sessionNode = parent.getSession();
+        _parent = parent;
+        _image = image;
     }
     
-    public String getUniqueIdentifier() {
-
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 
     /**
      * This node cannot have childnodes.
@@ -40,6 +41,10 @@ public class ObjectNode extends AbstractNode {
 
     public String getType() {
         return _type;
+    }
+
+    public String getQualifiedName() {
+        return "\"" + getSchemaOrCatalogName() + "\".\"" + getName() + "\"";
     }
 
 }

@@ -19,6 +19,7 @@
 
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
+import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.util.TextUtil;
@@ -53,6 +54,82 @@ public class SchemaNode extends AbstractNode {
         _imageKey = "Images.SchemaNodeIcon";
     }
     
+    private void addExtensionNodes() {
+        
+        String databaseProductName = getSession().getRoot().getDatabaseProductName().toLowerCase().trim();
+        
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "node");
+        IExtension[] extensions = point.getExtensions();
+
+        for (int i = 0; i < extensions.length; i++) {
+
+            IExtension e = extensions[i];
+
+            IConfigurationElement[] ces = e.getConfigurationElements();
+
+            for (int j = 0; j < ces.length; j++) {
+                try {
+                    
+                    // include only nodes that are attachted to the schema node..
+                    String parent = ces[j].getAttribute("parent-node");
+                    if (parent.indexOf("schema") == -1) {
+                        continue;
+                    }
+                    
+                    boolean isValidProduct = false;
+                    String[] validProducts = ces[j].getAttribute("database-product-name").split(",");
+                    
+                    // include only nodes valid for this database
+                    for (int k = 0; k < validProducts.length; k++) {
+                        
+                        String product = validProducts[k].toLowerCase().trim();
+                        
+                        if (product.length() == 0) {
+                            continue;
+                        }
+                        
+                        if (product.equals("*")) {
+                            isValidProduct = true;
+                            break;
+                        }
+                        
+                        String regex = TextUtil.replaceChar(product, '*', ".*");
+                        if (databaseProductName.matches(regex)) {
+                            isValidProduct = true;
+                            break;
+                        }
+                        
+                    }
+                    
+                    if (!isValidProduct) {
+                        continue;
+                    }
+                                        
+                    String imagePath = ces[j].getAttribute("icon");
+                    String id = ces[j].getAttribute("id");
+                    String type = ces[j].getAttribute("table-type").trim();
+                    
+                    AbstractNode childNode = (AbstractNode) ces[j].createExecutableExtension("class");                        
+                    childNode.setParent(this);
+                    childNode.setSession(_sessionNode);
+                    childNode.setType(type);
+                    
+                    String fragmentId = id.substring(0, id.indexOf('.', 28));
+                    if (imagePath != null && imagePath.trim().length() != 0) {
+                        childNode.setImage(ImageUtil.getFragmentImage(fragmentId, imagePath));
+                    }
+                    
+                    addChildNode(childNode);
+                    
+                    
+                } catch (Throwable ex) {
+                    SQLExplorerPlugin.error("Could not create child node", ex);
+                }
+            }
+        }
+        
+    }
     
     /**
      * Location extenstion nodes for a given tableType
@@ -160,6 +237,8 @@ public class SchemaNode extends AbstractNode {
                 }
             }
             
+            // load extension nodes
+            addExtensionNodes();
             
         } catch (Throwable e) {
             

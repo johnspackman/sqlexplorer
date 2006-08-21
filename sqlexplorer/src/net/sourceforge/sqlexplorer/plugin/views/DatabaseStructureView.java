@@ -37,7 +37,9 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
@@ -334,6 +336,32 @@ public class DatabaseStructureView extends ViewPart {
             }
         });
 
+        
+        // add expand/collapse listener
+        treeViewer.addTreeListener(new ITreeViewerListener() {
+
+            public void treeCollapsed(TreeExpansionEvent event) {
+
+                // refresh the node to change image
+                INode node = (INode) event.getElement();
+                node.setExpanded(false);
+                TreeViewer viewer = (TreeViewer) event.getSource();
+                viewer.update(node, null);
+            }
+
+            public void treeExpanded(TreeExpansionEvent event) {
+
+                // refresh the node to change image
+                INode node = (INode) event.getElement();
+                node.setExpanded(true);
+                TreeViewer viewer = (TreeViewer) event.getSource();
+                viewer.update(node, null);
+            }
+            
+        });
+        
+        
+        
         // set new tab as the active one
         _tabFolder.setSelection(_tabFolder.getItemCount() - 1);
 

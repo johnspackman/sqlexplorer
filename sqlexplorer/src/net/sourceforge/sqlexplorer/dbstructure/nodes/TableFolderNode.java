@@ -19,6 +19,7 @@
 
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
@@ -30,11 +31,12 @@ import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
  * @author Davy Vanherbergen
  * 
  */
-public class TableFolderNode extends AbstractNode {
+public class TableFolderNode extends AbstractFolderNode {
 
     /** all catalog/schema tables */
     private ITableInfo[] _allTables;
     
+    private String _origName;
     
     /**
      * Create new database table object type node (view, table, etc...)
@@ -48,9 +50,16 @@ public class TableFolderNode extends AbstractNode {
         _allTables = tables;
         _sessionNode = sessionNode;
         _parent = parent;
-        _name = name;
-
-        _imageKey = "Images.TableObjectNodeIcon";
+        _origName = name;
+        
+        // cleanup the names a little
+        _name = _origName.substring(0, 1).toUpperCase() + _origName.substring(1).toLowerCase();
+        if (_name.equals("View")) {
+            _name = Messages.getString("DatabaseStructureView.view");
+        }
+        if (_name.equals("Table")) {
+            _name = Messages.getString("DatabaseStructureView.table");
+        }
     }
     
     /**
@@ -93,13 +102,13 @@ public class TableFolderNode extends AbstractNode {
                 }
     
                 // get all relevant tables
-                tables = _sessionNode.getMetaData().getTables(catalogName, schemaName, "%", new String[] {_name});
+                tables = _sessionNode.getMetaData().getTables(catalogName, schemaName, "%", new String[] {_origName});
 
             }
             
             // add child nodes for all relevant tables
             for (int i = 0; i < tables.length; i++) {            
-                if (tables[i].getType().equalsIgnoreCase(_name)) {
+                if (tables[i].getType().equalsIgnoreCase(_origName)) {
                     addChildNode(new TableNode(this, tables[i].getSimpleName(), _sessionNode, tables[i]));
                 }
             }
@@ -114,7 +123,7 @@ public class TableFolderNode extends AbstractNode {
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
      */
     public String getType() {
-        return _name + "_FOLDER";
+        return _origName + "_FOLDER";
     }
     
 
@@ -123,13 +132,13 @@ public class TableFolderNode extends AbstractNode {
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getQualifiedName()
      */
     public String getQualifiedName() {        
+        return _origName;
+    }
+
+    public String getName() {        
+        
         return _name;
     }
     
-    /* (non-Javadoc)
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
-     */
-    public String getUniqueIdentifier() {
-        return getQualifiedName();
-    }
+    
 }

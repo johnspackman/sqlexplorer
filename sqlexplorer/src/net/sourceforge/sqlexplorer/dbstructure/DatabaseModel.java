@@ -88,6 +88,14 @@ public class DatabaseModel implements INode {
         return null;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getImage()
+     */
+    public Image getExpandedImage() {
+        return null;
+    }
 
     /*
      * (non-Javadoc)
@@ -196,4 +204,28 @@ public class DatabaseModel implements INode {
     public String getUniqueIdentifier() {
         return getQualifiedName();
     }
+
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#setExpanded(boolean)
+     */
+    public void setExpanded(boolean expanded) {
+        return;
+    }
+
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#isExpanded()
+     */
+    public boolean isExpanded() {
+        return false;
+    }
+
+
+    public String getSchemaOrCatalogName() {
+
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
 };

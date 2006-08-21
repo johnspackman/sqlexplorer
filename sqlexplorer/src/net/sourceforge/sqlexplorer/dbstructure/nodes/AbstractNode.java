@@ -40,20 +40,51 @@ import org.eclipse.swt.widgets.Composite;
  */
 public abstract class AbstractNode implements INode {
 
-    private static final Log _logger = LogFactory.getLog(AbstractNode.class);
-    
     protected ArrayList _children = new ArrayList();
-
-    protected String _name;
-
-    protected INode _parent;
-
-    protected SessionTreeNode _sessionNode;
-
+    
     private boolean _childrenLoaded = false;
+
+    protected String _expandedImageKey = null;
+
+    protected Image _image;
 
     protected String _imageKey = "Images.DefaultNodeImage";
 
+    private boolean _isExpanded = false;
+
+    protected String _name;
+    
+    protected INode _parent;
+
+    protected SessionTreeNode _sessionNode;
+    
+    private static final Log _logger = LogFactory.getLog(AbstractNode.class);
+    
+    protected String _type;
+    
+    
+    
+    
+    public String getType() {
+    
+        return _type;
+    }
+
+    
+    public void setType(String type) {
+    
+        _type = type;
+    }
+
+    /**
+     * Adds a new child node to this node
+     * 
+     * @param child node
+     */
+    public final void addChildNode(INode childNode) {
+        _children.add(childNode);
+    }
+    
     /*
      * (non-Javadoc)
      * 
@@ -61,6 +92,22 @@ public abstract class AbstractNode implements INode {
      */
     public void fillDetailComposite(Composite composite) {
         // noop
+    }
+
+
+    /**
+     * Get an iterator to all child nodes. If child nodes haven't been loaded
+     * yet, loading is triggered.
+     * 
+     * @return Iterator of child elements
+     */
+    public final Iterator getChildIterator() {
+
+        if (!_childrenLoaded) {
+            load();
+        }
+
+        return _children.iterator();
     }
 
 
@@ -107,14 +154,29 @@ public abstract class AbstractNode implements INode {
      * Override this method to change the image that is displayed for this node
      * in the database structure outline.
      */
-    public final Image getImage() {
+    public final Image getExpandedImage() {
 
-        if (_imageKey == null) {
+        if (_expandedImageKey == null) {
             return null;
+        }
+        return ImageUtil.getImage(_expandedImageKey);
+    }
+
+
+    /**
+     * Override this method to change the image that is displayed for this node
+     * in the database structure outline.
+     */
+    public Image getImage() {
+
+        if (_image != null) {
+            return _image;
+        }
+        if (_imageKey == null) {
+            return _image;
         }
         return ImageUtil.getImage(_imageKey);
     }
-
 
     /**
      * Override this method to change the text that is displayed in the database
@@ -122,6 +184,16 @@ public abstract class AbstractNode implements INode {
      */
     public String getLabelText() {
         return getName();
+    }
+
+    /**
+     * @return simple name for this node.
+     */
+    public String getName() {
+        if (_name == null) {
+            return "<null>";
+        }
+        return _name;
     }
 
 
@@ -133,6 +205,32 @@ public abstract class AbstractNode implements INode {
      */
     public final INode getParent() {
         return _parent;
+    }
+
+
+    /* (non-Javadoc)
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
+     */
+    public String getQualifiedName() {        
+        return getName();
+    }
+
+
+    /**
+     * @return SessionTreeNode for this node.
+     */
+    public final SessionTreeNode getSession() {
+        return _sessionNode;
+    }
+
+
+    /**
+     * Implement this method to return a unique identifier for this node.
+     * It is used to identify the node in the detail cache. 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
+     */
+    public String getUniqueIdentifier() {
+        return getParent().getQualifiedName() + "." + getQualifiedName();
     }
 
 
@@ -172,60 +270,21 @@ public abstract class AbstractNode implements INode {
     }
 
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns true.  Override this method to return false if your node cannot 
+     * have any children.  This will avoid the twistie being displayed in the
+     * database structure outline for nodes that cannot have children.
      * 
-     * @see java.lang.Object#toString()
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#isEndNode()
      */
-    public String toString() {
-        return getName();
+    public boolean isEndNode() {       
+        return false;
     }
 
 
-    /**
-     * Adds a new child node to this node
-     * 
-     * @param child node
-     */
-    public final void addChildNode(INode childNode) {
-        _children.add(childNode);
+    public boolean isExpanded() {    
+        return _isExpanded;
     }
-
-
-    /**
-     * Get an iterator to all child nodes. If child nodes haven't been loaded
-     * yet, loading is triggered.
-     * 
-     * @return Iterator of child elements
-     */
-    public final Iterator getChildIterator() {
-
-        if (!_childrenLoaded) {
-            load();
-        }
-
-        return _children.iterator();
-    }
-
-
-    /**
-     * Refresh. This will clear the nodes' children and reload them.
-     * It will also update the dictionary for this node & descendants
-     */
-    public final void refresh() {
-        
-        _children.clear();
-        _childrenLoaded = false;
-        load();
-                
-    }
-
-
-    /**
-     * Load all the children of this node here. Do not call this method, but use
-     * load() instead.
-     */
-    public abstract void loadChildren();
 
 
     /**
@@ -258,48 +317,31 @@ public abstract class AbstractNode implements INode {
 
 
     /**
-     * Returns true.  Override this method to return false if your node cannot 
-     * have any children.  This will avoid the twistie being displayed in the
-     * database structure outline for nodes that cannot have children.
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#isEndNode()
+     * Load all the children of this node here. Do not call this method, but use
+     * load() instead.
      */
-    public boolean isEndNode() {       
-        return false;
-    }
+    public abstract void loadChildren();
     
     
     /**
-     * @return SessionTreeNode for this node.
+     * Refresh. This will clear the nodes' children and reload them.
+     * It will also update the dictionary for this node & descendants
      */
-    public final SessionTreeNode getSession() {
-        return _sessionNode;
+    public final void refresh() {
+        
+        _children.clear();
+        _childrenLoaded = false;
+        load();
+                
     }
     
     
-    /**
-     * @return simple name for this node.
-     */
-    public final String getName() {
-        if (_name == null) {
-            return "<null>";
-        }
-        return _name;
+    public final void setExpanded(boolean expanded) {
+        _isExpanded = expanded;        
     }
     
-    /**
-     * Implement this method to return a unique identifier for this node.
-     * It is used to identify the node in the detail cache. 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
-     */
-    public abstract String getUniqueIdentifier();
-    
-    
-    /* (non-Javadoc)
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
-     */
-    public String getQualifiedName() {        
-        return getName();
+    public void setImage(Image image) {
+        _image = image;
     }
     
     
@@ -319,4 +361,29 @@ public abstract class AbstractNode implements INode {
     public final void setSession(SessionTreeNode session) {
         _sessionNode = session;
     }
+    
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        return getName();
+    }
+
+
+    public String getSchemaOrCatalogName() {
+
+        INode node = this;
+        while (!(node.getType().equalsIgnoreCase("schema") || node.getType().equalsIgnoreCase("schema"))) {
+            node = node.getParent();
+            if (node == null) {
+                return null;
+            }
+        }
+        return node.getName();
+    }
+    
+    
 }

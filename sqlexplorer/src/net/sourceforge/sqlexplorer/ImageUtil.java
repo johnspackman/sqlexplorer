@@ -138,4 +138,26 @@ public class ImageUtil {
 
         return image;
     }
+    
+    public static Image getFragmentImage(String fragmentId, String path) {
+        
+        try {
+
+            if (path == null || path.trim().length() == 0) {
+                return null;
+            }
+            
+            // create image
+            URL url = URLUtil.getFragmentResourceURL(fragmentId, path);
+            ImageDescriptor descriptor = ImageDescriptor.createFromURL(url);
+            if (descriptor == null) {
+                return null;
+            }
+            return descriptor.createImage();
+
+        } catch (Exception e) {
+            SQLExplorerPlugin.error("Couldn't create image for " + fragmentId + ": " + path, e);
+            return null;
+        }
+    }
 }
