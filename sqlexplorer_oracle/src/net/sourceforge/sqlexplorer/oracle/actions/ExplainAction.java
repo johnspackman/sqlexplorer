@@ -42,12 +42,28 @@ import org.eclipse.jface.dialogs.MessageDialog;
  */
 public class ExplainAction extends AbstractEditorAction {
 
+    static final String createPlanTableScript = "CREATE TABLE PLAN_TABLE ("
+            + "  STATEMENT_ID                    VARCHAR2(30)," + " TIMESTAMP                       DATE,"
+            + "  REMARKS                         VARCHAR2(80)," + "  OPERATION                       VARCHAR2(30),"
+            + "  OPTIONS                         VARCHAR2(30)," + "  OBJECT_NODE                     VARCHAR2(128),"
+            + "  OBJECT_OWNER                    VARCHAR2(30)," + "  OBJECT_NAME                     VARCHAR2(30),"
+            + "  OBJECT_INSTANCE                 NUMBER(38)," + "  OBJECT_TYPE                     VARCHAR2(30),"
+            + "  OPTIMIZER                       VARCHAR2(255)," + "  SEARCH_COLUMNS                  NUMBER,"
+            + "  ID                              NUMBER(38)," + "  PARENT_ID                       NUMBER(38),"
+            + "  POSITION                        NUMBER(38)," + "  COST                            NUMBER(38),"
+            + "  CARDINALITY                     NUMBER(38)," + "  BYTES                           NUMBER(38),"
+            + "  OTHER_TAG                       VARCHAR2(255)," + "  PARTITION_START                 VARCHAR2(255),"
+            + "  PARTITION_STOP                  VARCHAR2(255)," + "  PARTITION_ID                    NUMBER(38),"
+            + "  OTHER                           LONG," + "  DISTRIBUTION                    VARCHAR2(30)" + ")";
+
+
     /*
      * (non-Javadoc)
      * 
      * @see net.sourceforge.sqlexplorer.sqleditor.actions.AbstractEditorAction#getText()
      */
     public String getText() {
+
         return Messages.getString("oracle.editor.actions.explain");
     }
 
@@ -58,25 +74,29 @@ public class ExplainAction extends AbstractEditorAction {
      * @see net.sourceforge.sqlexplorer.sqleditor.actions.AbstractEditorAction#getToolTipText()
      */
     public String getToolTipText() {
+
         return getText();
     }
 
 
+    /* (non-Javadoc)
+     * @see net.sourceforge.sqlexplorer.sqleditor.actions.AbstractEditorAction#run()
+     */
     public void run() {
-                
+
         SessionTreeNode runNode = _editor.getSessionTreeNode();
         if (runNode == null) {
             return;
         }
 
-       
         Preferences prefs = SQLExplorerPlugin.getDefault().getPluginPreferences();
 
         String queryDelimiter = prefs.getString(IConstants.SQL_QRY_DELIMITER);
         String alternateDelimiter = prefs.getString(IConstants.SQL_ALT_QRY_DELIMITER);
         String commentDelimiter = prefs.getString(IConstants.SQL_COMMENT_DELIMITER);
 
-        QueryTokenizer qt = new QueryTokenizer(_editor.getSQLToBeExecuted(), queryDelimiter, alternateDelimiter, commentDelimiter);
+        QueryTokenizer qt = new QueryTokenizer(_editor.getSQLToBeExecuted(), queryDelimiter, alternateDelimiter,
+                commentDelimiter);
         final List queryStrings = new ArrayList();
         while (qt.hasQuery()) {
             final String querySql = qt.nextQuery();
@@ -96,7 +116,8 @@ public class ExplainAction extends AbstractEditorAction {
                 notFoundTable = false;
                 rs.close();
             } catch (Throwable e) {
-                createPlanTable = MessageDialog.openQuestion(null, Messages.getString("oracle.editor.actions.explain.notFound.Title"),
+                createPlanTable = MessageDialog.openQuestion(null,
+                        Messages.getString("oracle.editor.actions.explain.notFound.Title"),
                         Messages.getString("oracle.editor.actions.explain.notFound"));
             } finally {
                 try {
@@ -107,22 +128,23 @@ public class ExplainAction extends AbstractEditorAction {
             if (notFoundTable && !createPlanTable) {
                 return;
             }
-    
+
             if (notFoundTable && createPlanTable) {
-                
-                SQLConnection conn = runNode.getInteractiveConnection(); 
+
+                SQLConnection conn = runNode.getInteractiveConnection();
                 st = conn.createStatement();
-                
+
                 try {
                     st.execute(createPlanTableScript);
-                    
+
                     if (!conn.getAutoCommit()) {
                         conn.commit();
                     }
-                    
+
                 } catch (Throwable e) {
                     SQLExplorerPlugin.error("Error creating the plan table", e);
-                    MessageDialog.openError(null, Messages.getString("oracle.editor.actions.explain.createError.Title"),
+                    MessageDialog.openError(null,
+                            Messages.getString("oracle.editor.actions.explain.createError.Title"),
                             Messages.getString("oracle.editor.actions.explain.createError"));
                     try {
                         st.close();
@@ -136,14 +158,12 @@ public class ExplainAction extends AbstractEditorAction {
                 }
             }
 
-                
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        
+
         // execute explain plan for all statements
-        
+
         try {
 
             SqlResultsView resultsView = (SqlResultsView) _editor.getSite().getPage().showView(
@@ -161,20 +181,5 @@ public class ExplainAction extends AbstractEditorAction {
         } catch (Exception e) {
             SQLExplorerPlugin.error("Error creating sql execution tab", e);
         }
-    }
-    
- 
-    static final String createPlanTableScript = "CREATE TABLE PLAN_TABLE (" + "  STATEMENT_ID                    VARCHAR2(30),"
-            + " TIMESTAMP                       DATE," + "  REMARKS                         VARCHAR2(80),"
-            + "  OPERATION                       VARCHAR2(30)," + "  OPTIONS                         VARCHAR2(30),"
-            + "  OBJECT_NODE                     VARCHAR2(128)," + "  OBJECT_OWNER                    VARCHAR2(30),"
-            + "  OBJECT_NAME                     VARCHAR2(30)," + "  OBJECT_INSTANCE                 NUMBER(38),"
-            + "  OBJECT_TYPE                     VARCHAR2(30)," + "  OPTIMIZER                       VARCHAR2(255),"
-            + "  SEARCH_COLUMNS                  NUMBER," + "  ID                              NUMBER(38),"
-            + "  PARENT_ID                       NUMBER(38)," + "  POSITION                        NUMBER(38),"
-            + "  COST                            NUMBER(38)," + "  CARDINALITY                     NUMBER(38),"
-            + "  BYTES                           NUMBER(38)," + "  OTHER_TAG                       VARCHAR2(255),"
-            + "  PARTITION_START                 VARCHAR2(255)," + "  PARTITION_STOP                  VARCHAR2(255),"
-            + "  PARTITION_ID                    NUMBER(38)," + "  OTHER                           LONG,"
-            + "  DISTRIBUTION                    VARCHAR2(30)" + ")";;
+    };
 }

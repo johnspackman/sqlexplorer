@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2006 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package net.sourceforge.sqlexplorer.oracle.actions.explain;
 
 import java.sql.PreparedStatement;
@@ -85,7 +103,7 @@ public class ExplainExecution extends AbstractSQLExecution {
         _resultsView = resultsView;
         _sqlResult = new SQLResult();
         _sqlResult.setSqlStatement(_sqlStatement);
-        
+
         // set initial message
         setProgressMessage(Messages.getString("SQLResultsView.ConnectionWait"));
     }
@@ -179,21 +197,21 @@ public class ExplainExecution extends AbstractSQLExecution {
                     for (int i = 0; i < table.getColumnCount(); i++) {
                         table.getColumn(i).pack();
                     }
-                    
-                    final Composite parent = _composite;                    
+
+                    final Composite parent = _composite;
                     table.addKeyListener(new KeyAdapter() {
-                        
+
                         public void keyReleased(KeyEvent e) {
 
                             switch (e.keyCode) {
 
                                 case SWT.F5:
-                                    
+
                                     // refresh SQL Results
                                     try {
                                         Object o = parent.getData("parenttab");
                                         if (o != null) {
-                                            AbstractSQLExecution sqlExec = (AbstractSQLExecution) ((TabItem)o).getData();
+                                            AbstractSQLExecution sqlExec = (AbstractSQLExecution) ((TabItem) o).getData();
                                             if (sqlExec != null) {
                                                 sqlExec.startExecution();
                                             }
@@ -232,11 +250,11 @@ public class ExplainExecution extends AbstractSQLExecution {
     protected void doExecution() throws Exception {
 
         try {
-            
+
             if (_isCancelled) {
                 return;
             }
-            
+
             _stmt = _connection.createStatement();
             String id_ = Integer.toHexString(new Random().nextInt()).toUpperCase();
             _stmt.execute("delete plan_table where statement_id='" + id_ + "'");
@@ -246,7 +264,7 @@ public class ExplainExecution extends AbstractSQLExecution {
             if (_isCancelled) {
                 return;
             }
-            
+
             _stmt = _connection.createStatement();
             _stmt.execute("EXPLAIN PLAN SET statement_id = '" + id_ + "' FOR " + _sqlStatement);
             _stmt.close();
@@ -255,20 +273,19 @@ public class ExplainExecution extends AbstractSQLExecution {
             if (_isCancelled) {
                 return;
             }
-            
-            _prepStmt = _connection.prepareStatement(
-                    "select "
-                            + "object_type,operation,options,object_owner,object_name,optimizer,cardinality ,cost,id,parent_id "
-                            + " from " + " plan_table " + " start with id = 0 and statement_id=? "
-                            + " connect by prior id=parent_id and statement_id=?");
+
+            _prepStmt = _connection.prepareStatement("select "
+                    + "object_type,operation,options,object_owner,object_name,optimizer,cardinality ,cost,id,parent_id "
+                    + " from " + " plan_table " + " start with id = 0 and statement_id=? "
+                    + " connect by prior id=parent_id and statement_id=?");
             _prepStmt.setString(1, id_);
             _prepStmt.setString(2, id_);
             ResultSet rs = _prepStmt.executeQuery();
-            
+
             if (_isCancelled) {
                 return;
             }
-            
+
             HashMap mp = new HashMap();
             while (rs.next()) {
                 String object_type = rs.getString("object_type");
@@ -320,7 +337,7 @@ public class ExplainExecution extends AbstractSQLExecution {
             if (_isCancelled) {
                 return;
             }
-            
+
             displayResults(nd_parent);
 
         } catch (Exception e) {
