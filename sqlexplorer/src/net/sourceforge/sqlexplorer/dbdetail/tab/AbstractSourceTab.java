@@ -4,12 +4,13 @@
 package net.sourceforge.sqlexplorer.dbdetail.tab;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sqleditor.SQLTextViewer;
 
-import org.eclipse.jface.text.Document;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 
 /**
@@ -20,21 +21,48 @@ public abstract class AbstractSourceTab extends AbstractTab {
 
     private String _source = null;
     
-    private SQLTextViewer _viewer = null;
+    private Text _viewer = null;
     
-    public final void fillDetailComposite(Composite composite) {
+    public final void fillDetailComposite(Composite parent) {
 
         if (_source == null) {
             _source = getSource();
         }
+
+        Composite composite = new Composite(parent, SWT.FILL);
         
-        _viewer = new SQLTextViewer(composite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER | SWT.FULL_SELECTION, 
-                SQLExplorerPlugin.getDefault().getPreferenceStore(), null);
-        _viewer.setDocument(new Document(_source));
-        _viewer.refresh();
-        _viewer.getTextWidget().setWordWrap(true);
-        _viewer.setEditable(false);
+        GridLayout layout = new GridLayout();
+        layout.numColumns = 1;                
+        layout.marginLeft = 0;
+        layout.horizontalSpacing = 0;
+        layout.verticalSpacing = 2;
+        layout.marginWidth = 0;
+        layout.marginHeight = 0;
         
+        GridData gridData = new GridData(GridData.FILL_BOTH);
+        gridData.grabExcessHorizontalSpace = true;
+        gridData.grabExcessVerticalSpace = true;
+        
+        composite.setLayout(layout);
+        composite.setLayoutData(gridData);
+        
+        
+        _viewer = new Text(composite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER | SWT.WRAP);
+        if (_source != null) {
+            _viewer.setText(_source);
+        } else {
+            _viewer.setText("");
+        }
+        _viewer.setLayoutData(gridData);
+        
+        // add status bar labels
+        String info = getStatusMessage();
+        if (info == null) {
+            info = "";
+        }
+        Label infoLabel = new Label(composite, SWT.NULL);
+        infoLabel.setText(info);
+        infoLabel.setLayoutData(new GridData(SWT.LEFT, SWT.NULL, true, false));
     }
 
     public String getLabelText() {
