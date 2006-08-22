@@ -26,12 +26,6 @@ TODO Priorities.
 
 == DB SPECIFIC EXTENSIONS ==
 * write doc on how to create db specific plugin fragments
-^ create plugin fragment for Oracle
-^ create plugin fragment for DB2
-^ create plugin fragment for ..
-
-== SQL HISTORY ==
-? create extension point for context actions
 
 == GENERAL ==
 * create website
