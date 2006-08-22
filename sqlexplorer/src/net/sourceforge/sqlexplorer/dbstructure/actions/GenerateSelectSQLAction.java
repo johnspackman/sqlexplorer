@@ -25,7 +25,7 @@ import java.util.List;
 import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.TableColumnNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.ColumnNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
@@ -47,58 +47,36 @@ public class GenerateSelectSQLAction extends AbstractDBTreeContextAction {
 
 
     /**
-     * Custom image for generate SQL action
-     * 
-     * @see org.eclipse.jface.action.IAction#getImageDescriptor()
+     * @return query string for full table select
      */
-    public ImageDescriptor getImageDescriptor() {
-        return _image;
-    }
+    private String createColumnSelect() {
 
+        StringBuffer query = new StringBuffer("select ");
+        String sep = "";
+        String table = _selectedNodes[0].getParent().getQualifiedName();
 
-    /**
-     * Set the text for the menu entry.
-     * 
-     * @see org.eclipse.jface.action.IAction#getText()
-     */
-    public String getText() {
-        return Messages.getString("DatabaseStructureView.Actions.GenerateSelectSQL");
-    }
+        for (int i = 0; i < _selectedNodes.length; i++) {
 
+            INode node = _selectedNodes[i];
 
-    /**
-     * Generate select statement
-     * 
-     * @see org.eclipse.jface.action.IAction#run()
-     */
-    public void run() {
+            if (node instanceof ColumnNode) {
 
-        try {
+                ColumnNode column = (ColumnNode) node;
 
-            String query = null;
+                if (column.getParent().getQualifiedName().equals(table)) {
 
-            if (_selectedNodes[0] instanceof TableColumnNode) {
-                query = createColumnSelect();
+                    query.append(sep);
+                    query.append(column.getName());
+                    sep = ", ";
+                }
             }
-
-            if (_selectedNodes[0] instanceof TableNode) {
-                query = createTableSelect();
-            }
-
-            if (query == null) {
-                return;
-            }
-
-            SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getNextElement() + ").sql");
-            input.setSessionNode(_selectedNodes[0].getSession());
-            IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-
-            SQLEditor editorPart = (SQLEditor) page.openEditor((IEditorInput) input, "net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
-            editorPart.setText(query);
-
-        } catch (Throwable e) {
-            SQLExplorerPlugin.error("Could generate sql.", e);
         }
+
+        query.append(" from ");
+        query.append(table);
+
+        return query.toString();
+
     }
 
 
@@ -131,36 +109,24 @@ public class GenerateSelectSQLAction extends AbstractDBTreeContextAction {
 
 
     /**
-     * @return query string for full table select
+     * Custom image for generate SQL action
+     * 
+     * @see org.eclipse.jface.action.IAction#getImageDescriptor()
      */
-    private String createColumnSelect() {
+    public ImageDescriptor getImageDescriptor() {
 
-        StringBuffer query = new StringBuffer("select ");
-        String sep = "";
-        String table = _selectedNodes[0].getParent().getQualifiedName();
+        return _image;
+    }
 
-        for (int i = 0; i < _selectedNodes.length; i++) {
 
-            INode node = _selectedNodes[i];
+    /**
+     * Set the text for the menu entry.
+     * 
+     * @see org.eclipse.jface.action.IAction#getText()
+     */
+    public String getText() {
 
-            if (node instanceof TableColumnNode) {
-
-                TableColumnNode column = (TableColumnNode) node;
-
-                if (column.getParent().getQualifiedName().equals(table)) {
-
-                    query.append(sep);
-                    query.append(column.getName());
-                    sep = ", ";
-                }
-            }
-        }
-
-        query.append(" from ");
-        query.append(table);
-
-        return query.toString();
-
+        return Messages.getString("DatabaseStructureView.Actions.GenerateSelectSQL");
     }
 
 
@@ -174,16 +140,53 @@ public class GenerateSelectSQLAction extends AbstractDBTreeContextAction {
         if (_selectedNodes.length == 0) {
             return false;
         }
-        
 
-        if (_selectedNodes[0] instanceof TableColumnNode) {
+        if (_selectedNodes[0] instanceof ColumnNode) {
             return true;
         }
 
         if (_selectedNodes[0] instanceof TableNode) {
             return true;
         }
-        
+
         return false;
+    }
+
+
+    /**
+     * Generate select statement
+     * 
+     * @see org.eclipse.jface.action.IAction#run()
+     */
+    public void run() {
+
+        try {
+
+            String query = null;
+
+            if (_selectedNodes[0] instanceof ColumnNode) {
+                query = createColumnSelect();
+            }
+
+            if (_selectedNodes[0] instanceof TableNode) {
+                query = createTableSelect();
+            }
+
+            if (query == null) {
+                return;
+            }
+
+            SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getNextElement()
+                    + ").sql");
+            input.setSessionNode(_selectedNodes[0].getSession());
+            IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+
+            SQLEditor editorPart = (SQLEditor) page.openEditor((IEditorInput) input,
+                    "net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
+            editorPart.setText(query);
+
+        } catch (Throwable e) {
+            SQLExplorerPlugin.error("Could generate sql.", e);
+        }
     }
 }

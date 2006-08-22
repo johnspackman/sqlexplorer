@@ -20,21 +20,28 @@ package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.util.TextUtil;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
+
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
 
 public class TableNode extends AbstractNode {
 
+    private List _columnNames;
+
+    private List _foreignKeyNames;
+
+    private List _primaryKeyNames;
+
     private ITableInfo _tableInfo;
-
-    private List _columnNames = new ArrayList();
-
-    boolean _includeColumns = true;
 
 
     /**
@@ -50,9 +57,156 @@ public class TableNode extends AbstractNode {
         _sessionNode = sessionNode;
         _parent = parent;
         _name = name;
-        _includeColumns = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.INCLUDE_COLUMNS_IN_TREE);
-
         _imageKey = "Images.TableNodeIcon";
+    }
+
+
+    private void addExtensionNodes() {
+
+        String databaseProductName = getSession().getRoot().getDatabaseProductName().toLowerCase().trim();
+
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "node");
+        IExtension[] extensions = point.getExtensions();
+
+        for (int i = 0; i < extensions.length; i++) {
+
+            IExtension e = extensions[i];
+
+            IConfigurationElement[] ces = e.getConfigurationElements();
+
+            for (int j = 0; j < ces.length; j++) {
+                try {
+
+                    // include only nodes that are attachted to the schema
+                    // node..
+                    String parent = ces[j].getAttribute("parent-node");
+                    if (parent.indexOf("table") == -1) {
+                        continue;
+                    }
+
+                    boolean isValidProduct = false;
+                    String[] validProducts = ces[j].getAttribute("database-product-name").split(",");
+
+                    // include only nodes valid for this database
+                    for (int k = 0; k < validProducts.length; k++) {
+
+                        String product = validProducts[k].toLowerCase().trim();
+
+                        if (product.length() == 0) {
+                            continue;
+                        }
+
+                        if (product.equals("*")) {
+                            isValidProduct = true;
+                            break;
+                        }
+
+                        String regex = TextUtil.replaceChar(product, '*', ".*");
+                        if (databaseProductName.matches(regex)) {
+                            isValidProduct = true;
+                            break;
+                        }
+
+                    }
+
+                    if (!isValidProduct) {
+                        continue;
+                    }
+
+                    AbstractNode childNode = (AbstractNode) ces[j].createExecutableExtension("class");
+                    childNode.setParent(this);
+                    childNode.setSession(_sessionNode);
+
+                    addChildNode(childNode);
+
+                } catch (Throwable ex) {
+                    SQLExplorerPlugin.error("Could not create child node", ex);
+                }
+            }
+        }
+
+    }
+
+
+    /**
+     * @return List of column names for this table.
+     */
+    public List getColumnNames() {
+
+        if (_columnNames == null) {
+
+            _columnNames = new ArrayList();
+            try {
+                ResultSet resultSet = _sessionNode.getMetaData().getColumns(_tableInfo);
+                while (resultSet.next()) {
+                    _columnNames.add(resultSet.getString(4));
+                }
+
+            } catch (Exception e) {
+                SQLExplorerPlugin.error("Could not load column names", e);
+            }
+
+        }
+
+        return _columnNames;
+    }
+
+
+    /**
+     * @return List of column names for this table.
+     */
+    public List getForeignKeyNames() {
+
+        if (_foreignKeyNames == null) {
+
+            _foreignKeyNames = new ArrayList();
+            try {
+                ResultSet resultSet = _sessionNode.getMetaData().getImportedKeys(_tableInfo);
+                while (resultSet.next()) {
+                    _foreignKeyNames.add(resultSet.getString(4));
+                }
+
+            } catch (Exception e) {
+                SQLExplorerPlugin.error("Could not load foreign key names", e);
+            }
+
+        }
+
+        return _foreignKeyNames;
+    }
+
+
+    /**
+     * @return List of column names for this table.
+     */
+    public List getPrimaryKeyNames() {
+
+        if (_primaryKeyNames == null) {
+
+            _primaryKeyNames = new ArrayList();
+            try {
+                ResultSet resultSet = _sessionNode.getMetaData().getPrimaryKeys(_tableInfo);
+                while (resultSet.next()) {
+                    _primaryKeyNames.add(resultSet.getString(4));
+                }
+
+            } catch (Exception e) {
+                SQLExplorerPlugin.error("Could not load primary key names", e);
+            }
+
+        }
+
+        return _primaryKeyNames;
+    }
+
+
+    /**
+     * @return Qualified table name
+     */
+    public String getQualifiedName() {
+
+        return _tableInfo.getQualifiedName();
     }
 
 
@@ -60,6 +214,7 @@ public class TableNode extends AbstractNode {
      * @return // TODO fix this for sql completion?
      */
     public String getTableDesc() {
+
         return getTableInfo().getQualifiedName();
     }
 
@@ -68,7 +223,41 @@ public class TableNode extends AbstractNode {
      * @return TableInfo for this node
      */
     public ITableInfo getTableInfo() {
+
         return _tableInfo;
+    }
+
+
+    /**
+     * Returns the table info type as the type for this node.
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
+     */
+    public String getType() {
+
+        return _tableInfo.getType();
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
+     */
+    public String getUniqueIdentifier() {
+
+        return getQualifiedName();
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#isEndNode()
+     */
+    public boolean isEndNode() {
+
+        return false;
     }
 
 
@@ -76,6 +265,7 @@ public class TableNode extends AbstractNode {
      * @return true if this node is a synonym
      */
     public boolean isSynonym() {
+
         return _tableInfo.getType().equalsIgnoreCase("SYNONYM");
     }
 
@@ -84,6 +274,7 @@ public class TableNode extends AbstractNode {
      * @return true if this node is a table
      */
     public boolean isTable() {
+
         return _tableInfo.getType().equalsIgnoreCase("TABLE");
     }
 
@@ -92,6 +283,7 @@ public class TableNode extends AbstractNode {
      * @return true if this node is a view
      */
     public boolean isView() {
+
         return _tableInfo.getType().equalsIgnoreCase("VIEW");
     }
 
@@ -103,85 +295,14 @@ public class TableNode extends AbstractNode {
      */
     public void loadChildren() {
 
-        boolean includeColumns = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.INCLUDE_COLUMNS_IN_TREE);
-
-        if (includeColumns) {
-            try {
-                Iterator it = getColumnNames().iterator();
-                while (it.hasNext()) {
-                    addChildNode(new TableColumnNode(this, (String) it.next(), _sessionNode));
-                }
-            } catch (Exception e) {
-                SQLExplorerPlugin.error("Could not create child nodes for " + getName(), e);
-            }
+        try {
+            addChildNode(new ColumnFolderNode(this, _tableInfo));
+            addChildNode(new IndexFolderNode(this, _tableInfo));
+            addExtensionNodes();
+        } catch (Exception e) {
+            SQLExplorerPlugin.error("Could not create child nodes for " + getName(), e);
         }
 
     }
 
-
-    /**
-     * Returns the table info type as the type for this node.
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
-     */
-    public String getType() {
-        return _tableInfo.getType();
-    }
-
-
-    /**
-     * @return Qualified table name
-     */
-    public String getQualifiedName() {
-        return _tableInfo.getQualifiedName();
-    }
-
-
-
-
-    /**
-     * @return List of column names for this table.
-     */
-    public List getColumnNames() {
-        
-        if (_columnNames.size() == 0) {
-        
-            try {
-                ResultSet resultSet = _sessionNode.getMetaData().getColumns(_tableInfo);
-                while (resultSet.next()) {
-                    _columnNames.add(resultSet.getString(4));
-                }
-    
-            } catch (Exception e) {
-                SQLExplorerPlugin.error("Could not load column names", e);
-            }
-        
-        }
-        
-        return _columnNames;
-    }
-
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
-     */
-    public String getUniqueIdentifier() {
-        return getQualifiedName();
-    }
-
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#isEndNode()
-     */
-    public boolean isEndNode() {
-        if (!_includeColumns) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 }

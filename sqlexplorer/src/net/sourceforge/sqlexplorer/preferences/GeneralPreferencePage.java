@@ -39,6 +39,20 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 
 public class GeneralPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
+    private StringFieldEditor _altQryDelimiterField;
+
+    private StringFieldEditor _commentDelimiterField;
+
+    private StringFieldEditor _qryDelimiterField;
+
+    Button _wordWrapButton;
+
+    Button fAssistance;
+
+    Button fAutoCommitBox;
+
+    Button fCommitOnCloseBox;
+
     public final OverlayPreferenceStore.OverlayKey[] fKeys = new OverlayPreferenceStore.OverlayKey[] {
 
     new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.INT, IConstants.PRE_ROW_COUNT),
@@ -49,38 +63,14 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_QRY_DELIMITER),
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_ALT_QRY_DELIMITER),
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_COMMENT_DELIMITER),
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.INCLUDE_COLUMNS_IN_TREE),
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.WORD_WRAP)};
-
-    private IntegerFieldEditor fPreviewRowCountEditor;
 
     private IntegerFieldEditor fMaxSqlRowEditor;
 
-    private StringFieldEditor _qryDelimiterField;
-    
-    private StringFieldEditor _altQryDelimiterField;
-    
-    private StringFieldEditor _commentDelimiterField;
-    
     OverlayPreferenceStore fOverlayStore;
 
-    Button fAutoCommitBox;
+    private IntegerFieldEditor fPreviewRowCountEditor;
 
-    Button fCommitOnCloseBox;
-
-    Button fAssistance;
-    
-    Button _includeColumnsButton;
-    
-    Button _wordWrapButton;
-
-    public GeneralPreferencePage(OverlayPreferenceStore fOverlayStore) {
-        this.setTitle(Messages.getString("General_Preferences_1")); //$NON-NLS-1$
-        this.fOverlayStore = fOverlayStore;
-    };
-
-    public void init(IWorkbench workbench) {
-    }
 
     public GeneralPreferencePage() {
 
@@ -88,9 +78,18 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
 
         fOverlayStore.load();
         fOverlayStore.start();
+    };
+
+
+    public GeneralPreferencePage(OverlayPreferenceStore fOverlayStore) {
+
+        this.setTitle(Messages.getString("General_Preferences_1")); //$NON-NLS-1$
+        this.fOverlayStore = fOverlayStore;
     }
 
+
     protected Control createContents(Composite parent) {
+
         Composite colorComposite = new Composite(parent, SWT.NULL);
         GridLayout layout = new GridLayout();
         layout.numColumns = 3;
@@ -129,44 +128,39 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
         gd.horizontalSpan = 2;
         fAssistance.setLayoutData(gd);
 
-        _includeColumnsButton = new Button(colorComposite, SWT.CHECK);
-        _includeColumnsButton.setText(Messages.getString("Preferences.SQLExplorer.IncludeColumns")); //$NON-NLS-1$
-        gd = new GridData(GridData.FILL_HORIZONTAL);
-        gd.horizontalAlignment = GridData.BEGINNING;
-        gd.horizontalSpan = 2;
-        _includeColumnsButton.setLayoutData(gd);
-        
-        _qryDelimiterField = new StringFieldEditor(IConstants.SQL_QRY_DELIMITER, Messages.getString("Preferences.SQLExplorer.QueryDelimiter"),
-                colorComposite);
+        _qryDelimiterField = new StringFieldEditor(IConstants.SQL_QRY_DELIMITER,
+                Messages.getString("Preferences.SQLExplorer.QueryDelimiter"), colorComposite);
         _qryDelimiterField.setEmptyStringAllowed(false);
         _qryDelimiterField.setTextLimit(1);
         _qryDelimiterField.setErrorMessage(Messages.getString("Preferences.SQLExplorer.QueryDelimiter.Error"));
-        
-        _altQryDelimiterField = new StringFieldEditor(IConstants.SQL_ALT_QRY_DELIMITER, Messages.getString("Preferences.SQLExplorer.AltQueryDelimiter"),
-                colorComposite);
+
+        _altQryDelimiterField = new StringFieldEditor(IConstants.SQL_ALT_QRY_DELIMITER,
+                Messages.getString("Preferences.SQLExplorer.AltQueryDelimiter"), colorComposite);
         _altQryDelimiterField.setEmptyStringAllowed(true);
         _altQryDelimiterField.setTextLimit(4);
-        
-        _commentDelimiterField = new StringFieldEditor(IConstants.SQL_COMMENT_DELIMITER, Messages.getString("Preferences.SQLExplorer.CommentDelimiter"),
-                colorComposite);
+
+        _commentDelimiterField = new StringFieldEditor(IConstants.SQL_COMMENT_DELIMITER,
+                Messages.getString("Preferences.SQLExplorer.CommentDelimiter"), colorComposite);
         _commentDelimiterField.setEmptyStringAllowed(false);
         _commentDelimiterField.setTextLimit(4);
         _commentDelimiterField.setErrorMessage(Messages.getString("Preferences.SQLExplorer.CommentDelimiter.Error"));
-        
-        
+
         _wordWrapButton = new Button(colorComposite, SWT.CHECK);
-        _wordWrapButton.setText(Messages.getString("Preferences.SQLExplorer.WordWrap")); 
+        _wordWrapButton.setText(Messages.getString("Preferences.SQLExplorer.WordWrap"));
         gd = new GridData(GridData.FILL_HORIZONTAL);
         gd.horizontalAlignment = GridData.BEGINNING;
         gd.horizontalSpan = 2;
         _wordWrapButton.setLayoutData(gd);
-        
+
         fAutoCommitBox.addSelectionListener(new SelectionListener() {
 
             public void widgetDefaultSelected(SelectionEvent e) {
+
             }
 
+
             public void widgetSelected(SelectionEvent e) {
+
                 fOverlayStore.setValue(IConstants.AUTO_COMMIT, fAutoCommitBox.getSelection());
                 if (fAutoCommitBox.getSelection()) {
                     fCommitOnCloseBox.setEnabled(false);
@@ -178,9 +172,12 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
         fCommitOnCloseBox.addSelectionListener(new SelectionListener() {
 
             public void widgetDefaultSelected(SelectionEvent e) {
+
             }
 
+
             public void widgetSelected(SelectionEvent e) {
+
                 fOverlayStore.setValue(IConstants.COMMIT_ON_CLOSE, fCommitOnCloseBox.getSelection());
             }
         });
@@ -188,39 +185,74 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
         fAssistance.addSelectionListener(new SelectionListener() {
 
             public void widgetDefaultSelected(SelectionEvent e) {
+
             }
 
+
             public void widgetSelected(SelectionEvent e) {
+
                 fOverlayStore.setValue(IConstants.SQL_ASSIST, fAssistance.getSelection());
             }
         });
 
-        _includeColumnsButton.addSelectionListener(new SelectionListener() {
-
-            public void widgetDefaultSelected(SelectionEvent e) {
-            }
-
-            public void widgetSelected(SelectionEvent e) {
-                fOverlayStore.setValue(IConstants.INCLUDE_COLUMNS_IN_TREE, _includeColumnsButton.getSelection());
-            }
-        });
-        
         _wordWrapButton.addSelectionListener(new SelectionListener() {
 
             public void widgetDefaultSelected(SelectionEvent e) {
+
             }
 
+
             public void widgetSelected(SelectionEvent e) {
+
                 fOverlayStore.setValue(IConstants.WORD_WRAP, _wordWrapButton.getSelection());
             }
         });
-        
+
         initialize();
 
         return colorComposite;
     }
 
+
+    public void dispose() {
+
+        this.setPreferenceStore(null);
+
+        if (fPreviewRowCountEditor != null) {
+            fPreviewRowCountEditor.setPreferenceStore(null);
+            fPreviewRowCountEditor.setPage(null);
+        }
+        if (fMaxSqlRowEditor != null) {
+            fMaxSqlRowEditor.setPreferenceStore(null);
+            fMaxSqlRowEditor.setPage(null);
+        }
+
+        if (_qryDelimiterField != null) {
+            _qryDelimiterField.setPreferenceStore(null);
+            _qryDelimiterField.setPage(null);
+        }
+
+        if (_altQryDelimiterField != null) {
+            _altQryDelimiterField.setPreferenceStore(null);
+            _altQryDelimiterField.setPage(null);
+        }
+
+        if (_commentDelimiterField != null) {
+            _commentDelimiterField.setPreferenceStore(null);
+            _commentDelimiterField.setPage(null);
+        }
+
+        super.dispose();
+    }
+
+
+    public void init(IWorkbench workbench) {
+
+    }
+
+
     private void initialize() {
+
         fMaxSqlRowEditor.setPreferenceStore(fOverlayStore);
         fMaxSqlRowEditor.setPreferenceName(IConstants.MAX_SQL_ROWS); //$NON-NLS-1$
         fMaxSqlRowEditor.setPage(this);
@@ -250,11 +282,12 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
         _commentDelimiterField.load();
         if (_commentDelimiterField.getStringValue() == null || _commentDelimiterField.getStringValue().length() == 0) {
             _commentDelimiterField.loadDefault();
-        }       
-        
+        }
+
         fAutoCommitBox.getDisplay().asyncExec(new Runnable() {
 
             public void run() {
+
                 fCommitOnCloseBox.setSelection(fOverlayStore.getBoolean(IConstants.COMMIT_ON_CLOSE));//$NON-NLS-1$
                 fAutoCommitBox.setSelection(fOverlayStore.getBoolean(IConstants.AUTO_COMMIT));//$NON-NLS-1$
                 if (fAutoCommitBox.getSelection()) {
@@ -266,75 +299,24 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
         fAssistance.getDisplay().asyncExec(new Runnable() {
 
             public void run() {
+
                 fAssistance.setSelection(fOverlayStore.getBoolean(IConstants.SQL_ASSIST));
             }
         });
-        
-        _includeColumnsButton.getDisplay().asyncExec(new Runnable() {
 
-            public void run() {
-                _includeColumnsButton.setSelection(fOverlayStore.getBoolean(IConstants.INCLUDE_COLUMNS_IN_TREE));
-            }
-        });
-        
         _wordWrapButton.getDisplay().asyncExec(new Runnable() {
 
             public void run() {
+
                 _wordWrapButton.setSelection(fOverlayStore.getBoolean(IConstants.WORD_WRAP));
             }
         });
 
     }
 
-    public void dispose() {
-
-        this.setPreferenceStore(null);
-
-        if (fPreviewRowCountEditor != null) {
-            fPreviewRowCountEditor.setPreferenceStore(null);
-            fPreviewRowCountEditor.setPage(null);
-        }
-        if (fMaxSqlRowEditor != null) {
-            fMaxSqlRowEditor.setPreferenceStore(null);
-            fMaxSqlRowEditor.setPage(null);
-        }
-
-        if (_qryDelimiterField != null) {
-            _qryDelimiterField.setPreferenceStore(null);
-            _qryDelimiterField.setPage(null);
-        }
-        
-        if (_altQryDelimiterField != null) {
-            _altQryDelimiterField.setPreferenceStore(null);
-            _altQryDelimiterField.setPage(null);
-        }
-        
-        if (_commentDelimiterField != null) {
-            _commentDelimiterField.setPreferenceStore(null);
-            _commentDelimiterField.setPage(null);
-        }
-
-        super.dispose();
-    }
-
-    public boolean performOk() {
-        if (fPreviewRowCountEditor != null) {
-            fPreviewRowCountEditor.store();
-
-        }
-        if (fMaxSqlRowEditor != null) {
-            fMaxSqlRowEditor.store();
-        }
-        
-        _qryDelimiterField.store();
-        _altQryDelimiterField.store();
-        _commentDelimiterField.store();
-        
-        ((OverlayPreferenceStore) fOverlayStore).propagate();
-        return true;
-    }
 
     protected void performDefaults() {
+
         ((OverlayPreferenceStore) fOverlayStore).loadDefaults();
         if (fPreviewRowCountEditor != null) {
             fPreviewRowCountEditor.loadDefault();
@@ -342,17 +324,36 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
         if (fMaxSqlRowEditor != null) {
             fMaxSqlRowEditor.loadDefault();
         }
-        if(_qryDelimiterField != null) {
+        if (_qryDelimiterField != null) {
             _qryDelimiterField.loadDefault();
         }
-        if(_altQryDelimiterField != null) {
+        if (_altQryDelimiterField != null) {
             _altQryDelimiterField.loadDefault();
         }
-        if(_commentDelimiterField != null) {
+        if (_commentDelimiterField != null) {
             _commentDelimiterField.loadDefault();
         }
 
         super.performDefaults();
+    }
+
+
+    public boolean performOk() {
+
+        if (fPreviewRowCountEditor != null) {
+            fPreviewRowCountEditor.store();
+
+        }
+        if (fMaxSqlRowEditor != null) {
+            fMaxSqlRowEditor.store();
+        }
+
+        _qryDelimiterField.store();
+        _altQryDelimiterField.store();
+        _commentDelimiterField.store();
+
+        ((OverlayPreferenceStore) fOverlayStore).propagate();
+        return true;
     }
 
 }

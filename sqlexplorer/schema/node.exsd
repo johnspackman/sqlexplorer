@@ -64,6 +64,8 @@
                   </enumeration>
                   <enumeration value="schema+catalog">
                   </enumeration>
+                  <enumeration value="table">
+                  </enumeration>
                </restriction>
             </simpleType>
          </attribute>
@@ -83,7 +85,7 @@
                   <meta.attribute kind="resource"/>
                </appInfo>
             </annotation>
-         </attribute>            
+         </attribute>
       </complexType>
    </element>
 

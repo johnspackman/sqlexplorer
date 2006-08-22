@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.Composite;
 public abstract class AbstractNode implements INode {
 
     protected ArrayList _children = new ArrayList();
-    
+
     private boolean _childrenLoaded = false;
 
     protected String _expandedImageKey = null;
@@ -53,28 +53,15 @@ public abstract class AbstractNode implements INode {
     private boolean _isExpanded = false;
 
     protected String _name;
-    
+
     protected INode _parent;
 
     protected SessionTreeNode _sessionNode;
-    
-    private static final Log _logger = LogFactory.getLog(AbstractNode.class);
-    
-    protected String _type;
-    
-    
-    
-    
-    public String getType() {
-    
-        return _type;
-    }
 
-    
-    public void setType(String type) {
-    
-        _type = type;
-    }
+    protected String _type;
+
+    private static final Log _logger = LogFactory.getLog(AbstractNode.class);
+
 
     /**
      * Adds a new child node to this node
@@ -82,15 +69,18 @@ public abstract class AbstractNode implements INode {
      * @param child node
      */
     public final void addChildNode(INode childNode) {
+
         _children.add(childNode);
     }
-    
+
+
     /*
      * (non-Javadoc)
      * 
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#fillDetailComposite(org.eclipse.swt.widgets.Composite)
      */
     public void fillDetailComposite(Composite composite) {
+
         // noop
     }
 
@@ -122,24 +112,10 @@ public abstract class AbstractNode implements INode {
 
         if (!_childrenLoaded) {
             load();
-            Collections.sort(_children, new Comparator() {
-
-                public int compare(Object arg0, Object arg1) {
-
-                    if (arg0 == null || arg1 == null) {
-                        return 0;
-                    }
-                    String name0 = ((INode) arg0).getName();
-                    String name1 = ((INode) arg1).getName();
-                    
-                    if (name0 == null || name1 == null) {
-                        return 0;
-                    }
-                    
-                    return name0.compareTo(name1);
-                }
-                
-            });
+            Comparator comp = getComparator();
+            if (comp != null) {
+                Collections.sort(_children, getComparator());
+            }
         }
 
         if (_children.size() == 0) {
@@ -147,6 +123,32 @@ public abstract class AbstractNode implements INode {
         }
 
         return (INode[]) _children.toArray(new INode[] {});
+    }
+
+
+    /**
+     * Override this method to implement custom sorting of child nodes.
+     */
+    public Comparator getComparator() {
+
+        return new Comparator() {
+
+            public int compare(Object arg0, Object arg1) {
+
+                if (arg0 == null || arg1 == null) {
+                    return 0;
+                }
+                String name0 = ((INode) arg0).getName();
+                String name1 = ((INode) arg1).getName();
+
+                if (name0 == null || name1 == null) {
+                    return 0;
+                }
+
+                return name0.compareTo(name1);
+            }
+
+        };
     }
 
 
@@ -178,18 +180,28 @@ public abstract class AbstractNode implements INode {
         return ImageUtil.getImage(_imageKey);
     }
 
+
+    public String getLabelDecoration() {
+
+        return null;
+    }
+
+
     /**
      * Override this method to change the text that is displayed in the database
      * structure outline for this node.
      */
     public String getLabelText() {
+
         return getName();
     }
+
 
     /**
      * @return simple name for this node.
      */
     public String getName() {
+
         if (_name == null) {
             return "<null>";
         }
@@ -204,15 +216,32 @@ public abstract class AbstractNode implements INode {
      * @see net.sourceforge.sqlexplorer.db.INode#getParent()
      */
     public final INode getParent() {
+
         return _parent;
     }
 
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
      */
-    public String getQualifiedName() {        
+    public String getQualifiedName() {
+
         return getName();
+    }
+
+
+    public String getSchemaOrCatalogName() {
+
+        INode node = this;
+        while (!(node.getType().equalsIgnoreCase("schema") || node.getType().equalsIgnoreCase("catalog"))) {
+            node = node.getParent();
+            if (node == null) {
+                return null;
+            }
+        }
+        return node.getName();
     }
 
 
@@ -220,24 +249,33 @@ public abstract class AbstractNode implements INode {
      * @return SessionTreeNode for this node.
      */
     public final SessionTreeNode getSession() {
+
         return _sessionNode;
     }
 
 
+    public String getType() {
+
+        return _type;
+    }
+
+
     /**
-     * Implement this method to return a unique identifier for this node.
-     * It is used to identify the node in the detail cache. 
+     * Implement this method to return a unique identifier for this node. It is
+     * used to identify the node in the detail cache.
+     * 
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
      */
     public String getUniqueIdentifier() {
+
         return getParent().getQualifiedName() + "." + getQualifiedName();
     }
 
 
     /**
      * Checks if this node has children. If child nodes haven't been loaded yet,
-     * this method always returns true.  This defers the loading of metadata
-     * used in the database structure outline until it is actually required.
+     * this method always returns true. This defers the loading of metadata used
+     * in the database structure outline until it is actually required.
      * 
      * @return true if this node has children.
      */
@@ -271,18 +309,20 @@ public abstract class AbstractNode implements INode {
 
 
     /**
-     * Returns true.  Override this method to return false if your node cannot 
-     * have any children.  This will avoid the twistie being displayed in the
+     * Returns true. Override this method to return false if your node cannot
+     * have any children. This will avoid the twistie being displayed in the
      * database structure outline for nodes that cannot have children.
      * 
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#isEndNode()
      */
-    public boolean isEndNode() {       
+    public boolean isEndNode() {
+
         return false;
     }
 
 
-    public boolean isExpanded() {    
+    public boolean isExpanded() {
+
         return _isExpanded;
     }
 
@@ -295,22 +335,22 @@ public abstract class AbstractNode implements INode {
         if (!_childrenLoaded) {
 
             try {
-                
+
                 if (_logger.isDebugEnabled()) {
-                    _logger.debug("Loading child nodes for " + _name);    
+                    _logger.debug("Loading child nodes for " + _name);
                 }
-                
+
                 loadChildren();
                 _childrenLoaded = true;
 
             } catch (AbstractMethodError e) {
 
                 SQLExplorerPlugin.error("Could not load child nodes for " + _name, e);
-            
+
             } catch (Throwable e) {
 
                 SQLExplorerPlugin.error("Could not load child nodes for " + _name, e);
-                
+
             }
         }
     }
@@ -321,69 +361,68 @@ public abstract class AbstractNode implements INode {
      * load() instead.
      */
     public abstract void loadChildren();
-    
-    
+
+
     /**
-     * Refresh. This will clear the nodes' children and reload them.
-     * It will also update the dictionary for this node & descendants
+     * Refresh. This will clear the nodes' children and reload them. It will
+     * also update the dictionary for this node & descendants
      */
     public final void refresh() {
-        
+
         _children.clear();
         _childrenLoaded = false;
         load();
-                
+
     }
-    
-    
+
+
     public final void setExpanded(boolean expanded) {
-        _isExpanded = expanded;        
+
+        _isExpanded = expanded;
     }
-    
+
+
     public void setImage(Image image) {
+
         _image = image;
     }
-    
-    
+
+
     /**
      * Set parent node for this node.
+     * 
      * @param parent
      */
     public final void setParent(INode parent) {
+
         _parent = parent;
     }
-    
-    
+
+
     /**
      * Set sessiontreenode for this node
+     * 
      * @param session
      */
     public final void setSession(SessionTreeNode session) {
+
         _sessionNode = session;
     }
-    
-    
+
+
+    public void setType(String type) {
+
+        _type = type;
+    }
+
+
     /*
      * (non-Javadoc)
      * 
      * @see java.lang.Object#toString()
      */
     public String toString() {
+
         return getName();
     }
-
-
-    public String getSchemaOrCatalogName() {
-
-        INode node = this;
-        while (!(node.getType().equalsIgnoreCase("schema") || node.getType().equalsIgnoreCase("schema"))) {
-            node = node.getParent();
-            if (node == null) {
-                return null;
-            }
-        }
-        return node.getName();
-    }
-    
-    
 }

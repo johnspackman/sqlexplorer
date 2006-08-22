@@ -42,6 +42,15 @@ public interface INode {
 
     /**
      * The returned image is displayed in the database structure outline for
+     * this node when the node is expanded.
+     * 
+     * @return Image to be used for this node.
+     */
+    public Image getExpandedImage();
+
+
+    /**
+     * The returned image is displayed in the database structure outline for
      * this node.
      * 
      * @return Image to be used for this node.
@@ -49,17 +58,13 @@ public interface INode {
     public Image getImage();
 
 
-    public String getSchemaOrCatalogName();
-    
     /**
-     * The returned image is displayed in the database structure outline for
-     * this node when the node is expanded.
-     * 
-     * @return Image to be used for this node.
+     * @return text to append after node label.
      */
-    public Image getExpandedImage();
-    
-    
+
+    public String getLabelDecoration();
+
+
     /**
      * @return Text that is displayed for this node in the treeviewer.
      */
@@ -67,9 +72,43 @@ public interface INode {
 
 
     /**
+     * @return Simple name for this node.
+     */
+    public String getName();
+
+
+    /**
      * @return Parent node of this node.
      */
     public INode getParent();
+
+
+    /**
+     * @return Qualified name for this node.
+     */
+    public String getQualifiedName();
+
+
+    public String getSchemaOrCatalogName();
+
+
+    /**
+     * @return SessionTreeNode for this node.
+     */
+    public SessionTreeNode getSession();
+
+
+    /**
+     * @return type of this node, e.g. Database, schema, catalog, table, view,
+     *         ...
+     */
+    public String getType();
+
+
+    /**
+     * @return Qualified path for this node.
+     */
+    public String getUniqueIdentifier();
 
 
     /**
@@ -86,53 +125,28 @@ public interface INode {
      * @param sessionNode the session this node belongs too.
      */
     public void initialize(INode parent, String name, SessionTreeNode sessionNode);
-    
-    
+
+
     /**
      * @return true if this node cannot have children..
      */
     public boolean isEndNode();
-    
-    
-    /**
-     * @return type of this node, e.g. Database, schema, catalog, table, view, ...
-     */
-    public String getType();
-    
-    
-    /**
-     * Refresh. This will clear the nodes' children and reload them.
-     */
-    public void refresh();
-    
-    
-    /**
-     * @return SessionTreeNode for this node.
-     */
-    public SessionTreeNode getSession();
-    
-    /**
-     * @return Qualified name for this node.
-     */
-    public String getQualifiedName();
-    
-    /**
-     * @return Qualified path for this node.
-     */
-    public String getUniqueIdentifier();
-    
-    /**
-     * @return Simple name for this node.
-     */
-    public String getName();
- 
-    /**
-     * Set expanded state of element
-     */
-    public void setExpanded(boolean expanded);
-    
+
+
     /**
      * @return true if node is expanded.
      */
     public boolean isExpanded();
+
+
+    /**
+     * Refresh. This will clear the nodes' children and reload them.
+     */
+    public void refresh();
+
+
+    /**
+     * Set expanded state of element
+     */
+    public void setExpanded(boolean expanded);
 }

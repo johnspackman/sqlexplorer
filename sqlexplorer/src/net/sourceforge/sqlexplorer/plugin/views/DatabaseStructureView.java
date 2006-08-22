@@ -23,7 +23,7 @@ import net.sourceforge.sqlexplorer.dbstructure.DBTreeActionGroup;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeContentProvider;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeLabelProvider;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.TableColumnNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.ColumnNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.ISessionTreeClosedListener;
@@ -69,116 +69,10 @@ import org.eclipse.ui.part.ViewPart;
  */
 public class DatabaseStructureView extends ViewPart {
 
-    /** We use one tab for every session */
-    private TabFolder _tabFolder;
-
     private Composite _parent;
 
-
-    /**
-     * Initializes the view and creates the root tabfolder that holds all the
-     * sessions.
-     * 
-     * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
-     */
-    public void createPartControl(Composite parent) {
-
-        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent,
-                SQLExplorerPlugin.PLUGIN_ID + ".DatabaseStructureView");
-
-        _parent = parent;
-
-        // load all open sessions
-        RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
-        Object[] sessions = sessionRoot.getChildren();
-        if (sessions != null) {
-            for (int i = 0; i < sessions.length; i++) {
-                SessionTreeNode session = (SessionTreeNode) sessions[i];
-                addSession(session);
-            }
-        }
-
-        // set default message
-        if (sessions == null || sessions.length == 0) {
-            setDefaultMessage();
-        }
-    }
-
-
-    /**
-     * Update the detail view with the selection in the active treeviewer.
-     */
-    public void synchronizeDetailView(final DatabaseDetailView detailView) {
-
-        BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
-
-            public void run() {
-
-                if (detailView == null) {
-                    return;
-                }
-
-                if (_tabFolder == null || _tabFolder.getItemCount() == 0) {
-                    return;
-                }
-
-                TreeViewer treeViewer = (TreeViewer) _tabFolder.getItem(_tabFolder.getSelectionIndex()).getData();
-                INode selectedNode = null;
-
-                if (treeViewer != null) {
-
-                    // find our target node..
-                    IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
-
-                    // check if we have a valid selection
-                    if (selection != null && (selection.getFirstElement() instanceof INode)) {
-
-                        selectedNode = (INode) selection.getFirstElement();
-
-                        // if the selected node is a column node, we want to
-                        // show it's parent instead
-                        // in the detail view.
-
-                        if (selectedNode instanceof TableColumnNode) {
-                            selectedNode = selectedNode.getParent();
-                        }
-                    }
-
-                }
-
-                detailView.setSelectedNode(selectedNode);
-            }
-        });
-
-    }
-
-
-    /**
-     * Set focus on our database structure view..
-     * 
-     * @see org.eclipse.ui.IWorkbenchPart#setFocus()
-     */
-    public void setFocus() {
-
-        // we don't need to do anything here..
-    }
-
-
-    /**
-     * Cleanup and reset detail view.
-     * 
-     * @see org.eclipse.ui.IWorkbenchPart#dispose()
-     */
-    public void dispose() {
-
-        // refresh detail view
-        DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(
-                SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
-
-        if (detailView != null) {
-            detailView.setSelectedNode(null);
-        }
-    }
+    /** We use one tab for every session */
+    private TabFolder _tabFolder;
 
 
     /**
@@ -234,6 +128,20 @@ public class DatabaseStructureView extends ViewPart {
         Transfer[] transfers = new Transfer[] {TableNodeTransfer.getInstance()};
         treeViewer.addDragSupport(DND.DROP_COPY, transfers, new DragSourceListener() {
 
+            public void dragFinished(DragSourceEvent event) {
+
+                System.out.println("$drag finished");
+                TableNodeTransfer.getInstance().setSelection(null);
+            }
+
+
+            public void dragSetData(DragSourceEvent event) {
+
+                Object sel = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
+                event.data = sel;
+            }
+
+
             public void dragStart(DragSourceEvent event) {
 
                 event.doit = !treeViewer.getSelection().isEmpty();
@@ -248,19 +156,6 @@ public class DatabaseStructureView extends ViewPart {
                             event.doit = false;
                     }
                 }
-            }
-
-
-            public void dragSetData(DragSourceEvent event) {
-
-                Object sel = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
-                event.data = sel;
-            }
-
-
-            public void dragFinished(DragSourceEvent event) {
-                System.out.println("$drag finished");
-                TableNodeTransfer.getInstance().setSelection(null);
             }
         });
 
@@ -336,7 +231,6 @@ public class DatabaseStructureView extends ViewPart {
             }
         });
 
-        
         // add expand/collapse listener
         treeViewer.addTreeListener(new ITreeViewerListener() {
 
@@ -349,6 +243,7 @@ public class DatabaseStructureView extends ViewPart {
                 viewer.update(node, null);
             }
 
+
             public void treeExpanded(TreeExpansionEvent event) {
 
                 // refresh the node to change image
@@ -357,11 +252,9 @@ public class DatabaseStructureView extends ViewPart {
                 TreeViewer viewer = (TreeViewer) event.getSource();
                 viewer.update(node, null);
             }
-            
+
         });
-        
-        
-        
+
         // set new tab as the active one
         _tabFolder.setSelection(_tabFolder.getItemCount() - 1);
 
@@ -404,6 +297,67 @@ public class DatabaseStructureView extends ViewPart {
 
 
     /**
+     * Remove all items from parent
+     */
+    private void clearParent() {
+
+        Control[] children = _parent.getChildren();
+        if (children != null) {
+            for (int i = 0; i < children.length; i++) {
+                children[i].dispose();
+            }
+        }
+    }
+
+
+    /**
+     * Initializes the view and creates the root tabfolder that holds all the
+     * sessions.
+     * 
+     * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
+     */
+    public void createPartControl(Composite parent) {
+
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent,
+                SQLExplorerPlugin.PLUGIN_ID + ".DatabaseStructureView");
+
+        _parent = parent;
+
+        // load all open sessions
+        RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
+        Object[] sessions = sessionRoot.getChildren();
+        if (sessions != null) {
+            for (int i = 0; i < sessions.length; i++) {
+                SessionTreeNode session = (SessionTreeNode) sessions[i];
+                addSession(session);
+            }
+        }
+
+        // set default message
+        if (sessions == null || sessions.length == 0) {
+            setDefaultMessage();
+        }
+    }
+
+
+    /**
+     * Cleanup and reset detail view.
+     * 
+     * @see org.eclipse.ui.IWorkbenchPart#dispose()
+     */
+    public void dispose() {
+
+        // refresh detail view
+        DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(
+                SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
+
+        if (detailView != null) {
+            detailView.setSelectedNode(null);
+        }
+    }
+
+
+    /**
      * Set a default message, this method is called when no sessions are
      * available for viewing.
      */
@@ -423,15 +377,60 @@ public class DatabaseStructureView extends ViewPart {
 
 
     /**
-     * Remove all items from parent
+     * Set focus on our database structure view..
+     * 
+     * @see org.eclipse.ui.IWorkbenchPart#setFocus()
      */
-    private void clearParent() {
+    public void setFocus() {
 
-        Control[] children = _parent.getChildren();
-        if (children != null) {
-            for (int i = 0; i < children.length; i++) {
-                children[i].dispose();
+        // we don't need to do anything here..
+    }
+
+
+    /**
+     * Update the detail view with the selection in the active treeviewer.
+     */
+    public void synchronizeDetailView(final DatabaseDetailView detailView) {
+
+        BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+
+            public void run() {
+
+                if (detailView == null) {
+                    return;
+                }
+
+                if (_tabFolder == null || _tabFolder.getItemCount() == 0) {
+                    return;
+                }
+
+                TreeViewer treeViewer = (TreeViewer) _tabFolder.getItem(_tabFolder.getSelectionIndex()).getData();
+                INode selectedNode = null;
+
+                if (treeViewer != null) {
+
+                    // find our target node..
+                    IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
+
+                    // check if we have a valid selection
+                    if (selection != null && (selection.getFirstElement() instanceof INode)) {
+
+                        selectedNode = (INode) selection.getFirstElement();
+
+                        // if the selected node is a column node, we want to
+                        // show it's parent instead
+                        // in the detail view.
+
+                        if (selectedNode instanceof ColumnNode) {
+                            selectedNode = selectedNode.getParent();
+                        }
+                    }
+
+                }
+
+                detailView.setSelectedNode(selectedNode);
             }
-        }
+        });
+
     }
 }

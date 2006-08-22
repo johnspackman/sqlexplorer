@@ -50,44 +50,11 @@ import org.eclipse.swt.widgets.TabItem;
  */
 public class DetailTabManager {
 
-    private static final HashMap _sessionTabCache = new HashMap();
+    private static String _activeTabName = null;
 
     private static final Log _logger = LogFactory.getLog(DetailTabManager.class);
 
-    private static String _activeTabName = null;
-    
-    /**
-     * This method returns the tabs for a given node from the cache. Tabs are
-     * cached per sessionTreeNode. If the tabs don't exist in the cache, they
-     * are created.
-     * 
-     * @param node INode for which to retrieve tabs.
-     * @return List of tabs.
-     */
-    private static List getTabs(INode node) {
-
-        if (_logger.isDebugEnabled()) {
-            _logger.debug("Loading tabs for: " + node.getUniqueIdentifier());
-        }
-
-        HashMap tabCache = (HashMap) _sessionTabCache.get(node.getSession());
-
-        if (tabCache == null) {
-            // create cache
-            tabCache = new HashMap();
-            _sessionTabCache.put(node.getSession(), tabCache);
-        }
-
-        List tabs = (List) tabCache.get(node.getUniqueIdentifier());
-
-        if (tabs == null) {
-            // create tabs & store for later
-            tabs = createTabs(node);
-            tabCache.put(node.getUniqueIdentifier(), tabs);
-        }
-
-        return tabs;
-    }
+    private static final HashMap _sessionTabCache = new HashMap();
 
 
     /**
@@ -120,6 +87,107 @@ public class DetailTabManager {
         }
 
         _sessionTabCache.remove(session);
+    }
+
+
+    /**
+     * Creates all the tabs in the detail pane to display the information for a
+     * given node.
+     * 
+     * @param composite
+     * @param node
+     */
+    public static void createTabs(Composite composite, INode node) {
+
+        List tabs = getTabs(node);
+
+        if (tabs == null || tabs.size() == 0) {
+            // no detail found..
+
+            Label label = new Label(composite, SWT.FILL);
+            label.setText(Messages.getString("DatabaseDetailView.Tab.Unavailable") + " " + node.getLabelText());
+            label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+
+            return;
+        }
+
+        // create tabs
+        TabFolder tabFolder = new TabFolder(composite, SWT.NULL);
+
+        // only init tabs when the tab becomes active
+        tabFolder.addSelectionListener(new SelectionListener() {
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+
+                // noop
+            }
+
+
+            public void widgetSelected(SelectionEvent e) {
+
+                TabItem tabItem = (TabItem) e.item;
+                IDetailTab tab = (IDetailTab) tabItem.getData();
+                if (tab != null) {
+
+                    // create composite on tab and fill it..
+                    Composite detailComposite = new Composite(tabItem.getParent(), SWT.FILL);
+                    tabItem.setControl(detailComposite);
+                    detailComposite.setLayout(new FillLayout());
+                    tab.fillComposite(detailComposite);
+                    detailComposite.layout();
+
+                    // store tab name, so we can reselect when other node is
+                    // chosen
+                    DetailTabManager.setActiveTabName(tabItem.getText());
+                }
+            }
+
+        });
+
+        // add tabs to folder
+        Iterator it = tabs.iterator();
+        int tabIndex = 0;
+
+        while (it.hasNext()) {
+
+            IDetailTab detailTab = (IDetailTab) it.next();
+
+            // create tab
+            TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
+            tabItem.setText(detailTab.getLabelText());
+            tabItem.setToolTipText(detailTab.getLabelToolTipText());
+
+            // store tab so we can fill later
+            tabItem.setData(detailTab);
+
+            // reselect same tab as was previous selected
+            if (tabItem.getText() != null && _activeTabName != null) {
+                if (tabItem.getText().equals(_activeTabName)) {
+                    tabFolder.setSelection(tabIndex);
+                }
+            }
+
+            tabIndex++;
+        }
+
+        // load data for active tab, default to first one if none is selected
+        tabIndex = tabFolder.getSelectionIndex();
+        if (tabIndex == -1) {
+            tabIndex = 0;
+        }
+
+        TabItem tabItem = tabFolder.getItem(tabIndex);
+        if (tabItem != null) {
+            Composite detailComposite = new Composite(tabItem.getParent(), SWT.FILL);
+            tabItem.setControl(detailComposite);
+            detailComposite.setLayout(new FillLayout());
+            IDetailTab tab = (IDetailTab) tabItem.getData();
+            tab.fillComposite(detailComposite);
+            detailComposite.layout();
+        }
+
+        tabFolder.layout();
+
     }
 
 
@@ -283,109 +351,52 @@ public class DetailTabManager {
 
 
     /**
-     * Creates all the tabs in the detail pane to display the information for a
-     * given node.
+     * This method returns the tabs for a given node from the cache. Tabs are
+     * cached per sessionTreeNode. If the tabs don't exist in the cache, they
+     * are created.
      * 
-     * @param composite
-     * @param node
+     * @param node INode for which to retrieve tabs.
+     * @return List of tabs.
      */
-    public static void createTabs(Composite composite, INode node) {
+    private static List getTabs(INode node) {
 
-        List tabs = getTabs(node);
-
-        if (tabs == null || tabs.size() == 0) {
-            // no detail found..
-
-            Label label = new Label(composite, SWT.FILL);
-            label.setText(Messages.getString("DatabaseDetailView.Tab.Unavailable") + " " + node.getLabelText());
-            label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-
-            return;
+        if (_logger.isDebugEnabled()) {
+            _logger.debug("Loading tabs for: " + node.getUniqueIdentifier());
         }
 
-        // create tabs
-        TabFolder tabFolder = new TabFolder(composite, SWT.NULL);
+        HashMap tabCache = (HashMap) _sessionTabCache.get(node.getSession());
 
-        // only init tabs when the tab becomes active
-        tabFolder.addSelectionListener(new SelectionListener() {
-
-            public void widgetDefaultSelected(SelectionEvent e) {
-                // noop
-            }
-
-
-            public void widgetSelected(SelectionEvent e) {
-                TabItem tabItem = (TabItem) e.item;
-                IDetailTab tab = (IDetailTab) tabItem.getData();
-                if (tab != null) {
-
-                    // create composite on tab and fill it..
-                    Composite detailComposite = new Composite(tabItem.getParent(), SWT.FILL);
-                    tabItem.setControl(detailComposite);
-                    detailComposite.setLayout(new FillLayout());
-                    tab.fillComposite(detailComposite);
-                    detailComposite.layout();
-                    
-                    // store tab name, so we can reselect when other node is chosen
-                    DetailTabManager.setActiveTabName(tabItem.getText());
-                }
-            }
-
-        });
-
-        // add tabs to folder
-        Iterator it = tabs.iterator();
-        int tabIndex = 0;
-        
-        while (it.hasNext()) {
-
-            IDetailTab detailTab = (IDetailTab) it.next();
-
-            // create tab
-            TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
-            tabItem.setText(detailTab.getLabelText());
-            tabItem.setToolTipText(detailTab.getLabelToolTipText());
-
-            // store tab so we can fill later
-            tabItem.setData(detailTab);
-
-            // reselect same tab as was previous selected
-            if (tabItem.getText() != null && _activeTabName != null) {
-                if (tabItem.getText().equals(_activeTabName)) {
-                    tabFolder.setSelection(tabIndex);
-                }
-            }
-            
-            tabIndex++;
+        if (tabCache == null) {
+            // create cache
+            tabCache = new HashMap();
+            _sessionTabCache.put(node.getSession(), tabCache);
         }
 
-        // load data for active tab, default to first one if none is selected
-        tabIndex = tabFolder.getSelectionIndex();
-        if (tabIndex == -1) {
-            tabIndex = 0;
-        }
-        
-        TabItem tabItem = tabFolder.getItem(tabIndex);
-        if (tabItem != null) {
-            Composite detailComposite = new Composite(tabItem.getParent(), SWT.FILL);
-            tabItem.setControl(detailComposite);
-            detailComposite.setLayout(new FillLayout());
-            IDetailTab tab = (IDetailTab) tabItem.getData();
-            tab.fillComposite(detailComposite);
-            detailComposite.layout();
+        List tabs = (List) tabCache.get(node.getUniqueIdentifier());
+
+        if (tabs == null) {
+            // create tabs & store for later
+            tabs = createTabs(node);
+            tabCache.put(node.getUniqueIdentifier(), tabs);
         }
 
-        tabFolder.layout();
+        // display parent details if we have nothing for this node..
+        if ((tabs == null || tabs.size() == 0) && node.getParent() != null) {
+            return getTabs(node.getParent());
+        }
 
+        return tabs;
     }
-    
-    
+
+
     /**
-     * Store the name of the active tab, so that we can reselect it when a different node is
-     * selected.
+     * Store the name of the active tab, so that we can reselect it when a
+     * different node is selected.
+     * 
      * @param name tab label
      */
     public static void setActiveTabName(String name) {
+
         _activeTabName = name;
     }
 }

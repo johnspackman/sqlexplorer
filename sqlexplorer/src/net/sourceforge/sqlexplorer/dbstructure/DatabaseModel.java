@@ -53,6 +53,7 @@ public class DatabaseModel implements INode {
 
 
     public void fillDetailComposite(Composite composite) {
+
         // not implemented
     }
 
@@ -71,11 +72,14 @@ public class DatabaseModel implements INode {
     }
 
 
-    /**
-     * @return
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getImage()
      */
-    public DatabaseNode getRoot() {
-        return (DatabaseNode) _root;
+    public Image getExpandedImage() {
+
+        return null;
     }
 
 
@@ -85,17 +89,22 @@ public class DatabaseModel implements INode {
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getImage()
      */
     public Image getImage() {
+
         return null;
     }
+
 
     /*
      * (non-Javadoc)
      * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getImage()
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getLabelDecoration()
      */
-    public Image getExpandedImage() {
+    public String getLabelDecoration() {
+
+        // TODO Auto-generated method stub
         return null;
     }
+
 
     /*
      * (non-Javadoc)
@@ -103,7 +112,19 @@ public class DatabaseModel implements INode {
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getLabelText()
      */
     public String getLabelText() {
+
         return null;
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getIdentifier()
+     */
+    public String getName() {
+
+        return getQualifiedName();
     }
 
 
@@ -113,7 +134,49 @@ public class DatabaseModel implements INode {
      * @see net.sourceforge.sqlexplorer.dbviewer.model.IDbModel#getParent()
      */
     public INode getParent() {
+
         return null;
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getIdentifier()
+     */
+    public String getQualifiedName() {
+
+        return "databaseModel";
+    }
+
+
+    /**
+     * @return
+     */
+    public DatabaseNode getRoot() {
+
+        return (DatabaseNode) _root;
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getSchemaOrCatalogName()
+     */
+    public String getSchemaOrCatalogName() {
+
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    /**
+     * @return SessionTreeNode for this node.
+     */
+    public final SessionTreeNode getSession() {
+
+        return _sessionNode;
     }
 
 
@@ -124,7 +187,19 @@ public class DatabaseModel implements INode {
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
      */
     public String getType() {
+
         return "model";
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
+     */
+    public String getUniqueIdentifier() {
+
+        return getQualifiedName();
     }
 
 
@@ -134,6 +209,7 @@ public class DatabaseModel implements INode {
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#hasChildNodes()
      */
     public boolean hasChildNodes() {
+
         return false;
     }
 
@@ -146,6 +222,7 @@ public class DatabaseModel implements INode {
      *      net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode)
      */
     public void initialize(INode parent, String name, SessionTreeNode sessionNode) {
+
         // noop
     }
 
@@ -156,6 +233,18 @@ public class DatabaseModel implements INode {
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#isEndNode()
      */
     public boolean isEndNode() {
+
+        return false;
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#isExpanded()
+     */
+    public boolean isExpanded() {
+
         return false;
     }
 
@@ -166,66 +255,19 @@ public class DatabaseModel implements INode {
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#refresh(boolean)
      */
     public void refresh() {
+
         // we don't need refresh for the database model..
     }
 
 
-    /**
-     * @return SessionTreeNode for this node.
-     */
-    public final SessionTreeNode getSession() {
-        return _sessionNode;
-    }
-
-
     /*
      * (non-Javadoc)
      * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getIdentifier()
-     */
-    public String getQualifiedName() {
-        return "databaseModel";
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getIdentifier()
-     */
-    public String getName() {
-        return getQualifiedName();
-    }
-    
-    /*
-     * (non-Javadoc)
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
-     */
-    public String getUniqueIdentifier() {
-        return getQualifiedName();
-    }
-
-
-    /* (non-Javadoc)
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#setExpanded(boolean)
      */
     public void setExpanded(boolean expanded) {
+
         return;
     }
 
-
-    /* (non-Javadoc)
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#isExpanded()
-     */
-    public boolean isExpanded() {
-        return false;
-    }
-
-
-    public String getSchemaOrCatalogName() {
-
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
 };

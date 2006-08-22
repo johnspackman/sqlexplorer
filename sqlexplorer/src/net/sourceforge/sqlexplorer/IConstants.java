@@ -23,46 +23,55 @@ import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 
 public interface IConstants {
 
+    String AUTO_COMMIT = "SQLEditor.AutoCommit";
+
     String CLIP_EXPORT_COLUMNS = "SQLEditor.ClipExportColumns";
 
     String CLIP_EXPORT_SEPARATOR = "SQLEditor.ClipExportSeparator";
 
-    String AUTO_COMMIT = "SQLEditor.AutoCommit";
-
     String COMMIT_ON_CLOSE = "SQLEditor.CommitOnClose";
+
+    String DATASETRESULT_DATE_FORMAT = "DataSetResult.DateFormat";
+
+    String DATASETRESULT_FORMAT_DATES = "DataSetResult.FormatDates";
+
+    String DEFAULT_DRIVER = "Drivers.DefaultDriverName";
+
+    String FONT = "SQLEditor.Font";
+
+    String HISTORY_AUTOSAVE_AFTER = "SQLHistory.AutoSaveAfterXXStatements";
 
     String MAX_SQL_ROWS = "SQLEditor.MaxSQLRows";
 
     String PRE_ROW_COUNT = "SQLEditor.PreRowCount";
 
-    String FONT = "SQLEditor.Font";
+    String SQL_ALT_QRY_DELIMITER = "SQLEditor.AltQueryDelimiter";
 
     String SQL_ASSIST = "SQLEditor.Assist";
 
-    String SQL_EDITOR_CLASS = SQLEditor.class.getName();
-
-    String SQL_QRY_DELIMITER = "SQLEditor.QueryDelimiter";
-
-    String SQL_ALT_QRY_DELIMITER = "SQLEditor.AltQueryDelimiter";
+    /** The color key for database tables column names */
+    String SQL_COLUMS = "SQLEditor.ColumnsColor";
 
     String SQL_COMMENT_DELIMITER = "SQLEditor.CommentDelimiter";
 
-    String INCLUDE_COLUMNS_IN_TREE = "SQLEditor.IncludeColumns";
+    /**
+     * The color key for everthing in SQL code for which no other color is
+     * specified.
+     */
+    String SQL_DEFAULT = "SQLEditor.DefaultColor";
 
-    String WARN_IF_LARGE_LIMIT = "SQLEditor.WarnIfLargeLimit";
+    String SQL_EDITOR_CLASS = SQLEditor.class.getName();
 
-    String WARN_LIMIT = "SQLEditor.WarnLimit";
-
-    String DEFAULT_DRIVER = "Drivers.DefaultDriverName";
+    /** The color key for SQL keywords in Java code. */
+    String SQL_KEYWORD = "SQLEditor.KeywordColor";
 
     /** The color key for multi-line comments in Java code. */
     String SQL_MULTILINE_COMMENT = "SQLEditor.MultiLineCommentColor";
 
+    String SQL_QRY_DELIMITER = "SQLEditor.QueryDelimiter";
+
     /** The color key for single-line comments in Java code. */
     String SQL_SINGLE_LINE_COMMENT = "SQLEditor.SingleLineCommentColor";
-
-    /** The color key for SQL keywords in Java code. */
-    String SQL_KEYWORD = "SQLEditor.KeywordColor";
 
     /** The color key for string and character literals in Java code. */
     String SQL_STRING = "SQLEditor.StringColor";
@@ -70,20 +79,9 @@ public interface IConstants {
     /** The color key for database tables names */
     String SQL_TABLE = "SQLEditor.TableColor";
 
-    /** The color key for database tables column names */
-    String SQL_COLUMS = "SQLEditor.ColumnsColor";
+    String WARN_IF_LARGE_LIMIT = "SQLEditor.WarnIfLargeLimit";
 
-    String HISTORY_AUTOSAVE_AFTER = "SQLHistory.AutoSaveAfterXXStatements"; 
-    
-    /**
-     * The color key for everthing in SQL code for which no other color is
-     * specified.
-     */
-    String SQL_DEFAULT = "SQLEditor.DefaultColor";
-    
-    String DATASETRESULT_FORMAT_DATES = "DataSetResult.FormatDates";
-    
-    String DATASETRESULT_DATE_FORMAT = "DataSetResult.DateFormat";
+    String WARN_LIMIT = "SQLEditor.WarnLimit";
 
     String WORD_WRAP = "SQLEditor.AutoWrap";
 }
