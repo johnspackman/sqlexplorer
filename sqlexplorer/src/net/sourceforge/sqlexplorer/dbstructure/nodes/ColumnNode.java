@@ -64,6 +64,11 @@ public class ColumnNode extends AbstractNode {
     }
 
 
+    public String getQualifiedParentTableName() {
+        return _parentTable.getQualifiedName();
+    }
+    
+    
     /*
      * (non-Javadoc)
      * 
@@ -71,7 +76,7 @@ public class ColumnNode extends AbstractNode {
      */
     public String getQualifiedName() {
 
-        return _parent.getParent().getName() + "." + _name;
+        return _parentTable.getName() + "." + _name;
     }
 
 

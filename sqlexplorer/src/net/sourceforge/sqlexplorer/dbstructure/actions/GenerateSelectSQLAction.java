@@ -53,7 +53,7 @@ public class GenerateSelectSQLAction extends AbstractDBTreeContextAction {
 
         StringBuffer query = new StringBuffer("select ");
         String sep = "";
-        String table = _selectedNodes[0].getParent().getQualifiedName();
+        String table = "";
 
         for (int i = 0; i < _selectedNodes.length; i++) {
 
@@ -62,8 +62,12 @@ public class GenerateSelectSQLAction extends AbstractDBTreeContextAction {
             if (node instanceof ColumnNode) {
 
                 ColumnNode column = (ColumnNode) node;
+                
+                if (table.length() == 0) {
+                    table = column.getQualifiedParentTableName();
+                }
 
-                if (column.getParent().getQualifiedName().equals(table)) {
+                if (column.getQualifiedParentTableName().equals(table)) {
 
                     query.append(sep);
                     query.append(column.getName());
