@@ -2,7 +2,7 @@
 <?eclipse version="3.2"?>
 <fragment>
    <extension
-         id="EditorActions"
+         id="net.sourceforge.sqlexplorer.db2.EditorActions"
          point="net.sourceforge.sqlexplorer.editorAction">
       <action
             class="net.sourceforge.sqlexplorer.db2.actions.ExplainAction"
@@ -11,5 +11,33 @@
             id="net.sourceforge.sqlexplorer.db2.actions.explainplan"
             name="net.sourceforge.sqlexplorer.db2.explainaction"/>
    </extension>
-
+   <extension
+         id="net.sourceforge.sqlexplorer.db2.Nodes"
+         point="net.sourceforge.sqlexplorer.node">
+      <node
+            class="net.sourceforge.sqlexplorer.db2.nodes.TriggerFolder"
+            database-product-name="DB2*"
+            icon="icons/trigger.gif"
+            id="net.sourceforge.sqlexplorer.db2.nodes.TriggerFolder"
+            name="Trigger Folder"
+            parent-node="schema+catalog"
+            table-type="trigger_folder"/>
+      <node
+            class="net.sourceforge.sqlexplorer.db2.nodes.TableTriggerFolder"
+            database-product-name="DB2*"
+            icon="icons/trigger.gif"
+            id="net.sourceforge.sqlexplorer.db2.nodes.TableTriggerFolder"
+            name="Table Specific Trigger Folder"
+            parent-node="table"
+            table-type="trigger_folder"/>
+   </extension>
+   <extension
+         point="net.sourceforge.sqlexplorer.nodeDetailTab">
+      <detailtab
+            class="net.sourceforge.sqlexplorer.db2.tabs.TriggerSourceTab"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.tabs.TriggerSourceTab"
+            name="Trigger Source"
+            node-type="trigger"/>    
+   </extension>   
 </fragment>
