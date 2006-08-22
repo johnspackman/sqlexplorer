@@ -32,6 +32,7 @@ public abstract class AbstractSourceTab extends AbstractTab {
                 SQLExplorerPlugin.getDefault().getPreferenceStore(), null);
         _viewer.setDocument(new Document(_source));
         _viewer.refresh();
+        _viewer.getTextWidget().setWordWrap(true);
         _viewer.setEditable(false);
         
     }

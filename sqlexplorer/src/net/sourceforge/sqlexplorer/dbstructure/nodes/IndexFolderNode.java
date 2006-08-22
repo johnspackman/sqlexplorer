@@ -59,7 +59,7 @@ public class IndexFolderNode extends AbstractFolderNode {
             ResultSet resultSet = _sessionNode.getMetaData().getIndexInfo(_tableInfo);
             while (resultSet.next()) {
                 String name = resultSet.getString(6);
-                if (!indexNames.contains(name)) {
+                if (!(name == null || indexNames.contains(name))) {
                     indexNames.add(name);
                 }
             }

@@ -53,7 +53,13 @@ public class TableFolderNode extends AbstractFolderNode {
         _origName = name;
         
         // cleanup the names a little
-        _name = _origName.substring(0, 1).toUpperCase() + _origName.substring(1).toLowerCase();
+        String[] words = _origName.split(" ");
+        _name = "";
+        for (int i = 0; i < words.length; i++) {
+            _name = _name + words[i].substring(0, 1).toUpperCase() + words[i].substring(1).toLowerCase() + " ";
+        }        
+        _name = _name.trim();
+        
         if (_name.equals("View")) {
             _name = Messages.getString("DatabaseStructureView.view");
         }

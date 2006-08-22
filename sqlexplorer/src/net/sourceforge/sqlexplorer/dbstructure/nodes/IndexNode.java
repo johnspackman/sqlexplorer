@@ -97,10 +97,10 @@ public class IndexNode extends AbstractNode {
                 String indexName = resultSet.getString(6);
                 String columnName = resultSet.getString(9);
                 String sort = resultSet.getString(10);
-
-                if (indexName.equalsIgnoreCase(_name)) {
+                                
+                if (indexName != null && indexName.equalsIgnoreCase(_name)) {
                     ColumnNode col = new ColumnNode(this, columnName, _sessionNode, _parentTable);
-                    if (sort.equalsIgnoreCase("A")) {
+                    if (sort == null || sort.equalsIgnoreCase("A")) {
                         col.setLabelDecoration("ASC");
                     } else {
                         col.setLabelDecoration("DESC");
