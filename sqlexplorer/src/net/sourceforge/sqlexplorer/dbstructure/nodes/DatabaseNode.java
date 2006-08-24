@@ -112,7 +112,7 @@ public class DatabaseNode extends AbstractNode {
     public String[] getChildNames() {
 
         if (_childNames.size() == 0) {
-            loadChildren();
+            getChildNodes();
         }
         return (String[]) _childNames.toArray(new String[] {});
     }
