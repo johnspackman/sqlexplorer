@@ -18,6 +18,9 @@
  */
 package net.sourceforge.sqlexplorer.plugin.views;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeActionGroup;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeContentProvider;
@@ -79,15 +82,21 @@ public class DatabaseStructureView extends ViewPart {
     /** We use one tab for every session */
     private TabFolder _tabFolder;
 
-
+    private List _allSessions = new ArrayList();
+    
     /**
      * Add a new session to the database structure view. This will create a new
      * tab for the session.
      * 
      * @param sessionTreeNode
      */
-    public void addSession(SessionTreeNode sessionTreeNode) {
+    public void addSession(final SessionTreeNode sessionTreeNode) {
 
+        if (_allSessions.contains(sessionTreeNode)) {
+            return;
+        }
+        _allSessions.add(sessionTreeNode);
+        
         if (_filterAction != null) {
             _filterAction.setEnabled(true);
         }
@@ -237,6 +246,8 @@ public class DatabaseStructureView extends ViewPart {
                     tabItem.setData(null);
                     tabItem.dispose();
                 }
+                
+                _allSessions.remove(sessionTreeNode);
             }
         });
 
