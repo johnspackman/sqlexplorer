@@ -176,6 +176,9 @@ public class DatabaseModel implements INode {
      */
     public final SessionTreeNode getSession() {
 
+        if (_sessionNode == null) {
+            _sessionNode = getRoot().getSession();
+        }
         return _sessionNode;
     }
 

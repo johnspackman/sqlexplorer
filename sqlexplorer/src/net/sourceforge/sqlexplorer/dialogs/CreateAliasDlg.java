@@ -55,38 +55,33 @@ import org.eclipse.swt.widgets.Text;
  */
 public class CreateAliasDlg extends TitleAreaDialog {
 
-    protected void setShellStyle(int newShellStyle) {
-        super.setShellStyle(newShellStyle | SWT.RESIZE);// Make the dialog
-                                                        // resizable
-    }
-
-    DriverModel driverModel;
-
-    private static final int SIZING_TEXT_FIELD_WIDTH = 250;
+    Button _btnAutoLogon;
 
     private SQLAlias alias;
 
-    Text nameField;
-
-    Text userField;
-
-    Text urlField;
-
-    Text passwordField;
-
-    Text _metaFilterExpressionField;
+    private AliasModel aliasModel;
 
     Button btnActivate;
 
-    Button _btnAutoLogon;
-
     Combo combo;
+
+    DriverModel driverModel;
+
+    Text nameField;
+
+    Text passwordField;
 
     int type;
 
-    private AliasModel aliasModel;
+    Text urlField;
+
+    Text userField;
+
+    private static final int SIZING_TEXT_FIELD_WIDTH = 250;
+
 
     public CreateAliasDlg(Shell parentShell, DriverModel dm, int type, SQLAlias al, AliasModel am) {
+
         super(parentShell);
         driverModel = dm;
         alias = al;
@@ -94,7 +89,9 @@ public class CreateAliasDlg extends TitleAreaDialog {
         this.type = type;
     }
 
+
     protected void configureShell(Shell shell) {
+
         super.configureShell(shell);
         if (type == 1) {
             shell.setText(Messages.getString("AliasDialog.Create.Title")); //$NON-NLS-1$
@@ -105,30 +102,13 @@ public class CreateAliasDlg extends TitleAreaDialog {
         }
     }
 
-    protected void okPressed() {
-        try {
-            alias.setName(nameField.getText().trim());
-            int selIndex = combo.getSelectionIndex();
-            alias.setDriverIdentifier(driverModel.getElement(selIndex).getIdentifier());
-            alias.setUrl(urlField.getText().trim());
-            alias.setUserName(userField.getText().trim());
-            alias.setName(this.nameField.getText().trim());
-            alias.setMetaFilterExpression(_metaFilterExpressionField.getText().trim());
-            alias.setConnectAtStartup(btnActivate.getSelection());
-            alias.setPassword(passwordField.getText().trim());
-            alias.setAutoLogon(_btnAutoLogon.getSelection());
-            if ((this.type == 1) || (type == 3)) {
-                aliasModel.addAlias(alias);
-            }
-        } catch (ValidationException excp) {
-            SQLExplorerPlugin.error("Validation Exception", excp);//$NON-NLS-1$
-            // System.out.println(Messages.getString("Error_Validation_Exception_4"));//$NON-NLS-1$
-        } catch (DuplicateObjectException excp1) {
-            SQLExplorerPlugin.error("Duplicate Exception", excp1);//$NON-NLS-1$
-            // System.out.println(Messages.getString("Error_DuplicateObjectException_5"));//$NON-NLS-1$
-        }
-        close();
+
+    protected void createButtonsForButtonBar(Composite parent) {
+
+        super.createButtonsForButtonBar(parent);
+        validate();
     }
+
 
     protected Control createContents(Composite parent) {
 
@@ -152,24 +132,16 @@ public class CreateAliasDlg extends TitleAreaDialog {
         contents.addDisposeListener(new DisposeListener() {
 
             public void widgetDisposed(DisposeEvent e) {
-                ImageUtil.disposeImage("Images.WizardLogo");                
-            }            
+
+                ImageUtil.disposeImage("Images.WizardLogo");
+            }
         });
         return contents;
     }
 
-    protected void createButtonsForButtonBar(Composite parent) {
-        super.createButtonsForButtonBar(parent);
-        validate();
-    }
-
-    protected void setDialogComplete(boolean value) {
-        Button okBtn = getButton(IDialogConstants.OK_ID);
-        if (okBtn != null)
-            okBtn.setEnabled(value);
-    }
 
     protected Control createDialogArea(Composite parent) {
+
         // top level composite
         Composite parentComposite = (Composite) super.createDialogArea(parent);
 
@@ -202,10 +174,13 @@ public class CreateAliasDlg extends TitleAreaDialog {
         nameField.addKeyListener(new KeyListener() {
 
             public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
+
                 CreateAliasDlg.this.validate();
             };
 
+
             public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
+
                 CreateAliasDlg.this.validate();
             };
         });
@@ -228,6 +203,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
         button.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent event) {
+
                 final IdentifierFactory factory = IdentifierFactory.getInstance();
                 final ISQLDriver driver = driverModel.createDriver(factory.createIdentifier());
 
@@ -250,10 +226,13 @@ public class CreateAliasDlg extends TitleAreaDialog {
         urlField.addKeyListener(new KeyListener() {
 
             public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
+
                 CreateAliasDlg.this.validate();
             };
 
+
             public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
+
                 CreateAliasDlg.this.validate();
             };
         });
@@ -269,10 +248,13 @@ public class CreateAliasDlg extends TitleAreaDialog {
         userField.addKeyListener(new KeyListener() {
 
             public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
+
                 CreateAliasDlg.this.validate();
             };
 
+
             public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
+
                 CreateAliasDlg.this.validate();
             };
         });
@@ -285,26 +267,6 @@ public class CreateAliasDlg extends TitleAreaDialog {
         data.horizontalSpan = 2;
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         passwordField.setLayoutData(data);
-
-        Label label6 = new Label(nameGroup, SWT.WRAP);
-        label6.setText(Messages.getString("AliasDialog.MetaFilterExpression"));
-        label6.setToolTipText(Messages.getString("AliasDialog.MetaFilterExpressionToolTip"));
-        _metaFilterExpressionField = new Text(nameGroup, SWT.BORDER);
-        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-        data.horizontalSpan = 2;
-        data.widthHint = SIZING_TEXT_FIELD_WIDTH;
-        _metaFilterExpressionField.setLayoutData(data);
-        _metaFilterExpressionField.setToolTipText(Messages.getString("AliasDialog.MetaFilterExpressionToolTip"));
-        _metaFilterExpressionField.addKeyListener(new KeyListener() {
-
-            public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
-                CreateAliasDlg.this.validate();
-            };
-
-            public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
-                CreateAliasDlg.this.validate();
-            };
-        });
 
         Label label7 = new Label(nameGroup, SWT.WRAP);
         label7.setText("Open on Eclipse Startup"); //$NON-NLS-1$
@@ -327,9 +289,12 @@ public class CreateAliasDlg extends TitleAreaDialog {
         combo.addSelectionListener(new org.eclipse.swt.events.SelectionListener() {
 
             public void widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent e) {
+
             }
 
+
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+
                 int selIndex = combo.getSelectionIndex();
                 urlField.setText(driverModel.getElement(selIndex).getUrl());
                 CreateAliasDlg.this.validate();
@@ -343,17 +308,11 @@ public class CreateAliasDlg extends TitleAreaDialog {
         return parentComposite;
     }
 
-    void validate() {
-        if ((urlField.getText().trim().length() > 0) && (nameField.getText().trim().length() > 0))
-            setDialogComplete(true);
-        else
-            setDialogComplete(false);
-    }
 
     private void loadData() {
+
         nameField.setText(alias.getName());
         userField.setText(alias.getUserName());
-        _metaFilterExpressionField.setText(alias.getMetaFilterExpression());
         passwordField.setText(alias.getPassword());
         btnActivate.setSelection(alias.isConnectAtStartup());
         _btnAutoLogon.setSelection(alias.isAutoLogon());
@@ -363,6 +322,59 @@ public class CreateAliasDlg extends TitleAreaDialog {
             combo.setText(iSqlDriver.getName());
             urlField.setText(alias.getUrl());
         }
+    }
+
+
+    protected void okPressed() {
+
+        try {
+            alias.setName(nameField.getText().trim());
+            int selIndex = combo.getSelectionIndex();
+            alias.setDriverIdentifier(driverModel.getElement(selIndex).getIdentifier());
+            alias.setUrl(urlField.getText().trim());
+            alias.setUserName(userField.getText().trim());
+            alias.setName(this.nameField.getText().trim());
+            alias.setSchemaFilterExpression("");
+            alias.setNameFilterExpression("");
+            alias.setFolderFilterExpression("");
+            alias.setConnectAtStartup(btnActivate.getSelection());
+            alias.setPassword(passwordField.getText().trim());
+            alias.setAutoLogon(_btnAutoLogon.getSelection());
+            if ((this.type == 1) || (type == 3)) {
+                aliasModel.addAlias(alias);
+            }
+        } catch (ValidationException excp) {
+            SQLExplorerPlugin.error("Validation Exception", excp);//$NON-NLS-1$
+            // System.out.println(Messages.getString("Error_Validation_Exception_4"));//$NON-NLS-1$
+        } catch (DuplicateObjectException excp1) {
+            SQLExplorerPlugin.error("Duplicate Exception", excp1);//$NON-NLS-1$
+            // System.out.println(Messages.getString("Error_DuplicateObjectException_5"));//$NON-NLS-1$
+        }
+        close();
+    }
+
+
+    protected void setDialogComplete(boolean value) {
+
+        Button okBtn = getButton(IDialogConstants.OK_ID);
+        if (okBtn != null)
+            okBtn.setEnabled(value);
+    }
+
+
+    protected void setShellStyle(int newShellStyle) {
+
+        super.setShellStyle(newShellStyle | SWT.RESIZE);// Make the dialog
+        // resizable
+    }
+
+
+    void validate() {
+
+        if ((urlField.getText().trim().length() > 0) && (nameField.getText().trim().length() > 0))
+            setDialogComplete(true);
+        else
+            setDialogComplete(false);
     }
 
 }

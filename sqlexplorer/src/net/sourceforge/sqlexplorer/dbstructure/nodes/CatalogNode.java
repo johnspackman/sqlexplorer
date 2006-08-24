@@ -18,6 +18,11 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.sourceforge.sqlexplorer.ImageUtil;
+import net.sourceforge.sqlexplorer.SQLAlias;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.util.TextUtil;
@@ -35,12 +40,17 @@ import org.eclipse.core.runtime.Platform;
  * Database catalog node.
  * 
  * @author Davy Vanherbergen
- *
+ * 
  */
 public class CatalogNode extends AbstractNode {
 
-	private static final Log _logger = LogFactory.getLog(CatalogNode.class);
-	
+    private List _childNames = new ArrayList();
+
+    private String[] _filteredNames;
+
+    private static final Log _logger = LogFactory.getLog(CatalogNode.class);
+
+
     /**
      * Create new database Catalog node.
      * 
@@ -49,7 +59,7 @@ public class CatalogNode extends AbstractNode {
      * @param sessionNode session for this node
      */
     public CatalogNode(INode parent, String name, SessionTreeNode sessionNode) {
-        
+
         _sessionNode = sessionNode;
         _parent = parent;
         _name = name;
@@ -57,17 +67,11 @@ public class CatalogNode extends AbstractNode {
         _imageKey = "Images.CatalogNodeIcon";
     }
 
-    
-    
-    /**
-     * Location extenstion nodes for a given tableType
-     * @param tableType for which to find extension node
-     * @return INode or null if no extensions found
-     */
-    private INode findExtensionNode(String tableType) {
-        
+
+    private void addExtensionNodes() {
+
         String databaseProductName = getSession().getRoot().getDatabaseProductName().toLowerCase().trim();
-        
+
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "node");
         IExtension[] extensions = point.getExtensions();
@@ -80,112 +84,259 @@ public class CatalogNode extends AbstractNode {
 
             for (int j = 0; j < ces.length; j++) {
                 try {
-                    
-                    // include only nodes that are attachted to the schema node..
+
+                    // include only nodes that are attachted to the schema
+                    // node..
                     String parent = ces[j].getAttribute("parent-node");
                     if (parent.indexOf("catalog") == -1) {
                         continue;
                     }
-                    
+
                     boolean isValidProduct = false;
                     String[] validProducts = ces[j].getAttribute("database-product-name").split(",");
-                    
+
                     // include only nodes valid for this database
                     for (int k = 0; k < validProducts.length; k++) {
-                        
+
                         String product = validProducts[k].toLowerCase().trim();
-                        
+
                         if (product.length() == 0) {
                             continue;
                         }
-                        
+
                         if (product.equals("*")) {
                             isValidProduct = true;
                             break;
                         }
-                        
+
                         String regex = TextUtil.replaceChar(product, '*', ".*");
                         if (databaseProductName.matches(regex)) {
                             isValidProduct = true;
                             break;
                         }
-                        
+
                     }
-                    
+
                     if (!isValidProduct) {
                         continue;
                     }
-                    
-                    // check if it is the correct type
+
+                    String imagePath = ces[j].getAttribute("icon");
+                    String id = ces[j].getAttribute("id");
                     String type = ces[j].getAttribute("table-type").trim();
-                    if (!type.equalsIgnoreCase(tableType)) {
-                        continue;
-                    }
-                    
-                    AbstractNode childNode = (AbstractNode) ces[j].createExecutableExtension("class");                        
+
+                    AbstractNode childNode = (AbstractNode) ces[j].createExecutableExtension("class");
                     childNode.setParent(this);
                     childNode.setSession(_sessionNode);
-                    
-                    return childNode;
-                    
-                    
+                    childNode.setType(type);
+
+                    String fragmentId = id.substring(0, id.indexOf('.', 28));
+                    if (imagePath != null && imagePath.trim().length() != 0) {
+                        childNode.setImage(ImageUtil.getFragmentImage(fragmentId, imagePath));
+                    }
+
+                    _childNames.add(childNode.getLabelText());
+                    if (!isExcludedByFilter(childNode.getLabelText())) {
+                        addChildNode(childNode);
+                    }
+
                 } catch (Throwable ex) {
                     SQLExplorerPlugin.error("Could not create child node", ex);
                 }
             }
         }
-        
-        return null;
-    }
-    
-    
-    /* (non-Javadoc)
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode#loadChildren()
-     */
-    public void loadChildren() {
-               
-        try {
-            
-        	ITableInfo[] tables = null;
-        	String[] tableTypes = _sessionNode.getMetaData().getTableTypes();
-        	
-        	try {        		
-        		tables = _sessionNode.getMetaData().getTables(_name, null, "%", tableTypes);
-        	} catch (Throwable e) {
-        		_logger.debug("Loading all tables at once is not supported");
-        	}
-        	           
-            for (int i = 0; i < tableTypes.length; ++i) {
 
-                INode childNode = findExtensionNode(tableTypes[i]);
-                if (childNode != null) {
-                    addChildNode(childNode);
-                } else {
-                    addChildNode(new TableFolderNode(this, tableTypes[i], _sessionNode, tables));    
-                }
-            }
-            
-        } catch (Throwable e) {
-            SQLExplorerPlugin.error("Could not load childnodes for " + _name, e);
-        }        
     }
 
 
     /**
-     * Returns "catalog" as the type for this node.   
+     * Location extenstion nodes for a given tableType
+     * 
+     * @param tableType for which to find extension node
+     * @return INode or null if no extensions found
+     */
+    private INode findExtensionNode(String tableType) {
+
+        String databaseProductName = getSession().getRoot().getDatabaseProductName().toLowerCase().trim();
+
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "node");
+        IExtension[] extensions = point.getExtensions();
+
+        for (int i = 0; i < extensions.length; i++) {
+
+            IExtension e = extensions[i];
+
+            IConfigurationElement[] ces = e.getConfigurationElements();
+
+            for (int j = 0; j < ces.length; j++) {
+                try {
+
+                    // include only nodes that are attachted to the schema
+                    // node..
+                    String parent = ces[j].getAttribute("parent-node");
+                    if (parent.indexOf("catalog") == -1) {
+                        continue;
+                    }
+
+                    boolean isValidProduct = false;
+                    String[] validProducts = ces[j].getAttribute("database-product-name").split(",");
+
+                    // include only nodes valid for this database
+                    for (int k = 0; k < validProducts.length; k++) {
+
+                        String product = validProducts[k].toLowerCase().trim();
+
+                        if (product.length() == 0) {
+                            continue;
+                        }
+
+                        if (product.equals("*")) {
+                            isValidProduct = true;
+                            break;
+                        }
+
+                        String regex = TextUtil.replaceChar(product, '*', ".*");
+                        if (databaseProductName.matches(regex)) {
+                            isValidProduct = true;
+                            break;
+                        }
+
+                    }
+
+                    if (!isValidProduct) {
+                        continue;
+                    }
+
+                    // check if it is the correct type
+                    String type = ces[j].getAttribute("table-type").trim();
+                    if (!type.equalsIgnoreCase(tableType)) {
+                        continue;
+                    }
+
+                    AbstractNode childNode = (AbstractNode) ces[j].createExecutableExtension("class");
+                    childNode.setParent(this);
+                    childNode.setSession(_sessionNode);
+
+                    return childNode;
+
+                } catch (Throwable ex) {
+                    SQLExplorerPlugin.error("Could not create child node", ex);
+                }
+            }
+        }
+
+        return null;
+    }
+
+
+    public String[] getChildNames() {
+
+        if (_childNames.size() == 0) {
+            loadChildren();
+        }
+        return (String[]) _childNames.toArray(new String[] {});
+    }
+
+
+    /**
+     * Returns "catalog" as the type for this node.
+     * 
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
      */
     public String getType() {
+
         return "catalog";
     }
 
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
      */
     public String getUniqueIdentifier() {
+
         return getQualifiedName();
     }
 
-    
+
+    /**
+     * Checks if a node name should be filtered.
+     * 
+     * @param name to check for filtering
+     * @return true if the name should be filtered
+     */
+    protected boolean isExcludedByFilter(String name) {
+
+        if (_filteredNames == null) {
+            String filter = ((SQLAlias) getSession().getAlias()).getFolderFilterExpression();
+            if (filter != null) {
+                _filteredNames = filter.split(",");
+            }
+        }
+        if (_filteredNames == null || _filteredNames.length == 0) {
+            // no active filter
+            return false;
+        }
+
+        for (int i = 0; i < _filteredNames.length; i++) {
+
+            if (_filteredNames[i].equalsIgnoreCase(name)) {
+                // we have a match, exclude node..
+                return true;
+            }
+        }
+
+        // no match found
+        return false;
+
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode#loadChildren()
+     */
+    public void loadChildren() {
+
+        _childNames = new ArrayList();
+
+        try {
+
+            ITableInfo[] tables = null;
+            String[] tableTypes = _sessionNode.getMetaData().getTableTypes();
+
+            try {
+                tables = _sessionNode.getMetaData().getTables(_name, null, "%", tableTypes);
+            } catch (Throwable e) {
+                _logger.debug("Loading all tables at once is not supported");
+            }
+
+            for (int i = 0; i < tableTypes.length; ++i) {
+
+                INode childNode = findExtensionNode(tableTypes[i]);
+                if (childNode != null) {
+                    _childNames.add(childNode.getLabelText());
+                    if (!isExcludedByFilter(childNode.getLabelText())) {
+                        addChildNode(childNode);
+                    }
+                } else {
+                    TableFolderNode node = new TableFolderNode(this, tableTypes[i], _sessionNode, tables);
+                    _childNames.add(node.getLabelText());
+                    if (!isExcludedByFilter(node.getLabelText())) {
+                        addChildNode(node);
+                    }
+                }
+            }
+
+            // load extension nodes
+            addExtensionNodes();
+
+        } catch (Throwable e) {
+            SQLExplorerPlugin.error("Could not load childnodes for " + _name, e);
+        }
+    }
+
 }

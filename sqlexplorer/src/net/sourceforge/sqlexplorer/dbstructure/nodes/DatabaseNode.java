@@ -43,16 +43,20 @@ import org.eclipse.core.runtime.Platform;
  */
 public class DatabaseNode extends AbstractNode {
 
-    private String[] _filterExpressions;
-
     private SQLAlias _alias;
+
+    private List _childNames = new ArrayList();
+
+    private String _databaseProductName;
+
+    private String[] _filterExpressions;
 
     private boolean _supportsCatalogs = false;
 
     private boolean _supportsSchemas = false;
 
-    private String _databaseProductName;
-
+    private String _databaseVersion;
+    
 
     /**
      * Create a new database node with the given name
@@ -67,7 +71,7 @@ public class DatabaseNode extends AbstractNode {
         _alias = (SQLAlias) _sessionNode.getAlias();
 
         SQLDatabaseMetaData metadata = _sessionNode.getMetaData();
-        
+
         try {
             if (metadata.supportsCatalogs()) {
                 _supportsCatalogs = true;
@@ -76,130 +80,103 @@ public class DatabaseNode extends AbstractNode {
                 _supportsSchemas = true;
             }
             _databaseProductName = metadata.getDatabaseProductName();
+            _databaseVersion = metadata.getDatabaseProductVersion();
             
         } catch (Exception e) {
             SQLExplorerPlugin.error("Error loading database product name.", e);
         }
-        
+
         _imageKey = "Images.DatabaseIcon";
     }
 
 
     /**
-     * Loads childnodes, filtered to a subset of schemas/databases depending on
-     * whether a comma separated list of regular expression filters has been
-     * set.
+     * @return List of catalog nodes
      */
-    public void loadChildren() {
+    public List getCatalogs() {
 
-        String metaFilterExpression = _alias.getMetaFilterExpression();
-        if (metaFilterExpression != null && metaFilterExpression.trim().length() != 0) {
-            _filterExpressions = metaFilterExpression.split(",");
+        ArrayList catalogs = new ArrayList();
+
+        Iterator it = getChildIterator();
+        while (it.hasNext()) {
+            Object o = it.next();
+            if (o instanceof CatalogNode) {
+                catalogs.add(o);
+            }
+        }
+
+        return catalogs;
+    }
+
+
+    public String[] getChildNames() {
+
+        if (_childNames.size() == 0) {
+            loadChildren();
+        }
+        return (String[]) _childNames.toArray(new String[] {});
+    }
+
+
+    public String getDatabaseProductName() {
+
+        return _databaseProductName;
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getLabelText()
+     */
+    public String getLabelText() {
+
+        if (_alias.isFiltered()) {
+            return _databaseProductName + " " + _databaseVersion + " " + Messages.getString("DatabaseStructureView.filteredPostfix");
         } else {
-            _filterExpressions = null;
+            return _databaseProductName + " " + _databaseVersion;
         }
-        
-        SQLDatabaseMetaData metadata = _sessionNode.getMetaData();
+    }
 
-        try {
-           
-            if (_supportsCatalogs) {
 
-                final String[] catalogs = metadata.getCatalogs();
-                for (int i = 0; i < catalogs.length; ++i) {
-                    if (!isExcludedByFilter(catalogs[i])) {
-                        addChildNode(new CatalogNode(this, catalogs[i], _sessionNode));
-                    }
-                }
+    /**
+     * @return List of all database schemas
+     */
+    public List getSchemas() {
 
-            } else if (_supportsSchemas) {
+        ArrayList schemas = new ArrayList();
 
-                final String[] schemas = metadata.getSchemas();
-                for (int i = 0; i < schemas.length; ++i) {
-                    if (!isExcludedByFilter(schemas[i])) {
-                        addChildNode(new SchemaNode(this, schemas[i], _sessionNode));
-                    }
-                }
-
-            } else {
-
-                addChildNode(new CatalogNode(this, Messages.getString("NoCatalog_2"), _sessionNode));
+        Iterator it = getChildIterator();
+        while (it.hasNext()) {
+            Object o = it.next();
+            if (o instanceof SchemaNode) {
+                schemas.add(o);
             }
-
-            
-            // load extension nodes
-            String databaseProductName = _databaseProductName.toLowerCase().trim();
-            
-            IExtensionRegistry registry = Platform.getExtensionRegistry();
-            IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "node");
-            IExtension[] extensions = point.getExtensions();
-
-            for (int i = 0; i < extensions.length; i++) {
-
-                IExtension e = extensions[i];
-
-                IConfigurationElement[] ces = e.getConfigurationElements();
-
-                for (int j = 0; j < ces.length; j++) {
-                    try {
-                        
-                        // include only nodes that are attachted to the root node..
-                        String parent = ces[j].getAttribute("parent-node");
-                        if (!parent.equalsIgnoreCase("root")) {
-                            continue;
-                        }
-                        
-                        boolean isValidProduct = false;
-                        String[] validProducts = ces[j].getAttribute("database-product-name").split(",");
-                        
-                        // include only nodes valid for this database
-                        for (int k = 0; k < validProducts.length; k++) {
-                            
-                            String product = validProducts[k].toLowerCase().trim();
-                            
-                            if (product.length() == 0) {
-                                continue;
-                            }
-                            
-                            if (product.equals("*")) {
-                                isValidProduct = true;
-                                break;
-                            }
-                            
-                            String regex = TextUtil.replaceChar(product, '*', ".*");
-                            if (databaseProductName.matches(regex)) {
-                                isValidProduct = true;
-                                break;
-                            }
-                            
-                        }
-                        
-                        if (!isValidProduct) {
-                            continue;
-                        }
-                        
-                        String type = ces[j].getAttribute("table-type").trim();
-                        
-                        AbstractNode childNode = (AbstractNode) ces[j].createExecutableExtension("class");                        
-                        childNode.setParent(this);
-                        childNode.setSession(_sessionNode);
-                        childNode.setType(type);
-                        
-                        addChildNode(childNode);
-                        
-                        
-                    } catch (Throwable ex) {
-                        SQLExplorerPlugin.error("Could not create child node", ex);
-                    }
-                }
-            }
-
-            
-            
-        } catch (Exception e) {
-            SQLExplorerPlugin.error("Error loading children", e);
         }
 
+        return schemas;
+    }
+
+
+    /**
+     * Returns "database" as the type for this node.
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
+     */
+    public String getType() {
+
+        return "database";
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
+     */
+    public String getUniqueIdentifier() {
+
+        return getQualifiedName();
     }
 
 
@@ -234,28 +211,122 @@ public class DatabaseNode extends AbstractNode {
     }
 
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getLabelText()
-     */
-    public String getLabelText() {
-
-        if (_alias.getMetaFilterExpression() != null && _alias.getMetaFilterExpression().trim().length() != 0) {
-            return super.getLabelText() + " " + Messages.getString("DatabaseStructureView.filteredPostfix");
-        } else {
-            return super.getLabelText();
-        }
-    }
-
-
     /**
-     * Returns "database" as the type for this node.
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
+     * Loads childnodes, filtered to a subset of schemas/databases depending on
+     * whether a comma separated list of regular expression filters has been
+     * set.
      */
-    public String getType() {
-        return "database";
+    public void loadChildren() {
+
+        _childNames = new ArrayList();
+
+        String metaFilterExpression = _alias.getSchemaFilterExpression();
+        if (metaFilterExpression != null && metaFilterExpression.trim().length() != 0) {
+            _filterExpressions = metaFilterExpression.split(",");
+        } else {
+            _filterExpressions = null;
+        }
+
+        SQLDatabaseMetaData metadata = _sessionNode.getMetaData();
+
+        try {
+
+            if (_supportsCatalogs) {
+
+                final String[] catalogs = metadata.getCatalogs();
+                for (int i = 0; i < catalogs.length; ++i) {
+                    _childNames.add(catalogs[i]);
+                    if (!isExcludedByFilter(catalogs[i])) {
+                        addChildNode(new CatalogNode(this, catalogs[i], _sessionNode));
+                    }
+                }
+
+            } else if (_supportsSchemas) {
+
+                final String[] schemas = metadata.getSchemas();
+                for (int i = 0; i < schemas.length; ++i) {
+                    _childNames.add(schemas[i]);
+                    if (!isExcludedByFilter(schemas[i])) {
+                        addChildNode(new SchemaNode(this, schemas[i], _sessionNode));
+                    }
+                }
+
+            } else {
+
+                addChildNode(new CatalogNode(this, Messages.getString("NoCatalog_2"), _sessionNode));
+            }
+
+            // load extension nodes
+            String databaseProductName = _databaseProductName.toLowerCase().trim();
+
+            IExtensionRegistry registry = Platform.getExtensionRegistry();
+            IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "node");
+            IExtension[] extensions = point.getExtensions();
+
+            for (int i = 0; i < extensions.length; i++) {
+
+                IExtension e = extensions[i];
+
+                IConfigurationElement[] ces = e.getConfigurationElements();
+
+                for (int j = 0; j < ces.length; j++) {
+                    try {
+
+                        // include only nodes that are attachted to the root
+                        // node..
+                        String parent = ces[j].getAttribute("parent-node");
+                        if (!parent.equalsIgnoreCase("root")) {
+                            continue;
+                        }
+
+                        boolean isValidProduct = false;
+                        String[] validProducts = ces[j].getAttribute("database-product-name").split(",");
+
+                        // include only nodes valid for this database
+                        for (int k = 0; k < validProducts.length; k++) {
+
+                            String product = validProducts[k].toLowerCase().trim();
+
+                            if (product.length() == 0) {
+                                continue;
+                            }
+
+                            if (product.equals("*")) {
+                                isValidProduct = true;
+                                break;
+                            }
+
+                            String regex = TextUtil.replaceChar(product, '*', ".*");
+                            if (databaseProductName.matches(regex)) {
+                                isValidProduct = true;
+                                break;
+                            }
+
+                        }
+
+                        if (!isValidProduct) {
+                            continue;
+                        }
+
+                        String type = ces[j].getAttribute("table-type").trim();
+
+                        AbstractNode childNode = (AbstractNode) ces[j].createExecutableExtension("class");
+                        childNode.setParent(this);
+                        childNode.setSession(_sessionNode);
+                        childNode.setType(type);
+
+                        addChildNode(childNode);
+
+                    } catch (Throwable ex) {
+                        SQLExplorerPlugin.error("Could not create child node", ex);
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            SQLExplorerPlugin.error("Error loading children", e);
+        }
+
     }
 
 
@@ -263,6 +334,7 @@ public class DatabaseNode extends AbstractNode {
      * @return true if this database supports catalogs
      */
     public boolean supportsCatalogs() {
+
         return _supportsCatalogs;
     }
 
@@ -271,59 +343,8 @@ public class DatabaseNode extends AbstractNode {
      * @return true if this database supports schemas
      */
     public boolean supportsSchemas() {
+
         return _supportsSchemas;
     }
 
-
-    /**
-     * @return List of all database schemas
-     */
-    public List getSchemas() {
-
-        ArrayList schemas = new ArrayList();
-
-        Iterator it = getChildIterator();
-        while (it.hasNext()) {
-            Object o = it.next();
-            if (o instanceof SchemaNode) {
-                schemas.add(o);
-            }
-        }
-
-        return schemas;
-    }
-
-
-    /**
-     * @return List of catalog nodes
-     */
-    public List getCatalogs() {
-
-        ArrayList catalogs = new ArrayList();
-
-        Iterator it = getChildIterator();
-        while (it.hasNext()) {
-            Object o = it.next();
-            if (o instanceof CatalogNode) {
-                catalogs.add(o);
-            }
-        }
-
-        return catalogs;
-    }
-
-
-    public String getDatabaseProductName() {
-        return _databaseProductName;
-    }
-
-    
-    /* (non-Javadoc)
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
-     */
-    public String getUniqueIdentifier() {
-        return getQualifiedName();
-    }
-    
-    
 }

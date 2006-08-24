@@ -22,8 +22,10 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeActionGroup;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeContentProvider;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeLabelProvider;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
+import net.sourceforge.sqlexplorer.dbstructure.DatabaseModel;
+import net.sourceforge.sqlexplorer.dbstructure.actions.FilterStructureAction;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.ColumnNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.ISessionTreeClosedListener;
@@ -32,6 +34,7 @@ import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -69,6 +72,8 @@ import org.eclipse.ui.part.ViewPart;
  */
 public class DatabaseStructureView extends ViewPart {
 
+    private FilterStructureAction _filterAction;
+
     private Composite _parent;
 
     /** We use one tab for every session */
@@ -82,6 +87,10 @@ public class DatabaseStructureView extends ViewPart {
      * @param sessionTreeNode
      */
     public void addSession(SessionTreeNode sessionTreeNode) {
+
+        if (_filterAction != null) {
+            _filterAction.setEnabled(true);
+        }
 
         if (_tabFolder == null || _tabFolder.isDisposed()) {
 
@@ -221,7 +230,7 @@ public class DatabaseStructureView extends ViewPart {
                     }
 
                     setDefaultMessage();
-
+                    _filterAction.setEnabled(false);
                 } else {
 
                     // remove tab
@@ -280,7 +289,7 @@ public class DatabaseStructureView extends ViewPart {
         getSite().getPage().bringToTop(this);
 
         // add context menu
-        final DBTreeActionGroup actionGroup = new DBTreeActionGroup(treeViewer);
+        final DBTreeActionGroup actionGroup = new DBTreeActionGroup(treeViewer, this);
         MenuManager menuManager = new MenuManager("DBTreeContextMenu");
         menuManager.setRemoveAllWhenShown(true);
         Menu contextMenu = menuManager.createContextMenu(treeViewer.getTree());
@@ -337,6 +346,11 @@ public class DatabaseStructureView extends ViewPart {
         if (sessions == null || sessions.length == 0) {
             setDefaultMessage();
         }
+
+        _filterAction = new FilterStructureAction(this);
+        _filterAction.setEnabled((sessions != null && sessions.length != 0));
+        IToolBarManager toolBarMgr = getViewSite().getActionBars().getToolBarManager();
+        toolBarMgr.add(_filterAction);
     }
 
 
@@ -353,6 +367,39 @@ public class DatabaseStructureView extends ViewPart {
 
         if (detailView != null) {
             detailView.setSelectedNode(null);
+        }
+    }
+
+
+    public DatabaseModel getActiveDatabase() {
+
+        if (_tabFolder == null) {
+            return null;
+        }
+        TabItem item = _tabFolder.getItem(_tabFolder.getSelectionIndex());
+        DatabaseModel model = (DatabaseModel) ((TreeViewer) item.getData()).getInput();
+        return model;
+    }
+
+
+    /**
+     * Loop through all tabs and refresh trees for sessions with sessionName
+     */
+    public void refreshSessionTrees(String sessionName) {
+
+        if (_tabFolder == null) {
+            return;
+        }
+        TabItem[] items = _tabFolder.getItems();
+        if (items != null) {
+            for (int i = 0; i < items.length; i++) {
+                TreeViewer viewer = (TreeViewer) items[i].getData();
+                DatabaseModel model = (DatabaseModel) viewer.getInput();
+                if (model.getSession().toString().equals(sessionName)) {
+                    model.getRoot().refresh();
+                    viewer.refresh();
+                }
+            }
         }
     }
 

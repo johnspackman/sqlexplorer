@@ -240,12 +240,6 @@
             name="Generate TABLE Script"
             node-type="table"/>
       <action
-            class="net.sourceforge.sqlexplorer.dbstructure.actions.AddNodeToFilterAction"
-            database-product-name="*"
-            id="sqlexplorer.dbstructure.actions.AddNodeToFilterAction"
-            name="Add Node To Filter"
-            node-type="catalog,schema"/>
-      <action
             class="net.sourceforge.sqlexplorer.dbstructure.actions.RemoveNodeFilterAction"
             database-product-name="*"
             id="sqlexplorer.dbstructure.actions.RemoveNodeFilterAction"

@@ -64,11 +64,11 @@ public class RemoveNodeFilterAction extends AbstractDBTreeContextAction {
     public void run() {
 
         SQLAlias alias = (SQLAlias) _selectedNodes[0].getSession().getAlias();
-        alias.setMetaFilterExpression("");
-
-        _selectedNodes[0].getSession().getRoot().refresh();
-        _treeViewer.refresh();
-
+        alias.setNameFilterExpression("");
+        alias.setFolderFilterExpression("");
+        alias.setSchemaFilterExpression("");
+        
+        _view.refreshSessionTrees(_selectedNodes[0].getSession().toString());
     }
 
 
@@ -84,11 +84,10 @@ public class RemoveNodeFilterAction extends AbstractDBTreeContextAction {
         }
 
         SQLAlias alias = (SQLAlias) _selectedNodes[0].getSession().getAlias();
-        String filter = alias.getMetaFilterExpression();
-        if (filter == null || filter.trim().length() == 0) {
-            return false;
+        if (alias.isFiltered()) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 }
