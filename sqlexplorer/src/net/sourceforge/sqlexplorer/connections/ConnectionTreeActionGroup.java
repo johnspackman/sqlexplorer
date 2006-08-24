@@ -29,6 +29,7 @@ import net.sourceforge.sqlexplorer.connections.actions.DeleteAliasAction;
 import net.sourceforge.sqlexplorer.connections.actions.NewAliasAction;
 import net.sourceforge.sqlexplorer.connections.actions.NewEditorAction;
 import net.sourceforge.sqlexplorer.connections.actions.RollbackAction;
+import net.sourceforge.sqlexplorer.plugin.views.ConnectionsView;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 
 import org.eclipse.jface.action.IMenuManager;
@@ -73,7 +74,7 @@ public class ConnectionTreeActionGroup extends ActionGroup {
      * 
      * @param treeViewer TreeViewer used for this outline.
      */
-    public ConnectionTreeActionGroup(TreeViewer treeViewer) {
+    public ConnectionTreeActionGroup(ConnectionsView view, TreeViewer treeViewer) {
 
         _treeViewer = treeViewer;
 
@@ -100,6 +101,18 @@ public class ConnectionTreeActionGroup extends ActionGroup {
         _closeConnectionAction.setTreeViewer(_treeViewer);
         _commitAction.setTreeViewer(_treeViewer);
         _rollBackAction.setTreeViewer(_treeViewer);
+        
+        _newAliasAction.setView(view);
+        _changeAliasAction.setView(view);
+        _copyAliasAction.setView(view);
+        _deleteAliasAction.setView(view);
+        _connectAliasAction.setView(view);
+        _newEditorAction.setView(view);
+
+        _closeAllConnectionsAction.setView(view); 
+        _closeConnectionAction.setView(view);
+        _commitAction.setView(view);
+        _rollBackAction.setView(view);
     }
 
 

@@ -273,7 +273,7 @@ public class SQLHistoryView extends ViewPart implements SQLHistoryChangedListene
         // create action bar
         final IToolBarManager toolBarMgr = getViewSite().getActionBars().getToolBarManager();
 
-        final SQLHistoryActionGroup actionGroup = new SQLHistoryActionGroup(history, _tableViewer, toolBarMgr);
+        final SQLHistoryActionGroup actionGroup = new SQLHistoryActionGroup(this, history, _tableViewer, toolBarMgr);
 
         _tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
@@ -303,6 +303,8 @@ public class SQLHistoryView extends ViewPart implements SQLHistoryChangedListene
         // also add action as default when an entry is doubleclicked.
         final OpenInEditorAction openInEditorAction = new OpenInEditorAction();
         openInEditorAction.setTableViewer(_tableViewer);
+        openInEditorAction.setView(this);
+        
         _tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 
             public void doubleClick(DoubleClickEvent event) {

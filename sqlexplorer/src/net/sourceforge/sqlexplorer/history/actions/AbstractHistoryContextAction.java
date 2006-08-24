@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.history.actions;
 
 import net.sourceforge.sqlexplorer.history.SQLHistory;
+import net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -40,6 +41,7 @@ public abstract class AbstractHistoryContextAction extends Action {
 
     protected TableViewer _tableViewer;
 
+    protected SQLHistoryView _view;
 
     /**
      * Implement this method to return true when your action is available for
@@ -96,4 +98,15 @@ public abstract class AbstractHistoryContextAction extends Action {
         _tableViewer = viewer;
         _table = viewer.getTable();
     }
+
+
+    
+    /**
+     * @param view SQLHistory view
+     */
+    public void setView(SQLHistoryView view) {
+        _view = view;
+    }
+    
+    
 }

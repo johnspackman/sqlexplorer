@@ -268,14 +268,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         passwordField.setLayoutData(data);
 
-        Label label7 = new Label(nameGroup, SWT.WRAP);
-        label7.setText("Open on Eclipse Startup"); //$NON-NLS-1$
-        btnActivate = new Button(nameGroup, SWT.CHECK);
-        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-        data.horizontalSpan = 2;
-        data.widthHint = SIZING_TEXT_FIELD_WIDTH;
-        btnActivate.setLayoutData(data);
-
+        
         Label label8 = new Label(nameGroup, SWT.WRAP);
         label8.setText(Messages.getString("AliasDialog.AutoLogon"));
         label8.setToolTipText(Messages.getString("AliasDialog.AutoLogonToolTip"));
@@ -285,6 +278,28 @@ public class CreateAliasDlg extends TitleAreaDialog {
         data.horizontalSpan = 2;
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         _btnAutoLogon.setLayoutData(data);
+        
+        Label label7 = new Label(nameGroup, SWT.WRAP);
+        label7.setText("Open on Startup"); //$NON-NLS-1$
+        btnActivate = new Button(nameGroup, SWT.CHECK);
+        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
+        data.horizontalSpan = 2;
+        data.widthHint = SIZING_TEXT_FIELD_WIDTH;
+        btnActivate.setLayoutData(data);
+
+        _btnAutoLogon.addSelectionListener(new SelectionAdapter() {
+
+            public void widgetSelected(SelectionEvent event) {
+
+                boolean active = ((Button)event.widget).getSelection();
+                btnActivate.setEnabled(active);
+               if (!active) {
+                   btnActivate.setSelection(false);
+               }
+            }
+        });
+        
+        
 
         combo.addSelectionListener(new org.eclipse.swt.events.SelectionListener() {
 
@@ -304,8 +319,15 @@ public class CreateAliasDlg extends TitleAreaDialog {
             combo.select(0);
             urlField.setText(driverModel.getElement(0).getUrl());
         }
+        
+        
+        
+        
         loadData();
         return parentComposite;
+        
+        
+        
     }
 
 
@@ -314,9 +336,14 @@ public class CreateAliasDlg extends TitleAreaDialog {
         nameField.setText(alias.getName());
         userField.setText(alias.getUserName());
         passwordField.setText(alias.getPassword());
-        btnActivate.setSelection(alias.isConnectAtStartup());
         _btnAutoLogon.setSelection(alias.isAutoLogon());
-
+        if(!alias.isAutoLogon()) {
+            btnActivate.setEnabled(false);
+            btnActivate.setSelection(false);
+        } else {
+            btnActivate.setSelection(alias.isConnectAtStartup());
+        }
+        
         if (type != 1) {
             ISQLDriver iSqlDriver = driverModel.getDriver(alias.getDriverIdentifier());
             combo.setText(iSqlDriver.getName());

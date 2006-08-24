@@ -93,8 +93,6 @@ public class LoginProgress implements IRunnableWithProgress {
 
     private String _interactiveErrorMsg;
     
-    private boolean _isCancelled = false;
-
     private String _pwd;
     
     private String _user;
@@ -124,11 +122,6 @@ public class LoginProgress implements IRunnableWithProgress {
     }
 
 
-    public boolean isCancelled() {
-        return _isCancelled;
-    }
-
-
     public boolean isOk() {
         return ((_interactiveError == null && _backgroundError == null) ? true : false);
     }
@@ -148,9 +141,7 @@ public class LoginProgress implements IRunnableWithProgress {
             
             while (true) {
                 
-                if (monitor.isCanceled()) {
-                    
-                    _isCancelled = true;
+                if (monitor.isCanceled()) {                    
                     
                     if (iThread.isAlive()) {
                         iThread.interrupt();
@@ -190,6 +181,12 @@ public class LoginProgress implements IRunnableWithProgress {
                 Thread.sleep(100);
             }
             
+            // check for cancellation by user
+            if (monitor.isCanceled()) {
+                monitor.done();
+                throw new InterruptedException("Connection cancelled.");
+            }
+            
             monitor.done();
             
         } catch (Throwable e) {
@@ -197,6 +194,8 @@ public class LoginProgress implements IRunnableWithProgress {
             _interactiveErrorMsg = e.getMessage();
             SQLExplorerPlugin.error("Error logging to database", e);
 
+        } finally {
+            monitor.done();
         }
     }
 }

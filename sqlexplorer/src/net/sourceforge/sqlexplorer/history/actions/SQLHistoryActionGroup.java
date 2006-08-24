@@ -1,6 +1,7 @@
 package net.sourceforge.sqlexplorer.history.actions;
 
 import net.sourceforge.sqlexplorer.history.SQLHistory;
+import net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -30,7 +31,7 @@ public class SQLHistoryActionGroup extends ActionGroup {
      * 
      * @param tableViewer used for history
      */
-    public SQLHistoryActionGroup(SQLHistory history, TableViewer tableViewer, IToolBarManager toolbarMgr) {
+    public SQLHistoryActionGroup(SQLHistoryView view, SQLHistory history, TableViewer tableViewer, IToolBarManager toolbarMgr) {
 
         _tableViewer = tableViewer;
 
@@ -52,6 +53,12 @@ public class SQLHistoryActionGroup extends ActionGroup {
         _clearHistoryAction.setHistory(history);
         _copyAction.setHistory(history);
 
+        _openInEditorAction.setView(view);
+        _appendToEditorAction.setView(view);
+        _removeFromHistoryAction.setView(view);
+        _clearHistoryAction.setView(view);
+        _copyAction.setView(view);
+        
         toolbarMgr.add(_openInEditorAction);
         toolbarMgr.add(_appendToEditorAction);
         toolbarMgr.add(_removeFromHistoryAction);

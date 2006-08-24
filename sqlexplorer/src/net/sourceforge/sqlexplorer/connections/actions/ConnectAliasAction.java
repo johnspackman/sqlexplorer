@@ -29,7 +29,6 @@ import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.swt.widgets.Display;
 
 
 /**
@@ -67,7 +66,7 @@ public class ConnectAliasAction extends AbstractConnectionTreeAction {
             if (o instanceof SQLAlias) {
                 
                 ISQLAlias al = (ISQLAlias) o;                
-                OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(Display.getCurrent().getActiveShell(),
+                OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(_view.getSite(),
                         al, SQLExplorerPlugin.getDefault().getDriverModel(), SQLExplorerPlugin.getDefault().getPreferenceStore(), SQLExplorerPlugin.getDefault().getSQLDriverManager());
                 openDlgAction.run();
             }

@@ -105,7 +105,7 @@ public class OpenInEditorAction extends AbstractHistoryContextAction {
 
                         if (al != null) {
                             OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(
-                                    _table.getShell(), al, SQLExplorerPlugin.getDefault().getDriverModel(),
+                                    _view.getSite(), al, SQLExplorerPlugin.getDefault().getDriverModel(),
                                     SQLExplorerPlugin.getDefault().getPreferenceStore(),
                                     SQLExplorerPlugin.getDefault().getSQLDriverManager());
                             openDlgAction.run();

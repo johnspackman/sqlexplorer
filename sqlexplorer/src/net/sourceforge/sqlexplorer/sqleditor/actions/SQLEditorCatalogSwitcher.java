@@ -59,7 +59,7 @@ public class SQLEditorCatalogSwitcher extends ControlContribution {
         
         if (_editor.getSessionTreeNode() != null && _editor.getSessionTreeNode().supportsCatalogs()) {
                        
-            String catalogs[] = _editor.getSessionTreeNode().getCatalogs();
+            String catalogs[] = _editor.getSessionTreeNode().getRoot().getChildNames();
             String currentCatalog = _editor.getSessionTreeNode().getCatalog();
             
             for (int i = 0; i < catalogs.length; i++) {

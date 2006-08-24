@@ -881,6 +881,7 @@ public class SQLEditor extends TextEditor {
             text.setWordWrap(SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.WORD_WRAP));
         }
 
+        
     }
 
 
@@ -1235,7 +1236,7 @@ public class SQLEditor extends TextEditor {
 
         IDocument dc = new Document(txt);
         sqlTextViewer.setDocument(dc);
-
+        sqlTextViewer.refresh();
     }
 }
 

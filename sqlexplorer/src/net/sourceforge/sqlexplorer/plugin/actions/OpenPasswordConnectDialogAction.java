@@ -1,145 +1,96 @@
-package net.sourceforge.sqlexplorer.plugin.actions;
-
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2006 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
- 
+package net.sourceforge.sqlexplorer.plugin.actions;
 
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.LoginProgress;
-import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.RetrievingTableDataProgress;
+import net.sourceforge.sqlexplorer.SQLDriverManager;
+import net.sourceforge.sqlexplorer.connections.OpenConnectionJob;
 import net.sourceforge.sqlexplorer.dialogs.PasswordConnDlg;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
-import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
-import net.sourceforge.sqlexplorer.SQLDriverManager;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class OpenPasswordConnectDialogAction extends Action {
-	
-	Shell shell;
-	ISQLAlias alias;
-	DriverModel driverModel;
-	IPreferenceStore store;
-	SQLDriverManager dmgr;
-	
-	public OpenPasswordConnectDialogAction(Shell shell, ISQLAlias alias, DriverModel model,IPreferenceStore store,SQLDriverManager dmgr){
-		this.shell=shell;
-		this.alias=alias;
-		this.driverModel=model;
-		this.store=store;
-		this.dmgr=dmgr;
-		
-	}
-	public void run(){
-		
-		String user = alias.getUserName();
-		String pswd = alias.getPassword();
-		boolean autoCommit = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.AUTO_COMMIT);
-		boolean commitOnClose = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.COMMIT_ON_CLOSE);		
-				
-		if (!alias.isAutoLogon()) {
-			
-			PasswordConnDlg dlg = new PasswordConnDlg(shell, alias, driverModel, store);
-			if (dlg.open() == Window.OK){
-				pswd = dlg.getPassword();
-				user = dlg.getUser();
-				autoCommit = dlg.getAutoCommit();
-				commitOnClose = dlg.getCommitOnClose();
-			} else {
-				return;
-			}
-		}
-			
-		ISQLDriver dv=driverModel.getDriver(alias.getDriverIdentifier());
-		try{
-			LoginProgress lp=new LoginProgress(dmgr,dv,alias,user,pswd);
-			ProgressMonitorDialog pg=new ProgressMonitorDialog(shell);
-			pg.run(true, true, lp);
-            
-            if (lp.isCancelled()) {
+
+    private Shell _shell;
+
+    private ISQLAlias _alias;
+
+    private DriverModel _driverModel;
+
+    private IPreferenceStore _store;
+
+    private SQLDriverManager _dmgr;
+
+    private IWorkbenchPartSite _site;
+
+
+    public OpenPasswordConnectDialogAction(IWorkbenchPartSite site, ISQLAlias alias, DriverModel model,
+            IPreferenceStore store, SQLDriverManager dmgr) {
+
+        _site = site;
+        _shell = site.getShell();
+        _alias = alias;
+        _driverModel = model;
+        _store = store;
+        _dmgr = dmgr;
+
+    }
+
+
+    public void run() {
+
+        String user = _alias.getUserName();
+        String pswd = _alias.getPassword();
+        boolean autoCommit = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.AUTO_COMMIT);
+        boolean commitOnClose = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(
+                IConstants.COMMIT_ON_CLOSE);
+
+        if (!_alias.isAutoLogon()) {
+
+            PasswordConnDlg dlg = new PasswordConnDlg(_shell, _alias, _driverModel, _store);
+            if (dlg.open() == Window.OK) {
+                pswd = dlg.getPassword();
+                user = dlg.getUser();
+                autoCommit = dlg.getAutoCommit();
+                commitOnClose = dlg.getCommitOnClose();
+            } else {
                 return;
             }
-            
-            SQLConnection[] connections = lp.getConnections();
-            
-			if(lp.isOk()){
-				
-                for (int i = 0; i < connections.length; i++) {
-                    connections[i].setAutoCommit(autoCommit);
-                    if(autoCommit==false){
-                        connections[i].setCommitOnClose(commitOnClose);
-                    }    
-                }
-				
-				RetrievingTableDataProgress rtdp=new RetrievingTableDataProgress(connections,alias,SQLExplorerPlugin.getDefault().stm,pswd);
-				ProgressMonitorDialog pg2=new ProgressMonitorDialog(shell);
-				pg2.run(true,true,rtdp);
-                
-                
-                // add session to database structure view
-                DatabaseStructureView dbView = (DatabaseStructureView) SQLExplorerPlugin.getDefault().getWorkbench()
-                .getActiveWorkbenchWindow().getActivePage().findView("net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView");
-                if (dbView != null) {
-                    dbView.addSession(rtdp.getSessionTreeNode());
-                }
-                
-                
-				// after opening connection, open editor
-                SQLEditorInput input = new SQLEditorInput("SQL Editor ("+SQLExplorerPlugin.getDefault().getNextElement()+").sql");
-                input.setSessionNode(rtdp.getSessionTreeNode());
-                IWorkbenchPage page= SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-                
-                                
-                
-                try{
-                    page.openEditor(input,"net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
-                }catch(Throwable e){
-                    SQLExplorerPlugin.error("Error creating sql editor",e);
-                }
-                
-			}else{
-                
-                for (int i = 0; i < connections.length; i++) {
-                    if (connections[i] != null) {
-                        connections[i].close();
-                    }
-                }
-                
-				MessageDialog.openError(shell,Messages.getString("Error..._4"),lp.getError());
-			}
+        }
 
-		}catch(java.lang.Exception e){
-			SQLExplorerPlugin.error("Error Logging ",e); 
-		}
-		
+        ISQLDriver dv = _driverModel.getDriver(_alias.getDriverIdentifier());
 
-	}
+        OpenConnectionJob bgJob = new OpenConnectionJob(_dmgr, dv, _alias, user, pswd, autoCommit, commitOnClose,
+                _shell);
+
+        IWorkbenchSiteProgressService siteps = (IWorkbenchSiteProgressService) _site.getAdapter(IWorkbenchSiteProgressService.class);
+        siteps.showInDialog(_shell, bgJob);
+        bgJob.schedule();
+
+    }
 }

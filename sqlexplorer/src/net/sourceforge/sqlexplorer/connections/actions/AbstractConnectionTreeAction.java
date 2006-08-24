@@ -18,6 +18,8 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
+import net.sourceforge.sqlexplorer.plugin.views.ConnectionsView;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
 
@@ -31,6 +33,7 @@ public abstract class AbstractConnectionTreeAction extends Action {
 
     protected TreeViewer _treeViewer;
 
+    protected ConnectionsView _view;
 
     /**
      * Store treeViewer for use in the actions
@@ -39,6 +42,14 @@ public abstract class AbstractConnectionTreeAction extends Action {
      */
     public void setTreeViewer(TreeViewer treeViewer) {
         _treeViewer = treeViewer;
+    }
+
+
+    /**
+     * Store view for use in the actions
+     */ 
+    public void setView(ConnectionsView view) {    
+        _view = view;
     }
 
 

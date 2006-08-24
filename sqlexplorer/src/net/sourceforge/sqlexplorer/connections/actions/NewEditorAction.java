@@ -128,7 +128,7 @@ public class NewEditorAction extends AbstractConnectionTreeAction implements IVi
 
                         // create new connection..
                         OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(
-                                Display.getCurrent().getActiveShell(), al, SQLExplorerPlugin.getDefault().getDriverModel(),
+                                _view.getSite(), al, SQLExplorerPlugin.getDefault().getDriverModel(),
                                 SQLExplorerPlugin.getDefault().getPreferenceStore(), SQLExplorerPlugin.getDefault().getSQLDriverManager());
                         openDlgAction.run();
 

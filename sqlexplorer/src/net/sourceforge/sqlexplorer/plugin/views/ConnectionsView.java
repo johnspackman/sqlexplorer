@@ -76,6 +76,7 @@ public class ConnectionsView extends ViewPart implements SessionTreeModelChanged
 
         AbstractConnectionTreeAction newAliasAction = new NewAliasAction();
         newAliasAction.setTreeViewer(_treeViewer);
+        newAliasAction.setView(this);
         toolBarMgr.add(newAliasAction);
 
         // use hash lookup to improve performance
@@ -99,7 +100,7 @@ public class ConnectionsView extends ViewPart implements SessionTreeModelChanged
 
                         SQLAlias al = (SQLAlias) selection.getFirstElement();
                         OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(
-                                _treeViewer.getTree().getShell(), al, _driverModel,
+                                getSite(), al, _driverModel,
                                 SQLExplorerPlugin.getDefault().getPreferenceStore(),
                                 SQLExplorerPlugin.getDefault().getSQLDriverManager());
                         openDlgAction.run();
@@ -110,7 +111,7 @@ public class ConnectionsView extends ViewPart implements SessionTreeModelChanged
         });
 
         // add context menu
-        final ConnectionTreeActionGroup actionGroup = new ConnectionTreeActionGroup(_treeViewer);
+        final ConnectionTreeActionGroup actionGroup = new ConnectionTreeActionGroup(this, _treeViewer);
         MenuManager menuManager = new MenuManager("ConnectionTreeContextMenu");
         menuManager.setRemoveAllWhenShown(true);
         Menu contextMenu = menuManager.createContextMenu(_treeViewer.getTree());
@@ -126,6 +127,7 @@ public class ConnectionsView extends ViewPart implements SessionTreeModelChanged
 
         parent.layout();
 
+        SQLExplorerPlugin.getDefault().startDefaultConnections(getSite());
     }
 
 

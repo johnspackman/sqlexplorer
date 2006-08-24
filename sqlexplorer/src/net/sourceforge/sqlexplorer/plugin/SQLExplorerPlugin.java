@@ -25,20 +25,22 @@ import java.util.ResourceBundle;
 import net.sourceforge.sqlexplorer.AliasModel;
 import net.sourceforge.sqlexplorer.DataCache;
 import net.sourceforge.sqlexplorer.DriverModel;
+import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.SQLDriverManager;
+import net.sourceforge.sqlexplorer.connections.OpenConnectionJob;
 import net.sourceforge.sqlexplorer.history.SQLHistory;
 import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModel;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
-import net.sourceforge.sqlexplorer.SQLDriverManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -69,6 +71,8 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     private static SQLExplorerPlugin plugin;
 
     public final static String PLUGIN_ID = "net.sourceforge.sqlexplorer";
+
+    private boolean _defaultConnectionsStarted = false;
 
 
     /**
@@ -149,39 +153,8 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         _driverMgr = new SQLDriverManager();
 
         _cache = new DataCache(_driverMgr);
-
         aliasModel = new AliasModel(_cache);
         driverModel = new DriverModel(_cache);
-        Object[] aliases = (Object[]) aliasModel.getElements();
-        for (int i = 0; i < aliases.length; i++) {
-            final ISQLAlias alias = (ISQLAlias) aliases[i];
-            if (alias.isConnectAtStartup()) {
-                try {
-                    ISQLDriver dv = driverModel.getDriver(alias.getDriverIdentifier());
-                    SQLConnection iConn = _driverMgr.getConnection(dv, alias, alias.getUserName(),
-                            alias.getPassword());
-                    SQLConnection bgConn = _driverMgr.getConnection(dv, alias, alias.getUserName(),
-                            alias.getPassword());
-
-                    final SQLConnection[] conns = new SQLConnection[] {iConn, bgConn};
-                    Display.getDefault().asyncExec(new Runnable() {
-
-                        public void run() {
-
-                            try {
-                                stm.createSessionTreeNode(conns, alias, null, alias.getPassword());
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException();
-                            }
-
-                        }
-                    });
-
-                } catch (Throwable e) {
-                    error("Error creating sql connection to " + alias.getName(), e);//$NON-NLS-1$
-                }
-            }
-        }
 
         try {
             resourceBundle = ResourceBundle.getBundle("net.sourceforge.sqlexplorer.test"); //$NON-NLS-1$
@@ -191,6 +164,45 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 
         // load SQL History from previous sessions
         _history = new SQLHistory();
+    }
+
+
+    /**
+     * Open all connections that have the 'open on startup property'. This
+     * method should be called from within the UI thread!
+     */
+    public void startDefaultConnections(IWorkbenchSite site) {
+
+        if (_defaultConnectionsStarted) {
+            return;
+        }
+
+        boolean autoCommit = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.AUTO_COMMIT);
+        boolean commitOnClose = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(
+                IConstants.COMMIT_ON_CLOSE);
+
+        Object[] aliases = (Object[]) aliasModel.getElements();
+        for (int i = 0; i < aliases.length; i++) {
+            final ISQLAlias alias = (ISQLAlias) aliases[i];
+            if (alias.isConnectAtStartup() && alias.isAutoLogon()) {
+                try {
+
+                    ISQLDriver dv = driverModel.getDriver(alias.getDriverIdentifier());
+
+                    OpenConnectionJob bgJob = new OpenConnectionJob(_driverMgr, dv, alias, alias.getUserName(),
+                            alias.getPassword(), autoCommit, commitOnClose, site.getShell());
+
+                    IWorkbenchSiteProgressService siteps = (IWorkbenchSiteProgressService) site.getAdapter(
+                            IWorkbenchSiteProgressService.class);
+                    siteps.showInDialog(site.getShell(), bgJob);
+                    bgJob.schedule();
+
+                } catch (Throwable e) {
+                    error("Error creating sql connection to " + alias.getName(), e);//$NON-NLS-1$
+                }
+            }
+        }
+        _defaultConnectionsStarted = true;
     }
 
 

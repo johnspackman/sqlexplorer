@@ -69,15 +69,17 @@ public class DictionaryLoader extends Job {
 
                 // load full dictionary
                 dictionary.load(_sessionNode.getRoot(), monitor);
+                monitor.done();
             }
             
         } catch (InterruptedException ie) {
-            
             return new Status(IStatus.CANCEL, ID, IStatus.CANCEL, Messages.getString("Progress.Dictionary.Cancelled"), null);
             
-        } catch (Exception e) {
-            
+        } catch (Exception e) {            
             return new Status(IStatus.ERROR, ID, IStatus.CANCEL, Messages.getString("Progress.Dictionary.Error"), e);
+            
+        } finally {
+            monitor.done();
         }
         
         // everything ended ok..
