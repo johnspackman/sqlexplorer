@@ -66,6 +66,7 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -1026,6 +1027,16 @@ public class SQLEditor extends TextEditor {
             }
         });
 
+        
+        sqlTextViewer.getTextWidget().addKeyListener(new KeyAdapter() {
+
+            public void keyPressed(KeyEvent e) {
+
+                getEditorSite().getPage().activate(getEditorSite().getPart());
+            }
+            
+        });
+        
         statusBar.layout();
         myParent.layout();
         
