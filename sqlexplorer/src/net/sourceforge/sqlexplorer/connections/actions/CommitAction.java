@@ -20,10 +20,10 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.util.Iterator;
 
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.views.ConnectionsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;

@@ -12,6 +12,7 @@ General
 * Connection dialog is now resizable
 * moved all image definitions into properties file
 * database connecting is now cancellable
+* database connection can now run in background
 
 SQL History
 * only successfull queries are stored

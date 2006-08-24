@@ -22,8 +22,8 @@ package net.sourceforge.sqlexplorer.dialogs;
 //
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 

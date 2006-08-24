@@ -19,7 +19,6 @@
 
 package net.sourceforge.sqlexplorer.dbstructure.actions;
 
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbdetail.DetailTabManager;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
@@ -27,6 +26,7 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.views.DatabaseDetailView;
 import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
 import net.sourceforge.sqlexplorer.plugin.views.SqlexplorerViewConstants;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 

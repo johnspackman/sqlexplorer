@@ -18,8 +18,8 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure;
 
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;

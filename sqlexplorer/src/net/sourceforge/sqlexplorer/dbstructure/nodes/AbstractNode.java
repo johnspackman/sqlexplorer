@@ -23,9 +23,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

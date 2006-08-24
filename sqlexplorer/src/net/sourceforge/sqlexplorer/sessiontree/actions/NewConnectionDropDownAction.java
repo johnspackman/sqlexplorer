@@ -5,9 +5,9 @@
 package net.sourceforge.sqlexplorer.sessiontree.actions;
 
 import net.sourceforge.sqlexplorer.AliasModel;
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 
 import org.eclipse.jface.action.Action;

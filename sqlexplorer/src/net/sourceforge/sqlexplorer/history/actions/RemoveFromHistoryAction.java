@@ -1,9 +1,9 @@
 package net.sourceforge.sqlexplorer.history.actions;
 
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.history.SQLHistoryElement;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.TableItem;

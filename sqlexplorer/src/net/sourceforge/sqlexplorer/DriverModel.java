@@ -22,6 +22,7 @@ package net.sourceforge.sqlexplorer;
 import java.net.MalformedURLException;
 import java.util.Comparator;
 
+import net.sourceforge.sqlexplorer.util.SortedList;
 import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 import net.sourceforge.squirrel_sql.fw.util.DuplicateObjectException;

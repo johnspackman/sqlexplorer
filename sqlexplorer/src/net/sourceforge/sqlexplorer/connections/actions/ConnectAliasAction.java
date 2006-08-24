@@ -20,11 +20,11 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.util.Iterator;
 
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLAlias;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 
 import org.eclipse.jface.resource.ImageDescriptor;

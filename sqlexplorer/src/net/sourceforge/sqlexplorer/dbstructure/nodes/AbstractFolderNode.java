@@ -1,7 +1,7 @@
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.eclipse.swt.graphics.Image;

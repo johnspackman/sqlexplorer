@@ -19,9 +19,9 @@
 
 package net.sourceforge.sqlexplorer.dbstructure.actions;
 
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 

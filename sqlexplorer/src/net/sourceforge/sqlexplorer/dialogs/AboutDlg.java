@@ -25,10 +25,10 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.Collator;
 
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.URLUtil;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
+import net.sourceforge.sqlexplorer.util.URLUtil;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;

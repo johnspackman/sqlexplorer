@@ -26,10 +26,10 @@ import java.sql.Driver;
 import java.util.StringTokenizer;
 
 import net.sourceforge.sqlexplorer.DriverModel;
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.MyURLClassLoader;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
+import net.sourceforge.sqlexplorer.util.MyURLClassLoader;
 import net.sourceforge.squirrel_sql.fw.persist.ValidationException;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 import net.sourceforge.squirrel_sql.fw.util.DuplicateObjectException;

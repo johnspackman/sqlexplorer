@@ -1,4 +1,4 @@
-package net.sourceforge.sqlexplorer;
+package net.sourceforge.sqlexplorer.util;
 
 /*
  * Copyright (C) 2002-2004 Andrea Mazzolini

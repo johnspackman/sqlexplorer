@@ -3,10 +3,10 @@ package net.sourceforge.sqlexplorer.sqleditor.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.eclipse.core.runtime.IConfigurationElement;

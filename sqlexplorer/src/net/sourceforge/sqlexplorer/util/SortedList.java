@@ -1,4 +1,4 @@
-package net.sourceforge.sqlexplorer;
+package net.sourceforge.sqlexplorer.util;
 
 import java.util.AbstractList;
 import java.util.Collection;

@@ -21,11 +21,11 @@ package net.sourceforge.sqlexplorer.connections.actions;
 import net.sourceforge.sqlexplorer.AliasModel;
 import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IdentifierFactory;
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLAlias;
 import net.sourceforge.sqlexplorer.dialogs.CreateAliasDlg;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;

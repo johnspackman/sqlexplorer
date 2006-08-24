@@ -1,8 +1,9 @@
-package net.sourceforge.sqlexplorer;
+package net.sourceforge.sqlexplorer.util;
 
 import java.net.URL;
 import java.util.HashMap;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.jface.resource.ImageDescriptor;

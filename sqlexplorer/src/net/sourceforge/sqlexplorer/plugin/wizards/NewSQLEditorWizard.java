@@ -18,7 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.plugin.wizards;
 
-import net.sourceforge.sqlexplorer.ImageUtil;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;

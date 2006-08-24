@@ -18,8 +18,8 @@
  */
 package net.sourceforge.sqlexplorer.plugin.actions;
 
-import net.sourceforge.sqlexplorer.ImageUtil;
 import net.sourceforge.sqlexplorer.dialogs.AboutDlg;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
