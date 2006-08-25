@@ -131,7 +131,13 @@ public class SQLTextViewer extends SourceViewer {
 
             public void widgetDisposed(DisposeEvent event) {
                 if (dictionary != null) {
-                    contentAssistant.uninstall();
+                    if (contentAssistant != null) {
+                        try {
+                            contentAssistant.uninstall();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         });
