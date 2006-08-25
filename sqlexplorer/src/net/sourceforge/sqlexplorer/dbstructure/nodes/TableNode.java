@@ -24,6 +24,7 @@ import java.util.List;
 
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
 
@@ -43,6 +44,7 @@ public class TableNode extends AbstractNode {
 
     private ITableInfo _tableInfo;
 
+    private List _folderNames = new ArrayList();
 
     /**
      * Create new database table node.
@@ -115,11 +117,20 @@ public class TableNode extends AbstractNode {
                     }
 
                     AbstractNode childNode = (AbstractNode) ces[j].createExecutableExtension("class");
+                    
+                    String imagePath = ces[j].getAttribute("icon");
+                    String id = ces[j].getAttribute("id");
+                    String fragmentId = id.substring(0, id.indexOf('.', 28));
+                    if (imagePath != null && imagePath.trim().length() != 0) {
+                        childNode.setImage(ImageUtil.getFragmentImage(fragmentId, imagePath));
+                    }
+                    
                     childNode.setParent(this);
                     childNode.setSession(_sessionNode);
 
                     addChildNode(childNode);
-
+                    _folderNames.add(childNode.getName());
+                    
                 } catch (Throwable ex) {
                     SQLExplorerPlugin.error("Could not create child node", ex);
                 }
@@ -295,10 +306,22 @@ public class TableNode extends AbstractNode {
      */
     public void loadChildren() {
 
-        try {
-            addChildNode(new ColumnFolderNode(this, _tableInfo));
-            addChildNode(new IndexFolderNode(this, _tableInfo));
+        try {            
             addExtensionNodes();
+            
+            // add column and index nodes if they don't exist yet. 
+            
+            ColumnFolderNode colNode = new ColumnFolderNode(this, _tableInfo);            
+            if (!_folderNames.contains(colNode.getName())) {
+                addChildNode(colNode);
+            }
+            
+            IndexFolderNode indexNode = new IndexFolderNode(this, _tableInfo);
+            if (!_folderNames.contains(indexNode.getName())) {
+                addChildNode(indexNode);
+            }
+            
+            
         } catch (Exception e) {
             SQLExplorerPlugin.error("Could not create child nodes for " + getName(), e);
         }

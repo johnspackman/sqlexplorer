@@ -407,7 +407,7 @@ public class FilterStructureDialog extends Dialog {
 
     protected Point getInitialSize() {
 
-        return new Point(300, 420);
+        return new Point(300, 440);
     }
 
 

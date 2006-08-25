@@ -34,8 +34,8 @@ public class ColumnNode extends AbstractNode {
 
     private TableNode _parentTable;
 
-
-    public ColumnNode(INode node, String name, SessionTreeNode session, TableNode parentTable) throws Exception {
+   
+    public ColumnNode(INode node, String name, SessionTreeNode session, TableNode parentTable, boolean showKeyLabels) throws Exception {
 
         _parent = node;
         _parentTable = parentTable;
@@ -43,17 +43,21 @@ public class ColumnNode extends AbstractNode {
         _name = name;
         _imageKey = "Images.ColumnNodeIcon";
 
+        if (showKeyLabels) {
         if (_parentTable.getPrimaryKeyNames().contains(_name)) {
             _isPrimaryKey = true;
             _imageKey = "Images.PrimaryKeyIcon";
         }
-        if (_parentTable.getForeignKeyNames().contains(_name)) {
-            _isForeignKey = true;
-            if (_isPrimaryKey) {
-                _imageKey = "Images.PKForeignKeyIcon";
-            } else {
-                _imageKey = "Images.ForeignKeyIcon";
-            }
+        // this has been disabled for now.
+        // foreign key determination turns out to be a real performance hog for oracle
+//        if (_parentTable.getForeignKeyNames().contains(_name)) {
+//            _isForeignKey = true;
+//            if (_isPrimaryKey) {
+//                _imageKey = "Images.PKForeignKeyIcon";
+//            } else {
+//                _imageKey = "Images.ForeignKeyIcon";
+//            }
+//        }
         }
     }
 
@@ -98,7 +102,7 @@ public class ColumnNode extends AbstractNode {
      */
     public String getUniqueIdentifier() {
 
-        return _parent.getParent().getQualifiedName() + "." + _name;
+        return _parentTable.getQualifiedName() + "." + _name;
     }
 
 

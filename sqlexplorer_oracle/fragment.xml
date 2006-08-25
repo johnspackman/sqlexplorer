@@ -72,7 +72,23 @@
             id="net.sourceforge.sqlexplorer.oracle.triggers"
             name="Trigger Folder"
             parent-node="schema+catalog"
-            table-type="trigger_folder"/>                                                                                                   
+            table-type="trigger_folder"/>    
+      <node
+            class="net.sourceforge.sqlexplorer.oracle.nodes.TableIndexFolder"
+            database-product-name="Oracle*"
+            icon="icons/index.gif"
+            id="net.sourceforge.sqlexplorer.oracle.nodes.TableIndexFolder"
+            name="Table Specific Index Folder"
+            parent-node="table"
+            table-type="index_folder"/>                 
+      <node
+            class="net.sourceforge.sqlexplorer.oracle.nodes.TableTriggerFolder"
+            database-product-name="Oracle*"
+            icon="icons/trigger.gif"
+            id="net.sourceforge.sqlexplorer.oracle.nodes.TableTriggerFolder"
+            name="Table Specific Trigger Folder"
+            parent-node="table"
+            table-type="trigger_folder"/>                                                                                                         
    </extension>
    <extension
          point="net.sourceforge.sqlexplorer.nodeDetailTab">
@@ -123,19 +139,19 @@
             database-product-name="Oracle*"
             id="net.sourceforge.sqlexplorer.oracle.InfoTab"
             name="Generic Info Tab"
-            node-type="function,java_source,package_body,package,procedure,trigger,sequence,materialized_view"/>
+            node-type="function,java_source,package_body,package,procedure,trigger,sequence,materialized_view,index"/>
       <detailtab
             class="net.sourceforge.sqlexplorer.oracle.tabs.DDLTab"
             database-product-name="Oracle*"
             id="net.sourceforge.sqlexplorer.oracle.DDLTab"
             name="DDL Info"
-            node-type="function,java_source,package_body,package,procedure,trigger,sequence,table,materialized_view"/>    
+            node-type="function,java_source,package_body,package,procedure,trigger,sequence,table,materialized_view,index"/>    
       <detailtab
             class="net.sourceforge.sqlexplorer.oracle.tabs.XMLTab"
             database-product-name="Oracle*"
             id="net.sourceforge.sqlexplorer.oracle.XMLTab"
             name="XML Info"
-            node-type="function,java_source,package_body,package,procedure,trigger,sequence,table,materialized_view"/>                            
+            node-type="function,java_source,package_body,package,procedure,trigger,sequence,table,materialized_view,index"/>                            
                                                                                                                   
    </extension>
 

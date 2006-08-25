@@ -113,7 +113,7 @@ public class ColumnFolderNode extends AbstractFolderNode {
         try {
             Iterator it = ((TableNode) _parent).getColumnNames().iterator();
             while (it.hasNext()) {
-                addChildNode(new ColumnNode(this, (String) it.next(), _sessionNode, (TableNode) _parent));
+                addChildNode(new ColumnNode(this, (String) it.next(), _sessionNode, (TableNode) _parent, true));
             }
         } catch (Exception e) {
             SQLExplorerPlugin.error("Could not create child nodes for " + getName(), e);
