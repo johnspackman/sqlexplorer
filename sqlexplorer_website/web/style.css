@@ -1,6 +1,7 @@
 * {
 	font-family: "Lucida Grande",Lucida,Verdana,Arial,sans-serif;
 	font-size: 1em;
+	line-height: 1.4em;
 }
 
 html, body { 
@@ -63,6 +64,7 @@ html, body {
 /* Menu Styles */
 
 .menu {
+	width: 160px;
 	margin: 40px 5px 0 10px;
 }
 .menu A {
@@ -74,11 +76,11 @@ html, body {
 }
 .menu UL {
 	padding: 0;
-	margin: 5px 0 5px 12px;	
+	margin: 0px 0 0px 12px;	
 }
 .menu LI {
 	padding: 0;
-	margin: 2px 0 0 10px;	
+	margin: 0px 0 0 10px;	
 	font-weight: bold;
 }
 
@@ -100,7 +102,15 @@ html, body {
 	margin-left: 25px;
 	border: none;
 }
-
+.content P {
+	max-width: 650px;	
+}
+.content UL {
+	max-width: 500px;
+}
+.content LI {
+	margin-top: 5px;
+}
 
 
 
