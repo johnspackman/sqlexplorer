@@ -80,7 +80,8 @@ public class DatabaseNode extends AbstractNode {
                 _supportsSchemas = true;
             }
             _databaseProductName = metadata.getDatabaseProductName();
-            _databaseVersion = metadata.getDatabaseProductVersion();
+            _databaseVersion = " [v" + metadata.getJDBCMetaData().getDatabaseMajorVersion() + "." 
+                + metadata.getJDBCMetaData().getDatabaseMinorVersion() + "]";
             
         } catch (Exception e) {
             SQLExplorerPlugin.error("Error loading database product name.", e);
