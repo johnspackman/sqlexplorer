@@ -59,7 +59,7 @@ public class SessionsTab extends AbstractSQLTab {
     }
 
     public String getStatusMessage() {
-        return Messages.getString("oracle.dbdetail.tab.sessionsFor") + " " + getNode().getQualifiedName();
+        return Messages.getString("oracle.dbdetail.tab.sessionsFor") + " " + getNode().getSession().toString();
     }
     
     
