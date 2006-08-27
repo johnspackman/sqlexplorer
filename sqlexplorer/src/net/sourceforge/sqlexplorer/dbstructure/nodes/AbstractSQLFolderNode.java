@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
@@ -27,7 +28,8 @@ public abstract class AbstractSQLFolderNode extends AbstractFolderNode {
         ResultSet rs = null;
         Statement stmt = null;
         PreparedStatement pStmt = null;
-
+        int timeOut = SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(IConstants.INTERACTIVE_QUERY_TIMEOUT);
+        
         try {
 
             Object[] params = getSQLParameters();
@@ -35,13 +37,15 @@ public abstract class AbstractSQLFolderNode extends AbstractFolderNode {
 
                 // use normal statement
                 stmt = connection.createStatement();
+                stmt.setQueryTimeout(timeOut);
                 rs = stmt.executeQuery(getSQL());
 
             } else {
 
                 // use prepared statement
                 pStmt = connection.prepareStatement(getSQL());
-
+                pStmt.setQueryTimeout(timeOut);
+                
                 for (int i = 0; i < params.length; i++) {
 
                     if (params[i] instanceof String) {

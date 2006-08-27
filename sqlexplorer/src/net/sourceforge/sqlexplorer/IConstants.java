@@ -41,6 +41,8 @@ public interface IConstants {
 
     String HISTORY_AUTOSAVE_AFTER = "SQLHistory.AutoSaveAfterXXStatements";
 
+    String INTERACTIVE_QUERY_TIMEOUT = "InteractiveConnection.QueryTimeOutSeconds";
+
     String MAX_SQL_ROWS = "SQLEditor.MaxSQLRows";
 
     String PRE_ROW_COUNT = "SQLEditor.PreRowCount";
@@ -53,7 +55,6 @@ public interface IConstants {
     String SQL_COLUMS = "SQLEditor.ColumnsColor";
 
     String SQL_COMMENT_DELIMITER = "SQLEditor.CommentDelimiter";
-
     /**
      * The color key for everthing in SQL code for which no other color is
      * specified.
