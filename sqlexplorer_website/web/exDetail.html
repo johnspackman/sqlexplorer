@@ -17,7 +17,7 @@
 				<!-- HEADER -->						
 				
 				<td class="topLeft">
-					<img src="logo.jpg" class="logo" />	
+					<a href="http://eclipsesql.sourceforge.net/"><img src="logo.jpg" class="logo" /></a>	
 				</td>
 				<td class="topRight">
 					<span class="headerLinks"> 
@@ -39,7 +39,7 @@
 				
 				<div class="menu">
 				<ul>
-					<li><a href="index.html">About</a></li>
+					<li><a href="index.html">Home</a></li>
 					<li><a href="screenshots.html">Screenshots</a></li>
 					<li><a href="features.html">Overview</a>
 					<ul>
@@ -50,10 +50,7 @@
 						<li><a href="sqlhistory.html">SQL History</a></li>
 						<li><a href="structure.html">Structure View</a></li>
 						<li><a href="detail.html">Detail View</a></li>						
-						<li><a href="oracle.html">Oracle Features</a></li>						
-						<li><a href="db2.html">DB2 Features</a></li>
-						<li><a href="mysql.html">MySQL Features</a></li>						
-						<li><a href="other.html">Other Databases</a></li>						
+						<li><a href="dbspecific.html">DB2, Oracle &amp; MySQL Features</a></li>											
 					</ul>
 					</li>
 					<li><a href="extending.html">Extending SQL Explorer</a>
@@ -69,7 +66,7 @@
 					<li><a href="help.html">Help Wanted</a></li>
 				</ul>
 				</div>
-				<img class="sfLogo" src="http://sflogo.sourceforge.net/sflogo.php?group_id=132863&amp;type=1" alt="SourceForge.net Logo" />
+				<a href="http://sourceforge.net"><img class="sfLogo" src="http://sflogo.sourceforge.net/sflogo.php?group_id=132863&amp;type=1" alt="SourceForge.net Logo" /></a>
 				</td>
 				
 				<td class="content">
@@ -98,7 +95,7 @@
 						<p>
 						<img src="detail3.jpg" />
 						</p>
-							<p>Step 4: Here we enter the details of our extension point.<p><p>The name can be anything you like, but make sure
+							<p>Step 4: Here we enter the details of our extension point.</p><p>The name can be anything you like, but make sure
 							that the id starts with 'net.sourceforge.sqlexplorer.&lt;yourdbname&gt;.'<br/>
 							I like to keep all tabs together in one package, so in this example, we'll use 'net.sourceforge.sqlexplorer.mysql.tabs.ProcessTab' as the class name.
 							This class doesn't have to exist yet.  As you'll see in a moment, eclipse will generate it for us.</p>
@@ -117,8 +114,30 @@
 						<img src="detail4.jpg" />
 						</p>			
 							<p>Step 5: Normally, we wouldn't have to do anything here, but the default super class is AbstractTab.  This class gives us a blank
-							canvas to draw the detail page on and that's too much work in this case.  Let's change AbstractTab to AbstractSQLTab. 
-							This will provide us with an easy to use tab that is preconfigured for handling SQL statements.</p>
+							canvas to draw the detail page on and that's too much work in this case.</p>
+							<p>SQL Explorer currently provides 5 different base classes that can be extended to create a new tab:
+														</p>
+								<ul>
+									<li><i>AbstractTab</i>:<br/>
+										This is the most basic implementation.  It provides you with a composite on which you can do whatever you like.
+									</li>									
+									<li><i>AbstractDataSetTab</i>:<br/>
+										This is a tab implementation extends AbstractTab that displays a column grid like the SQL results.  All you have to do is provide DataSet
+										which holds the data to populate the grid.  A DataSet can be constructed from a resultset, an sql statement or an array.
+									</li>
+									<li><i>AbstractSQLTab</i>:<br/>
+									This is an extension of AbstractDataSetTab.  All that is required here is to add an SQL statement, and the dataset is generated for you.
+									</li>									
+									<li><i>AbstractSourceTab</i>:<br/>
+									AbstractSourceTab extends AbstractTab and provides a tab prepopulated with a text viewer.  All you have to do here is add the text.
+									</li>
+									<li><i>AbstractSQLSourceTab</i>:<br />
+									AbstractSQLSourceTab extends AbstractSourceTab and allows you to populate the text viewer by providing an SQL statement.
+									</li>
+								</ul>
+
+							<p>Let's change AbstractTab to AbstractSQLTab. This will provide us with an easy to use tab that is preconfigured for handling SQL statements.
+							</p>
 						<p>
 						<img src="detail5.jpg" />
 						</p>										
@@ -140,7 +159,7 @@
 						<p>
 						<img src="detail7.jpg" />
 						</p>
-							<p>Step 8: To test our application, we need to create a new run configuration.  Select Run > Run... from the menu. 
+							<p>Step 8: To test our application, we need to create a new run configuration.  Select Run &gt; Run... from the menu. 
 							Highlight 'eclipse application', right click and select New.<br/>
 							In the 'Program to Run' section, select 'Run an application' and select 'org.eclipse.ide.ui.workbench'.<br/>
 							On the plugin tab, make sure that both the SQL Explorer plugin and your fragment are selected.</p>							
@@ -155,7 +174,24 @@
 						are required for the SQL statement.  An example is shown below.</p>	
 												<p>
 						<img src="detail9.jpg" />
-						</p>										
+						</p>				
+						<h1>Creating a source tab</h1>
+						<p>To create source tabs in the detail view, you can extend the AbstractSQLSourceTab or the AbstractSourceTab.  
+						The AbstractSQLSourceTab provides you with a preconfigured SQL based source tab.  The AbstractSourceTab requires a little more work, but
+						also gives you more control.</p>
+						<p>Below you can see a sample extension point for an AbstractSQLSourceTab.  In this particular case, the extension point is valid
+						for many different node types.</p>
+						<p>
+							<img src="detail10.jpg" />
+						</p>	
+						<p>The code itself turns out to be even shorter than for a regular resultset based tab like we described above.</p>
+												<p>
+							<img src="detail11.jpg" />
+						</p>	
+						<p>And here is the result of the source tab:</p>
+												<p>
+							<img src="detail12.jpg" />
+						</p>	
 					<!-- CONTENT END -->		
 				</td>
 			</tr>

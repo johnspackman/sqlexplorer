@@ -22,6 +22,7 @@ html, body {
 .sfLogo {
 	margin-top: 30px;
 	margin-left: 30px;	
+	border: none;
 }
 .mainTable {	
 	border-collapse: collapse;
@@ -42,6 +43,9 @@ html, body {
 }
 .topLeft {
 	height: 42px;	
+}
+.topLeft img {
+	border: none;
 }
 .topRight {
 	background-color: #eaeae2;		
