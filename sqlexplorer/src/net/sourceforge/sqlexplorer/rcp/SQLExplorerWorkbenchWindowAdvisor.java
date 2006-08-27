@@ -60,8 +60,6 @@ public class SQLExplorerWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         hideMenuItem(menuBar, IWorkbenchActionConstants.M_FILE, "org.eclipse.ui.edit.text.openExternalFile");
                       
         // clean help menu
-        hideMenuItem(menuBar, "help", "org.eclipse.update.ui.softwareUpdates");
-        hideMenuItem(menuBar, "help", "org.eclipse.update.ui.updateMenu");
         hideMenuItem(menuBar, "help", "org.eclipse.ui.actionSet.keyBindings");
         hideMenuItem(menuBar, "help", "org.eclipse.ui.actions.showKeyAssistHandler");
 
