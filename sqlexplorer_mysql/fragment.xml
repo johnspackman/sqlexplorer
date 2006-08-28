@@ -60,5 +60,14 @@
             parent-node="schema+catalog"
             table-type="procedure_folder"/>
    </extension>
+   <extension
+         point="net.sourceforge.sqlexplorer.nodeContextAction">
+      <action
+            class="net.sourceforge.sqlexplorer.mysql.actions.RenameTable"
+            database-product-name="MySQL*"
+            id="net.sourceforge.sqlexplorer.mysql.actions.RenameTable"
+            name="Rename Table Context Action"
+            node-type="table"/>
+   </extension>
 
 </fragment>
