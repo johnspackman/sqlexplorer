@@ -796,7 +796,7 @@ public class SQLCodeScanner extends AbstractSQLScanner {
 	/*
 	 * @see AbstractJavaScanner#createRules()
 	 */
-	protected List createRules() {
+	protected synchronized List createRules() {
 				
 		List rules= new ArrayList();		
 		

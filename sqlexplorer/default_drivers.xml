@@ -215,8 +215,8 @@
 		<url>jdbc:mysql://&lt;hostname&gt;[&lt;:3306&gt;]/&lt;dbname&gt;</url>
 		<usesClassPath>true</usesClassPath>
 		<jarFileNames Indexed="true"/>
-		<driverClassName>org.gjt.mm.mysql.Driver</driverClassName>
-		<name>MMMySQL Driver</name>
+		<driverClassName>com.mysql.jdbc.Driver</driverClassName>
+		<name>MySQL Driver</name>
 	</Bean>
 	
 	<Bean Class="net.sourceforge.squirrel_sql.fw.sql.SQLDriver">

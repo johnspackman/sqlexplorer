@@ -34,7 +34,9 @@ public abstract class AbstractEditorAction extends Action {
    
     public abstract String getText();
     
-    public abstract String getToolTipText();
+    public String getToolTipText() {
+        return getText();
+    }
     
     public abstract void run();
     
