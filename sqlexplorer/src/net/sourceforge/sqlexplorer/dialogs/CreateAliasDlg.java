@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer.dialogs;
 
 import net.sourceforge.sqlexplorer.AliasModel;
 import net.sourceforge.sqlexplorer.DriverModel;
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.IdentifierFactory;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLAlias;
@@ -192,8 +193,15 @@ public class CreateAliasDlg extends TitleAreaDialog {
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
 
         int size = driverModel.size();
-        for (int i = 0; i < size; i++)
-            combo.add(driverModel.getElement(i).toString());
+        String defaultDriverName = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DEFAULT_DRIVER);
+        int defaultDriver = 0;
+        for (int i = 0; i < size; i++) {
+            String driverName = driverModel.getElement(i).toString();
+            if (driverName.startsWith(defaultDriverName)) {
+                defaultDriver = i;
+            }
+            combo.add(driverName);
+        }
         combo.setLayoutData(data);
 
         Button button = new Button(nameGroup, SWT.NULL);
@@ -315,11 +323,11 @@ public class CreateAliasDlg extends TitleAreaDialog {
                 CreateAliasDlg.this.validate();
             };
         });
-        if (size > 0) {
-            combo.select(0);
-            urlField.setText(driverModel.getElement(0).getUrl());
-        }
         
+        if (size > 0) {            
+            combo.select(defaultDriver);
+            urlField.setText(driverModel.getElement(defaultDriver).getUrl());
+        }     
         
         
         
