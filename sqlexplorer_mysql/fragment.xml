@@ -50,5 +50,15 @@
             name="Create Table Script"
             node-type="table"/>
    </extension>
+   <extension
+         point="net.sourceforge.sqlexplorer.node">
+      <node
+            class="net.sourceforge.sqlexplorer.mysql.nodes.ProcedureFolder"
+            database-product-name="MySQL*"
+            id="net.sourceforge.sqlexplorer.mysql.nodes.ProcedureFolder"
+            name="Procedure Folder"
+            parent-node="schema+catalog"
+            table-type="procedure_folder"/>
+   </extension>
 
 </fragment>
