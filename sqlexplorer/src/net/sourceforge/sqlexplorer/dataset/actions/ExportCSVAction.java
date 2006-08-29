@@ -37,8 +37,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.TableItem;
 
 /**
- * Copy an entire datasettable to the clipboard.
- * 
+ * Export table contents to a CSV file.
  * @author Davy Vanherbergen
  */
 public class ExportCSVAction extends AbstractDataSetTableContextAction {
@@ -46,32 +45,26 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
     private static final ImageDescriptor _image = ImageUtil.getDescriptor("Images.ExportIcon");
 
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.jface.action.IAction#getText()
+    /**
+     * Return the text that will be displayed in the context popup menu for this action. 
      */
     public String getText() {
         return Messages.getString("DataSetTable.Actions.Export.CSV");
     }
 
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.jface.action.IAction#getImageDescriptor()
+    /**
+     * Provide image for action
      */
     public ImageDescriptor getImageDescriptor() {
         return _image;
     }
 
-
     /**
-     * Copy all table data to clipboard
-     * @see org.eclipse.jface.action.IAction#run()
+     * Main method. Prompt for file name and save table contents to csv file.
      */
     public void run() {
 
+        // get filename
         FileDialog fileDialog = new FileDialog(_table.getShell(), SWT.SAVE);        
         String[] filterExtensions = new String[] {"*.csv"};
         fileDialog.setFilterExtensions(filterExtensions);       
@@ -81,12 +74,14 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
             return;
         }
         
+        // let's show the fancy wait cursor..
         BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
 
             public void run() {
 
                 try {
 
+                    // create new file
                     File file = new File(fileName);
 
                     if (file.exists()) {
@@ -98,10 +93,11 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
                     BufferedWriter writer = new BufferedWriter(new FileWriter(file));
                     StringBuffer buffer = new StringBuffer("");
                     
-                    // get preferences
+                    // get column header and separator preferences
                     String columnSeparator = SQLExplorerPlugin.getDefault().getPreferenceStore().getString(IConstants.CLIP_EXPORT_SEPARATOR);
                     boolean includeColumnNames = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.CLIP_EXPORT_COLUMNS);
                                        
+                    // check if there is somethign in our table
                     TableItem[] items = _table.getItems();                    
                     DataSet dataSet = (DataSet) _table.getData();
                     
@@ -109,7 +105,7 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
                         return;
                     }
                     
-                    // export column names
+                    // export column names if we need to 
                     if (includeColumnNames) {
                         
                         String[] columnNames = dataSet.getColumnLabels();
