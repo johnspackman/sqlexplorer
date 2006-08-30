@@ -47,7 +47,7 @@ public class DatabaseNode extends AbstractNode {
 
     private List _childNames = new ArrayList();
 
-    private String _databaseProductName;
+    private String _databaseProductName = "";
 
     private String[] _filterExpressions;
 
@@ -55,7 +55,7 @@ public class DatabaseNode extends AbstractNode {
 
     private boolean _supportsSchemas = false;
 
-    private String _databaseVersion;
+    private String _databaseVersion = "";
     
 
     /**
@@ -69,7 +69,8 @@ public class DatabaseNode extends AbstractNode {
         _name = name;
         _sessionNode = session;
         _alias = (SQLAlias) _sessionNode.getAlias();
-
+        _imageKey = "Images.DatabaseIcon";
+        
         SQLDatabaseMetaData metadata = _sessionNode.getMetaData();
 
         try {
@@ -85,9 +86,11 @@ public class DatabaseNode extends AbstractNode {
             
         } catch (Exception e) {
             SQLExplorerPlugin.error("Error loading database product name.", e);
+        } catch (AbstractMethodError e) {
+            SQLExplorerPlugin.error("Error loading database product name.", e);
         }
 
-        _imageKey = "Images.DatabaseIcon";
+        
     }
 
 
