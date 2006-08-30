@@ -61,7 +61,7 @@ USA
          id="net.sourceforge.sqlexplorer"
          download-size="0"
          install-size="0"
-         version="3.0.0.20060829"/>
+         version="3.0.0.20060830"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.db2"
