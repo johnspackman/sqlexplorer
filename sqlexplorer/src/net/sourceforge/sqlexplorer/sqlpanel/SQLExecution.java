@@ -109,6 +109,22 @@ public class SQLExecution extends AbstractSQLExecution {
     }
 
 
+    private void closeStatement() {
+        
+        if (_stmt == null) {
+            return;
+        }
+        if (_stmt != null) {
+            try {
+                _stmt.close();
+            } catch (Exception e) {
+                SQLExplorerPlugin.error("Error closing statement.", e);
+            }
+        }
+        _stmt = null;
+        
+    }
+    
     protected void doExecution() throws Exception {
 
         final long startTime = System.currentTimeMillis();
@@ -128,6 +144,7 @@ public class SQLExecution extends AbstractSQLExecution {
             boolean b = _stmt.execute(_sqlStatement);
 
             if (_isCancelled) {
+                closeStatement();
                 return;
             }
             
@@ -137,6 +154,7 @@ public class SQLExecution extends AbstractSQLExecution {
                 if (rs != null) {
 
                     if (_isCancelled) {
+                        closeStatement();
                         return;
                     }
                     
@@ -151,7 +169,7 @@ public class SQLExecution extends AbstractSQLExecution {
                     // save successfull query
                     SQLExplorerPlugin.getDefault().getSQLHistory().addSQL(_sqlStatement, _session.toString());
 
-                    _stmt.close();
+                    closeStatement();
 
                     if (_isCancelled) {
                         return;
@@ -175,8 +193,6 @@ public class SQLExecution extends AbstractSQLExecution {
                     });
                 }
 
-                _stmt.close();
-
             } else {
 
                 final long endTime = System.currentTimeMillis();
@@ -198,7 +214,7 @@ public class SQLExecution extends AbstractSQLExecution {
                     }
                 });
 
-                _stmt.close();
+                closeStatement();
 
                 if (_isCancelled) {
                     return;
@@ -213,15 +229,7 @@ public class SQLExecution extends AbstractSQLExecution {
 
         } catch (Exception e) {
 
-            if (_stmt != null) {
-                try {
-                    _stmt.close();
-                } catch (Exception e1) {
-                    SQLExplorerPlugin.error("Error closing statement.", e);
-                }
-            }
-            _stmt = null;
-
+            closeStatement();
             throw e;
         }
 
@@ -241,7 +249,7 @@ public class SQLExecution extends AbstractSQLExecution {
                 SQLExplorerPlugin.error("Error cancelling statement.", e);
             }
             try {
-                _stmt.close();
+                closeStatement();
             } catch (Exception e) {
                 SQLExplorerPlugin.error("Error closing statement.", e);
             }
