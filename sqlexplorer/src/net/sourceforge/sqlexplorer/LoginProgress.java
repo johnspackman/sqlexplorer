@@ -46,7 +46,7 @@ public class LoginProgress implements IRunnableWithProgress {
                     
                 } catch (Throwable e) {
                     _backgroundError = e;
-                    _backgroundErrorMsg = e.getMessage();
+                    _backgroundErrorMsg = e.getClass().getName() + ": " + e.getMessage();
                     SQLExplorerPlugin.error("Error logging to database", e);
 
                 }
@@ -65,7 +65,7 @@ public class LoginProgress implements IRunnableWithProgress {
                      
                 } catch (Throwable e) {
                     _interactiveError = e;
-                    _interactiveErrorMsg = e.getMessage();
+                    _interactiveErrorMsg = e.getClass().getName() + ": " + e.getMessage();
                     SQLExplorerPlugin.error("Error logging to database", e);
 
                 }
