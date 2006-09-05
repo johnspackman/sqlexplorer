@@ -1,4 +1,11 @@
-2006.01.xx - 2006.06.xx Enhancements - Davy Vanherbergen
+2006.09.01 - 2006.XX.XX v3.0.1 Enhancements - Davy Vanherbergen
+==========================================================
+* new preference to choose if new editor should be opened when connection is opened.
+
+
+
+
+2006.01.01 - 2006.08.31 v3.0.0 Enhancements - Davy Vanherbergen
 ==========================================================
 General
 * dropped support for hibernate plugin

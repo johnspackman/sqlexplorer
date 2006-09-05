@@ -5,6 +5,7 @@
 
 == DATASET ==
 * add export option: insert statement file
+* better row/column/cells copy support
 
 == EDITOR STUFF ==
 * review/fix sql editor content assist
@@ -20,7 +21,6 @@
 * add 'do not ask again' to some of the prompts
 * create installer for standalone app
 * create update manager for RCP
-* configuration setting that determines whether a new editor is opened on new connection
 
 == OTHER (db specific?) ==
 * create/modify table wizard

@@ -25,6 +25,8 @@ public interface IConstants {
 
     String AUTO_COMMIT = "SQLEditor.AutoCommit";
 
+    String AUTO_OPEN_EDITOR = "SQLEditor.AutoOpenEditor";
+
     String CLIP_EXPORT_COLUMNS = "SQLEditor.ClipExportColumns";
 
     String CLIP_EXPORT_SEPARATOR = "SQLEditor.ClipExportSeparator";
@@ -53,8 +55,8 @@ public interface IConstants {
 
     /** The color key for database tables column names */
     String SQL_COLUMS = "SQLEditor.ColumnsColor";
-
     String SQL_COMMENT_DELIMITER = "SQLEditor.CommentDelimiter";
+
     /**
      * The color key for everthing in SQL code for which no other color is
      * specified.
@@ -83,6 +85,6 @@ public interface IConstants {
     String WARN_IF_LARGE_LIMIT = "SQLEditor.WarnIfLargeLimit";
 
     String WARN_LIMIT = "SQLEditor.WarnLimit";
-
+    
     String WORD_WRAP = "SQLEditor.AutoWrap";
 }

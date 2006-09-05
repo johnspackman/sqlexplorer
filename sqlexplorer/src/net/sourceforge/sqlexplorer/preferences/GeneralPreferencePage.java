@@ -46,6 +46,8 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
     private StringFieldEditor _qryDelimiterField;
 
     Button _wordWrapButton;
+    
+    Button _autoOpenEditorButton;
 
     Button fAssistance;
 
@@ -63,7 +65,8 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_QRY_DELIMITER),
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_ALT_QRY_DELIMITER),
             new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_COMMENT_DELIMITER),
-            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.WORD_WRAP)};
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.WORD_WRAP),
+            new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.AUTO_OPEN_EDITOR)};
 
     private IntegerFieldEditor fMaxSqlRowEditor;
 
@@ -152,6 +155,13 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
         gd.horizontalSpan = 2;
         _wordWrapButton.setLayoutData(gd);
 
+        _autoOpenEditorButton = new Button(colorComposite, SWT.CHECK);
+        _autoOpenEditorButton.setText(Messages.getString("Preferences.SQLExplorer.OpenEditorOnConnection"));
+        gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalAlignment = GridData.BEGINNING;
+        gd.horizontalSpan = 2;
+        _autoOpenEditorButton.setLayoutData(gd);
+        
         fAutoCommitBox.addSelectionListener(new SelectionListener() {
 
             public void widgetDefaultSelected(SelectionEvent e) {
@@ -208,6 +218,19 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
             }
         });
 
+        _autoOpenEditorButton.addSelectionListener(new SelectionListener() {
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+
+            }
+
+
+            public void widgetSelected(SelectionEvent e) {
+
+                fOverlayStore.setValue(IConstants.AUTO_OPEN_EDITOR, _autoOpenEditorButton.getSelection());
+            }
+        });
+        
         initialize();
 
         return colorComposite;
@@ -309,6 +332,14 @@ public class GeneralPreferencePage extends PreferencePage implements IWorkbenchP
             public void run() {
 
                 _wordWrapButton.setSelection(fOverlayStore.getBoolean(IConstants.WORD_WRAP));
+            }
+        });
+        
+        _autoOpenEditorButton.getDisplay().asyncExec(new Runnable() {
+
+            public void run() {
+
+                _autoOpenEditorButton.setSelection(fOverlayStore.getBoolean(IConstants.AUTO_OPEN_EDITOR));
             }
         });
 

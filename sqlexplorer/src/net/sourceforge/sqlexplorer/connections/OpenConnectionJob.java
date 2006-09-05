@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.connections;
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.LoginProgress;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLDriverManager;
@@ -179,14 +180,19 @@ public class OpenConnectionJob extends Job {
                         dbView.addSession(newSession);
                     }
 
-                    // after opening connection, open editor
-                    SQLEditorInput input = new SQLEditorInput("SQL Editor ("
-                            + SQLExplorerPlugin.getDefault().getNextElement() + ").sql");
-                    input.setSessionNode(newSession);
-                    IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                    // after opening connection, open editor if preference is set.
+                    boolean openEditor = SQLExplorerPlugin.getDefault().getPluginPreferences()
+                                                    .getBoolean(IConstants.AUTO_OPEN_EDITOR);
+                    if (openEditor) {
+                    
+                        SQLEditorInput input = new SQLEditorInput("SQL Editor ("
+                                + SQLExplorerPlugin.getDefault().getNextElement() + ").sql");
+                        input.setSessionNode(newSession);
+                        IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+    
+                        page.openEditor(input, "net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
 
-                    page.openEditor(input, "net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
-
+                    }
                 } catch (Throwable e) {
                     SQLExplorerPlugin.error("Error updating ui with new session", e);
                 }
