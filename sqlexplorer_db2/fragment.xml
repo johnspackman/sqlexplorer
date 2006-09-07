@@ -30,6 +30,20 @@
             name="Table Specific Trigger Folder"
             parent-node="table"
             table-type="trigger_folder"/>
+      <node
+            class="net.sourceforge.sqlexplorer.db2.nodes.ProcedureFolder"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.nodes.ProcedureFolder"
+            name="Procedure Folder"
+            parent-node="schema+catalog"
+            table-type="procedure_folder"/>
+      <node
+            class="net.sourceforge.sqlexplorer.db2.nodes.FunctionFolder"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.nodes.FunctionFolder"
+            name="Function Folder"
+            parent-node="schema+catalog"
+            table-type="function_folder"/>
    </extension>
    <extension
          point="net.sourceforge.sqlexplorer.nodeDetailTab">
@@ -38,6 +52,24 @@
             database-product-name="DB2*"
             id="net.sourceforge.sqlexplorer.db2.tabs.TriggerSourceTab"
             name="Trigger Source"
-            node-type="trigger"/>    
-   </extension>   
+            node-type="trigger"/>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.db2.tabs.ProcedureSourceTab"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.tabs.ProcedureSourceTab"
+            name="Procedure Source"
+            node-type="procedure"/>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.db2.tabs.ViewSourceTab"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.tabs.ViewSourceTab"
+            name="View Source"
+            node-type="view"/>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.db2.tabs.FunctionSourceTab"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.tabs.FunctionSourceTab"
+            name="Function Source"
+            node-type="function"/>    
+   </extension>
 </fragment>
