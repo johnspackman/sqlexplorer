@@ -39,11 +39,15 @@ public class AppendToEditorAction extends AbstractHistoryContextAction {
         if (page == null) {
             return false;
         }
-        SQLEditor editorPart = (SQLEditor) page.getActiveEditor();
         
-        if (editorPart == null) {
+        if (page.getActiveEditor() == null) {
             return false;
-        }
+        } 
+        
+        if (!(page.getActiveEditor() instanceof SQLEditor)) {
+            return false;
+        }      
+        
         return true;
     }
 
