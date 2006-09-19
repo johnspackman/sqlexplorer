@@ -39,7 +39,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 public class Dictionary {
 
     // TODO check if we need to add more types or remove restriction completely?
-    private static final String[] SUPPORTED_CONTENT_ASSIST_TYPES = new String[] {"TABLE_TYPE", "VIEW_TYPE"};
+    private static final String[] SUPPORTED_CONTENT_ASSIST_TYPES = new String[] {"TABLE_FOLDER", "TABLE_TYPE", "VIEW_FOLDER", "VIEW_TYPE"};
 
     private static final Log _logger = LogFactory.getLog(Dictionary.class);
 
@@ -114,7 +114,7 @@ public class Dictionary {
 
     public void putColumnsByTableName(String key, Object value) {
 
-        col_map.put(key, value);
+        col_map.put(key.toLowerCase(), value);
     }
 
 
