@@ -70,6 +70,45 @@
             database-product-name="DB2*"
             id="net.sourceforge.sqlexplorer.db2.tabs.FunctionSourceTab"
             name="Function Source"
-            node-type="function"/>    
+            node-type="function"/>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.db2.tabs.ProcedurePrivilegeTab"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.tabs.ProcedurePrivilegeTab"
+            name="Procedure Privilege"
+            node-type="procedure"/>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.db2.tabs.FunctionPrivilegeTab"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.tabs.FunctionPrivilegeTab"
+            name="Function Privilege"
+            node-type="function"/>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.db2.tabs.ProcedureDependencyTab"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.tabs.ProcedureDependencyTab"
+            name="Procedure Dependency"
+            node-type="procedure"/>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.db2.tabs.FunctionDependencyTab"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.tabs.FunctionDependencyTab"
+            name="Function Dependency"
+            node-type="function"/>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.db2.tabs.TableDependencyTab"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.tabs.TableDependencyTab"
+            name="Table Dependency"
+            node-type="table"/>    
+   </extension>
+   <extension
+         point="net.sourceforge.sqlexplorer.nodeContextAction">
+      <action
+            class="net.sourceforge.sqlexplorer.db2.actions.ReactiveViewAction"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.actions.ReactiveViewAction"
+            name="Reactive View Context Action"
+            node-type="Inoperative View"/>
    </extension>
 </fragment>
