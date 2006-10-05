@@ -47,8 +47,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -146,17 +144,18 @@ public class CreateDriverDlg extends TitleAreaDialog {
         }
 
         Image image = ImageUtil.getImage("Images.WizardLogo");
+        
         if (image != null) {
             setTitleImage(image);
         }
-
-        contents.addDisposeListener(new DisposeListener() {
+        // Bug # 1569762 : Driver list corrupt
+        /*contents.addDisposeListener(new DisposeListener() {
 
             public void widgetDisposed(DisposeEvent e) {
                 ImageUtil.disposeImage("Images.WizardLogo");                
             }            
         });
-        
+       */        
         return contents;
     }
 
