@@ -81,9 +81,15 @@ public class SQLExecution extends AbstractSQLExecution {
                 _composite.setLayout(gLayout);
 
                 try {
+                    int resultCount = _sqlResult.getDataSet().getRows().length;
                     String statusMessage = Messages.getString("SQLResultsView.Time.Prefix") + " "
                             + _sqlResult.getExecutionTimeMillis() + " "
                             + Messages.getString("SQLResultsView.Time.Postfix");
+                    
+                    if (resultCount > 0) {
+                        statusMessage = statusMessage + "  " 
+                        + Messages.getString("SQLResultsView.Count.Prefix") + " " + resultCount;
+                    }
                     new DataSetTable(_composite, _sqlResult.getDataSet(), statusMessage);
 
                     _composite.setData("parenttab", _parentTab);
