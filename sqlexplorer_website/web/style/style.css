@@ -29,7 +29,7 @@ html, body {
 	border-style: none;
 	width: 100%;
 	height: 100%;
-	background-image: url("logo.jpg");
+	background-image: url("../images/logo.jpg");
 	background-repeat: no-repeat;
 }
 .leftBar {
@@ -92,7 +92,7 @@ html, body {
 
 .content {
 	vertical-align: top;
-	background-image: url("leftcorner.jpg");
+	background-image: url("../images/leftcorner.jpg");
 	background-repeat: no-repeat;
 	padding: 20px 5px 30px 40px;	
 }

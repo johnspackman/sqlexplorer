@@ -1,77 +1,5 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-		<title>Eclipse SQL Explorer</title>
-		<link href="style.css" media="screen" type="text/css" rel="stylesheet" />
-	</head>
+<?php include("common/header.php"); ?>
 
-
-	<body>
-
-		<table class="mainTable">
-			
-			<tr>
-			
-				<!-- HEADER -->						
-				
-				<td class="topLeft">
-					<a href="http://eclipsesql.sourceforge.net/"><img src="logo.jpg" class="logo" /></a>	
-				</td>
-				<td class="topRight">
-					<span class="headerLinks"> 
-						<a href="http://eclipsesql.sourceforge.net/">Home</a> | 
-						<a href="screenshots.html">Screenshots</a> | 
-						<a href="http://sourceforge.net/project/showfiles.php?group_id=132863">Download</a>	| 
-						<a href="http://sourceforge.net/forum/?group_id=132863">Forums</a> |
-						<a href="http://sourceforge.net/tracker/?group_id=132863&atid=725498">Feature Requests</a> | 
-						<a href="http://sourceforge.net/tracker/?group_id=132863&atid=725495">Bugs</a>
-					</span>
-				</td>
-			</tr>
-			
-			<tr>
-
-				<!-- MENU -->			
-				
-				<td class="leftBar">
-				
-				<div class="menu">
-				<ul>
-					<li><a href="index.html">Home</a></li>
-					<li><a href="screenshots.html">Screenshots</a></li>
-					<li><a href="features.html">Overview</a>
-					<ul>
-						<li><a href="drivers.html">Driver Preferences</a></li>
-						<li><a href="connections.html">Connections View</a></li>
-						<li><a href="sqleditor.html">SQL Editor</a></li>						
-						<li><a href="sqlresults.html">SQL Results</a></li>
-						<li><a href="sqlhistory.html">SQL History</a></li>
-						<li><a href="structure.html">Structure View</a></li>
-						<li><a href="detail.html">Detail View</a></li>						
-						<li><a href="dbspecific.html">DB2, Oracle &amp; MySQL Features</a></li>											
-					</ul>
-					</li>
-					<li><a href="extending.html">Extending SQL Explorer</a>
-					<ul>
-						<li><a href="exBasics.html">Create Fragment</a></li>
-						<li><a href="exDetail.html">Detail Pages</a></li>
-						<li>Structure Nodes</li>					
-						<li><a href="exStructureAction.html">Structure Actions</a></li>	
-						<li><a href="exEditorActions.html">Editor Actions</a></li>						
-						<li><a href="exResult.html">Result Actions</a></li>						
-					</ul>
-					</li>
-					<li><a href="help.html">Help Wanted</a></li>
-				</ul>
-				</div>
-				<a href="http://sourceforge.net"><img class="sfLogo" src="http://sflogo.sourceforge.net/sflogo.php?group_id=132863&amp;type=1" alt="SourceForge.net Logo" /></a>
-				</td>
-				
-				<td class="content">
-		
-					<!-- CONTENT START -->
 					<h1>Creating new Nodes in the Database Structure View</h1>
 					<p>Eclipse SQL Explorer provides the 'net.sourceforge.sqlexplorer.node' extension point, which allows you to create
 					new nodes in the database structure view.</p>
@@ -91,19 +19,19 @@
 					<h1>Creating a new SQL Folder Node</h1>
 					<p>In this tutorial, we'll create a new Procedures folder node for the MySQL database.</p>
 					
-					<p>Step 1: Assuming that you've already created a <a href="exBasics.html">fragment project</a>, open the fragment.xml and
+					<p>Step 1: Assuming that you've already created a <a href="exBasics.php">fragment project</a>, open the fragment.xml and
 					go to the extensions tab.  We haven't used this extension point yet, so we need to add it first using the 'Add' button.
 					</p>
 					<p>
-						<img src="nodes1.jpg" />
+						<img src="screenshots/nodes1.jpg" />
 					</p>
 					<p>Step 2: Select the net.sourceforge.sqlexplore.node extension point.</p>
 					<p>	
-						<img src="nodes2.jpg" />
+						<img src="screenshots/nodes2.jpg" />
 					</p>
 					<p>Step 3: Right click the extension point and create a new node.</p>
 					<p>
-						<img src="nodes3.jpg" />
+						<img src="screenshots/nodes3.jpg" />
 					</p>
 					<p>Step 4: This is where we define the most important details for our new extension point.</p>
 					<p>In the name field, we have to provide a name for this node.  This name is only used to make it easy to identify your node.  
@@ -119,30 +47,24 @@
 					Once we've entered all information, we can generate our new class by clicking on the class link.
 					</p>
 					<p>
-						<img src="nodes4.jpg" />
+						<img src="screenshots/nodes4.jpg" />
 					</p>
 					<p>Step 5: Change the super class to AbstractSQLFolderNode.</p>
 					<p>
-						<img src="nodes5.jpg" />
+						<img src="screenshots/nodes5.jpg" />
 					</p>
 					<p>Step 6: Once the class is generated, we create a new entry in our text.properties file to hold the label for
 					our procedure node.</p>
 					<p>
-						<img src="nodes6.jpg" />
+						<img src="screenshots/nodes6.jpg" />
 					</p>
 					<p>Step 7: Update the methods of the generated class.  The image says it all..</p>
 					<p>
-						<img src="nodes7.jpg" />
+						<img src="screenshots/nodes7.jpg" />
 					</p>
 					<p>All we have to do now is save everything and run SQL Explorer with our new extension.  Here's the end result.</p>
 					<p>
-						<img src="nodes8.jpg" />
+						<img src="screenshots/nodes8.jpg" />
 					</p>
 					
-					<!-- CONTENT END -->		
-				</td>
-			</tr>
-
-			</table>
-	</body>
-</html>
+<?php include("common/footer.php"); ?>
