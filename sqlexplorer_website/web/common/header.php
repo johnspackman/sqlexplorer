@@ -8,6 +8,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+		<meta name="verify-v1" content="o1h147FC4rmjoSFUN29aNjAl3EnazrCNY3exUPNgXzs=" />
+		<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+		</script>
+		<script type="text/javascript">
+		_uacct = "UA-153465-3";
+		urchinTracker();
+		</script>
 		<title>Eclipse SQL Explorer</title>
 		<link href="style/style.css" media="screen" type="text/css" rel="stylesheet" />
 	</head>
@@ -22,7 +29,7 @@
 				<!-- HEADER -->						
 				
 				<td class="topLeft">
-					<a href="/"><img src="images/logo.jpg" class="logo" /></a>	
+					<a href="/"><img src="images/logo.jpg" class="logo" alt="Eclipse SQL Explorer" /></a>	
 				</td>
 				<td class="topRight">
 					<span class="headerLinks"> 
@@ -30,8 +37,8 @@
 						<a href="screenshots.php">Screenshots</a> | 
 						<a href="http://sourceforge.net/project/showfiles.php?group_id=132863">Download</a>	| 
 						<a href="http://sourceforge.net/forum/?group_id=132863">Forums</a> |
-						<a href="http://sourceforge.net/tracker/?group_id=132863&atid=725498">Feature Requests</a> | 
-						<a href="http://sourceforge.net/tracker/?group_id=132863&atid=725495">Bugs</a>
+						<a href="http://sourceforge.net/tracker/?group_id=132863&amp;atid=725498">Feature Requests</a> | 
+						<a href="http://sourceforge.net/tracker/?group_id=132863&amp;atid=725495">Bugs</a>
 					</span>
 				</td>
 			</tr>
@@ -58,7 +65,7 @@
 						if ($page=='features.php') { 
 							echo "<li>Overview</li>";
 						} else {
-							echo "<li><a href=\"features.php\">Overview</a></li>";
+							echo "<li><a href=\"features.php\">Overview</a>";
 						}
 					?>
 					<ul>
@@ -104,12 +111,12 @@
 								echo "<li><a href=\"dbspecific.php\">DB2, Oracle &amp; MySQL Features</a></li>";
 							}
 						?>
-					</ul>
+					</ul></li>
 					<?php
 						if ($page=='extending.php') { 
 							echo "<li>Extending SQL Explorer</li>";
 						} else {
-							echo "<li><a href=\"extending.php\">Extending SQL Explorer</a></li>";
+							echo "<li><a href=\"extending.php\">Extending SQL Explorer</a>";
 						}
 					?>					
 					<ul>
@@ -145,7 +152,7 @@
 								echo "<li><a href=\"exResult.php\">Result Actions</a></li>";
 							}
 						?>
-					</ul>
+					</ul></li>
 					<?php
 						if ($page=='help.php') { 
 							echo "<li>Help Wanted</li>";
