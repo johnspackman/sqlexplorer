@@ -8,20 +8,20 @@
 	<p>Wouldn't it be nice if we could have a tab that shows the process list info for the database?  This way, we
 	wouldn't have to keep executing the 'show full processlist' SQL statement to get to this information.</p>
 	<p>
-		<img src="screenshots/detail0.jpg" />
+		<img src="screenshots/detail0.jpg" alt="" />
 	</p>
 	<p>Step 1: If you haven't done so already, open the manifest.mf file.  The file is located in the META-INF folder of your fragment project.<br/>
 	Switch to the extensions tab.  And yes, you've guessed it: click on the 'Add' button to proceed.</p>
 	<p>
-		<img src="screenshots/detail1.jpg" />
+		<img src="screenshots/detail1.jpg" alt="" />
 	</p>						
 	<p>Step 2: In the window that is presented, you'll need to locate and select the net.sourceforge.sqlexplorer.nodeDetailTab extension point.</p>
 	<p>
-		<img src="screenshots/detail2.jpg" />
+		<img src="screenshots/detail2.jpg" alt="" />
 	</p>
 		<p>Step 3: Now right click on the extension point and select New &gt; detailtab.</p>
 	<p>
-		<img src="screenshots/detail3.jpg" />
+		<img src="screenshots/detail3.jpg" alt="" />
 	</p>
 	<p>Step 4: Here we enter the details of our extension point.</p><p>The name can be anything you like, but make sure
 	that the id starts with 'net.sourceforge.sqlexplorer.&lt;yourdbname&gt;.'<br/>
@@ -39,7 +39,7 @@
 	package_body, ... it really depends on what database you are using.</p>
 	<p>Now, let's click on the 'class' link to generate our class file.</p>
 	<p>
-		<img src="screenshots/detail4.jpg" />
+		<img src="screenshots/detail4.jpg" alt="" />
 	</p>			
 	<p>Step 5: Normally, we wouldn't have to do anything here, but the default super class is AbstractTab.  This class gives us a blank
 	canvas to draw the detail page on and that's too much work in this case.</p>
@@ -64,13 +64,13 @@
 	</ul>
 	<p>Let's change AbstractTab to AbstractSQLTab. This will provide us with an easy to use tab that is preconfigured for handling SQL statements.</p>
 	<p>
-		<img src="screenshots/detail5.jpg" />
+		<img src="screenshots/detail5.jpg" alt="" />
 	</p>										
 	<p>Step 6: We have our new class now, but before we change it, let's open the text.properties file and 
 	add some text variables that we can use in our detail tab.  When you name your properties, I recommend
 	always starting with &lt;yourdbname&gt;. , this will avoid conflicts with other extensions.</p>
 	<p>
-		<img src="screenshots/detail6.jpg" />
+		<img src="screenshots/detail6.jpg" alt="" />
 	</p>
 	<p>Step 7: In our new class, we override 3 methods of the parent AbstractSQL class.</p>
 	<p>getLabelText(): This method should return the value that will be displayed on the 'tab' of our new tab.<br/>
@@ -82,7 +82,7 @@
 	getNode() always returns the node that is selected in the database structure view.  getSession() returns the active session to which the node belongs.
 	And you've guessed it: getSession().toString() returns the session name.</p>
 	<p>
-		<img src="screenshots/detail7.jpg" />
+		<img src="screenshots/detail7.jpg" alt="" />
 	</p>
 	<p>Step 8: To test our application, we need to create a new run configuration.  Select Run &gt; Run... from the menu. 
 	Highlight 'eclipse application', right click and select New.<br/>
@@ -90,7 +90,7 @@
 	On the plugin tab, make sure that both the SQL Explorer plugin and your fragment are selected.</p>							
 	<p>Below you can see the result.  A brand new tab when the database node is selected.</p>
 	<p>
-		<img src="screenshots/detail8.jpg" />
+		<img src="screenshots/detail8.jpg" alt="" />
 	</p>			
 	<h1>A slighty more difficult example</h1>
 	<p>In the above example we used a simple sql statement.  Using the AbstractSQLTab, it is also possible to use a
@@ -98,7 +98,7 @@
 	to override an additional method: getSQLParameters().  This method should return all the parameter values that
 	are required for the SQL statement.  An example is shown below.</p>	
 	<p>
-		<img src="screenshots/detail9.jpg" />
+		<img src="screenshots/detail9.jpg" alt="" />
 	</p>				
 	<h1>Creating a source tab</h1>
 	<p>To create source tabs in the detail view, you can extend the AbstractSQLSourceTab or the AbstractSourceTab.  
@@ -107,15 +107,15 @@
 	<p>Below you can see a sample extension point for an AbstractSQLSourceTab.  In this particular case, the extension point is valid
 	for many different node types.</p>
 	<p>
-		<img src="screenshots/detail10.jpg" />
+		<img src="screenshots/detail10.jpg" alt="" />
 	</p>	
 	<p>The code itself turns out to be even shorter than for a regular resultset based tab like we described above.</p>
 	<p>
-		<img src="screenshots/detail11.jpg" />
+		<img src="screenshots/detail11.jpg" alt="" />
 	</p>	
 	<p>And here is the result of the source tab:</p>
 	<p>
-		<img src="screenshots/detail12.jpg" />
+		<img src="screenshots/detail12.jpg" alt="" />
 	</p>
 
 <?php include("common/footer.php"); ?>

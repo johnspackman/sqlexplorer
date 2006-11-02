@@ -9,23 +9,23 @@
 	<p>Ok, let's get started.</p>
 	<p>Step 1: Select File &gt; New Project from the menu.</p>
 		<p>
-		<img src="screenshots/basics1.jpg" />
+		<img src="screenshots/basics1.jpg" alt="" />
 		</p>
 	<p>Step 2: In the new project wizard that has just appeared, select Fragment Project and click next.</p>
 		<p>
-		<img src="screenshots/basics2.jpg" />
+		<img src="screenshots/basics2.jpg" alt="" />
 		</p>
 	<p>Step 3: Enter your project details.  As the project name, use sqlexplorer_&lt;yourdbname&gt;.  
 	The targeted runtime should be set to eclipse 3.2.</p>
 		<p>
-		<img src="screenshots/basics3.jpg" />
+		<img src="screenshots/basics3.jpg" alt="" />
 		</p>
 	<p>Step 4: Here we have to enter a few more details.<br/>As the fragment id, use 'net.sourceforge.sqlexplorer.&lt;yourdbname&gt;'.<br/>
 	For the fragment version, you can start from 1.0.0 if you like.  For the fragment name, I suggest using '&lt;yourdbname&gt; extension for SQL Explorer', but you are free
 	to use anything you like.  The fragment provider should obviously be YOUR name.<br/>As the plugin ID, enter 'net.sourceforge.sqlexplorer'.  This is how your fragment will know
 	that it is an extension to the core SQL Explorer plugin.  For the minimum version, enter the version number of the SQL Explorer version that you've got installed.  This should be 3.0.0 or higher.</p>
 		<p>
-		<img src="screenshots/basics4.jpg" />
+		<img src="screenshots/basics4.jpg" alt="" />
 		</p>
 	<p>Step 5: We're almost done.  Eclipse has created your brand new fragment and it should look almost the same
 	as the one below.  There are just a few more things to add.  In the project root, add a new folder 'icons', we'll need
@@ -35,7 +35,7 @@
 	that this file is in the main package, otherwise it might not be found by the core plugin.
 	</p>
 		<p>
-		<img src="screenshots/basics5.jpg" />
+		<img src="screenshots/basics5.jpg" alt="" />
 		</p>	
 	<p>Congratulations.  You've just created a new fragment project for SQL Explorer.  Now head on over to the 
 	<a href="exDetail.php">next section</a> and create that feature you've been waiting to code!

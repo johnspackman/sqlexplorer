@@ -22,15 +22,15 @@
 	go to the extensions tab.  We haven't used this extension point yet, so we need to add it first using the 'Add' button.
 	</p>
 	<p>
-		<img src="screenshots/nodes1.jpg" />
+		<img src="screenshots/nodes1.jpg" alt="" />
 	</p>
 	<p>Step 2: Select the net.sourceforge.sqlexplore.node extension point.</p>
 	<p>	
-		<img src="screenshots/nodes2.jpg" />
+		<img src="screenshots/nodes2.jpg" alt="" />
 	</p>
 	<p>Step 3: Right click the extension point and create a new node.</p>
 	<p>
-		<img src="screenshots/nodes3.jpg" />
+		<img src="screenshots/nodes3.jpg" alt="" />
 	</p>
 	<p>Step 4: This is where we define the most important details for our new extension point.</p>
 	<p>In the name field, we have to provide a name for this node.  This name is only used to make it easy to identify your node.  
@@ -46,24 +46,24 @@
 	Once we've entered all information, we can generate our new class by clicking on the class link.
 	</p>
 	<p>
-		<img src="screenshots/nodes4.jpg" />
+		<img src="screenshots/nodes4.jpg" alt="" />
 	</p>
 	<p>Step 5: Change the super class to AbstractSQLFolderNode.</p>
 	<p>
-		<img src="screenshots/nodes5.jpg" />
+		<img src="screenshots/nodes5.jpg" alt="" />
 	</p>
 	<p>Step 6: Once the class is generated, we create a new entry in our text.properties file to hold the label for
 	our procedure node.</p>
 	<p>
-		<img src="screenshots/nodes6.jpg" />
+		<img src="screenshots/nodes6.jpg" alt="" />
 	</p>
 	<p>Step 7: Update the methods of the generated class.  The image says it all..</p>
 	<p>
-		<img src="screenshots/nodes7.jpg" />
+		<img src="screenshots/nodes7.jpg" alt="" />
 	</p>
 	<p>All we have to do now is save everything and run SQL Explorer with our new extension.  Here's the end result.</p>
 	<p>
-		<img src="screenshots/nodes8.jpg" />
+		<img src="screenshots/nodes8.jpg" alt="" />
 	</p>
 					
 <?php include("common/footer.php"); ?>

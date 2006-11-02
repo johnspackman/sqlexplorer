@@ -63,7 +63,7 @@
 							echo "<li><a href=\"screenshots.php\">Screenshots</a></li>";
 						}
 						if ($page=='features.php') { 
-							echo "<li>Overview</li>";
+							echo "<li>Overview";
 						} else {
 							echo "<li><a href=\"features.php\">Overview</a>";
 						}
@@ -114,7 +114,7 @@
 					</ul></li>
 					<?php
 						if ($page=='extending.php') { 
-							echo "<li>Extending SQL Explorer</li>";
+							echo "<li>Extending SQL Explorer";
 						} else {
 							echo "<li><a href=\"extending.php\">Extending SQL Explorer</a>";
 						}

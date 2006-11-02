@@ -13,6 +13,6 @@
 		<li>Commit/Rollback buttons (if session is not in autocommit mode)</li>
 		<li>Display of query execution time of last run query</li>
 	</ul>
-	<p><img src="screenshots/editor1.jpg" /></p>
+	<p><img src="screenshots/editor1.jpg" alt="" /></p>
 
 <?php include("common/footer.php"); ?>
