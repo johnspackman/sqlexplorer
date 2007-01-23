@@ -32,6 +32,9 @@ import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 import net.sourceforge.sqlexplorer.sqlpanel.SQLResult;
 
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -48,6 +51,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -91,6 +95,7 @@ public class ExplainExecution extends AbstractSQLExecution {
     protected SQLResult _sqlResult;
 
     protected Statement _stmt;
+    
 
 
     public ExplainExecution(SQLEditor editor, SqlResultsView resultsView, String sqlString,
@@ -107,8 +112,8 @@ public class ExplainExecution extends AbstractSQLExecution {
         // set initial message
         setProgressMessage(Messages.getString("SQLResultsView.ConnectionWait"));
     }
-
-
+    
+    
     private void displayResults(final ExplainNode node) {
 
         _resultsView.getSite().getShell().getDisplay().asyncExec(new Runnable() {
@@ -227,6 +232,21 @@ public class ExplainExecution extends AbstractSQLExecution {
                         }
 
                     });
+                    
+                    // add context menu to table & cursor
+                    final ExplainPlanActionGroup actionGroup = new ExplainPlanActionGroup(tv, node.getChildren()[0]);
+                    MenuManager menuManager = new MenuManager("ExplainPlanContextMenu");
+                    menuManager.setRemoveAllWhenShown(true);
+                    Menu contextMenu = menuManager.createContextMenu(table);        
+                    
+                    tv.getControl().setMenu(contextMenu);
+                    
+                    menuManager.addMenuListener(new IMenuListener() {
+
+                        public void menuAboutToShow(IMenuManager manager) {
+                            actionGroup.fillContextMenu(manager);
+                        }
+                    });                    
 
                 } catch (Exception e) {
 
@@ -275,7 +295,7 @@ public class ExplainExecution extends AbstractSQLExecution {
             }
 
             _prepStmt = _connection.prepareStatement("select "
-                    + "object_type,operation,options,object_owner,object_name,optimizer,cardinality ,cost,id,parent_id "
+                    + "level, object_type,operation,options,object_owner,object_name,optimizer,cardinality ,cost,id,parent_id,level "
                     + " from " + " plan_table " + " start with id = 0 and statement_id=? "
                     + " connect by prior id=parent_id and statement_id=?");
             _prepStmt.setString(1, id_);
@@ -304,6 +324,7 @@ public class ExplainExecution extends AbstractSQLExecution {
                     cost = -1;
                 int parentID = rs.getInt("parent_id");
                 int id = rs.getInt("id");
+                int level = rs.getInt("level");
                 ExplainNode nd = null;
                 if (id == 0) {
                     ExplainNode dummy = new ExplainNode(null);
@@ -328,6 +349,8 @@ public class ExplainExecution extends AbstractSQLExecution {
                 nd.setOperation(operation);
                 nd.setOptimizer(optimizer);
                 nd.setOptions(options);
+                nd.setId(id);
+                nd.setLevel(level);
             }
             rs.close();
             _prepStmt.close();
