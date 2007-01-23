@@ -19,10 +19,10 @@
 package net.sourceforge.sqlexplorer.oracle.tabs;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSQLTab;
+import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSingleSQLTab;
 
 
-public class InfoTab extends AbstractSQLTab {
+public class InfoTab extends AbstractSingleSQLTab {
 
     public String getSQL() {
         String objectType = getNode().getType().toUpperCase().replace('_', ' ');

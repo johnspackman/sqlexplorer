@@ -19,10 +19,10 @@
 package net.sourceforge.sqlexplorer.oracle.tabs;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSQLTab;
+import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSingleSQLTab;
 
 
-public class SequenceDetailTab extends AbstractSQLTab {
+public class SequenceDetailTab extends AbstractSingleSQLTab {
 
     public String getSQL() {
         return "select min_value,max_value,increment_by,cycle_flag,order_flag, cache_size, last_number from sys.all_sequences "+
