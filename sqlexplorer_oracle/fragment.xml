@@ -88,7 +88,7 @@
             id="net.sourceforge.sqlexplorer.oracle.nodes.TableTriggerFolder"
             name="Table Specific Trigger Folder"
             parent-node="table"
-            table-type="trigger_folder"/>                                                                                                         
+            table-type="trigger_folder"/>
    </extension>
    <extension
          point="net.sourceforge.sqlexplorer.nodeDetailTab">
@@ -151,8 +151,27 @@
             database-product-name="Oracle*"
             id="net.sourceforge.sqlexplorer.oracle.XMLTab"
             name="XML Info"
-            node-type="function,java_source,package_body,package,procedure,trigger,sequence,table,materialized_view,index"/>                            
+            node-type="function,java_source,package_body,package,procedure,trigger,sequence,table,materialized_view,index"/>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.oracle.tabs.ProcedureTab"
+            database-product-name="Oracle*"
+            id="net.sourceforge.sqlexplorer.oracle.ProcedureTab"
+            name="Procedure Information"
+            node-type="procedure,package_procedure"/>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.oracle.tabs.ArgumentsTab"
+            database-product-name="Oracle*"
+            id="net.sourceforge.sqlexplorer.tabs.ArgumentTab"
+            name="Arguments information"
+            node-type="procedure,package_procedure"/>                            
                                                                                                                   
+   </extension>
+   <extension
+         point="net.sourceforge.sqlexplorer.explainPlanContextAction">
+      <action
+            class="net.sourceforge.sqlexplorer.oracle.actions.explain.GenerateMetaUML"
+            id="net.sourceforge.sqlexplorer.oracle.explain.generatemetauml"
+            name="Generate MetaUML"/>
    </extension>
 
 </fragment>
