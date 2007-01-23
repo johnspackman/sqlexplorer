@@ -18,25 +18,60 @@
  */
 package net.sourceforge.sqlexplorer.oracle.nodes;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 
-public class PackageFolder extends AbstractSQLFolderNode {
-
-    public String getChildType() {
-        return "PACKAGE";
-    }
-   
+public class PackageFolder extends AbstractFolderNode {
+	
+	public PackageFolder() {
+		_type = "FOLDER"; 
+	}
+	
     public String getName() {
         return Messages.getString("oracle.dbstructure.packages");
     }
-    
-    public String getSQL() {
-        return "select object_name from sys.all_objects where owner = ? and object_type = 'PACKAGE'";
-    }
-    
-    public Object[] getSQLParameters() {
-        return new Object[] {getParent().getQualifiedName()};
-    }
+
+	public void loadChildren() {
+		
+        SQLConnection connection = getSession().getInteractiveConnection();
+        ResultSet rs = null;
+        PreparedStatement pStmt = null;
+
+        try {
+
+            // use prepared statement
+            pStmt = connection.prepareStatement("select object_name from sys.all_objects where owner = ? and object_type = 'PACKAGE'");
+            pStmt.setString(1, _parent.getQualifiedName());
+
+            rs = pStmt.executeQuery();
+
+            while (rs.next()) {
+            	if (!isExcludedByFilter(rs.getString(1))) {
+            		addChildNode(new PackageNode(this, rs.getString(1), _sessionNode, getParent().getName()));
+            	}
+            }
+
+            rs.close();
+
+        } catch (Exception e) {
+
+            SQLExplorerPlugin.error("Couldn't load children for: " + getName(), e);
+
+        } finally {
+
+            if (pStmt != null) {
+                try {
+                    pStmt.close();
+                } catch (Exception e) {
+                    SQLExplorerPlugin.error("Error closing statement", e);
+                }
+            }
+        }
+	}
 }
