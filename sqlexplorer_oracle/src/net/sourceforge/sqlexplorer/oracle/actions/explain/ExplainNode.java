@@ -25,6 +25,8 @@ public class ExplainNode {
     int cardinality, cost;
 
     int id, parent_id;
+    
+    int level;
 
     ArrayList ls = new ArrayList();
 
@@ -76,6 +78,14 @@ public class ExplainNode {
 
         return id;
     }
+    
+    /**
+     * @return
+     */
+    public int getLevel() {
+
+        return level;
+    }    
 
 
     /**
@@ -163,6 +173,14 @@ public class ExplainNode {
 
         id = i;
     }
+    
+    /**
+     * @param i
+     */
+    public void setLevel(int i) {
+
+        level = i;
+    }    
 
 
     /**
