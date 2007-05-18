@@ -33,5 +33,15 @@
             parent-node="schema+catalog"
             table-type="user_folder"/>
    </extension>
+   <extension
+         point="net.sourceforge.sqlexplorer.nodeContextAction">
+      <action
+            class="net.sourceforge.sqlexplorer.sybase.actions.ShowProcedureSource"
+            database-product-name="Adaptive Server*"
+            icon="icons/new_editor.gif"
+            id="net.sourceforge.sqlexplorer.sybase.actions.ShowProcedureSource"
+            name="Show Procedure Source Action"
+            node-type="procedure"/>
+   </extension>
 
 </fragment>

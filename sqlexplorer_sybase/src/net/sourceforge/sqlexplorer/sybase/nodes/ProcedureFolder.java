@@ -18,7 +18,10 @@ public class ProcedureFolder extends AbstractSQLFolderNode {
 	}
 
 	public String getSQL() {
-		return "select name from " + getSchemaOrCatalogName() + "..sysobjects where type = 'P' order by name";
+		return "select b.name + '.' + a.name from " + 
+			getSchemaOrCatalogName() + "..sysobjects a, " + 
+			getSchemaOrCatalogName() + "..sysusers b " +
+			" where a.uid = b.uid and a.type = 'P' order by a.name";
 	}
 
 	public Object[] getSQLParameters() {
