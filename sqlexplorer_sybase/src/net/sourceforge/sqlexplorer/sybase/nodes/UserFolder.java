@@ -1,15 +1,25 @@
 package net.sourceforge.sqlexplorer.sybase.nodes;
 
-import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
-public class UserFolder extends AbstractSQLFolderNode {
+import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+
+public class UserFolder  extends SysObjectFolder {
 	public UserFolder() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getChildType() {
 		return "user";
+	}
+
+	public Class getChildClass() {
+		return UserNode.class;
 	}
 
 	public String getName() {
@@ -17,7 +27,7 @@ public class UserFolder extends AbstractSQLFolderNode {
 	}
 
 	public String getSQL() {
-		return " select Name = u.name, 'Group' = g.Name, Login = l.name from " + 
+		return " select u.name, u.uid, u.name from " + 
 		getSchemaOrCatalogName() + "..sysusers u, " +  
 		getSchemaOrCatalogName() + "..sysusers g, " + 
 		" master..syslogins l " + 
@@ -30,5 +40,5 @@ public class UserFolder extends AbstractSQLFolderNode {
 		return null;
 	}
 
-}
+	}
 
