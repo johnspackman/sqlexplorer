@@ -68,6 +68,8 @@ public class ShowProcedureSource extends AbstractDBTreeContextAction {
                              script.append(queryDelimiter).append('\n');
                         	 script.append('\n');
 
+                        	 //TODO Get and Print Permissions on Object
+                        	 
                         	 script.append("SET USER").append(queryDelimiter).append('\n');
                          } catch (Exception e) {
                         	 SQLExplorerPlugin.error("Error retrieving procedure source.", e);
