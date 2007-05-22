@@ -25,9 +25,9 @@
 
 package net.sourceforge.sqlexplorer.oracle.tabs;
 
-import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSingleSQLTab;
+import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSQLTab;
 
-public class ProcedureTab extends AbstractSingleSQLTab {
+public class ProcedureTab extends AbstractSQLTab {
 
 	public ProcedureTab() {
 	}
