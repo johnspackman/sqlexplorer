@@ -1,0 +1,11 @@
+SqlExplorer PostgreSQL extension
+================================
+
+- Query Execution Explain Plan (normal and analyzed)
+- Support for: Aggregate, Cast, Conversion, Domain, Function,
+  Role (Group and Login), Language, Operator, Operator Class,
+  Procedure, Tablespace, Trigger and Type folders
+- Connection, Lock, Prepared Transaction tabs for database
+- Configuration and SQL Feature views via dialog and context menu
+- Support for Detail info, Dependencies and Dependentants for all nodes
+- Statistics for Database and Table

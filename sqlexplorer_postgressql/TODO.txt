@@ -1,0 +1,5 @@
+Todo in random order:
+- extends statistics views (+ add for indexes)
+- build IDataSet with getters from DataSet so that we can skip the
+  factory part of PropertyDataSet
+- convert to Messages.getString() API
