@@ -10,6 +10,12 @@ import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSQLTab;
  */
 public class TxTab extends AbstractSQLTab {
 
+	private static final String QUERY = "SELECT " + "   owner AS \"Owner\", "
+			+ "    transaction AS \"Transaction\", " + "    gid AS \"Gid\", "
+			+ "    prepared AS \"Prepared at\" " + "FROM "
+			+ "    pg_prepared_xacts " + "WHERE "
+			+ "    database = current_database() " + "ORDER BY " + "    owner";
+
 	@Override
 	public String getLabelText() {
 		return "Prepared transactions";
@@ -17,12 +23,13 @@ public class TxTab extends AbstractSQLTab {
 
 	@Override
 	public String getSQL() {
-		return "SELECT * FROM pg_prepared_xacts";
+		return QUERY;
 	}
 
 	@Override
 	public String getStatusMessage() {
-		return "Transactions for";
+		String s = getNode().getSession().getAlias().getName();
+		return "Transactions for " + s;
 	}
 
 }

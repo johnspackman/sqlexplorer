@@ -33,7 +33,8 @@ public class DatabaseStatisticsTab extends AbstractDataSetTab {
 
 	@Override
 	public String getStatusMessage() {
-		return "Statistics for " + getNode().getName();
+		String s = getNode().getSession().getAlias().getName();
+		return "Statistics for " + s;
 	}
 
 	@Override
