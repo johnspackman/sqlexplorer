@@ -3,6 +3,7 @@ package net.sourceforge.sqlexplorer.rcp;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
+import org.eclipse.ui.application.IWorkbenchConfigurer;
 
 
 /**
@@ -13,6 +14,14 @@ import org.eclipse.ui.application.WorkbenchWindowAdvisor;
  */
 public class SQLExplorerWorkbenchAdvisor extends WorkbenchAdvisor {
    
+	/**
+	 * Allow SQL Explorer to save and restore layout and views
+	 */
+	public void initialize(IWorkbenchConfigurer configurer) {
+		super.initialize(configurer);
+		configurer.setSaveAndRestore(true);
+	}
+	
     /**
      * Get unique id for our sql explorer perspective.
      * This should match a perspective defined in the plugin.xml
