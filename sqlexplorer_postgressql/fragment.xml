@@ -197,6 +197,13 @@
             icon="icons/features.gif"
             name="Show SQL features"
             node-type="database"/>
+      <action
+            class="net.sourceforge.sqlexplorer.postgresql.actions.DiscoverDbContextAction"
+            database-product-name="PostgreSQL"
+            id="net.sourceforge.sqlexplorer.postgresql.actions.DiscoverDbContextAction"
+            icon="icons/database.jpg"
+            name="Discover databases"
+            node-type="database"/>
    </extension>
 
 </fragment>
