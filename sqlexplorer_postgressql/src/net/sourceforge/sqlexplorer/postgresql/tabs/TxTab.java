@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.tabs;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSQLTab;
 
 /**
@@ -18,7 +19,7 @@ public class TxTab extends AbstractSQLTab {
 
 	@Override
 	public String getLabelText() {
-		return "Prepared transactions";
+		return Messages.getString("postgresql.detail.db.tx.label");
 	}
 
 	@Override
@@ -29,7 +30,7 @@ public class TxTab extends AbstractSQLTab {
 	@Override
 	public String getStatusMessage() {
 		String s = getNode().getSession().getAlias().getName();
-		return "Transactions for " + s;
+		return Messages.getString("postgresql.detail.db.tx.status", s);
 	}
 
 }

@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.tabs;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractDataSetTab;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
@@ -34,13 +35,15 @@ public class PropertyInfoTab extends AbstractDataSetTab {
 
 	@Override
 	public String getStatusMessage() {
-		return "Detail info for " + getNode().getType() + " "
-				+ getNode().getName();
+		String t = Messages.getString("postgresql.object." +
+				getNode().getType());
+		return Messages.getString("postgresql.detail.db.info.status",
+				new Object[] { t, getNode().getName() });
 	}
 
 	@Override
 	public String getLabelText() {
-		return "Info";
+		return Messages.getString("postgresql.detail.db.info.label");
 	}
 
 }

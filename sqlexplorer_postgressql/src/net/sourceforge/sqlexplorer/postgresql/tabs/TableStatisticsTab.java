@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.tabs;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractDataSetTab;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
@@ -39,12 +40,12 @@ public class TableStatisticsTab extends AbstractDataSetTab {
 
 	@Override
 	public String getStatusMessage() {
-		return "Statistics for table " + getNode();
+		return Messages.getString("postgresql.detail.stat.status", getNode().getName());
 	}
 
 	@Override
 	public String getLabelText() {
-		return "Statistics";
+		return Messages.getString("postgresql.detail.stat.label");
 	}
 
 }

@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.tabs;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSQLTab;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.postgresql.nodes.RequiredByNode;
@@ -14,7 +15,7 @@ public class RequiredByTab extends AbstractSQLTab {
 
 	@Override
 	public String getLabelText() {
-		return "Required by";
+		return Messages.getString("postgresql.detail.db.requiredby.label");
 	}
 
 	private String _getSQL() {
@@ -44,8 +45,10 @@ public class RequiredByTab extends AbstractSQLTab {
 
 	@Override
 	public String getStatusMessage() {
-		return "Objects requiring " + getNode().getType() + " "
-				+ getNode().getName();
+		String t = Messages.getString("postgresql.object." +
+				getNode().getType());
+		return Messages.getString("postgresql.detail.db.requiredby.status",
+				new Object[] { t, getNode().getName() });
 	}
 
 }

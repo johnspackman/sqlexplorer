@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.tabs;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSQLTab;
 
 /**
@@ -27,7 +28,7 @@ public class LockTab extends AbstractSQLTab {
 
 	@Override
 	public String getLabelText() {
-		return "Locks";
+		return Messages.getString("postgresql.detail.db.lock.label");
 	}
 
 	@Override
@@ -38,7 +39,7 @@ public class LockTab extends AbstractSQLTab {
 	@Override
 	public String getStatusMessage() {
 		String s = getNode().getSession().getAlias().getName();
-		return "Locks for " + s;
+		return Messages.getString("postgresql.detail.db.lock.status", s);
 	}
 
 }

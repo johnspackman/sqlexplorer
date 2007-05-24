@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.tabs;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSQLTab;
 
 /**
@@ -24,7 +25,7 @@ public class ConnectionTab extends AbstractSQLTab {
 
 	@Override
 	public String getLabelText() {
-		return "Connections";
+		return Messages.getString("postgresql.detail.db.connection.label");
 	}
 
 	@Override
@@ -35,7 +36,7 @@ public class ConnectionTab extends AbstractSQLTab {
 	@Override
 	public String getStatusMessage() {
 		String s = getNode().getSession().getAlias().getName();
-		return "Connections for " + s;
+		return Messages.getString("postgresql.detail.db.connection.status", s);
 	}
 
 }

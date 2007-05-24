@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.tabs;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSQLTab;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.postgresql.nodes.InfoNode;
@@ -14,7 +15,7 @@ public class TableInfoTab extends AbstractSQLTab {
 
 	@Override
 	public String getLabelText() {
-		return "Info";
+		return Messages.getString("postgresql.detail.db.info.label");
 	}
 
 	private String _getSQL() {
@@ -43,8 +44,10 @@ public class TableInfoTab extends AbstractSQLTab {
 
 	@Override
 	public String getStatusMessage() {
-		return "Detail info for " + getNode().getType() + " "
-				+ getNode().getName();
+		String t = Messages.getString("postgresql.object." +
+				getNode().getType());
+		return Messages.getString("postgresql.detail.db.info.status",
+				new Object[] { t, getNode().getName() });
 	}
 
 }
