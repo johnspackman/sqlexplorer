@@ -26,6 +26,7 @@ import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.window.Window;
 
 
 public class FilterStructureAction extends Action {
@@ -59,7 +60,7 @@ public class FilterStructureAction extends Action {
             dialog.setNameFilter(alias.getNameFilterExpression());
         }
         
-        if (dialog.open() != FilterStructureDialog.OK) {
+        if (dialog.open() != Window.OK) {
             return;
         }
         
