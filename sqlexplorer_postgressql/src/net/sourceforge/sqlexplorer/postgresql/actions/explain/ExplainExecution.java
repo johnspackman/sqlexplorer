@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.Savepoint;
 import java.sql.Statement;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
@@ -176,14 +177,14 @@ public class ExplainExecution extends AbstractSQLExecution {
 							p.close();
 							logger.debug("Did close statement");
 						} catch (Exception e) {
-							SQLExplorerPlugin.error(
-									"Failed to cancel EXPLAIN statement", e);
+							SQLExplorerPlugin.error(Messages.getString(
+									"postgresql.explain.error.cancel"),	e);
 						}
 					}
 				}.start();
 			} catch (Exception e) {
 				SQLExplorerPlugin
-						.error("Failed to cancel EXPLAIN statement", e);
+						.error(Messages.getString("postgresql.explain.error.cancel"), e);
 				throw e;
 			}
 		}
@@ -208,16 +209,23 @@ public class ExplainExecution extends AbstractSQLExecution {
 							TreeDataSetViewer v = new TreeDataSetViewer(
 									_composite);
 							String[] l = null;
+							String lAction = Messages.getString("postgresql.explain.action");
+							String lInfo = Messages.getString("postgresql.explain.info");
 							if (type == AbstractExplainAction.EXPLAIN_ANALYZE)
-								l = new String[] { "Guessed (self)",
-										"Guessed (tree)", "Actual (self)",
-										"Actual (tree)", "Info" };
+								l = new String[] {
+									Messages.getString("postgresql.explain.guessSelf"),
+									Messages.getString("postgresql.explain.guessTree"),
+									Messages.getString("postgresql.explain.actualSelf"),
+									Messages.getString("postgresql.explain.actualTree"),
+									lInfo };
 							else
-								l = new String[] { "Guessed (self)",
-										"Guessed (tree)", "Info" };
+								l = new String[] {
+									Messages.getString("postgresql.explain.guessSelf"),
+									Messages.getString("postgresql.explain.guessTree"),
+									lInfo };
 							v
 									.setTreeDataSet(new TreeDataSet(node, l,
-											"Action"));
+											lAction));
 							v.getTreeViewer().setLabelProvider(
 									new ExplainTreeLabelProvider(type));
 
@@ -237,7 +245,9 @@ public class ExplainExecution extends AbstractSQLExecution {
 											}
 										} catch (Exception e1) {
 											SQLExplorerPlugin.error(
-													"Error refreshing", e1);
+													Messages.getString(
+															"postgresql.explain.error.refresh"),
+													e1);
 										}
 									}
 								}
@@ -249,7 +259,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 							errorLabel.setLayoutData(new GridData(SWT.FILL,
 									SWT.TOP, true, false));
 							SQLExplorerPlugin.error(
-									"Error creating explain tab", e);
+									Messages.getString("postgresql.explain.error.tab"), e);
 						}
 
 						_composite.layout();

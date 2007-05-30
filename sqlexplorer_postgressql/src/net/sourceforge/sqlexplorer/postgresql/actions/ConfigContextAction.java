@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.actions;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.postgresql.dataset.tree.ITreeDataSet;
@@ -20,7 +21,7 @@ public class ConfigContextAction extends AbstractDBTreeContextAction {
 
 	@Override
 	public String getText() {
-		return "Show database configuration";
+		return Messages.getString("postgresql.config.menu");
 	}
 
 	@Override
@@ -28,6 +29,11 @@ public class ConfigContextAction extends AbstractDBTreeContextAction {
 		if (_selectedNodes == null || _selectedNodes.length != 1)
 			return;
 		try {
+			String lVal = Messages.getString("postgresql.hdr.value");
+			String lMin = Messages.getString("postgresql.hdr.min");
+			String lMax = Messages.getString("postgresql.hdr.max");
+			String lDesc = Messages.getString("postgresql.hdr.description");
+			String lSet = Messages.getString("postgresql.hdr.setting");
 			SQLConnection c = _selectedNodes[0].getSession()
 					.getInteractiveConnection();
 			String sql = "SELECT "
@@ -40,23 +46,23 @@ public class ConfigContextAction extends AbstractDBTreeContextAction {
 					+ "	ELSE SUBSTRING(category FROM POSITION('/' IN category) + 2)"
 					+ "END,"
 					+ "name,"
-					+ "setting AS \"Value\","
-					+ "COALESCE(min_val,'') AS \"Minimum\","
-					+ "COALESCE(max_val,'') AS \"Maximum\","
-					+ "COALESCE(TRIM(BOTH FROM short_desc||' '||extra_desc),'') AS \"Description\""
+					+ "setting AS \"" + lVal + "\","
+					+ "COALESCE(min_val,'') AS \"" + lMin + "\","
+					+ "COALESCE(max_val,'') AS \"" + lMax + "\","
+					+ "COALESCE(TRIM(BOTH FROM short_desc||' '||extra_desc),'') AS \"" + lDesc + "\""
 					+ "FROM" + "    pg_catalog.pg_settings " + "ORDER BY"
 					+ "    1,2,3";
 			ITreeDataSet set = new SqlTreeDataSet(c, sql,
-					new int[] { 1, 2, 3 }, new int[] { 4, 5, 6, 7 }, "Setting");
+					new int[] { 1, 2, 3 }, new int[] { 4, 5, 6, 7 }, lSet);
 			Shell shell = PlatformUI.getWorkbench().getDisplay()
 					.getActiveShell();
 			String t = _selectedNodes[0].getSession().getAlias().getName();
-			TreeDataDialog dlg = new TreeDataDialog(shell,
-					"Database configuration",
-					"PostgreSQL database configuration for " + t, set);
+			String title = Messages.getString("postgresql.config.title");
+			String message = Messages.getString("postgresql.config.message", t);
+			TreeDataDialog dlg = new TreeDataDialog(shell, title, message, set);
 			dlg.open();
 		} catch (Exception e) {
-			SQLExplorerPlugin.error("Failed to display database config", e);
+			SQLExplorerPlugin.error(Messages.getString("postgresql.config.error"), e);
 		}
 	}
 }

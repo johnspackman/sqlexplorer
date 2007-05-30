@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.actions;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.postgresql.dataset.tree.ITreeDataSet;
@@ -20,7 +21,7 @@ public class SqlFeaturesContextAction extends AbstractDBTreeContextAction {
 
 	@Override
 	public String getText() {
-		return "Show SQL features";
+		return Messages.getString("postgresql.feature.menu");
 	}
 
 	@Override
@@ -28,6 +29,10 @@ public class SqlFeaturesContextAction extends AbstractDBTreeContextAction {
 		if (_selectedNodes == null || _selectedNodes.length != 1)
 			return;
 		try {
+			String lName = Messages.getString("postgresql.hdr.name");
+			String lSupported = Messages.getString("postgresql.hdr.supported");
+			String lComments = Messages.getString("postgresql.hdr.comments");
+			String lFeature = Messages.getString("postgresql.hdr.feature");
 			SQLConnection c = _selectedNodes[0].getSession()
 					.getInteractiveConnection();
 			String sql = "SELECT "
@@ -36,22 +41,22 @@ public class SqlFeaturesContextAction extends AbstractDBTreeContextAction {
 					+ "    SUBSTR(feature_id,1,3), "
 					+ "    feature_id||': '||feature_name, "
 					+ "    CASE WHEN sub_feature_id = '' THEN NULL ELSE sub_feature_id END, "
-					+ "    sub_feature_name AS \"Name\", "
-					+ "    is_supported AS \"Is supported\", "
-					+ "    comments AS \"Comments\" " + "FROM "
+					+ "    sub_feature_name AS \"" + lName + "\", "
+					+ "    is_supported AS \"" + lSupported + "\", "
+					+ "    comments AS \"" + lComments + "\" " + "FROM "
 					+ "    information_schema.sql_features " + "ORDER BY "
 					+ "    1,2,3,4,5";
 			ITreeDataSet set = new SqlTreeDataSet(c, sql, new int[] { 1, 2, 3,
-					4, 5 }, new int[] { 6, 7, 8 }, "SQL Feature");
+					4, 5 }, new int[] { 6, 7, 8 }, lFeature);
 			Shell shell = PlatformUI.getWorkbench().getDisplay()
 					.getActiveShell();
 			String t = _selectedNodes[0].getSession().getAlias().getName();
-			TreeDataDialog dlg = new TreeDataDialog(shell,
-					"Database SQL features",
-					"PostgreSQL database SQL features for " + t, set);
+			String title = Messages.getString("postgresql.feature.title");
+			String message = Messages.getString("postgresql.feature.message", t);
+			TreeDataDialog dlg = new TreeDataDialog(shell, title, message, set);
 			dlg.open();
 		} catch (Exception e) {
-			SQLExplorerPlugin.error("Failed to display database features", e);
+			SQLExplorerPlugin.error(Messages.getString("postgresql.feature.error"), e);
 		}
 	}
 

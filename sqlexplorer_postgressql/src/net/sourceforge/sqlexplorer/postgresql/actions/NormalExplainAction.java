@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.actions;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.postgresql.actions.explain.AbstractExplainAction;
 
 /**
@@ -21,6 +22,6 @@ public class NormalExplainAction extends AbstractExplainAction {
 
 	@Override
 	public String getText() {
-		return "PostgreSQL explain";
+		return Messages.getString("postgresql.explain.normal");
 	}
 }
