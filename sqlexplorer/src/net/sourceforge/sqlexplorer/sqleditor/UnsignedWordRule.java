@@ -87,16 +87,18 @@ public class UnsignedWordRule implements IRule {
     public void addWord(String word, IToken token) {
         Assert.isNotNull(word);
         Assert.isNotNull(token);
+        String w = word;
         if (word != null)
-            word = word.toLowerCase();
-        fWords.put(word, token);
+            w = w.toLowerCase();
+        fWords.put(w, token);
     }
 
 
     public void setColumnConstraint(int column) {
+    	int c = column;
         if (column < 0)
-            column = UNDEFINED;
-        fColumn = column;
+            c = UNDEFINED;
+        fColumn = c;
     }
 
 

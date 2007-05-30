@@ -390,8 +390,9 @@ class TernarySearchTree {
 	private void deleteNode(TSTNode nodeToDelete) {
 		if(nodeToDelete == null) return;
 		nodeToDelete.data = null;
-		while(nodeToDelete != null) {
-			nodeToDelete = deleteNodeRecursion(nodeToDelete);
+		TSTNode n = nodeToDelete;
+		while(n != null) {
+			n = deleteNodeRecursion(n);
 		}
 	}
 	

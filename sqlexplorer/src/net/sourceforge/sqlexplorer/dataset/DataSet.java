@@ -180,11 +180,13 @@ public class DataSet {
 
         ResultSetMetaData metadata = resultSet.getMetaData();
 
+        int[] ri = relevantIndeces;
+        
         // create default column indexes
-        if (relevantIndeces == null || relevantIndeces.length == 0) {
-            relevantIndeces = new int[metadata.getColumnCount()];
+        if (ri == null || ri.length == 0) {
+            ri = new int[metadata.getColumnCount()];
             for (int i = 1; i <= metadata.getColumnCount(); i++) {
-                relevantIndeces[i - 1] = i;
+                ri[i - 1] = i;
             }
         }
 
@@ -192,17 +194,17 @@ public class DataSet {
         if (columnLabels != null && columnLabels.length != 0) {
             _columnLabels = columnLabels;
         } else {
-            _columnLabels = new String[relevantIndeces.length];
-            for (int i = 0; i < relevantIndeces.length; i++) {
-                _columnLabels[i] = metadata.getColumnName(relevantIndeces[i]);
+            _columnLabels = new String[ri.length];
+            for (int i = 0; i < ri.length; i++) {
+                _columnLabels[i] = metadata.getColumnName(ri[i]);
             }
         }
 
         // create column types
-        _columnTypes = new int[relevantIndeces.length];
-        for (int i = 0; i < relevantIndeces.length; i++) {
+        _columnTypes = new int[ri.length];
+        for (int i = 0; i < ri.length; i++) {
 
-            switch (metadata.getColumnType(relevantIndeces[i])) {
+            switch (metadata.getColumnType(ri[i])) {
 
                 case Types.CHAR:
                 case Types.VARCHAR:
@@ -247,35 +249,35 @@ public class DataSet {
         ArrayList rows = new ArrayList(100);
         while (resultSet.next()) {
 
-            DataSetRow row = new DataSetRow(relevantIndeces.length);
+            DataSetRow row = new DataSetRow(ri.length);
 
-            for (int i = 0; i < relevantIndeces.length; i++) {
+            for (int i = 0; i < ri.length; i++) {
 
                 switch (_columnTypes[i]) {
 
                     case TYPE_STRING:
-                        row.setValue(i, resultSet.getString(relevantIndeces[i]));
+                        row.setValue(i, resultSet.getString(ri[i]));
                         break;
                     case TYPE_INTEGER:
-                        row.setValue(i, new Long(resultSet.getInt(relevantIndeces[i])));
+                        row.setValue(i, new Long(resultSet.getInt(ri[i])));
                         break;
                     case TYPE_DOUBLE:
-                        row.setValue(i, new Double(resultSet.getDouble(relevantIndeces[i])));
+                        row.setValue(i, new Double(resultSet.getDouble(ri[i])));
                         break;
                     case TYPE_DATE:
-                        row.setValue(i, resultSet.getDate(relevantIndeces[i]));
+                        row.setValue(i, resultSet.getDate(ri[i]));
                         break;
                     case TYPE_DATETIME:
-                        row.setValue(i, resultSet.getTimestamp(relevantIndeces[i]));
+                        row.setValue(i, resultSet.getTimestamp(ri[i]));
                         break;
                     case TYPE_TIME:
-                        row.setValue(i, resultSet.getTime(relevantIndeces[i]));
+                        row.setValue(i, resultSet.getTime(ri[i]));
                         break;
                     case TYPE_LONG:
-                        row.setValue(i, new Long(resultSet.getLong(relevantIndeces[i])));
+                        row.setValue(i, new Long(resultSet.getLong(ri[i])));
                         break;
                     default:
-                        row.setValue(i, resultSet.getString(relevantIndeces[i]));
+                        row.setValue(i, resultSet.getString(ri[i]));
                         break;
                 }
                 

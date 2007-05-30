@@ -149,9 +149,8 @@ public class Dictionary {
 
 
     public String[] matchTablePrefix(String prefix) {
-
-        prefix = prefix.toLowerCase();
-        DoublyLinkedList linkedList = tree.matchPrefix(prefix);
+    	String p = prefix.toLowerCase();
+        DoublyLinkedList linkedList = tree.matchPrefix(p);
         int size = linkedList.size();
         DoublyLinkedList.DLLIterator iterator = linkedList.iterator();
         String[] result = new String[size];
@@ -164,9 +163,8 @@ public class Dictionary {
 
 
     public String[] matchCatalogSchemaPrefix(String prefix) {
-
-        prefix = prefix.toLowerCase();
-        DoublyLinkedList linkedList = catalogSchemaTree.matchPrefix(prefix);
+    	String p = prefix.toLowerCase();
+        DoublyLinkedList linkedList = catalogSchemaTree.matchPrefix(p);
         int size = linkedList.size();
         DoublyLinkedList.DLLIterator iterator = linkedList.iterator();
         String[] result = new String[size];
@@ -179,9 +177,8 @@ public class Dictionary {
 
 
     public String[] matchExternalObjectPrefix(String prefix) {
-
-        prefix = prefix.toLowerCase();
-        DoublyLinkedList linkedList = externalObjectTree.matchPrefix(prefix);
+        String p = prefix.toLowerCase();
+        DoublyLinkedList linkedList = externalObjectTree.matchPrefix(p);
         int size = linkedList.size();
         DoublyLinkedList.DLLIterator iterator = linkedList.iterator();
         String[] result = new String[size];
@@ -194,9 +191,8 @@ public class Dictionary {
 
 
     public static String[] matchKeywordsPrefix(String prefix) {
-
-        prefix = prefix.toLowerCase();
-        DoublyLinkedList linkedList = keywordsTree.matchPrefix(prefix);
+    	String p = prefix.toLowerCase();
+        DoublyLinkedList linkedList = keywordsTree.matchPrefix(p);
         int size = linkedList.size();
         DoublyLinkedList.DLLIterator iterator = linkedList.iterator();
         String[] result = new String[size];
