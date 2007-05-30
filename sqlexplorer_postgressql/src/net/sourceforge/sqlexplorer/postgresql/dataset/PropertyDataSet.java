@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.util.log.ILogger;
@@ -85,7 +86,9 @@ public class PropertyDataSet {
 				}
 		}
 
-		return new DataSet(new String[] { "Property", "Value" }, data,
+		return new DataSet(new String[] {
+				Messages.getString("postgresql.hdr.property"),
+				Messages.getString("postgresql.hdr.value") }, data,
 				new int[] { DataSet.TYPE_STRING, DataSet.TYPE_STRING });
 	}
 }
