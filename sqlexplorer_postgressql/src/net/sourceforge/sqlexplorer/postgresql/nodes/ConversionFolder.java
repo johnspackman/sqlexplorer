@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.nodes;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 
 /**
@@ -13,9 +14,11 @@ public class ConversionFolder extends AbstractSQLFolderNode implements
 
 	private static final String TYPE = "conversion";
 
-	private static final String QUERY = "SELECT conname AS \"Name\", us.usename AS \"Owner\", "
-			+ "conforencoding AS \"From encoding\", contoencoding AS \"To encoding\", pr.proname AS \"Handler\","
-			+ " condefault AS \"Is default\""
+	private static final String QUERY = "SELECT conname AS \"${postgresql.hdr.name}\", "
+			+ "us.usename AS \"${postgresql.hdr.owner}\", "
+			+ "conforencoding AS \"${postgresql.hdr.enc_from}\","
+			+ "contoencoding AS \"${postgresql.hdr.enc_to}\", pr.proname AS \"${postgresql.hdr.handler}\","
+			+ " condefault AS \"${postgresql.hdr.default}\""
 			+ " FROM pg_conversion conv "
 			+ "JOIN pg_proc pr ON conv.conproc=pr.oid "
 			+ "JOIN pg_namespace ns ON ns.oid = conv.connamespace "
@@ -47,17 +50,17 @@ public class ConversionFolder extends AbstractSQLFolderNode implements
 	}
 
 	public String getDetailSQL(Object[] params) {
-		return QUERY;
+		return Messages.processTemplate(QUERY);
 	}
 
 	public String getRequiresSQL() {
-		return QUERY_REQUIRES_HEAD + OID_QUERY + QUERY_REQUIRES_MID + OID_QUERY
-				+ QUERY_REQUIRES_TAIL;
+		return Messages.processTemplate(QUERY_REQUIRES_HEAD + OID_QUERY +
+				QUERY_REQUIRES_MID + OID_QUERY + QUERY_REQUIRES_TAIL);
 	}
 
 	public String getRequiredBySQL(Object[] params) {
-		return QUERY_REQUIREDBY_HEAD + OID_QUERY + QUERY_REQUIREDBY_MID
-				+ OID_QUERY + QUERY_REQUIREDBY_TAIL;
+		return Messages.processTemplate(QUERY_REQUIREDBY_HEAD + OID_QUERY +
+				QUERY_REQUIREDBY_MID + OID_QUERY + QUERY_REQUIREDBY_TAIL);
 	}
 
 }

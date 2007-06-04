@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.nodes;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 
 /**
@@ -13,9 +14,9 @@ public class LanguageFolder extends AbstractSQLFolderNode implements InfoNode,
 
 	private static final String TYPE = "language";
 
-	private static final String QUERY = "SELECT lanname AS \"Name\","
-			+ "NOT lanispl AS \"Is internal\",lanpltrusted AS \"Trusted\","
-			+ "proc1.proname AS \"Handler\",proc2.proname AS \"Validator\" "
+	private static final String QUERY = "SELECT lanname AS \"${postgresql.hdr.name}\","
+			+ "NOT lanispl AS \"${postgresql.hdr.internal}\",lanpltrusted AS \"${postgresql.hdr.trusted}\","
+			+ "proc1.proname AS \"${postgresql.hdr.handler}\",proc2.proname AS \"${postgresql.hdr.validator}\" "
 			+ "FROM pg_language pl LEFT JOIN pg_proc proc1 ON pl.lanplcallfoid = proc1.oid "
 			+ "LEFT JOIN pg_proc proc2 ON pl.lanvalidator = proc2.oid "
 			+ "WHERE ? LIKE '%' AND lanname LIKE ?;";
@@ -45,17 +46,17 @@ public class LanguageFolder extends AbstractSQLFolderNode implements InfoNode,
 	}
 
 	public String getDetailSQL(Object[] params) {
-		return QUERY;
+		return Messages.processTemplate(QUERY);
 	}
 
 	public String getRequiresSQL() {
-		return QUERY_REQUIRES_HEAD + OID_QUERY + QUERY_REQUIRES_MID + OID_QUERY
-				+ QUERY_REQUIRES_TAIL;
+		return Messages.processTemplate(QUERY_REQUIRES_HEAD + OID_QUERY +
+				QUERY_REQUIRES_MID + OID_QUERY + QUERY_REQUIRES_TAIL);
 	}
 
 	public String getRequiredBySQL(Object[] params) {
-		return QUERY_REQUIREDBY_HEAD + OID_QUERY + QUERY_REQUIREDBY_MID
-				+ OID_QUERY + QUERY_REQUIREDBY_TAIL;
+		return Messages.processTemplate(QUERY_REQUIREDBY_HEAD + OID_QUERY +
+				QUERY_REQUIREDBY_MID + OID_QUERY + QUERY_REQUIREDBY_TAIL);
 	}
 
 }

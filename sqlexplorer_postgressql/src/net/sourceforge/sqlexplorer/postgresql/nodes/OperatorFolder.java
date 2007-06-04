@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.nodes;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 
 /**
@@ -17,11 +18,12 @@ public class OperatorFolder extends AbstractSQLFolderNode implements InfoNode,
 			+ " op JOIN pg_namespace ns ON op.oprnamespace=ns.oid WHERE ns.nspname = ?";
 
 	/* '%' is an operator but '_' is not: escape % with _ */
-	private static final String DETAIL_QUERY = "SELECT op.oprname AS \"Name\","
-			+ "CASE op.oprkind WHEN 'b' THEN 'Infix' WHEN 'l' THEN 'Prefix' WHEN 'r' THEN 'Postfix' END || ' operator' AS \"Type\","
-			+ "us.usename AS \"Owner\",format_type(op.oprleft,NULL) AS \"Left argument\",format_type(op.oprright,NULL)  "
-			+ "AS \"Right argument\",format_type(op.oprresult,NULL) AS \"Resulting argument\",com.oprname AS \"Commutator\",neg.oprname "
-			+ "AS \"Negator\" FROM pg_operator op JOIN pg_namespace ns ON op.oprnamespace=ns.oid JOIN pg_user us "
+	private static final String DETAIL_QUERY = "SELECT "
+		   +  "op.oprname AS \"${postgresql.hdr.name}\","
+			+ "CASE op.oprkind WHEN 'b' THEN '${postgresql.op.infix}' WHEN 'l' THEN '${postgresql.op.prefix}' WHEN 'r' THEN '${postgresql.op.postfix}' END || ' ${postgresql.op}' AS \"${postgresql.hdr.type}\","
+			+ "us.usename AS \"${postgresql.hdr.owner}\",format_type(op.oprleft,NULL) AS \"${postgresql.hdr.leftarg}\",format_type(op.oprright,NULL)  "
+			+ "AS \"${postgresql.hdr.rightarg}\",format_type(op.oprresult,NULL) AS \"${postgresql.hdr.resarg}\",com.oprname AS \"${postgresql.hdr.commutator}\",neg.oprname "
+			+ "AS \"${postgresql.hdr.negator}\" FROM pg_operator op JOIN pg_namespace ns ON op.oprnamespace=ns.oid JOIN pg_user us "
 			+ "ON op.oprowner=us.usesysid LEFT JOIN pg_operator com ON op.oprcom=com.oid LEFT JOIN pg_operator neg"
 			+ " ON op.oprnegate=neg.oid WHERE ns.nspname LIKE ? AND op.oprname "
 			+ "LIKE REPLACE(?, '%', '_%') ESCAPE '_'";
@@ -51,17 +53,17 @@ public class OperatorFolder extends AbstractSQLFolderNode implements InfoNode,
 	}
 
 	public String getDetailSQL(Object[] params) {
-		return DETAIL_QUERY;
+		return Messages.processTemplate(DETAIL_QUERY);
 	}
 
 	public String getRequiresSQL() {
-		return QUERY_REQUIRES_HEAD + OID_QUERY + QUERY_REQUIRES_MID + OID_QUERY
-				+ QUERY_REQUIRES_TAIL;
+		return Messages.processTemplate(QUERY_REQUIRES_HEAD + OID_QUERY +
+				QUERY_REQUIRES_MID + OID_QUERY + QUERY_REQUIRES_TAIL);
 	}
 
 	public String getRequiredBySQL(Object[] params) {
-		return QUERY_REQUIREDBY_HEAD + OID_QUERY + QUERY_REQUIREDBY_MID
-				+ OID_QUERY + QUERY_REQUIREDBY_TAIL;
+		return Messages.processTemplate(QUERY_REQUIREDBY_HEAD + OID_QUERY +
+				QUERY_REQUIREDBY_MID + OID_QUERY + QUERY_REQUIREDBY_TAIL);
 	}
 
 }

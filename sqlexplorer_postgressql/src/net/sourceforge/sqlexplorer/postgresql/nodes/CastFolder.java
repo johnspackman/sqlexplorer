@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.nodes;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 
 /**
@@ -14,9 +15,9 @@ public class CastFolder extends AbstractSQLFolderNode implements InfoNode,
 	private static final String TYPE = "cast";
 
 	private static final String QUERY = "SELECT DISTINCT "
-			+ "REPLACE(format_type(s.oid,NULL),'\"','')||' -> '||REPLACE(format_type (t.oid,NULL),'\"','') AS \"Name\","
-			+ " CASE c.castfunc WHEN 0 THEN TRUE ELSE FALSE END AS \"Binary compatible\", "
-			+ "COALESCE(proc.proname,'') AS \"Function\" "
+			+ "REPLACE(format_type(s.oid,NULL),'\"','')||' -> '||REPLACE(format_type (t.oid,NULL),'\"','') AS \"${postgresql.hdr.name}\","
+			+ " CASE c.castfunc WHEN 0 THEN TRUE ELSE FALSE END AS \"${postgresql.hdr.bincompat}\", "
+			+ "COALESCE(proc.proname,'') AS \"${postgresql.hdr.function}\" "
 			+ "FROM pg_cast c "
 			+ "JOIN pg_type s ON c.castsource=s.oid"
 			+ " JOIN pg_type t ON c.casttarget=t.oid "
@@ -52,17 +53,17 @@ public class CastFolder extends AbstractSQLFolderNode implements InfoNode,
 	}
 
 	public String getDetailSQL(Object[] params) {
-		return QUERY;
+		return Messages.processTemplate(QUERY);
 	}
 
 	public String getRequiresSQL() {
-		return QUERY_REQUIRES_HEAD + OID_QUERY + QUERY_REQUIRES_MID + OID_QUERY
-				+ QUERY_REQUIRES_TAIL;
+		return Messages.processTemplate(QUERY_REQUIRES_HEAD + OID_QUERY +
+				QUERY_REQUIRES_MID + OID_QUERY + QUERY_REQUIRES_TAIL);
 	}
 
 	public String getRequiredBySQL(Object[] params) {
-		return QUERY_REQUIREDBY_HEAD + OID_QUERY + QUERY_REQUIREDBY_MID
-				+ OID_QUERY + QUERY_REQUIREDBY_TAIL;
+		return Messages.processTemplate(QUERY_REQUIREDBY_HEAD + OID_QUERY +
+				QUERY_REQUIREDBY_MID + OID_QUERY + QUERY_REQUIREDBY_TAIL);
 	}
 
 }

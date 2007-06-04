@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.nodes;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.squirrel_sql.fw.util.log.ILogger;
 import net.sourceforge.squirrel_sql.fw.util.log.LoggerController;
 
@@ -47,8 +48,8 @@ public class GroupRoleFolder extends AbstractRoleFolder {
 				+ params[1] + "' AND rl.oid = ANY(gp.grolist)");
 		logger.debug("Role [" + params[1]
 				+ "] turns out to have these members [" + members + "]");
-		String s = DETAIL_QUERY_HEAD + " '" + members + "' AS \"Members\" "
-				+ TAIL;
+		String s = Messages.processTemplate(DETAIL_QUERY_HEAD + " '" + members + "' AS \"${postgresql.hdr.members}\" "
+				+ TAIL);
 		logger.debug("Will run [" + s + "]");
 		return s;
 	}

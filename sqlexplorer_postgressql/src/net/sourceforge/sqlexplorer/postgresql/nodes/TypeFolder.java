@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.nodes;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 
 /**
@@ -20,10 +21,11 @@ public class TypeFolder extends AbstractSQLFolderNode implements InfoNode,
 			+ "LEFT OUTER JOIN pg_class ct ON ct.oid=t.typrelid AND ct.relkind <> 'c'"
 			+ "WHERE t.typtype != 'd' AND SUBSTR(t.typname,1,1) <> '_' AND ns.nspname LIKE ?";
 
-	private static final String DETAIL_QUERY = "SELECT DISTINCT format_type(t.oid,NULL) AS \"Type\","
-			+ "t.typlen AS \"Length\",CASE t.typtype WHEN 'b' THEN 'Base' WHEN 'c' THEN 'Compound' "
-			+ "WHEN 'p' THEN 'Pseudo' END || ' type' AS \"Type\",t.typdefault AS \"Is default\", "
-			+ "des.description AS \"Description\" "
+	private static final String DETAIL_QUERY = "SELECT DISTINCT "
+			+ "format_type(t.oid,NULL) AS \"${postgresql.hdr.name}\","
+			+ "t.typlen AS \"${postgresql.hdr.length}\",CASE t.typtype WHEN 'b' THEN '${postgresql.type.base}' WHEN 'c' THEN '${postgresql.type.compound}' "
+			+ "WHEN 'p' THEN '${postgresql.type.pseudo}' END || ' ${postgresql.type}' AS \"${postgresql.hdr.type}\",t.typdefault AS \"${postgresql.hdr.default}\", "
+			+ "des.description AS \"${postgresql.hdr.desc}\" "
 			+ "FROM pg_type t "
 			+ "JOIN pg_namespace ns ON t.typnamespace = ns.oid "
 			+ "LEFT OUTER JOIN pg_type e ON e.oid=t.typelem "
@@ -59,17 +61,17 @@ public class TypeFolder extends AbstractSQLFolderNode implements InfoNode,
 	}
 
 	public String getDetailSQL(Object[] params) {
-		return DETAIL_QUERY;
+		return Messages.processTemplate(DETAIL_QUERY);
 	}
 
 	public String getRequiresSQL() {
-		return QUERY_REQUIRES_HEAD + OID_QUERY + QUERY_REQUIRES_MID + OID_QUERY
-				+ QUERY_REQUIRES_TAIL;
+		return Messages.processTemplate(QUERY_REQUIRES_HEAD + OID_QUERY +
+				QUERY_REQUIRES_MID + OID_QUERY + QUERY_REQUIRES_TAIL);
 	}
 
 	public String getRequiredBySQL(Object[] params) {
-		return QUERY_REQUIREDBY_HEAD + OID_QUERY + QUERY_REQUIREDBY_MID
-				+ OID_QUERY + QUERY_REQUIREDBY_TAIL;
+		return Messages.processTemplate(QUERY_REQUIREDBY_HEAD + OID_QUERY +
+				QUERY_REQUIREDBY_MID + OID_QUERY + QUERY_REQUIREDBY_TAIL);
 	}
 
 }

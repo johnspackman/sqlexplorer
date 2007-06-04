@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.nodes;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 
 /**
@@ -17,8 +18,8 @@ public class OperatorClassFolder extends AbstractSQLFolderNode implements
 			+ "FROM pg_opclass cl JOIN pg_namespace ns ON cl.opcnamespace=ns.oid WHERE ns.nspname = ?";
 
 	private static final String DETAIL_QUERY = "SELECT DISTINCT "
-			+ "opcname AS \"Name\",am.amname AS \"For index type\", "
-			+ "format_type(opcintype,NULL) AS \"For type\",us.usename AS \"Owner\" "
+			+ "opcname AS \"${postgresql.hdr.name}\",am.amname AS \"${postgresql.hdr.foridx}\", "
+			+ "format_type(opcintype,NULL) AS \"${postgresql.hdr.fortype}\",us.usename AS \"${postgresql.hdr.owner}\" "
 			+ "FROM pg_opclass cl JOIN pg_namespace ns ON cl.opcnamespace=ns.oid "
 			+ "JOIN pg_am am ON cl.opcamid=am.oid LEFT JOIN pg_user us ON us.usesysid=opcowner "
 			+ "WHERE ns.nspname LIKE ? AND opcname LIKE ?";
@@ -47,17 +48,17 @@ public class OperatorClassFolder extends AbstractSQLFolderNode implements
 	}
 
 	public String getDetailSQL(Object[] params) {
-		return DETAIL_QUERY;
+		return Messages.processTemplate(DETAIL_QUERY);
 	}
 
 	public String getRequiresSQL() {
-		return QUERY_REQUIRES_HEAD + OID_QUERY + QUERY_REQUIRES_MID + OID_QUERY
-				+ QUERY_REQUIRES_TAIL;
+		return Messages.processTemplate(QUERY_REQUIRES_HEAD + OID_QUERY +
+				QUERY_REQUIRES_MID + OID_QUERY + QUERY_REQUIRES_TAIL);
 	}
 
 	public String getRequiredBySQL(Object[] params) {
-		return QUERY_REQUIREDBY_HEAD + OID_QUERY + QUERY_REQUIREDBY_MID
-				+ OID_QUERY + QUERY_REQUIREDBY_TAIL;
+		return Messages.processTemplate(QUERY_REQUIREDBY_HEAD + OID_QUERY +
+				QUERY_REQUIREDBY_MID + OID_QUERY + QUERY_REQUIREDBY_TAIL);
 	}
 
 }

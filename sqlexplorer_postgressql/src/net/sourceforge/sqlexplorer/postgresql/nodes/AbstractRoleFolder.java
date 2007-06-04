@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.nodes;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.postgresql.util.PgUtil;
 
 /**
@@ -19,35 +20,35 @@ public abstract class AbstractRoleFolder extends AbstractFolder {
 	public abstract String getOidSubquery();
 
 	public String getRequiresSQL() {
-		return QUERY_REQUIRES_HEAD + getOidSubquery() + QUERY_REQUIRES_MID
-				+ getOidSubquery() + QUERY_REQUIRES_TAIL;
+		return Messages.processTemplate(QUERY_REQUIRES_HEAD + getOidSubquery() +
+				QUERY_REQUIRES_MID + getOidSubquery() + QUERY_REQUIRES_TAIL);
 	}
 
 	public String getRequiredBySQL(Object[] params) {
-		return "SELECT "
+		return Messages.processTemplate("SELECT "
 				+ "CASE relkind "
-				+ "WHEN 'M' THEN 'Tablespace' "
-				+ "WHEN 'd' THEN 'Database' "
-				+ "WHEN 'r' THEN 'Table' "
-				+ "WHEN 'i' THEN 'Index' "
-				+ "WHEN 'S' THEN 'Sequence' "
-				+ "WHEN 'v' THEN 'View' "
-				+ "WHEN 'c' THEN 'Composite' "
-				+ "WHEN 's' THEN 'Special' "
-				+ "WHEN 't' THEN 'Toast' "
-				+ "WHEN 'n' THEN 'Schema' "
-				+ "WHEN 'y' THEN 'Type' "
-				+ "WHEN 'd' THEN 'Domain' "
-				+ "WHEN 'C' THEN 'Conversion' "
-				+ "WHEN 'p' THEN 'Function' "
-				+ "WHEN 'T' THEN 'Trigger' "
-				+ "WHEN 'o' THEN 'Operator' "
-				+ "END AS \"Type\", "
+				+ "WHEN 'M' THEN '${postgresql.object.Tablespace}' "
+				+ "WHEN 'd' THEN '${postgresql.object.Database}' "
+				+ "WHEN 'r' THEN '${postgresql.object.Table}' "
+				+ "WHEN 'i' THEN '${postgresql.object.Index}' "
+				+ "WHEN 'S' THEN '${postgresql.object.Sequence}' "
+				+ "WHEN 'v' THEN '${postgresql.object.View}' "
+				+ "WHEN 'c' THEN '${postgresql.object.Composite}' "
+				+ "WHEN 's' THEN '${postgresql.object.Special}' "
+				+ "WHEN 't' THEN '${postgresql.object.Toast}' "
+				+ "WHEN 'n' THEN '${postgresql.object.Schema}' "
+				+ "WHEN 'y' THEN '${postgresql.object.Type}' "
+				+ "WHEN 'd' THEN '${postgresql.object.Domain}' "
+				+ "WHEN 'C' THEN '${postgresql.object.Conversion}' "
+				+ "WHEN 'p' THEN '${postgresql.object.Function}' "
+				+ "WHEN 'T' THEN '${postgresql.object.Trigger}' "
+				+ "WHEN 'o' THEN '${postgresql.object.Operator}' "
+				+ "END AS \"${postgresql.hdr.type}\", "
 				+ "CASE relkind "
 				+ "WHEN 'n' THEN relname "
 				+ "WHEN 'i' THEN CASE WHEN nspname IS NOT NULL THEN nspname||'.'||relname||'.'||indname ELSE relname||'.'||indname END "
 				+ "ELSE CASE WHEN nspname IS NULL THEN relname ELSE nspname||'.'||relname END "
-				+ "END AS \"Name\" "
+				+ "END AS \"${postgresql.hdr.name}\" "
 				+ "FROM ( "
 				+ "SELECT rl.rolname, cl.relkind, COALESCE(cin.nspname, cln.nspname) as nspname, COALESCE(ci.relname, cl.relname) as relname, cl.relname as indname "
 				+ "FROM pg_class cl "
@@ -86,7 +87,7 @@ public abstract class AbstractRoleFolder extends AbstractFolder {
 				+ "LEFT JOIN pg_type tr ON tr.oid=op.oprright "
 				+ ") AS tmp "
 				+ "WHERE ? LIKE '%' AND tmp.rolname = ? AND ? LIKE '%' AND tmp.rolname = ? "
-				+ "ORDER BY 1,2";
+				+ "ORDER BY 1,2");
 	}
 
 	/**
@@ -95,8 +96,13 @@ public abstract class AbstractRoleFolder extends AbstractFolder {
 	 * well as the from clause which must include the <tt>pg_roles</tt> table.
 	 */
 	protected static final String DETAIL_QUERY_HEAD = "SELECT DISTINCT "
-			+ "	rolname as \"Name\", rolsuper AS \"Is superuser?\", rolinherit AS \"Inherits?\", "
-			+ "	rolcreaterole AS \"Can create roles?\", rolcreatedb AS \"Can create databases?\", "
-			+ "	rolcatupdate AS \"Can update catalog?\", rolcanlogin AS \"Can login?\", "
-			+ "	rolconnlimit AS \"Connection limit\", rolvaliduntil AS \"Valid until\", ";
+			+ " rolname as \"${postgresql.hdr.name}\","
+			+ " rolsuper AS \"${postgresql.hdr.issuper}\","
+			+ " rolinherit AS \"${postgresql.hdr.inherits}\","
+			+ "	rolcreaterole AS \"${postgresql.hdr.createrole}\","
+			+ " rolcreatedb AS \"${postgresql.hdr.createdb}\","
+			+ "	rolcatupdate AS \"${postgresql.hdr.updatecat}\","
+			+ " rolcanlogin AS \"${postgresql.hdr.canlogin}\", "
+			+ "	rolconnlimit AS \"${postgresql.hdr.connlimit}\","
+			+ " rolvaliduntil AS \"${postgresql.hdr.validuntil}\", ";
 }

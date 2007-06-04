@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.postgresql.nodes;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.squirrel_sql.fw.util.log.ILogger;
 import net.sourceforge.squirrel_sql.fw.util.log.LoggerController;
 
@@ -49,8 +50,8 @@ public class LoginRoleFolder extends AbstractRoleFolder {
 				+ params[1] + "') = ANY(grolist)");
 		logger.debug("User [" + params[1] + "] turns out to be member of ["
 				+ groups + "]");
-		String s = DETAIL_QUERY_HEAD + " '" + groups + "' AS \"Member of\" "
-				+ TAIL;
+		String s = Messages.processTemplate(DETAIL_QUERY_HEAD + " '" + groups + "' AS \"${postgresql.hdr.memberof}\" "
+				+ TAIL);
 		logger.debug("Will run [" + s + "]");
 		return s;
 	}
