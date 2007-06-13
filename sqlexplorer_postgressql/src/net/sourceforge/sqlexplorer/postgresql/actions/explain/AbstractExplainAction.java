@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
@@ -85,7 +86,7 @@ public abstract class AbstractExplainAction extends AbstractEditorAction {
 							session, type));
 			}
 		} catch (Exception e) {
-			SQLExplorerPlugin.error("Error creating sql execution tab", e);
+			SQLExplorerPlugin.error(Messages.getString("postgresql.explain.error.tab"), e);
 		}
 	}
 

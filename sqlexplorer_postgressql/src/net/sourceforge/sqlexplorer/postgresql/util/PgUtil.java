@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
@@ -38,7 +39,7 @@ public class PgUtil {
 				return meta.getDatabaseMinorVersion() >= minor;
 			return false;
 		} catch (SQLException e) {
-			SQLExplorerPlugin.error("Failed to determin postgres version", e);
+			SQLExplorerPlugin.error(Messages.getString("postresql.version.error"), e);
 		}
 		return false;
 	}
