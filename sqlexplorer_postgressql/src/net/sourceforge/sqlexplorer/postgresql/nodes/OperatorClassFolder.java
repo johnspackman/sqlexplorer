@@ -34,7 +34,7 @@ public class OperatorClassFolder extends AbstractSQLFolderNode implements
 
 	@Override
 	public String getName() {
-		return "Operator Classes";
+		return Messages.getString("postgresql.node.opclass");
 	}
 
 	@Override

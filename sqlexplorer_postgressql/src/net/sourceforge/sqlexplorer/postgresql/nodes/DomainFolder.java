@@ -35,7 +35,7 @@ public class DomainFolder extends AbstractSQLFolderNode implements InfoNode,
 
 	@Override
 	public String getName() {
-		return "Domains";
+		return Messages.getString("postgresql.node.domain");
 	}
 
 	@Override

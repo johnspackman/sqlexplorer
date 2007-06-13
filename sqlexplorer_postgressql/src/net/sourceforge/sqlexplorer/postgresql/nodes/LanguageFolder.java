@@ -32,7 +32,7 @@ public class LanguageFolder extends AbstractSQLFolderNode implements InfoNode,
 
 	@Override
 	public String getName() {
-		return "Languages";
+		return Messages.getString("postgresql.node.language");
 	}
 
 	@Override

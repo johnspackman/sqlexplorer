@@ -30,7 +30,7 @@ public class GroupRoleFolder extends AbstractRoleFolder {
 
 	@Override
 	public String getName() {
-		return "Group Roles";
+		return Messages.getString("postgresql.node.role.group");
 	}
 
 	@Override

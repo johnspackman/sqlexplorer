@@ -39,7 +39,7 @@ public class CastFolder extends AbstractSQLFolderNode implements InfoNode,
 
 	@Override
 	public String getName() {
-		return "Casts";
+		return Messages.getString("postgresql.node.cast");
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package net.sourceforge.sqlexplorer.postgresql.nodes;
 
+import net.sourceforge.sqlexplorer.Messages;
+
 /**
  * Support for PostgreSQL's trigger concept.
  * 
@@ -19,7 +21,7 @@ public class TriggerFolder extends AbstractFunctionFolder {
 
 	@Override
 	public String getName() {
-		return "Triggers";
+		return Messages.getString("postgresql.node.trigger");
 	}
 
 	@Override

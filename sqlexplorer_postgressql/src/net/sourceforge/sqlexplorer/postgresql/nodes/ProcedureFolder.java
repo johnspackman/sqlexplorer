@@ -1,5 +1,7 @@
 package net.sourceforge.sqlexplorer.postgresql.nodes;
 
+import net.sourceforge.sqlexplorer.Messages;
+
 /**
  * Support for PostgreSQL's procedure concept.
  * 
@@ -19,7 +21,7 @@ public class ProcedureFolder extends AbstractFunctionFolder {
 
 	@Override
 	public String getName() {
-		return "Procedures";
+		return Messages.getString("postgresql.node.procedure");
 	}
 
 	@Override

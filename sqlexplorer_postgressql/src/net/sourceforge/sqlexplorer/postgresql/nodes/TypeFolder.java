@@ -47,7 +47,7 @@ public class TypeFolder extends AbstractSQLFolderNode implements InfoNode,
 
 	@Override
 	public String getName() {
-		return "Types";
+		return Messages.getString("postgresql.node.type");
 	}
 
 	@Override

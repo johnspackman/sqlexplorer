@@ -1,5 +1,7 @@
 package net.sourceforge.sqlexplorer.postgresql.nodes;
 
+import net.sourceforge.sqlexplorer.Messages;
+
 /**
  * Support for PostgreSQL's function concept.
  * 
@@ -22,7 +24,7 @@ public class FunctionFolder extends AbstractFunctionFolder {
 
 	@Override
 	public String getName() {
-		return "Functions";
+		return Messages.getString("postgresql.node.function");
 	}
 
 	@Override

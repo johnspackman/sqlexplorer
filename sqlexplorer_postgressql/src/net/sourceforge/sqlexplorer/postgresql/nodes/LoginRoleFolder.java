@@ -32,7 +32,7 @@ public class LoginRoleFolder extends AbstractRoleFolder {
 
 	@Override
 	public String getName() {
-		return "Login Roles";
+		return Messages.getString("postgresql.node.role.login");
 	}
 
 	@Override

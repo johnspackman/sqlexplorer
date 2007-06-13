@@ -36,7 +36,7 @@ public class ConversionFolder extends AbstractSQLFolderNode implements
 
 	@Override
 	public String getName() {
-		return "Conversions";
+		return Messages.getString("postgresql.node.conversion");
 	}
 
 	@Override

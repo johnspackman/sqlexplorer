@@ -39,7 +39,7 @@ public class OperatorFolder extends AbstractSQLFolderNode implements InfoNode,
 
 	@Override
 	public String getName() {
-		return "Operators";
+		return Messages.getString("postgresql.node.operator");
 	}
 
 	@Override

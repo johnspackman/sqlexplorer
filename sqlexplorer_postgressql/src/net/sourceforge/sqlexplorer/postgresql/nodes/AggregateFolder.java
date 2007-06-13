@@ -41,7 +41,7 @@ public class AggregateFolder extends AbstractSQLFolderNode implements InfoNode,
 
 	@Override
 	public String getName() {
-		return "Aggregates";
+		return Messages.getString("postgresql.node.aggregate");
 	}
 
 	@Override

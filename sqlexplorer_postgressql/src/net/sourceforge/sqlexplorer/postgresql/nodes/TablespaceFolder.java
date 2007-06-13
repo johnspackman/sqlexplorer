@@ -39,7 +39,7 @@ public class TablespaceFolder extends AbstractFolder {
 
 	@Override
 	public String getName() {
-		return "Tablespaces";
+		return Messages.getString("postgresql.node.tablespace");
 	}
 
 	@Override
