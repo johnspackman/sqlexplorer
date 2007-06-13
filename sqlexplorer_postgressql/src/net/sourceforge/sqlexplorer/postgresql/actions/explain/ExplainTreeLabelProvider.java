@@ -30,7 +30,7 @@ public class ExplainTreeLabelProvider extends LabelProvider implements
 	 */
 	public ExplainTreeLabelProvider(int type) {
 		this.type = type;
-		fmt = new DecimalFormat("0.000");
+		fmt = new DecimalFormat("0.00");
 	}
 
 	public Image getColumnImage(Object element, int columnIndex) {
