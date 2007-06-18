@@ -18,22 +18,21 @@
  */
 package net.sourceforge.sqlexplorer.dataset.actions;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.PrintStream;
 
-import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
+import net.sourceforge.sqlexplorer.dialogs.XlsExportOptionsDlg;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
+import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.SWT;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.TableItem;
 
 /**
@@ -72,14 +71,9 @@ public class ExportXLSAction extends AbstractDataSetTableContextAction {
      */
     public void run() {
 
-        FileDialog fileDialog = new FileDialog(_table.getShell(), SWT.SAVE);        
-        String[] filterExtensions = new String[] {"*.xls"};
-        fileDialog.setFilterExtensions(filterExtensions);       
-        
-        final String fileName = fileDialog.open();
-        if (fileName == null && fileName.trim().length() == 0) {
-            return;
-        }
+    	final XlsExportOptionsDlg dlg = new XlsExportOptionsDlg(_table.getShell());
+    	if (dlg.open() != Window.OK)
+    		return;
         
         BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
 
@@ -87,7 +81,7 @@ public class ExportXLSAction extends AbstractDataSetTableContextAction {
 
                 try {
 
-                    File file = new File(fileName);
+                    File file = new File(dlg.getFilename());
 
                     if (file.exists()) {
                         // overwrite existing files
@@ -95,11 +89,13 @@ public class ExportXLSAction extends AbstractDataSetTableContextAction {
                     }
                     
                     file.createNewFile();
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+                    PrintStream writer = new PrintStream(file, dlg.getCharacterSet()); 
                     StringBuffer buffer = new StringBuffer("");
                     
                     // get preferences
-                    boolean includeColumnNames = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.CLIP_EXPORT_COLUMNS);
+                    boolean includeColumnNames = dlg.includeHeaders();
+                    boolean rtrim = dlg.trimSpaces();
+                    boolean quote = dlg.quoteText();
                                        
                     TableItem[] items = _table.getItems();                    
                     DataSet dataSet = (DataSet) _table.getData();
@@ -108,8 +104,7 @@ public class ExportXLSAction extends AbstractDataSetTableContextAction {
                         return;
                     }
 
-                    writer.write("<table>");
-                    writer.newLine();
+                    writer.println("<table>");
                     
                     // export column names
                     if (includeColumnNames) {
@@ -122,8 +117,7 @@ public class ExportXLSAction extends AbstractDataSetTableContextAction {
                             buffer.append("</th>");
                         }
                         buffer.append("</tr>");
-                        writer.write(buffer.toString());
-                        writer.newLine();
+                        writer.println(buffer.toString());
                     }
 
                     // export column data
@@ -134,18 +128,24 @@ public class ExportXLSAction extends AbstractDataSetTableContextAction {
                         
                         for (int j = 0; j < columnCount; j++) {
                             buffer.append("<td>");
-                            buffer.append(items[i].getText(j));
+                        	String t = items[i].getText(j);
+                        	if (rtrim) 
+                        		t = TextUtil.rtrim(t);
+                        	if (quote && dataSet.getColumnTypes()[j] == DataSet.TYPE_STRING) {
+                        		buffer.append("\"");
+                        		buffer.append(t);
+                        		buffer.append("\"");
+                        	} else
+                        		buffer.append(t);
                             buffer.append("</td>");
                         }
                         
                         buffer.append("</tr>");
                         
-                        writer.write(buffer.toString());
-                        writer.newLine();
+                        writer.println(buffer.toString());
                     }
 
-                    writer.write("</table>");
-                    writer.newLine();
+                    writer.println("</table>");
                     
                     writer.close();
 

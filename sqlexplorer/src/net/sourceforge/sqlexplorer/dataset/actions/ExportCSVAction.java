@@ -18,22 +18,20 @@
  */
 package net.sourceforge.sqlexplorer.dataset.actions;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.PrintStream;
 
-import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.dialogs.CsvExportOptionsDlg;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
+import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.SWT;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.TableItem;
 
 /**
@@ -64,16 +62,10 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
      */
     public void run() {
 
-        // get filename
-        FileDialog fileDialog = new FileDialog(_table.getShell(), SWT.SAVE);        
-        String[] filterExtensions = new String[] {"*.csv"};
-        fileDialog.setFilterExtensions(filterExtensions);       
-        
-        final String fileName = fileDialog.open();
-        if (fileName == null && fileName.trim().length() == 0) {
-            return;
-        }
-        
+    	final CsvExportOptionsDlg dlg = new CsvExportOptionsDlg(_table.getShell());
+    	if (dlg.open() != Window.OK)
+    		return;
+
         // let's show the fancy wait cursor..
         BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
 
@@ -82,7 +74,7 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
                 try {
 
                     // create new file
-                    File file = new File(fileName);
+                    File file = new File(dlg.getFilename());
 
                     if (file.exists()) {
                         // overwrite existing files
@@ -90,12 +82,14 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
                     }
                     
                     file.createNewFile();
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+                    PrintStream writer = new PrintStream(file, dlg.getCharacterSet()); 
                     StringBuffer buffer = new StringBuffer("");
                     
                     // get column header and separator preferences
-                    String columnSeparator = SQLExplorerPlugin.getDefault().getPreferenceStore().getString(IConstants.CLIP_EXPORT_SEPARATOR);
-                    boolean includeColumnNames = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.CLIP_EXPORT_COLUMNS);
+                    String columnSeparator = dlg.getDelimiter(); 
+                    boolean includeColumnNames = dlg.includeHeaders();
+                    boolean rtrim = dlg.trimSpaces();
+                    boolean quote = dlg.quoteText();
                                        
                     // check if there is somethign in our table
                     TableItem[] items = _table.getItems();                    
@@ -113,8 +107,7 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
                             buffer.append(columnNames[i]);
                             buffer.append(columnSeparator);
                         }
-                        writer.write(buffer.toString(), 0, buffer.length());
-                        writer.newLine();
+                        writer.println(buffer.toString());
                     }
 
                     // export column data
@@ -124,11 +117,18 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
                         buffer = new StringBuffer("");
                         
                         for (int j = 0; j < columnCount; j++) {
-                            buffer.append(items[i].getText(j));
+                        	String t = items[i].getText(j);
+                        	if (rtrim) 
+                        		t = TextUtil.rtrim(t);
+                        	if (quote && dataSet.getColumnTypes()[j] == DataSet.TYPE_STRING) {
+                        		buffer.append("\"");
+                        		buffer.append(t);
+                        		buffer.append("\"");
+                        	} else
+                        		buffer.append(t);
                             buffer.append(columnSeparator);
                         }
-                        writer.write(buffer.toString(), 0, buffer.length());
-                        writer.newLine();
+                        writer.println(buffer.toString());
                     }
 
                     writer.close();

@@ -18,22 +18,21 @@
  */
 package net.sourceforge.sqlexplorer.dataset.actions;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.PrintStream;
 
-import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
+import net.sourceforge.sqlexplorer.dialogs.HtmlExportOptionsDlg;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
+import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.SWT;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.TableItem;
 
 /**
@@ -72,14 +71,9 @@ public class ExportHTMLAction extends AbstractDataSetTableContextAction {
      */
     public void run() {
 
-        FileDialog fileDialog = new FileDialog(_table.getShell(), SWT.SAVE);        
-        String[] filterExtensions = new String[] {"*.htm", "*.html"};
-        fileDialog.setFilterExtensions(filterExtensions);       
-        
-        final String fileName = fileDialog.open();
-        if (fileName == null && fileName.trim().length() == 0) {
-            return;
-        }
+    	final HtmlExportOptionsDlg dlg = new HtmlExportOptionsDlg(_table.getShell());
+    	if (dlg.open() != Window.OK)
+    		return;
         
         BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
 
@@ -87,19 +81,22 @@ public class ExportHTMLAction extends AbstractDataSetTableContextAction {
 
                 try {
 
-                    File file = new File(fileName);
+                    File file = new File(dlg.getFilename());
 
                     if (file.exists()) {
                         // overwrite existing files
                         file.delete();
                     }
+
+                    String charset = dlg.getCharacterSet();
                     
                     file.createNewFile();
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+                    PrintStream writer = new PrintStream(file, charset); 
                     StringBuffer buffer = new StringBuffer("");
                     
                     // get preferences
-                    boolean includeColumnNames = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.CLIP_EXPORT_COLUMNS);
+                    boolean includeColumnNames = dlg.includeHeaders();
+                    boolean rtrim = dlg.trimSpaces();
                                        
                     TableItem[] items = _table.getItems();                    
                     DataSet dataSet = (DataSet) _table.getData();
@@ -108,18 +105,20 @@ public class ExportHTMLAction extends AbstractDataSetTableContextAction {
                         return;
                     }
                     
-                    writer.write("<html>");
-                    writer.newLine();
-                    
-                    writer.write("<style>");
-                    writer.write("TABLE {border-collapse: collapse;}");
-                    writer.write("TH {background-color: rgb(240, 244, 245);}");
-                    writer.write("TH, TD {border: 1px solid #D1D6D4;font-size: 10px;font-family: Verdana, Arial, Helvetica, sans-serif;}");
-                    writer.write(".right {text-align: right;}");
-                    writer.write("</style>");
-                    writer.write("</head>");
-                    writer.write("<table>");
-                    writer.newLine();
+                    writer.println("<html>");
+                    writer.println("<head>");                    
+                    writer.print("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=");
+                    writer.print(charset);
+                    writer.println("\">");
+                    writer.println("<style type=\"text/css\">");
+                    writer.println("TABLE {border-collapse: collapse;}");
+                    writer.println("TH {background-color: rgb(240, 244, 245);}");
+                    writer.println("TH, TD {border: 1px solid #D1D6D4;font-size: 10px;font-family: Verdana, Arial, Helvetica, sans-serif;}");
+                    writer.println(".right {text-align: right;}");
+                    writer.println("</style>");
+                    writer.println("</head>");
+                    writer.println("<body>");
+                    writer.println("<table>");
                     
                     // export column names
                     if (includeColumnNames) {
@@ -132,8 +131,7 @@ public class ExportHTMLAction extends AbstractDataSetTableContextAction {
                             buffer.append("</th>");
                         }
                         buffer.append("</tr>");
-                        writer.write(buffer.toString());
-                        writer.newLine();
+                        writer.println(buffer.toString());
                     }
 
                     DataSet set = (DataSet)_table.getData();
@@ -153,21 +151,22 @@ public class ExportHTMLAction extends AbstractDataSetTableContextAction {
                             } else {
                                 buffer.append("<td>");
                             }
-                            
-                            buffer.append(items[i].getText(j));
+
+                        	String t = items[i].getText(j);
+                        	if (rtrim) 
+                        		t = TextUtil.rtrim(t);
+                            buffer.append(t);
                             buffer.append("</td>");
                         }
                         
                         buffer.append("</tr>");
                         
-                        writer.write(buffer.toString());
-                        writer.newLine();
+                        writer.println(buffer.toString());
                     }
 
-                    writer.write("</table>");
-                    writer.newLine();
-                    writer.write("</html>");
-                    writer.newLine();
+                    writer.println("</table>");
+                    writer.println("</body>");
+                    writer.println("</html>");
                     
                     writer.close();
 

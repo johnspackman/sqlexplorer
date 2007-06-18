@@ -5,6 +5,7 @@ package net.sourceforge.sqlexplorer.util;
  * Text handling utility.
  * 
  * @author Davy Vanherbergen
+ * @author Rocco Rutte <a href="mailto:pdmef@gmx.net">&lt;pdmef@gmx.net&gt;</a>.
  */
 public class TextUtil {
 
@@ -141,6 +142,19 @@ public class TextUtil {
 
         return buffer.toString();
     }
-    
+
+    /**
+     * Remove trailing spaces from input.
+     * @param input Input string.
+     * @return String without trailing spaces.
+     */
+    public static String rtrim(String input) {
+    	if (input == null)
+    		return null;
+    	int i = 0;
+    	for (i = input.length() - 1; i >= 0 && Character.isWhitespace(input.charAt(i)); i--)
+    		;
+    	return input.substring(0, i + 1);
+    }
     
 }
