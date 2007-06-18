@@ -49,11 +49,13 @@ public class DataSetRow {
 
 
     /**
-     * Returns value of given column.
+     * Returns value of given column. It's pretty, i.e. guaranteed to be
+     * not <tt>null</tt>.
      * 
      * @param column first column is 0
+     * @return Pretty column value.
      */
-    public Object getObjectValue(int column) {
+    public Object getPrettyObjectValue(int column) {
 
         Object tmp = _values[column];
         if (tmp != null) {
@@ -61,7 +63,15 @@ public class DataSetRow {
         }
         return "<null>";
     }
-    
+
+    /**
+     * Returns the raw value of given column.
+     * @param column first column is 0
+     * @return Raw column value, maybe <tt>null</tt>.
+     */
+    public Object getRawObjectValue(int column) {
+    	return _values[column];
+    }
 
     /**
      * Set the value for a given column

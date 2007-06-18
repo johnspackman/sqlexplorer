@@ -102,8 +102,8 @@ public class DataSetTableSorter implements Comparator {
         int result = 0;
 
         // check for null values
-        Object o1 = m1.getObjectValue(columnNumber);
-        Object o2 = m2.getObjectValue(columnNumber);        
+        Object o1 = m1.getPrettyObjectValue(columnNumber);
+        Object o2 = m2.getPrettyObjectValue(columnNumber);        
         
         // sort based on null values
     	if (o1 == null || o2 == null) {

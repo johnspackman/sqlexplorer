@@ -158,6 +158,13 @@ public class DataSet {
         return _columnTypes;
     }
 
+    /**
+     * Obtain number of rows.
+     * @return Number of rows.
+     */
+    public int getRowCount() {
+    	return _rows.length;
+    }
 
     /**
      * @return all rows in this dataset
@@ -166,6 +173,17 @@ public class DataSet {
         return _rows;
     }
 
+    /**
+     * Get a single row in this dataset.
+     * @param index Index of row.
+     * @return Row.
+     * @throws IndexOutOfBoundsException if row at index isn't present.
+     */
+    public DataSetRow getRow(int index) {
+    	if (index < 0 || index >= _rows.length)
+    		throw new IndexOutOfBoundsException("DataSetRow index out of range: " + index);
+    	return _rows[index];
+    }
 
     /**
      * Initialize dataSet based on an existing ResultSet.

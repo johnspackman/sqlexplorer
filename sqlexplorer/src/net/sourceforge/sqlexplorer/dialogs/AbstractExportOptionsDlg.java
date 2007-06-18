@@ -45,6 +45,8 @@ public abstract class AbstractExportOptionsDlg extends TitleAreaDialog {
 
 	private Combo uiDelim;
 
+	private Text uiNullValue;
+
 	private Button uiIncHeaders;
 
 	private Button uiQuoteText;
@@ -56,6 +58,8 @@ public abstract class AbstractExportOptionsDlg extends TitleAreaDialog {
 	private String charset;
 
 	private String delim;
+
+	private String nullValue;
 
 	private boolean incHeaders;
 
@@ -78,19 +82,24 @@ public abstract class AbstractExportOptionsDlg extends TitleAreaDialog {
 	public static final int FMT_DELIM = 1 << 1;
 
 	/**
+	 * Flag indicating consumer wants to obtain null value string.
+	 */
+	public static final int FMT_NULL = 1 << 2;
+
+	/**
 	 * Flag indicating consumer wants to know whether to export column headers.
 	 */
-	public static final int OPT_HDR = 1 << 2;
+	public static final int OPT_HDR = 1 << 3;
 
 	/**
 	 * Flag indicating consumer wants to know whether to quote string values.
 	 */
-	public static final int OPT_QUOTE = 1 << 3;
+	public static final int OPT_QUOTE = 1 << 4;
 
 	/**
 	 * Flag indicating consumer wants to know whether to right-trim values.
 	 */
-	public static final int OPT_RTRIM = 1 << 4;
+	public static final int OPT_RTRIM = 1 << 5;
 
 	private static final String[] DELIMS = { ";", "|", "\\t [TAB]", "," };
 
@@ -156,7 +165,7 @@ public abstract class AbstractExportOptionsDlg extends TitleAreaDialog {
 		Label l = null;
 		int flags = getFlags();
 
-		if ((flags & FMT_CHARSET) != 0 || (flags & FMT_DELIM) != 0) {
+		if ((flags & FMT_CHARSET) != 0 || (flags & FMT_DELIM) != 0 || (flags & FMT_NULL) != 0) {
 			Group fmtGroup = new Group(comp, SWT.SHADOW_ETCHED_IN);
 			fmtGroup.setText(Messages.getString("ExportDialog.group.format"));
 			fmtGroup.setLayout(new GridLayout(2, false));
@@ -187,26 +196,38 @@ public abstract class AbstractExportOptionsDlg extends TitleAreaDialog {
 				}
 				uiDelim.select(def);
 			}
+			
+			if ((flags & FMT_NULL) != 0) {
+				l = new Label(fmtGroup, SWT.NONE);
+				l.setText(Messages.getString("ExportDialog.format.null"));
+				uiNullValue = new Text(fmtGroup, SWT.SINGLE | SWT.BORDER | SWT.FILL);
+				uiNullValue.setText("<null>");
+				uiNullValue.setLayoutData(new GridData(50, SWT.DEFAULT));
+			}
 		}
 
 		if ((flags & OPT_HDR) != 0 || (flags & OPT_QUOTE) != 0
 				|| (flags & OPT_RTRIM) != 0) {
 			Group optionsGroup = new Group(comp, SWT.SHADOW_ETCHED_IN);
-			optionsGroup.setText(Messages.getString("ExportDialog.group.options"));
+			optionsGroup.setText(Messages
+					.getString("ExportDialog.group.options"));
 			optionsGroup.setLayout(new GridLayout(1, true));
 
 			if ((flags & OPT_HDR) != 0) {
 				uiIncHeaders = new Button(optionsGroup, SWT.CHECK);
-				uiIncHeaders.setText(Messages.getString("ExportDialog.options.hdr"));
+				uiIncHeaders.setText(Messages
+						.getString("ExportDialog.options.hdr"));
 				uiIncHeaders.setSelection(hdr);
 			}
 			if ((flags & OPT_QUOTE) != 0) {
 				uiQuoteText = new Button(optionsGroup, SWT.CHECK);
-				uiQuoteText.setText(Messages.getString("ExportDialog.options.quote"));
+				uiQuoteText.setText(Messages
+						.getString("ExportDialog.options.quote"));
 			}
 			if ((flags & OPT_RTRIM) != 0) {
 				uiRtrim = new Button(optionsGroup, SWT.CHECK);
-				uiRtrim.setText(Messages.getString("ExportDialog.options.rtrim"));
+				uiRtrim.setText(Messages
+						.getString("ExportDialog.options.rtrim"));
 			}
 		}
 
@@ -260,7 +281,7 @@ public abstract class AbstractExportOptionsDlg extends TitleAreaDialog {
 	private void sync() {
 		String filename = uiFile.getText();
 		if (filename == null || filename.trim().length() == 0)
-			setErrorMessage("Please specify a filename.");
+			setErrorMessage(Messages.getString("ExportDialog.error.file"));
 		else
 			setErrorMessage(null);
 		Button ok = getButton(IDialogConstants.OK_ID);
@@ -286,6 +307,7 @@ public abstract class AbstractExportOptionsDlg extends TitleAreaDialog {
 		quoteText = uiQuoteText != null && uiQuoteText.getSelection();
 		rtrim = uiRtrim != null && uiRtrim.getSelection();
 		file = uiFile != null ? uiFile.getText() : null;
+		nullValue = uiNullValue != null ? uiNullValue.getText() : null;
 		super.okPressed();
 	}
 
@@ -349,5 +371,13 @@ public abstract class AbstractExportOptionsDlg extends TitleAreaDialog {
 	 */
 	public String getFilename() {
 		return file;
+	}
+	
+	/**
+	 * Return chosen null value replacement string.
+	 * @return String or <tt>null</tt> if not requested.
+	 */
+	public String getNullValue() {
+		return nullValue;
 	}
 }

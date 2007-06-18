@@ -101,7 +101,7 @@ public class DataSetTableLabelProvider implements ITableLabelProvider {
 
         DataSetRow row = (DataSetRow) element;
 
-        Object tmp = row.getObjectValue(columnIndex);
+        Object tmp = row.getPrettyObjectValue(columnIndex);
 
         if (tmp != null) {
 

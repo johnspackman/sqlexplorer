@@ -23,6 +23,7 @@ import java.io.PrintStream;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
+import net.sourceforge.sqlexplorer.dataset.DataSetRow;
 import net.sourceforge.sqlexplorer.dialogs.CsvExportOptionsDlg;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.TextUtil;
@@ -32,7 +33,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.TableItem;
 
 /**
  * Export table contents to a CSV file.
@@ -90,12 +90,12 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
                     boolean includeColumnNames = dlg.includeHeaders();
                     boolean rtrim = dlg.trimSpaces();
                     boolean quote = dlg.quoteText();
+                    String nullValue = dlg.getNullValue();
                                        
-                    // check if there is somethign in our table
-                    TableItem[] items = _table.getItems();                    
+                    // check if there is somethign in our table                    
                     DataSet dataSet = (DataSet) _table.getData();
                     
-                    if (items == null || dataSet == null) {
+                    if (dataSet == null) {
                         return;
                     }
                     
@@ -112,12 +112,14 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
 
                     // export column data
                     int columnCount = _table.getColumnCount();
-                    for (int i = 0; i < items.length; i++) {
+                    for (int i = 0; i < dataSet.getRowCount(); i++) {
                                            
                         buffer = new StringBuffer("");
+                        DataSetRow row = dataSet.getRow(i);
                         
                         for (int j = 0; j < columnCount; j++) {
-                        	String t = items[i].getText(j);
+                        	Object o = row.getRawObjectValue(j);
+                        	String t = o == null ? nullValue : o.toString();
                         	if (rtrim) 
                         		t = TextUtil.rtrim(t);
                         	if (quote && dataSet.getColumnTypes()[j] == DataSet.TYPE_STRING) {
@@ -127,7 +129,7 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
                         	} else
                         		buffer.append(t);
                         	/* don't append separator _after_ last column */
-                        	if (i < columnCount - 1)
+                        	if (j < columnCount - 1)
                         		buffer.append(columnSeparator);
                         }
                         writer.println(buffer.toString());

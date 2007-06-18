@@ -14,8 +14,8 @@ public class CsvExportOptionsDlg extends AbstractExportOptionsDlg {
 
 	private static final String[] FILTER = { "*.csv", "*.txt" };
 
-	private static final int FLAGS = FMT_CHARSET | FMT_DELIM | OPT_HDR
-			| OPT_QUOTE | OPT_RTRIM;
+	private static final int FLAGS = FMT_CHARSET | FMT_DELIM | FMT_NULL
+			| OPT_HDR | OPT_QUOTE | OPT_RTRIM;
 
 	public CsvExportOptionsDlg(Shell parentShell) {
 		super(parentShell);

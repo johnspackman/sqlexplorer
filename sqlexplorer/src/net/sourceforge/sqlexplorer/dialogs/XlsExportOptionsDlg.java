@@ -14,8 +14,8 @@ public class XlsExportOptionsDlg extends AbstractExportOptionsDlg {
 
 	private static final String[] FILTER = { "*.xls" };
 
-	private static final int FLAGS = FMT_CHARSET | OPT_HDR | OPT_QUOTE
-			| OPT_RTRIM;
+	private static final int FLAGS = FMT_CHARSET | FMT_NULL | OPT_HDR
+			| OPT_QUOTE | OPT_RTRIM;
 
 	public XlsExportOptionsDlg(Shell parentShell) {
 		super(parentShell);

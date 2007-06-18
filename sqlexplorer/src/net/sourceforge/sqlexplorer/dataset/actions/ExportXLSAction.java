@@ -23,6 +23,7 @@ import java.io.PrintStream;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
+import net.sourceforge.sqlexplorer.dataset.DataSetRow;
 import net.sourceforge.sqlexplorer.dialogs.XlsExportOptionsDlg;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
@@ -33,7 +34,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.TableItem;
 
 /**
  * Copy an entire datasettable to the clipboard.
@@ -96,11 +96,11 @@ public class ExportXLSAction extends AbstractDataSetTableContextAction {
                     boolean includeColumnNames = dlg.includeHeaders();
                     boolean rtrim = dlg.trimSpaces();
                     boolean quote = dlg.quoteText();
-                                       
-                    TableItem[] items = _table.getItems();                    
+                    String nullValue = dlg.getNullValue();
+                   
                     DataSet dataSet = (DataSet) _table.getData();
                     
-                    if (items == null || dataSet == null) {
+                    if (dataSet == null) {
                         return;
                     }
 
@@ -122,13 +122,15 @@ public class ExportXLSAction extends AbstractDataSetTableContextAction {
 
                     // export column data
                     int columnCount = _table.getColumnCount();
-                    for (int i = 0; i < items.length; i++) {
+                    for (int i = 0; i < dataSet.getRowCount(); i++) {
                                            
                         buffer = new StringBuffer("<tr>");
+                        DataSetRow row = dataSet.getRow(i);
                         
                         for (int j = 0; j < columnCount; j++) {
                             buffer.append("<td>");
-                        	String t = items[i].getText(j);
+                            Object o = row.getRawObjectValue(j);
+                        	String t = o == null ? nullValue : o.toString();
                         	if (rtrim) 
                         		t = TextUtil.rtrim(t);
                         	if (quote && dataSet.getColumnTypes()[j] == DataSet.TYPE_STRING) {
