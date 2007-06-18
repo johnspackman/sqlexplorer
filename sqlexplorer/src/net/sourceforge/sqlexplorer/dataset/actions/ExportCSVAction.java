@@ -126,7 +126,9 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
                         		buffer.append("\"");
                         	} else
                         		buffer.append(t);
-                            buffer.append(columnSeparator);
+                        	/* don't append separator _after_ last column */
+                        	if (i < columnCount - 1)
+                        		buffer.append(columnSeparator);
                         }
                         writer.println(buffer.toString());
                     }
