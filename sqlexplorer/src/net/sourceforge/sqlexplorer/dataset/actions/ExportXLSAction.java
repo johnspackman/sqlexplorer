@@ -113,7 +113,7 @@ public class ExportXLSAction extends AbstractDataSetTableContextAction {
                         String[] columnNames = dataSet.getColumnLabels();
                         for (int i = 0; i < columnNames.length; i++) {
                             buffer.append("<th>");
-                            buffer.append(columnNames[i]);
+                            buffer.append(TextUtil.htmlEscape(columnNames[i]));
                             buffer.append("</th>");
                         }
                         buffer.append("</tr>");
@@ -133,10 +133,10 @@ public class ExportXLSAction extends AbstractDataSetTableContextAction {
                         		t = TextUtil.rtrim(t);
                         	if (quote && dataSet.getColumnTypes()[j] == DataSet.TYPE_STRING) {
                         		buffer.append("\"");
-                        		buffer.append(t);
+                        		buffer.append(TextUtil.htmlEscape(t));
                         		buffer.append("\"");
                         	} else
-                        		buffer.append(t);
+                        		buffer.append(TextUtil.htmlEscape(t));
                             buffer.append("</td>");
                         }
                         

@@ -156,5 +156,17 @@ public class TextUtil {
     		;
     	return input.substring(0, i + 1);
     }
+
+    /**
+     * Escape input string suitable for HTML output.
+     * @param input Input string.
+     * @return String with most dangerous characters escaped.
+     */
+    public static String htmlEscape(String input) {
+    	String ret = input.replaceAll("&", "&amp;");
+    	ret = ret.replaceAll("<", "&lt;");
+    	ret = ret.replaceAll(">", "&gt;");
+    	return ret;
+    }
     
 }
