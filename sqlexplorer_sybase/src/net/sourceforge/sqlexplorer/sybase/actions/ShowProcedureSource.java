@@ -1,25 +1,27 @@
 package net.sourceforge.sqlexplorer.sybase.actions;
 
-import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
+import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
 import net.sourceforge.sqlexplorer.sybase.nodes.ProcedureNode;
+import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
-import java.sql.ResultSet;
-import java.sql.Statement;
-
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 
-public class ShowProcedureSource extends AbstractDBTreeContextAction {
 
-	public ShowProcedureSource() {
-		
-	}
+public class ShowProcedureSource extends AbstractDBTreeContextAction {
 	
 	public String getText() {
 		return Messages.getString("sybase.dbstructure.actions.ShowProcedureSource");
@@ -32,50 +34,33 @@ public class ShowProcedureSource extends AbstractDBTreeContextAction {
         return false;
     }
 
-
 	public void run() {
          try {
-        	 ProcedureNode procNode;
         	 
+        	 ProcedureNode procNode;
     		 StringBuffer script = new StringBuffer("");
-             String queryDelimiter = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(
-                     IConstants.SQL_QRY_DELIMITER);
+    		 Preferences prefs = SQLExplorerPlugin.getDefault().getPluginPreferences();
+    		 
+             String queryDelimiter = prefs.getString(IConstants.SQL_QRY_DELIMITER);
+             String altQueryDelimiter = prefs.getString(IConstants.SQL_ALT_QRY_DELIMITER);
 
-             Statement stmt = _selectedNodes[0].getSession().getInteractiveConnection().createStatement();
+    		 // If there is an alternative delimeter set, I prefer the alt, 
+    		 // because 'go' is the more usual delimeter in the sybase world.
+             if (altQueryDelimiter != null && !altQueryDelimiter.equals("")) {
+            	 queryDelimiter = altQueryDelimiter;
+             }
+
+        	 SQLConnection con = _selectedNodes[0].getSession().getInteractiveConnection();
+             Statement stmt = con.createStatement();
              
              try {
                  for (int i = 0; i < _selectedNodes.length; i++) {
 
                      if (_selectedNodes[i].getType().equalsIgnoreCase("procedure")) {
-                    	 procNode = (ProcedureNode) _selectedNodes[i];
                     	 
-                         ResultSet rs = null;
-                         try {
-                        	 script.append("SET USER " + procNode.getUName()).append(queryDelimiter).append('\n');
-                        	 script.append('\n');
-                        	 
-                        	 script.append("DROP PROCEDURE " + procNode.getName()).append(queryDelimiter).append('\n');
-                        	 script.append('\n');
-                        	                         	 
-                        	 String sql = "Select text from " + procNode.getSchemaOrCatalogName() 
-                    		 + "..syscomments where id = object_id('" + procNode.getUniqueIdentifier() + "')";
-                        	 
-                             rs = stmt.executeQuery(sql);
-                             
-                             while (rs.next()) {
-                                 script.append(rs.getString(1));
-                             }
-                             script.append(queryDelimiter).append('\n');
-                        	 script.append('\n');
-
-                        	 //TODO Get and Print Permissions on Object
-                        	 
-                        	 script.append("SET USER").append(queryDelimiter).append('\n');
-                         } catch (Exception e) {
-                        	 SQLExplorerPlugin.error("Error retrieving procedure source.", e);
-                         } finally {
-                             rs.close();
-                         }
+                    	 procNode = (ProcedureNode) _selectedNodes[i];
+                    	 generateProcedureDDL(con, script, stmt, procNode, queryDelimiter);
+                    	 
                      }
                  }
              } finally {
@@ -90,9 +75,8 @@ public class ShowProcedureSource extends AbstractDBTreeContextAction {
                  return;
              }
              
-             
-             SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getNextElement()
-                     + ").sql");
+             String inputTitle = "SQL Editor (" + SQLExplorerPlugin.getDefault().getNextElement() + ").sql";
+             SQLEditorInput input = new SQLEditorInput(inputTitle);
              input.setSessionNode(_selectedNodes[0].getSession());
              IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
@@ -105,5 +89,174 @@ public class ShowProcedureSource extends AbstractDBTreeContextAction {
          }	
 	}
 
+	private void generateProcedureDDL(SQLConnection con, StringBuffer script, Statement stmt, ProcedureNode procNode, String queryDelimeter) throws SQLException {
+
+		ResultSet rs = null;		
+			
+		String owner = procNode.getSession().getMetaData().getUserName();
+		String spName = procNode.getName();
+		String spUniqueName = procNode.getUniqueIdentifier();
+		String dbName = procNode.getParent().getParent().toString(); 
+		String scriptCommandDelim = "\n" + queryDelimeter + "\n\n";
+		int objId = procNode.getID();
+		
+		
+		script.append("USE " + dbName);
+		script.append(scriptCommandDelim);
+		
+		script.append("SETUSER '" + owner + "'");
+		script.append(scriptCommandDelim);
+		
+		String dropStatement = "IF object_id('" + spUniqueName
+			+ "') IS NOT NULL DROP PROCEDURE " 
+			+ owner + "." + spName;
+		
+		script.append(dropStatement);
+		script.append(scriptCommandDelim);
+		
+		String sql = "Select text from " + dbName 
+			+ "..syscomments NOHOLDLOCK where id = " + objId;
+		
+		rs = stmt.executeQuery(sql);
+		 
+		while (rs.next()) {
+		    script.append(rs.getString(1));
+		}
+		script.append(scriptCommandDelim);
+		
+		StringBuffer grantStatements = getGrantStatements(spUniqueName, dbName, stmt, scriptCommandDelim);
+		script.append(grantStatements);
+		
+		//System.out.println(procNode.getSession().getMetaData().getDatabaseProductVersion());
+		
+		String procxmodeStatement = getProcxmodeStatement(spName, spUniqueName, con);
+		
+		if (!procxmodeStatement.equals("")) {
+			script.append(procxmodeStatement);
+			script.append(scriptCommandDelim);
+		}
+		
+		script.append("SETUSER");
+		script.append(scriptCommandDelim);
+		
+		rs.close();
+	}
+	
+	private StringBuffer getGrantStatements(String fullSpName, String dbName, Statement stmt, String delim) throws SQLException {
+
+		List grantees = new ArrayList();
+		
+		String sql = "SELECT user_name(s.uid)"
+			+ " FROM " + dbName + "..sysprotects s NOHOLDLOCK"
+			+ " WHERE s.id = object_id('" + fullSpName + "')";
+	
+		ResultSet rs = stmt.executeQuery(sql);
+	
+		while (rs.next()) {
+			grantees.add(rs.getString(1));
+		}
+	
+		rs.close();
+	
+		StringBuffer grantStatements = new StringBuffer();
+		
+		String statement = "";
+		String grantee = "";
+		
+		for (int i = 0; i < grantees.size(); i++) {
+			grantee = (String) grantees.get(i);
+			statement = "Grant Execute on " + fullSpName + " to " + grantee;
+			grantStatements.append(statement);
+			grantStatements.append(delim);
+		}
+	
+		return grantStatements;
+	}
+	
+	private String getProcxmodeStatement(String spName, String fullSpName, SQLConnection con) throws SQLException {
+		
+		String sql = 
+			" create table #execmode (intval integer, charval varchar(30))"
+			+ "	insert into #execmode values(0,  'unchained')"
+			+ " insert into #execmode values(16, 'chained')"
+			+ " insert into #execmode values(32, 'anymode')"
+			+ " insert into #execmode values(256,'[not] dynamic [ownership chain]')"
+			+ " SELECT t.charval as mode"
+			+ " FROM   sysobjects o NOHOLDLOCK, #execmode t"
+			+ " where	((o.type = 'P') or (o.type = 'XP')) and"
+			+ "     	(((o.sysstat2 & t.intval ) != 0) or"
+			+ " 		 ((t.intval = 0) and (o.sysstat2 & 48) = 0))"
+			+ " AND o.name = '" + spName + "'"
+			+ "	drop table #execmode"; 
+		
+		SybExecute execute = new SybExecute(con, sql);
+		ResultSet rs = execute.getNextResultSet();
+		String mode = "";
+		
+		while (rs != null) {
+			while (rs.next()) {
+				mode = rs.getString(1);
+			}
+			rs.close();
+			rs = execute.getNextResultSet();
+		}
+		execute.close();
+		
+		String procxmodeStatement = "";
+		
+		if (!mode.equals("")) {
+			procxmodeStatement = 
+			"sp_procxmode '" + fullSpName + "', " + mode;
+		}
+		
+		return procxmodeStatement;
+	}
+
+	
+	private class SybExecute {
+		
+		private PreparedStatement stmt = null;
+		private boolean firstResultReceived = false;
+		
+		public SybExecute(SQLConnection con, String sql) throws SQLException {
+			stmt = con.prepareStatement(sql);
+			stmt.execute();
+		}
+		
+	    /**
+	     * Honors multiple result sets and asks for update counts 
+	     * as described in the jdbc documentation. 
+	     * @throws SQLException
+	     */
+	    public ResultSet getNextResultSet() throws SQLException {
+	        
+	    	if (!firstResultReceived) {
+				ResultSet rs = stmt.getResultSet();
+				firstResultReceived = true;
+			    if (rs == null) {
+			    	rs = getNextResultSet();
+			    }
+			    return rs;
+	    	}
+	    	
+	    	boolean isResultSet = stmt.getMoreResults();
+	    	
+	    	while (!isResultSet) {
+	    		if (stmt.getUpdateCount() == -1) {
+	    			return null;
+	    		}
+	    		isResultSet = stmt.getMoreResults();
+	    	}
+	    	
+	    	ResultSet result = stmt.getResultSet(); 
+	    	return result;
+	    }
+	    
+	    public void close() throws SQLException {
+	    	stmt.close();
+	    }
+		
+	}
+	
 	
 }
