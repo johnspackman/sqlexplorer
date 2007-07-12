@@ -16,23 +16,23 @@ public class ProcedureNode extends SysObjectNode {
 		return ImageUtil.getFragmentImage("net.sourceforge.sqlexplorer.sybase", Messages.getString("sybase.images.procedure"));
 	}
 	
-	public String getName() {
-		return _name;
-	}
-	
-	public String getQualifiedName() {
-		return _name;
-	}
+//	public String getName() {
+//		return _name;
+//	}
+//	
+//	public String getQualifiedName() {
+//		return _name;
+//	}
 
 	public String getUniqueIdentifier() {
 		return getSchemaOrCatalogName() + "." + getUName() + "." + getName();
 	}
 
-	public boolean isEndNode() {
-		return true;
-	}
-	
-	public void loadChildren() {
-	}
+//	public boolean isEndNode() {
+//		return true;
+//	}
+//	
+//	public void loadChildren() {
+//	}
 
 }

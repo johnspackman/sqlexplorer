@@ -30,7 +30,7 @@ public class ProcedureFolder extends SysObjectFolder {
 	}
 
 	public String getSQL() {
-		return "select a.name, a.uid, b.name from " + 
+		return "select a.name, a.uid, b.name, a.id from " + 
 			getSchemaOrCatalogName() + "..sysobjects a, " + 
 			getSchemaOrCatalogName() + "..sysusers b " +
 			" where a.uid = b.uid and a.type = 'P' order by a.name";

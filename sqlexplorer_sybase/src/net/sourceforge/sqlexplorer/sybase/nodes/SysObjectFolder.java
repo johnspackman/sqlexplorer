@@ -63,6 +63,7 @@ public class SysObjectFolder extends AbstractFolderNode {
 	            	newNode.initialize(this, rs.getString(1), _sessionNode);
 	            	newNode.setUID(rs.getInt(2));
 	            	newNode.setUName(rs.getString(3));
+	            	newNode.setID(rs.getInt(4));
 	
 	            	addChildNode(newNode);
             	} catch (InstantiationException ie) {

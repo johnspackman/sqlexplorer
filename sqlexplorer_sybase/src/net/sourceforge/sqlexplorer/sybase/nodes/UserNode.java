@@ -15,24 +15,24 @@ public class UserNode extends SysObjectNode {
 		return ImageUtil.getFragmentImage("net.sourceforge.sqlexplorer.sybase", Messages.getString("sybase.images.procedure"));
 	}
 	
-	public String getName() {
-		return _name;
-	}
+//	public String getName() {
+//		return _name;
+//	}
 	
-	public String getQualifiedName() {
-		return _name;
-	}
+//	public String getQualifiedName() {
+//		return _name;
+//	}
 
 	public String getUniqueIdentifier() {
 		return getSchemaOrCatalogName() + "." + getUName();
 	}
 
-	public boolean isEndNode() {
-		return true;
-	}
+//	public boolean isEndNode() {
+//		return true;
+//	}
 	
-	public void loadChildren() {
-		return;
-	}
+//	public void loadChildren() {
+//		return;
+//	}
 
 }

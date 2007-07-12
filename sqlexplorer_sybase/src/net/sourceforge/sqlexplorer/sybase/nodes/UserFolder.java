@@ -27,7 +27,7 @@ public class UserFolder  extends SysObjectFolder {
 	}
 
 	public String getSQL() {
-		return " select u.name, u.uid, u.name from " + 
+		return " select u.name, u.uid, u.name, a.id from " + 
 		getSchemaOrCatalogName() + "..sysusers u, " +  
 		getSchemaOrCatalogName() + "..sysusers g, " + 
 		" master..syslogins l " + 

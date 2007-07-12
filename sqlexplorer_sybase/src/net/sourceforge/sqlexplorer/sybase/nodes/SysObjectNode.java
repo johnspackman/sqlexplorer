@@ -11,10 +11,15 @@ import org.eclipse.swt.graphics.Image;
 public class SysObjectNode extends AbstractNode {
 	
 	protected int _uid;
+	protected int _id;
 	protected String _uname;
 
 	public int getUID() {
 		return _uid;
+	}
+
+	public int getID() {
+		return _id;
 	}
 
 	public String getUName() {
@@ -27,6 +32,10 @@ public class SysObjectNode extends AbstractNode {
 
 	public void setUName(String uname) {
 		_uname = uname;
+	}
+
+	public void setID(int id) {
+		_id = id;
 	}
 
 	public SysObjectNode() {
