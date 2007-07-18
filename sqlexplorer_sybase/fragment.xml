@@ -32,6 +32,13 @@
             name="User Folder"
             parent-node="schema+catalog"
             table-type="user_folder"/>
+      <node
+            class="net.sourceforge.sqlexplorer.sybase.nodes.UDDataTypeFolder"
+            database-product-name="Adaptive Server*"
+            id="net.sourceforge.sqlexplorer.sybase.nodes.UDDataTypeFolder"
+            name="User Defined DataType Folder"
+            parent-node="schema+catalog"
+            table-type="uddt_folder"/>
    </extension>
    <extension
          point="net.sourceforge.sqlexplorer.nodeContextAction">
