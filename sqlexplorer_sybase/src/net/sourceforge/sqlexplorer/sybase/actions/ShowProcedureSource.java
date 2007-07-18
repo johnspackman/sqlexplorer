@@ -93,7 +93,8 @@ public class ShowProcedureSource extends AbstractDBTreeContextAction {
 
 		ResultSet rs = null;		
 			
-		String owner = procNode.getSession().getMetaData().getUserName();
+		//String owner = procNode.getSession().getMetaData().getUserName();
+		String owner = procNode.getUName();
 		String spName = procNode.getName();
 		String spUniqueName = procNode.getUniqueIdentifier();
 		String dbName = procNode.getParent().getParent().toString(); 
@@ -104,7 +105,7 @@ public class ShowProcedureSource extends AbstractDBTreeContextAction {
 		script.append("USE " + dbName);
 		script.append(scriptCommandDelim);
 		
-		script.append("SETUSER '" + owner + "'");
+		script.append("SETUSER 'dbo'");
 		script.append(scriptCommandDelim);
 		
 		String dropStatement = "IF object_id('" + spUniqueName
@@ -113,6 +114,10 @@ public class ShowProcedureSource extends AbstractDBTreeContextAction {
 		
 		script.append(dropStatement);
 		script.append(scriptCommandDelim);
+
+		script.append("SETUSER '" + owner + "'");
+		script.append(scriptCommandDelim);
+
 		
 		String sql = "Select text from " + dbName 
 			+ "..syscomments NOHOLDLOCK where id = " + objId;
