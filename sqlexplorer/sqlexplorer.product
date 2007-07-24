@@ -3,7 +3,6 @@
 
 <product name="SQL Explorer" id="net.sourceforge.sqlexplorer.product" application="net.sourceforge.sqlexplorer.application" useFeatures="false">
 
-
    <configIni use="custom" path="/sqlexplorer/config.ini"/>
 
    <launcherArgs>
@@ -23,13 +22,13 @@
       </win>
    </launcher>
 
-
    <plugins>
       <plugin id="com.ibm.icu"/>
       <plugin id="net.sourceforge.sqlexplorer"/>
       <plugin id="net.sourceforge.sqlexplorer.db2" fragment="true"/>
       <plugin id="net.sourceforge.sqlexplorer.mysql" fragment="true"/>
       <plugin id="net.sourceforge.sqlexplorer.oracle" fragment="true"/>
+      <plugin id="net.sourceforge.sqlexplorer.sybase" fragment="true"/>
       <plugin id="org.apache.xerces"/>
       <plugin id="org.eclipse.ant.core"/>
       <plugin id="org.eclipse.core.commands"/>
