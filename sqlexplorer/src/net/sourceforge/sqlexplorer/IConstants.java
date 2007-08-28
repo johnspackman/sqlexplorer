@@ -55,6 +55,7 @@ public interface IConstants {
 
     /** The color key for database tables column names */
     String SQL_COLUMS = "SQLEditor.ColumnsColor";
+    
     String SQL_COMMENT_DELIMITER = "SQLEditor.CommentDelimiter";
 
     /**
@@ -87,4 +88,32 @@ public interface IConstants {
     String WARN_LIMIT = "SQLEditor.WarnLimit";
     
     String WORD_WRAP = "SQLEditor.AutoWrap";
+    
+    // When executing the code in an editor, should we clear all the results tabs and 
+    //	empty the messages list 
+    String CLEAR_RESULTS_ON_EXECUTE = "SQLEditor.ClearResultsOnExecute";
+    
+    // Should the tabs just have a number (false), or should they have a snippit
+    //	of the code (true).  Eg "q [select * from my_table...]"
+    String USE_LONG_CAPTIONS_ON_RESULTS = "SQLEditor.UseLongCaptionsOnResults";
+    
+    // When executing more than one query from an editor, should the execution
+    //	stop at the first error or carry on until the end logging all the errors
+    //	in the message tab
+    String STOP_ON_ERROR = "SQLEditor.StopOnError";
+    
+    // Whether unsaved editors should prompt to be saved when they are closed 
+    String REQUIRE_SAVE_ON_CLOSE_EDITOR = "SQLEditor.RequireSaveOnClose";
+    
+    // Whether Untitled editors should be saved to a scratch pad
+    String SAVE_UNTITLED_IN_SCRATCH_PAD = "SQLEditor.SaveUntitledInScratchPad";
+    
+    // Whether structured comments are enabled in SQL queries
+    String ENABLE_STRUCTURED_COMMENTS = "SQLEditor.EnableStructuredComments";
+    
+    // Debug logging level for queries
+    String QUERY_DEBUG_LOG_LEVEL = "SQLEditor.QueryDebugLog";
+    String QUERY_DEBUG_OFF = "off";
+    String QUERY_DEBUG_FAILED = "failed";
+    String QUERY_DEBUG_ALL = "all";
 }
