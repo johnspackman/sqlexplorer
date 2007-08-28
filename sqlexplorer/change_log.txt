@@ -8,26 +8,38 @@ SQL Editor
 	and then added to a Messages tab (attached to the editor next to the result tabs).
 	The line/column that caused the error is recorded and clicking on a row in the
 	Messages tab takes you to the line/character that caused the error
-* A new QueryParser and Tokenizer have been written which accurately parse SQL; this is
-	used to parse SQL and automatically determine how to break up the text into individual
-	SQL queries to be passed to the database, based on the grammar of the SQL.  This is
-	abstracted so that there are pluggable database-specific implementations for different
-	database products - currently only Oracle is supported but new additions are fairly 
-	trivial.
-* Database-specific extensions are required to abstract database specific components which
-	do not easily fit into the Eclipse plugin architecture (see DatabaseProduct).
-* Added Structured Comments for macros, conditional compilation, and other scriptable 
-	functionality without compromising compatability with other, standard SQL tools (this
-	can be disabled in preferences).
-* Refactored the Preference pages, simplifying the code and extracting commonality, and 
-	added new preferences:
+* You no longer need to use special separator characters to break up your SQL code
+	(currently this is only supported on Oracle but other databases can be relatively 
+	easily added).
+* Structured Comments are a new feature which allow you embed instructions to SQLExplorer
+	in your SQL scripts.  This can be used for conditional compilation and for macro
+	expansion (you'll recognise this straight away if you've previously used C/C++),
+	but future versions will support asking the user questions, data type overriding,
+	importing, exporting, and client-side scripting with JavaScript.  Because the commands
+	are disguised in comments this facility will NOT make your script incompatable with 
+	other tools.
+* New preferences for:
 	a) Clear result tabs on execute
 	b) Use long captions on result tabs
 	c) Stop processing queries when an error is found
 	d) prompt to save modified editors when closing
 * Prompt to save files before closing (optional - see preferences)
-* Added support for opening files from Eclipse, EG via a Project
-* Basic online help (based on website, plus a few extra bits)
+* Added support for opening files from Eclipse, I.E. via a Project
+* Basic online help - this is based on the website plus documentation of new features
+* There is a new DatabaseProduct class which can optionally be implemented by a database
+	fragment to extend the data types supported and the query parser cabailities (see online 
+	help)
+* There are new general-purpose QueryParser and Tokenizer classes for reading SQL and Structured 
+	Comments.
+* Database-specific extensions are required to abstract database specific components which
+	do not easily fit into the Eclipse plugin architecture (see DatabaseProduct).
+* Added Structured Comments for macros, conditional compilation, and other scriptable 
+	functionality without compromising compatability with other, standard SQL tools (this
+	can be disabled in preferences).
+* Refactored the Preference pages, simplifying the code and extracting commonality
+* DataSet now uses reflection to determine data types; there is partial implementation of
+	additional datatypes at the moment - work here was stalled and will be completed soon.
+* Drivers are loaded by the ClassLoader of the database extension
 
 
 
