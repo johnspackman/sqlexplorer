@@ -20,21 +20,26 @@ package net.sourceforge.sqlexplorer.oracle.actions.explain;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.parsers.Query;
+import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
-import net.sourceforge.sqlexplorer.sqlpanel.SQLResult;
 
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -91,50 +96,38 @@ public class ExplainExecution extends AbstractSQLExecution {
     }
 
     private PreparedStatement _prepStmt;
-
-    protected SQLResult _sqlResult;
-
-    protected Statement _stmt;
+    private Statement _stmt;
     
-
-
-    public ExplainExecution(SQLEditor editor, SqlResultsView resultsView, String sqlString,
-            SessionTreeNode sessionTreeNode) {
-
-        _editor = editor;
-        _editor = editor;
-        _sqlStatement = sqlString;
-        _session = sessionTreeNode;
-        _resultsView = resultsView;
-        _sqlResult = new SQLResult();
-        _sqlResult.setSqlStatement(_sqlStatement);
-
+    public ExplainExecution(SQLEditor editor, QueryParser queryParser, SessionTreeNode sessionTreeNode) {
+    	super(editor, queryParser, sessionTreeNode);
+    	
         // set initial message
         setProgressMessage(Messages.getString("SQLResultsView.ConnectionWait"));
     }
     
-    
-    private void displayResults(final ExplainNode node) {
+    private void displayResults(final ExplainNode node, final Query query) {
 
-        _resultsView.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+    	getEditor().getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
             public void run() {
 
-                clearCanvas();
-
-                GridLayout gLayout = new GridLayout();
-                gLayout.numColumns = 2;
-                gLayout.marginLeft = 0;
-                gLayout.horizontalSpacing = 0;
-                gLayout.verticalSpacing = 0;
-                gLayout.marginWidth = 0;
-                gLayout.marginHeight = 0;
-                _composite.setLayout(gLayout);
+            	ResultsTab resultsTab = allocateResultsTab(query);
 
                 try {
-                    _composite.setData("parenttab", _parentTab);
+	                Composite composite = resultsTab.getParent();
+	
+	                GridLayout gLayout = new GridLayout();
+	                gLayout.numColumns = 2;
+	                gLayout.marginLeft = 0;
+	                gLayout.horizontalSpacing = 0;
+	                gLayout.verticalSpacing = 0;
+	                gLayout.marginWidth = 0;
+	                gLayout.marginHeight = 0;
+	                composite.setLayout(gLayout);
 
-                    Composite pp = new Composite(_composite, SWT.NULL);
+                    composite.setData("parenttab", resultsTab.getTabItem());
+
+                    Composite pp = new Composite(composite, SWT.NULL);
                     pp.setLayout(new FillLayout());
                     pp.setLayoutData(new GridData(GridData.FILL_BOTH));
                     TableTreeViewer tv = new TableTreeViewer(pp, SWT.BORDER | SWT.FULL_SELECTION);
@@ -203,7 +196,7 @@ public class ExplainExecution extends AbstractSQLExecution {
                         table.getColumn(i).pack();
                     }
 
-                    final Composite parent = _composite;
+                    final Composite parent = composite;
                     table.addKeyListener(new KeyAdapter() {
 
                         public void keyReleased(KeyEvent e) {
@@ -248,19 +241,22 @@ public class ExplainExecution extends AbstractSQLExecution {
                         }
                     });                    
 
+                    composite.layout();
+                    composite.redraw();
+
                 } catch (Exception e) {
 
                     // add message
-                    String message = e.getMessage();
-                    Label errorLabel = new Label(_composite, SWT.FILL);
-                    errorLabel.setText(message);
-                    errorLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+                	if (resultsTab != null) {
+		                Composite composite = resultsTab.getParent();
+	                    String message = e.getMessage();
+	                    Label errorLabel = new Label(composite, SWT.FILL);
+	                    errorLabel.setText(message);
+	                    errorLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+                	}
 
                     SQLExplorerPlugin.error("Error creating explain tab", e);
                 }
-
-                _composite.layout();
-                _composite.redraw();
 
             };
         });
@@ -268,133 +264,155 @@ public class ExplainExecution extends AbstractSQLExecution {
 
 
     protected void doExecution() throws Exception {
+        int numErrors = 0;
+        SQLException lastSQLException = null;
+        Query query = null;
 
         try {
-
-            if (_isCancelled) {
-                return;
-            }
-
-            _stmt = _connection.createStatement();
-            String id_ = Integer.toHexString(new Random().nextInt()).toUpperCase();
-            _stmt.execute("delete plan_table where statement_id='" + id_ + "'");
-            _stmt.close();
-            _stmt = null;
-
-            if (_isCancelled) {
-                return;
-            }
-
-            _stmt = _connection.createStatement();
-            _stmt.execute("EXPLAIN PLAN SET statement_id = '" + id_ + "' FOR " + _sqlStatement);
-            _stmt.close();
-            _stmt = null;
-
-            if (_isCancelled) {
-                return;
-            }
-
-            _prepStmt = _connection.prepareStatement("select "
-                    + "level, object_type,operation,options,object_owner,object_name,optimizer,cardinality ,cost,id,parent_id,level "
-                    + " from " + " plan_table " + " start with id = 0 and statement_id=? "
-                    + " connect by prior id=parent_id and statement_id=?");
-            _prepStmt.setString(1, id_);
-            _prepStmt.setString(2, id_);
-            ResultSet rs = _prepStmt.executeQuery();
-
-            if (_isCancelled) {
-                return;
-            }
-
-            HashMap mp = new HashMap();
-            while (rs.next()) {
-                String object_type = rs.getString("object_type");
-                String operation = rs.getString("operation");
-                String options = rs.getString("options");
-                String object_owner = rs.getString("object_owner");
-                String object_name = rs.getString("object_name");
-                String optimizer = rs.getString("optimizer");
-                int cardinality = rs.getInt("cardinality");
-                if (rs.wasNull()) {
-                    cardinality = -1;
-                }
-
-                int cost = rs.getInt("cost");
-                if (rs.wasNull())
-                    cost = -1;
-                int parentID = rs.getInt("parent_id");
-                int id = rs.getInt("id");
-                int level = rs.getInt("level");
-                ExplainNode nd = null;
-                if (id == 0) {
-                    ExplainNode dummy = new ExplainNode(null);
-                    mp.put(new Integer(-1), dummy);
-                    dummy.setId(-1);
-                    nd = new ExplainNode(dummy);
-                    dummy.add(nd);
-                    nd.setId(0);
-                    mp.put(new Integer(0), nd);
-                } else {
-                    ExplainNode nd_parent = (ExplainNode) mp.get(new Integer(parentID));
-
-                    nd = new ExplainNode(nd_parent);
-                    nd_parent.add(nd);
-                    mp.put(new Integer(id), nd);
-                }
-                nd.setCardinality(cardinality);
-                nd.setCost(cost);
-                nd.setObject_name(object_name);
-                nd.setObject_owner(object_owner);
-                nd.setObject_type(object_type);
-                nd.setOperation(operation);
-                nd.setOptimizer(optimizer);
-                nd.setOptions(options);
-                nd.setId(id);
-                nd.setLevel(level);
-            }
-            rs.close();
-            _prepStmt.close();
-            _prepStmt = null;
-            ExplainNode nd_parent = (ExplainNode) mp.get(new Integer(-1));
-
-            if (_isCancelled) {
-                return;
-            }
-
-            displayResults(nd_parent);
-
+        	try {
+        		
+            	for (Iterator<Query> iter = getQueryParser().iterator(); iter.hasNext(); ) {
+            		query = iter.next();
+        			if (_isCancelled)
+        				break;
+	
+		            _stmt = _connection.createStatement();
+		            String id_ = Integer.toHexString(new Random().nextInt()).toUpperCase();
+		            _stmt.execute("delete plan_table where statement_id='" + id_ + "'");
+		            _stmt.close();
+		            _stmt = null;
+		
+		            if (_isCancelled) {
+		                return;
+		            }
+		
+		            _stmt = _connection.createStatement();
+		            _stmt.execute("EXPLAIN PLAN SET statement_id = '" + id_ + "' FOR " + query.getQuerySql());
+		            _stmt.close();
+		            _stmt = null;
+		
+		            if (_isCancelled) {
+		                return;
+		            }
+		
+		            _prepStmt = _connection.prepareStatement("select "
+		                    + "level, object_type,operation,options,object_owner,object_name,optimizer,cardinality ,cost,id,parent_id,level "
+		                    + " from " + " plan_table " + " start with id = 0 and statement_id=? "
+		                    + " connect by prior id=parent_id and statement_id=?");
+		            _prepStmt.setString(1, id_);
+		            _prepStmt.setString(2, id_);
+		            ResultSet rs = _prepStmt.executeQuery();
+		
+		            if (_isCancelled) {
+		                return;
+		            }
+		
+		            HashMap mp = new HashMap();
+		            while (rs.next()) {
+		                String object_type = rs.getString("object_type");
+		                String operation = rs.getString("operation");
+		                String options = rs.getString("options");
+		                String object_owner = rs.getString("object_owner");
+		                String object_name = rs.getString("object_name");
+		                String optimizer = rs.getString("optimizer");
+		                int cardinality = rs.getInt("cardinality");
+		                if (rs.wasNull()) {
+		                    cardinality = -1;
+		                }
+		
+		                int cost = rs.getInt("cost");
+		                if (rs.wasNull())
+		                    cost = -1;
+		                int parentID = rs.getInt("parent_id");
+		                int id = rs.getInt("id");
+		                int level = rs.getInt("level");
+		                ExplainNode nd = null;
+		                if (id == 0) {
+		                    ExplainNode dummy = new ExplainNode(null);
+		                    mp.put(new Integer(-1), dummy);
+		                    dummy.setId(-1);
+		                    nd = new ExplainNode(dummy);
+		                    dummy.add(nd);
+		                    nd.setId(0);
+		                    mp.put(new Integer(0), nd);
+		                } else {
+		                    ExplainNode nd_parent = (ExplainNode) mp.get(new Integer(parentID));
+		
+		                    nd = new ExplainNode(nd_parent);
+		                    nd_parent.add(nd);
+		                    mp.put(new Integer(id), nd);
+		                }
+		                nd.setCardinality(cardinality);
+		                nd.setCost(cost);
+		                nd.setObject_name(object_name);
+		                nd.setObject_owner(object_owner);
+		                nd.setObject_type(object_type);
+		                nd.setOperation(operation);
+		                nd.setOptimizer(optimizer);
+		                nd.setOptions(options);
+		                nd.setId(id);
+		                nd.setLevel(level);
+		            }
+		            rs.close();
+		            _prepStmt.close();
+		            _prepStmt = null;
+		            ExplainNode nd_parent = (ExplainNode) mp.get(new Integer(-1));
+		
+		            if (_isCancelled) {
+		                return;
+		            }
+		
+		            displayResults(nd_parent, query);
+	            	debugLogQuery(query, null);
+        		}
+            	query = null;
+        	} catch(SQLException e) {
+            	debugLogQuery(query, e);
+                logException(e, query);
+                closeStatements();
+            	boolean stopOnError = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.STOP_ON_ERROR);
+            	if (stopOnError)
+            		throw e;
+            	numErrors++;
+            	lastSQLException = e;
+        	}
         } catch (Exception e) {
-
-            if (_stmt != null) {
-
-                try {
-                    _stmt.close();
-                    _stmt = null;
-                } catch (Exception e1) {
-                    SQLExplorerPlugin.error("Error closing statement.", e);
-                }
-            }
-
-            if (_prepStmt != null) {
-                try {
-                    _prepStmt.close();
-                    _prepStmt = null;
-                } catch (Exception e1) {
-                    SQLExplorerPlugin.error("Error closing statement.", e);
-                }
-            }
+        	closeStatements();
             throw e;
         }
 
+        if (numErrors == 1)
+        	throw lastSQLException;
+        else if (numErrors > 1)
+			MessageDialog.openError(getEditor().getSite().getShell(), "SQL Error", "One or more of your SQL statements failed - check the Messages log for details");
     }
 
+    private void closeStatements() {
+        if (_stmt != null) {
+            try {
+                _stmt.close();
+                _stmt = null;
+            } catch (Exception e) {
+                SQLExplorerPlugin.error("Error closing statement.", e);
+            }
+        }
+
+        if (_prepStmt != null) {
+            try {
+                _prepStmt.close();
+                _prepStmt = null;
+            } catch (Exception e) {
+                SQLExplorerPlugin.error("Error closing statement.", e);
+            }
+        }
+    }
 
     protected void doStop() throws Exception {
 
         Exception t = null;
 
+        _isCancelled = true;
         if (_stmt != null) {
-
             try {
                 _stmt.cancel();
             } catch (Exception e) {
@@ -410,7 +428,6 @@ public class ExplainExecution extends AbstractSQLExecution {
         }
 
         if (_prepStmt != null) {
-
             try {
                 _prepStmt.cancel();
             } catch (Exception e) {

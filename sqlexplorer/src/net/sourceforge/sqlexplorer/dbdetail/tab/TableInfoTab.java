@@ -68,11 +68,7 @@ public class TableInfoTab extends AbstractDataSetTab {
             data[5][0] = Messages.getString("DatabaseDetailView.Tab.Info.Remarks");
             data[5][1] = tableInfo.getRemarks();
             
-            int[] types = new int[2];
-            types[0] = DataSet.TYPE_STRING;
-            types[1] = DataSet.TYPE_STRING;
-            
-            DataSet dataSet = new DataSet(header, data, types);
+            DataSet dataSet = new DataSet(header, data);
                        
             return dataSet;
         }

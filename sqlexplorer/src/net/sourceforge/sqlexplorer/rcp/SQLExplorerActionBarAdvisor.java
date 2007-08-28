@@ -1,9 +1,22 @@
 package net.sourceforge.sqlexplorer.rcp;
 
+import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.IContributionManager;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.StatusLineLayoutData;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.CoolBar;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory;
@@ -19,13 +32,13 @@ import org.eclipse.ui.application.IActionBarConfigurer;
  * @author Davy Vanherbergen
  */
 public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor {
-
+	
 	private IWorkbenchAction _exitAction;
 
     private IWorkbenchAction _preferencesAction;
     
     private IContributionItem _viewList;
-
+    
     
     /**
      * Default constructor.
@@ -53,7 +66,7 @@ public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor {
         
 	}
 
-    
+
 	/**
      * Populate the menubar with actions.
      * 

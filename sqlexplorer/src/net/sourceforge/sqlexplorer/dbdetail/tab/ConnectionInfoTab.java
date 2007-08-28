@@ -339,11 +339,7 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
             data[123][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.ReadOnly");
             try {data[123][1] = "" + jdbcMetaData.isReadOnly();} catch (Throwable e) {}
         
-        int[] types = new int[2];
-        types[0] = DataSet.TYPE_STRING;
-        types[1] = DataSet.TYPE_STRING;
-
-        DataSet dataSet = new DataSet(header, data, types);
+        DataSet dataSet = new DataSet(header, data);
 
         return dataSet;
 

@@ -133,7 +133,7 @@ public class ExportXLSAction extends AbstractDataSetTableContextAction {
                         	String t = o == null ? nullValue : o.toString();
                         	if (rtrim) 
                         		t = TextUtil.rtrim(t);
-                        	if (quote && dataSet.getColumnTypes()[j] == DataSet.TYPE_STRING) {
+                        	if (quote && o instanceof String) {
                         		buffer.append("\"");
                         		buffer.append(TextUtil.htmlEscape(t));
                         		buffer.append("\"");

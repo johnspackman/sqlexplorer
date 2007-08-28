@@ -1,19 +1,21 @@
 package net.sourceforge.sqlexplorer.postgresql.actions.explain;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.Connection;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.Iterator;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.parsers.Query;
+import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
 import net.sourceforge.sqlexplorer.postgresql.dataset.tree.TreeDataSet;
 import net.sourceforge.sqlexplorer.postgresql.ui.TreeDataSetViewer;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
-import net.sourceforge.sqlexplorer.sqlpanel.SQLResult;
 import net.sourceforge.squirrel_sql.fw.util.log.ILogger;
 import net.sourceforge.squirrel_sql.fw.util.log.LoggerController;
 
@@ -40,8 +42,6 @@ public class ExplainExecution extends AbstractSQLExecution {
 
 	private Savepoint start = null;
 
-	private final SQLResult sqlResult;
-
 	private final String prefix;
 
 	private final int type;
@@ -66,14 +66,8 @@ public class ExplainExecution extends AbstractSQLExecution {
 	 * @see AbstractExplainAction#EXPLAIN_ANALYZE
 	 * @see AbstractExplainAction#EXPLAIN_NORMAL
 	 */
-	public ExplainExecution(final SQLEditor _editor, final SqlResultsView res,
-			final String query, final SessionTreeNode session, int type) {
-		this._editor = _editor;
-		_sqlStatement = query;
-		_session = session;
-		_resultsView = res;
-		sqlResult = new SQLResult();
-		sqlResult.setSqlStatement(query);
+	public ExplainExecution(final SQLEditor _editor, QueryParser queryParser, final SessionTreeNode session, int type) {
+		super(_editor, queryParser, session);
 		setProgressMessage("SQLResultsView.ConnectionWait");
 		prefix = type == AbstractExplainAction.EXPLAIN_ANALYZE ? " ANALYZE "
 				: "";
@@ -101,40 +95,47 @@ public class ExplainExecution extends AbstractSQLExecution {
 
 		connection = _session.getInteractiveConnection().getConnection();
 		ResultSet rs = null;
+		Query query = null;
 		try {
 			autoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
-			start = connection.setSavepoint("BEFORE_EXPLAIN");
-			stmt = connection.createStatement();
 			if (isCancelled())
 				return;
-			stmt.execute("EXPLAIN " + prefix + _sqlStatement);
-			if (isCancelled())
-				return;
-			rs = stmt.getResultSet();
-			if (isCancelled()) {
-				rs.close();
-				return;
-			}
-			final ResultSet tmp = rs;
-			ExplainTreeBuilder b = new ExplainTreeBuilder(type);
-			b.parse(new ExplainLineProvider() {
-				public String getLine() throws Exception {
-					if (!tmp.next())
-						return null;
-					return tmp.getString(1);
+        	for (Iterator<Query> iter = getQueryParser().iterator(); iter.hasNext(); ) {
+        		query = iter.next();
+    			if (_isCancelled)
+    				break;
+
+    			start = connection.setSavepoint("BEFORE_EXPLAIN");
+    			stmt = connection.createStatement();
+				stmt.execute("EXPLAIN " + prefix + query.getQuerySql());
+				if (isCancelled())
+					return;
+				rs = stmt.getResultSet();
+				if (isCancelled()) {
+					rs.close();
+					return;
 				}
-			});
-			rs.close();
-			if (isCancelled())
-				return;
-			connection.rollback(start);
-			connection.setAutoCommit(autoCommit);
-			stmt.close();
-			if (isCancelled())
-				return;
-			b.getRoot().computeStatistics();
-			displayResult(b.getRoot());
+				final ResultSet tmp = rs;
+				ExplainTreeBuilder b = new ExplainTreeBuilder(type);
+				b.parse(new ExplainLineProvider() {
+					public String getLine() throws Exception {
+						if (!tmp.next())
+							return null;
+						return tmp.getString(1);
+					}
+				});
+				rs.close();
+				if (isCancelled())
+					return;
+				connection.rollback(start);
+				connection.setAutoCommit(autoCommit);
+				stmt.close();
+				if (isCancelled())
+					return;
+				b.getRoot().computeStatistics();
+				displayResult(b.getRoot(), query);
+        	}
 		} catch (Exception e) {
 			throw e;
 		} finally {
@@ -197,17 +198,18 @@ public class ExplainExecution extends AbstractSQLExecution {
 	 * @param node
 	 *            The explain tree's root node.
 	 */
-	private void displayResult(final ExplainNode node) {
-		_resultsView.getSite().getShell().getDisplay().asyncExec(
+	private void displayResult(final ExplainNode node, final Query query) {
+		getEditor().getSite().getShell().getDisplay().asyncExec(
 				new Runnable() {
 
 					public void run() {
-						clearCanvas();
+
+		            	ResultsTab resultsTab = allocateResultsTab(query);
 
 						try {
-							_composite.setData("parenttab", _parentTab);
-							TreeDataSetViewer v = new TreeDataSetViewer(
-									_composite);
+			                Composite composite = resultsTab.getParent();
+			                
+							TreeDataSetViewer v = new TreeDataSetViewer(composite);
 							String[] l = null;
 							String lAction = Messages.getString("postgresql.explain.action");
 							String lInfo = Messages.getString("postgresql.explain.info");
@@ -229,7 +231,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 							v.getTreeViewer().setLabelProvider(
 									new ExplainTreeLabelProvider(type));
 
-							final Composite parent = _composite;
+							final Composite parent = composite;
 							v.getTree().addKeyListener(new KeyAdapter() {
 								@Override
 								public void keyReleased(KeyEvent e) {
@@ -252,18 +254,19 @@ public class ExplainExecution extends AbstractSQLExecution {
 									}
 								}
 							});
+							
+							composite.layout();
+							composite.redraw();
 						} catch (Exception e) {
+			                Composite composite = resultsTab.getParent();
 							String m = e.getMessage();
-							Label errorLabel = new Label(_composite, SWT.FILL);
+							Label errorLabel = new Label(composite, SWT.FILL);
 							errorLabel.setText(m);
 							errorLabel.setLayoutData(new GridData(SWT.FILL,
 									SWT.TOP, true, false));
 							SQLExplorerPlugin.error(
 									Messages.getString("postgresql.explain.error.tab"), e);
 						}
-
-						_composite.layout();
-						_composite.redraw();
 					}
 				});
 	}

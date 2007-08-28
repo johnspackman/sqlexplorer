@@ -1,8 +1,6 @@
-package net.sourceforge.sqlexplorer.preferences;
-
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2007 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,12 +16,12 @@ package net.sourceforge.sqlexplorer.preferences;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
- 
+package net.sourceforge.sqlexplorer.preferences;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-
 
 public class OverlayPreferenceStore implements IPreferenceStore {
 	public static final class TypeDescriptor {

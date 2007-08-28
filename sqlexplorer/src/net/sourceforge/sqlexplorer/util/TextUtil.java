@@ -113,6 +113,61 @@ public class TextUtil {
         return wrappedText;
     }
     
+    /**
+     * Trims whitespace from a string and compresses all internal whitespace
+     * down to a single space.
+     * @param source the string to compress
+     * @return the compressed string
+     */
+    public static String compressWhitespace(CharSequence source) {
+    	return compressWhitespace(source, 0);
+    }
+    
+    /**
+     * Trims whitespace from a string and compresses all internal whitespace
+     * down to a single space.  Keeps the length of the string to at most
+     * maxLength, but if it truncates then it makes the last 3 characters
+     * an elipsis
+     * @param source the string to compress
+     * @param maxLength maximum length of the result
+     * @return the compressed string
+     */
+    public static String compressWhitespace(CharSequence source, int maxLength) {
+		StringBuffer sb = new StringBuffer(source);
+		
+		// Trim leading whitespace
+		while (sb.length() > 0 && Character.isWhitespace(sb.charAt(0)))
+			sb.deleteCharAt(0);
+		
+		boolean lastWasWhite = false;
+		for (int i = 0; i < sb.length(); i++) {
+			if (Character.isWhitespace(sb.charAt(i))) {
+				if (lastWasWhite) {
+					// Delete continguous whitespace
+					sb.deleteCharAt(i);
+					i--;
+				} else {
+					lastWasWhite = true;
+					
+					// Force all whitespace to be a space - IE no funny characters for CR etc
+					sb.setCharAt(i, ' ');
+				}
+			} else
+				lastWasWhite = false;
+		}
+		
+		// Optionally trim to size
+		if (maxLength > 0 && sb.length() > maxLength) {
+			if (maxLength > 3) {
+				sb.delete(maxLength - 3, sb.length());
+				sb.append("...");
+			} else
+				sb.delete(maxLength, sb.length());
+		}
+		
+		return sb.toString();
+    }
+    
 
     /**
      * Replace all occurrences of replaceFrom in inputString with replaceTo.

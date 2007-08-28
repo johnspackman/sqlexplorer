@@ -26,9 +26,10 @@ import org.eclipse.swt.widgets.CoolBar;
 
 /**
  * SQLEditorToolBar controls the toolbar displayed in the editor.
+ * @modified John Spackman
  */
 public class SQLEditorToolBar {
-
+	
     private SQLEditorCatalogSwitcher _catalogSwitcher;
 
     private ToolBarManager _catalogToolBarMgr;
@@ -55,8 +56,12 @@ public class SQLEditorToolBar {
 
     private AbstractEditorAction _saveAsAction;
 
+    // Drop down to switch sessions
     private SQLEditorSessionSwitcher _sessionSwitcher;
-
+    
+    // Whether to limit rows and by how much
+    private SQLLimitRowsControl _limitRows;
+    
     private ToolBarManager _sessionToolBarMgr;
 
 
@@ -109,6 +114,9 @@ public class SQLEditorToolBar {
 
         _sessionSwitcher = new SQLEditorSessionSwitcher(editor);
         _sessionToolBarMgr.add(_sessionSwitcher);
+        
+        _limitRows = new SQLLimitRowsControl(editor);
+        _sessionToolBarMgr.add(_limitRows);
 
         // initialize catalog actions
 
@@ -129,9 +137,7 @@ public class SQLEditorToolBar {
 
     }
 
-
     public void addResizeListener(ControlListener listener) {
-
         _coolBar.addControlListener(listener);
     }
 
@@ -254,35 +260,55 @@ public class SQLEditorToolBar {
      */
     public void refresh(final boolean sessionChanged) {
 
-        _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
-
-            public void run() {
-
-                if (sessionChanged) {
-
-                    // reset actions
-                    addDefaultActions(_defaultToolBarMgr);
-                    _defaultToolBarMgr.update(true);
-                    
-                    // rebuild extension toolbar
-                    createExtensionActions(_extensionToolBarMgr);
-                    _extensionToolBarMgr.update(true);
-                }
-
-                // update session toolbar
-                _sessionSwitcher.refresh();
-                _sessionToolBarMgr.update(true);
-
-                // update catalog toolbar
-                _catalogToolBarMgr.removeAll();
-                if (_editor.getSessionTreeNode() != null && _editor.getSessionTreeNode().supportsCatalogs()) {
-                    _catalogSwitcher = new SQLEditorCatalogSwitcher(_editor);
-                    _catalogToolBarMgr.add(_catalogSwitcher);
-                }
-
-                _coolBarMgr.update(true);
-                _coolBar.update();
-            }
-        });
+    	if (_editor.getSite() != null && _editor.getSite().getShell() != null && _editor.getSite().getShell().getDisplay() != null)
+	        _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+	
+	            public void run() {
+	
+	                if (sessionChanged) {
+	
+	                    // reset actions
+	                    addDefaultActions(_defaultToolBarMgr);
+	                    _defaultToolBarMgr.update(true);
+	                    
+	                    // rebuild extension toolbar
+	                    createExtensionActions(_extensionToolBarMgr);
+	                    _extensionToolBarMgr.update(true);
+	                }
+	
+	                // update session toolbar
+	                _sessionSwitcher.refresh();
+	                _sessionToolBarMgr.update(true);
+	
+	                // update catalog toolbar
+	                _catalogToolBarMgr.removeAll();
+	                if (_editor.getSessionTreeNode() != null && _editor.getSessionTreeNode().supportsCatalogs()) {
+	                    _catalogSwitcher = new SQLEditorCatalogSwitcher(_editor);
+	                    _catalogToolBarMgr.add(_catalogSwitcher);
+	                }
+	
+	                _coolBarMgr.update(true);
+	                _coolBar.update();
+	            }
+	        });
     }
+
+
+	/**
+	 * Returns the control
+	 * @return the _coolBar
+	 */
+	public CoolBar getToolbarControl() {
+		return _coolBar;
+	}
+
+	/**
+	 * Returns whether to limit the results and if so by how much.
+	 * 
+	 * @return the maximum number of rows to retrieve, 0 for unlimited, or null
+	 *         if it cannot be interpretted
+	 */
+	public Integer getLimitResults() {
+		return _limitRows.getLimitResults();
+	}
 }

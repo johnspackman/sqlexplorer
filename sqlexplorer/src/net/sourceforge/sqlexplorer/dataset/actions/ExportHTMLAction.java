@@ -143,15 +143,14 @@ public class ExportHTMLAction extends AbstractDataSetTableContextAction {
                         
                         for (int j = 0; j < columnCount; j++) {
                     
-                            if (dataSet.getColumnTypes()[j] == DataSet.TYPE_DOUBLE 
-                                    || dataSet.getColumnTypes()[j] == DataSet.TYPE_INTEGER) {
+                            Object o = row.getRawObjectValue(j);
+                        	
+                            if (o instanceof Double || o instanceof Integer)
                                 // right align numbers
                                 buffer.append("<td class=\"right\">");    
-                            } else {
+                            else
                                 buffer.append("<td>");
-                            }
 
-                            Object o = row.getRawObjectValue(j);
                         	String t = o == null ? nullValue : o.toString();
                         	if (rtrim) 
                         		t = TextUtil.rtrim(t);

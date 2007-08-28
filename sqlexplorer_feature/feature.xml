@@ -2,8 +2,8 @@
 <feature
       id="net.sourceforge.sqlexplorer"
       label="Eclipse SQL Explorer"
-      version="3.0.0"
-      provider-name="Davy Vanherbergen"
+      version="3.5.0.beta1"
+      provider-name="Eclipse SQL Explorer Project (eclipsesql.sourceforge.net)"
       plugin="net.sourceforge.sqlexplorer"
       nl="en_US">
 
@@ -61,7 +61,7 @@ USA
          id="net.sourceforge.sqlexplorer"
          download-size="0"
          install-size="0"
-         version="3.0.0.20060901"/>
+         version="3.5.0.beta1"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.db2"
@@ -75,7 +75,7 @@ USA
          id="net.sourceforge.sqlexplorer.oracle"
          download-size="0"
          install-size="0"
-         version="1.0.0.20060829"
+         version="3.5.0.beta1"
          fragment="true"
          unpack="false"/>
 

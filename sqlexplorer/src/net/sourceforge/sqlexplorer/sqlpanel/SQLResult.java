@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.sqlpanel;
 
 import net.sourceforge.sqlexplorer.dataset.DataSet;
+import net.sourceforge.sqlexplorer.parsers.Query;
 
 
 /**
@@ -31,16 +32,18 @@ public class SQLResult {
     
     private long _executionTimeMillis;
     
-    private String _sqlStatement;
+//    private String _sqlStatement;
+    
+    private Query query;
 
     
     
     /**
      * @return Returns the sqlStatement.
      */
-    public String getSqlStatement() {
-        return _sqlStatement;
-    }
+//    public String getSqlStatement() {
+//        return _sqlStatement;
+//    }
 
 
     /**
@@ -72,9 +75,19 @@ public class SQLResult {
 
 
     
-    public void setSqlStatement(String sqlStatement) {
-        _sqlStatement = sqlStatement;
-    }
+//    public void setSqlStatement(String sqlStatement) {
+//        _sqlStatement = sqlStatement;
+//    }
+
+
+	public Query getQuery() {
+		return query;
+	}
+
+
+	public void setQuery(Query query) {
+		this.query = query;
+	}
 
 
     

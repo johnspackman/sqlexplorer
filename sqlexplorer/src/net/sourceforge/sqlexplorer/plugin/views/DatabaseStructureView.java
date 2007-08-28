@@ -228,6 +228,9 @@ public class DatabaseStructureView extends ViewPart {
         sessionTreeNode.addListener(new ISessionTreeClosedListener() {
 
             public void sessionTreeClosed() {
+            	
+            	if (tabItem.isDisposed())
+            		return;
 
                 // if it is the last session, clear detail tab
                 if (tabItem.getParent().getItemCount() == 1) {

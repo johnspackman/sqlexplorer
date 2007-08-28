@@ -33,18 +33,17 @@
       <view
             allowMultiple="false"
             category="SQLExplorerPlugin"
-            class="net.sourceforge.sqlexplorer.plugin.views.SqlResultsView"
-            icon="icons/common_tab.gif"
-            id="net.sourceforge.sqlexplorer.plugin.views.SqlResultsView"
-            name="SQL Results">
-      </view>
-      <view
-            allowMultiple="false"
-            category="SQLExplorerPlugin"
             class="net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView"
             icon="icons/sql_history.gif"
             id="net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView"
             name="SQL History">
+      </view>
+      <view
+            allowMultiple="false"
+            category="SQLExplorerPlugin"
+            class="net.sourceforge.sqlexplorer.plugin.views.DataPreviewView"
+            id="net.sourceforge.sqlexplorer.plugin.views.DataPreviewView"
+            name="DataPreviewView">
       </view>
    </extension>
    <extension
@@ -60,9 +59,9 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            name="SQL Explorer"
             class="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage"
-            id="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage">
+            id="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage"
+            name="SQL Explorer">
       </page>
       
    </extension>
@@ -84,12 +83,13 @@
          id="editors"
          point="org.eclipse.ui.editors">
       <editor
+            class="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor"
+            contributorClass="net.sourceforge.sqlexplorer.plugin.editors.SqlExplorerEditorActionBarContributor"
             default="true"
-            name="Sql Editor"
             extensions="sql"
             icon="icons/editor.gif"
-            class="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor"
-            id="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor">
+            id="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor"
+            name="Sql Editor">
       </editor>
    </extension>
    <extension point="org.eclipse.ui.viewActions">
@@ -285,6 +285,10 @@
          <property
                name="windowImages"
                value="icons/logo16.gif,icons/logo32.gif"/>
+         <property
+               name="appName"
+               value="SQL Explorer">
+         </property>
       </product>
    </extension>
 </plugin>

@@ -172,7 +172,7 @@ public class Messages {
 							+ BUNDLE_NAME);
 				} catch (Exception e) {
 					SQLExplorerPlugin.error("No text.properties found for: "
-							+ fragments[i].getBundleId(), e);
+							+ fragments[1].getSymbolicName() + " [id=" + fragments[i].getBundleId() + "]", e);
 				}
 			}
 		}

@@ -18,7 +18,10 @@
  */
 package net.sourceforge.sqlexplorer.dataset;
 
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.plugin.views.DataPreviewView;
 
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -44,6 +47,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IWorkbenchPage;
 
 /**
  * @author Davy Vanherbergen
@@ -54,6 +58,7 @@ public class DataSetTable {
     /**
      * Hidden default constructor.
      */
+    @SuppressWarnings("unused")
     private DataSetTable() {
 
     }
@@ -87,12 +92,9 @@ public class DataSetTable {
         
         // check column labels & types
         String[] columnLabels = dataSet.getColumnLabels();
-        int[] columnTypes = dataSet.getColumnTypes();
 
-        if (columnLabels == null || columnTypes == null || columnLabels.length == 0 || columnTypes.length == 0
-                || columnTypes.length != columnLabels.length) {
+        if (columnLabels == null || columnLabels.length == 0)
             throw new Exception("Invalid columnLabel or columnTypes in DataSet ");
-        }
         
         // create table structure
         final TableViewer tableViewer = new TableViewer(composite, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI | SWT.VIRTUAL);
@@ -196,10 +198,26 @@ public class DataSetTable {
                         + " " + (cursor.getColumn() + 1));                
                 positionLabel.getParent().layout();
                 positionLabel.redraw();
+                
+                // Show the preview
+    			IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+    			if (page != null) {
+    		        DataPreviewView view = (DataPreviewView)page.findView(DataPreviewView.class.getName());
+    		        if (view != null) {
+    		        	TableItem row = cursor.getRow();
+    		        	int column = cursor.getColumn();
+    		        	DataSetRow dsRow = (DataSetRow)row.getData();
+    		        	Object obj = dsRow.getRawObjectValue(column);
+    		        	try {
+    		        		view.previewData(null, obj);
+    		        	}catch(ExplorerException ex) {
+    		        		SQLExplorerPlugin.error(ex.getMessage(), ex);
+    		        	}
+    		        }
+    			}
             }
         });
-        
-        
+
         // add resize listener for cursor, to stop cursor from
         // taking strange shapes after being table is resized
         cursor.addControlListener(new ControlAdapter() {

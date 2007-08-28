@@ -20,49 +20,40 @@ package net.sourceforge.sqlexplorer.dataset;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 /**
  * Generic DataSet to hold values for TableViewer.
  * 
+ * This class has been changed to remove dependencies on a fixed list of data types;
+ * this is to allow database-specific data types.  Since every row is represented as
+ * Objects (typically instances of String, Integer, Double, etc), it is only a requirement 
+ * that the cells implement the Comparable interface so that sorting works correctly.
+ * The textual representation is obtained by calling toString() on the object.
+ * 
+ * Any code which used to use the TYPE_XXXX constants defined here should now use
+ * instanceof if knowledge of the implementing type is required; however, be aware
+ * that non-standard types (i.e. types not defined in java.lang) may be present.  
+ * 
  * @author Davy Vanherbergen
+ * @modified John Spackman
  */
 public class DataSet {
 
-    public static final int TYPE_DATE = 3;
-
-    public static final int TYPE_DATETIME = 4;
-
-    public static final int TYPE_DOUBLE = 1;
-
-    public static final int TYPE_INTEGER = 2;
-    
-    public static final int TYPE_LONG = 6;
-
-    public static final int TYPE_STRING = 0;
-
-    public static final int TYPE_TIME = 5;
-
     private String[] _columnLabels;
-
-    private int[] _columnTypes;
 
     private DataSetRow[] _rows;
 
     private DataSetTableSorter _sorter;
-
-	/**
-     * Hidden default constructor.
-     */
-    private DataSet() {
-
-    }
-
+    
+    protected ISQLAlias alias;
 
     /**
      * Create a new dataSet based on an existing ResultSet.
@@ -73,11 +64,14 @@ public class DataSet {
      *            null if all columns should be included.
      * @throws Exception if the dataset could not be created
      */
-    public DataSet(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws Exception {
+    public DataSet(ISQLAlias alias, String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
 
+    	this.alias = alias;
         initialize(columnLabels, resultSet, relevantIndeces);
     }
-
+    public DataSet(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
+    	this(null, columnLabels, resultSet, relevantIndeces);
+    }
 
     /**
      * Create new dataset based on sql query.
@@ -90,7 +84,7 @@ public class DataSet {
      * @param connection An open SQLConnection [mandatory]
      * @throws Exception if dataSet could not be created
      */
-    public DataSet(String[] columnLabels, String sql, int[] relevantIndeces, SQLConnection connection) throws Exception {
+    public DataSet(String[] columnLabels, String sql, int[] relevantIndeces, SQLConnection connection) throws SQLException {
   	
         Statement statement = connection.createStatement();
 
@@ -100,8 +94,6 @@ public class DataSet {
         initialize(columnLabels, resultSet, relevantIndeces);
         
         statement.close();
-        
-
     }
 
 
@@ -110,14 +102,10 @@ public class DataSet {
      * 
      * @param columnLabels string[] of columnLabels [mandatory]
      * @param data string[][] with values for dataset [mandatory]
-     * @param columnTypes int[] with valid column types (e.g.
-     *            DataSet.TYPE_STRING) [mandatory]
      * @throws Exception if dataSet could not be created
      */
-    public DataSet(String[] columnLabels, String[][] data, int[] columnTypes) throws Exception {
-
+    public DataSet(String[] columnLabels, String[][] data) throws Exception {
         _columnLabels = columnLabels;
-        _columnTypes = columnTypes;
 
         _rows = new DataSetRow[data.length];
 
@@ -141,6 +129,14 @@ public class DataSet {
         }
         return 0;
     }
+    
+    /**
+     * Returns the number of columns
+     * @return
+     */
+    public int getNumberOfColumns() {
+    	return _columnLabels.length;
+    }
 
 
     /**
@@ -148,14 +144,6 @@ public class DataSet {
      */
     public String[] getColumnLabels() {
         return _columnLabels;
-    }
-
-
-    /**
-     * @return int[] with all column types
-     */
-    public int[] getColumnTypes() {
-        return _columnTypes;
     }
 
     /**
@@ -194,7 +182,7 @@ public class DataSet {
      *            null if all columns should be included.
      * @throws Exception if the dataset could not be created
      */
-    private void initialize(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws Exception {
+    private void initialize(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
 
         ResultSetMetaData metadata = resultSet.getMetaData();
 
@@ -218,100 +206,74 @@ public class DataSet {
             }
         }
 
-        // create column types
-        _columnTypes = new int[ri.length];
-        for (int i = 0; i < ri.length; i++) {
-
-            switch (metadata.getColumnType(ri[i])) {
-
-                case Types.CHAR:
-                case Types.VARCHAR:
-                case Types.LONGVARCHAR:
-                case -9:
-                    _columnTypes[i] = TYPE_STRING;
-                    break;
-
-                case Types.INTEGER:
-                case Types.SMALLINT:
-                case Types.TINYINT:
-                    _columnTypes[i] = TYPE_INTEGER;
-                    break;
-
-                case Types.DECIMAL:
-                case Types.NUMERIC:
-                case Types.DOUBLE:
-                case Types.FLOAT:
-                case Types.REAL:
-                    _columnTypes[i] = TYPE_DOUBLE;
-                    break;
-
-                case Types.DATE:
-                case Types.TIMESTAMP:                    
-                    _columnTypes[i] = TYPE_DATETIME;
-                    break;
-
-                case Types.TIME:
-                    _columnTypes[i] = TYPE_TIME;
-                    break;
-
-                case Types.BIGINT:
-                    _columnTypes[i] = TYPE_LONG;
-                    break;
-                    
-                default:
-                    _columnTypes[i] = TYPE_STRING;
-            }
-        }
-
+        loadRows(resultSet, ri);
+    }
+    
+    /**
+     * Called to load rows from the specified result set; the default implementation
+     * simply uses standard JDBC data types to  inten to be
+     * overridden.
+     * @param resultSet ResultSet to load from
+     * @param relevantIndeces int[] of all columns to add to the dataSet, use
+     *            null if all columns should be included.
+     */
+    protected void loadRows(ResultSet resultSet, int[] relevantIndeces) throws SQLException {
+        ResultSetMetaData metadata = resultSet.getMetaData();
+        
         // create rows
         ArrayList rows = new ArrayList(100);
         while (resultSet.next()) {
 
-            DataSetRow row = new DataSetRow(ri.length);
-
-            for (int i = 0; i < ri.length; i++) {
-
-                switch (_columnTypes[i]) {
-
-                    case TYPE_STRING:
-                        row.setValue(i, resultSet.getString(ri[i]));
-                        break;
-                    case TYPE_INTEGER:
-                        row.setValue(i, new Long(resultSet.getInt(ri[i])));
-                        break;
-                    case TYPE_DOUBLE:
-                        row.setValue(i, new Double(resultSet.getDouble(ri[i])));
-                        break;
-                    case TYPE_DATE:
-                        row.setValue(i, resultSet.getDate(ri[i]));
-                        break;
-                    case TYPE_DATETIME:
-                        row.setValue(i, resultSet.getTimestamp(ri[i]));
-                        break;
-                    case TYPE_TIME:
-                        row.setValue(i, resultSet.getTime(ri[i]));
-                        break;
-                    case TYPE_LONG:
-                        row.setValue(i, new Long(resultSet.getLong(ri[i])));
-                        break;
-                    default:
-                        row.setValue(i, resultSet.getString(ri[i]));
-                        break;
-                }
-                
-                if (resultSet.wasNull()) {
+            DataSetRow row = new DataSetRow(getNumberOfColumns());
+            for (int i = 0; i < getNumberOfColumns(); i++) {
+            	int columnIndex = relevantIndeces[i];
+            	Comparable obj = loadCellValue(columnIndex, metadata.getColumnType(columnIndex), resultSet);
+            	row.setValue(i, obj);
+                if (resultSet.wasNull())
                     row.setValue(i, null);
-                }
-
             }
             rows.add(row);
         }
-
         _rows = (DataSetRow[]) rows.toArray(new DataSetRow[] {});
-
     }
     
-    
+    /**
+     * Loads a given column from the current row in a ResultSet; can be overridden to
+     * provide database-specific implementation
+     * @param columnIndex
+     * @param dataType
+     * @param resultSet
+     * @return
+     * @throws SQLException
+     */
+    protected Comparable loadCellValue(int columnIndex, int dataType, ResultSet resultSet) throws SQLException {
+        switch (dataType) {
+	        case Types.INTEGER:
+	        case Types.SMALLINT:
+	        case Types.TINYINT:
+	            return new Long(resultSet.getInt(columnIndex));
+	
+	        case Types.DECIMAL:
+	        case Types.NUMERIC:
+	        case Types.DOUBLE:
+	        case Types.FLOAT:
+	        case Types.REAL:
+	            return new Double(resultSet.getDouble(columnIndex));
+	
+	        case Types.DATE:
+	        case Types.TIMESTAMP:                    
+	            return resultSet.getTimestamp(columnIndex);
+	            
+	        case Types.TIME:
+	            return resultSet.getTime(columnIndex);
+	            
+	        case Types.BIGINT:
+	            return new Long(resultSet.getLong(columnIndex));
+	            
+	        default:
+	            return resultSet.getString(columnIndex);
+	    }
+    }
     
     /**
      * Resort the data using the given column and sortdirection.
@@ -319,7 +281,6 @@ public class DataSet {
      * @param sortDirection SWT.UP | SWT.DOWN
      */    
 	public void sort(int columnIndex, int sortDirection) {
-    	
     	if (_sorter == null) {
     		_sorter = new DataSetTableSorter(this);
     	}
@@ -327,6 +288,4 @@ public class DataSet {
     	
     	Arrays.sort(_rows, _sorter);
     }
-    
-    
 }

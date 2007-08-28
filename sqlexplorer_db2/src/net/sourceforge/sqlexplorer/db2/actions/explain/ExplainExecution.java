@@ -4,15 +4,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.parsers.Query;
+import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
-import net.sourceforge.sqlexplorer.sqlpanel.SQLResult;
 
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -70,48 +72,38 @@ public class ExplainExecution extends AbstractSQLExecution {
 
     private PreparedStatement _prepStmt;
 
-    private SQLResult _sqlResult;
-
     private Statement _stmt;
 
 
-    public ExplainExecution(SQLEditor editor, SqlResultsView resultsView, String sqlString,
-            SessionTreeNode sessionTreeNode) {
-
-        _editor = editor;
-        _editor = editor;
-        _sqlStatement = sqlString;
-        _session = sessionTreeNode;
-        _resultsView = resultsView;
-        _sqlResult = new SQLResult();
-        _sqlResult.setSqlStatement(_sqlStatement);
+    public ExplainExecution(SQLEditor editor, QueryParser queryParser, SessionTreeNode sessionTreeNode) {
+    	super(editor, queryParser, sessionTreeNode);
         
         // set initial message
         setProgressMessage(Messages.getString("SQLResultsView.ConnectionWait"));
     }
 
 
-    private void displayResults(final ExplainNode node) {
+    private void displayResults(final ExplainNode node, final Query query) {
 
-        _resultsView.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+        getEditor().getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
             public void run() {
 
-                clearCanvas();
-
-                GridLayout gLayout = new GridLayout();
-                gLayout.numColumns = 2;
-                gLayout.marginLeft = 0;
-                gLayout.horizontalSpacing = 0;
-                gLayout.verticalSpacing = 0;
-                gLayout.marginWidth = 0;
-                gLayout.marginHeight = 0;
-                _composite.setLayout(gLayout);
+            	ResultsTab resultsTab = allocateResultsTab(query);
 
                 try {
-                    _composite.setData("parenttab", _parentTab);
+                    Composite composite = resultsTab.getParent();
 
-                    Composite pp = new Composite(_composite, SWT.NULL);
+                    GridLayout gLayout = new GridLayout();
+                    gLayout.numColumns = 2;
+                    gLayout.marginLeft = 0;
+                    gLayout.horizontalSpacing = 0;
+                    gLayout.verticalSpacing = 0;
+                    gLayout.marginWidth = 0;
+                    gLayout.marginHeight = 0;
+                    composite.setLayout(gLayout);
+
+                    Composite pp = new Composite(composite, SWT.NULL);
                     pp.setLayout(new FillLayout());
                     pp.setLayoutData(new GridData(GridData.FILL_BOTH));
                     TableTreeViewer tv = new TableTreeViewer(pp, SWT.BORDER | SWT.FULL_SELECTION);
@@ -180,7 +172,7 @@ public class ExplainExecution extends AbstractSQLExecution {
                         table.getColumn(i).pack();
                     }
                     
-                    final Composite parent = _composite;                    
+                    final Composite parent = composite;                    
                     table.addKeyListener(new KeyAdapter() {
                         
                         public void keyReleased(KeyEvent e) {
@@ -210,21 +202,20 @@ public class ExplainExecution extends AbstractSQLExecution {
 
                     });
                     
+                    composite.layout();
+                    composite.redraw();
                     
                 } catch (Exception e) {
 
                     // add message
                     String message = e.getMessage();
-                    Label errorLabel = new Label(_composite, SWT.FILL);
+	                Composite composite = resultsTab.getParent();
+                    Label errorLabel = new Label(composite, SWT.FILL);
                     errorLabel.setText(message);
                     errorLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
                     SQLExplorerPlugin.error("Error creating explain tab", e);
                 }
-
-                _composite.layout();
-                _composite.redraw();
-
             };
         });
     }
@@ -236,100 +227,107 @@ public class ExplainExecution extends AbstractSQLExecution {
 
             setProgressMessage(Messages.getString("SQLResultsView.Executing"));
 
-            int id_ = new Random().nextInt(1000);
+            Query query = null;
+        	for (Iterator<Query> iter = getQueryParser().iterator(); iter.hasNext(); ) {
+        		query = iter.next();
+    			if (_isCancelled)
+    				break;
 
-            _prepStmt = _connection.prepareStatement(
-                    "delete from SYSTOOLS.explain_statement where queryno = ? ");
-            _prepStmt.setInt(1, id_);
-            _prepStmt.executeUpdate();
-            _prepStmt.close();
-            _prepStmt = null;
-
-            if (_isCancelled) {
-                return;
-            }
-            
-            _stmt = _connection.createStatement();
-            _stmt.execute("EXPLAIN PLAN SET queryno = " + id_ + " FOR " + _sqlStatement);
-            _stmt.close();
-            _stmt = null;
-
-            if (_isCancelled) {
-                return;
-            }
-            
-            _prepStmt = _connection.prepareStatement(
-                    "SELECT O.Operator_ID as id, S2.Target_ID as parent_id, O.Operator_Type, "
-                            + "S.OBJECT_SCHEMA, EOB.OBJECT_TYPE, S.Object_Name, O.CPU_COST,  "
-                            + "CAST(O.Total_Cost AS INTEGER) Cost FROM SYSTOOLS.EXPLAIN_OPERATOR O "
-                            + "LEFT OUTER JOIN SYSTOOLS.EXPLAIN_STREAM S2 ON O.Operator_ID=S2.Source_ID "
-                            + "LEFT OUTER JOIN SYSTOOLS.EXPLAIN_STREAM S  ON O.Operator_ID = S.Target_ID "
-                            + "AND O.Explain_Time = S.Explain_Time AND S.Object_Name IS NOT NULL "
-                            + "LEFT OUTER JOIN SYSTOOLS.explain_object EOB ON O.Explain_Time = EOB.Explain_Time     "
-                            + "AND S.OBJECT_NAME = EOB.OBJECT_NAME "
-                            + "where o.explain_time =  (select max(explain_time) from SYSTOOLS.explain_statement where queryno = ?) "
-                            + "ORDER BY O.Operator_ID ASC, S2.TARGET_ID ASC ");
-            _prepStmt.setInt(1, id_);
-            ResultSet rs = _prepStmt.executeQuery();
-
-            if (_isCancelled) {
-                return;
-            }
-            
-            HashMap mp = new HashMap();
-            ExplainNode baseNode = new ExplainNode(null);
-            mp.put(new Integer(-1), baseNode);
-            int lastId = -1;
-
-            while (rs.next()) {
-                String object_type = rs.getString("object_type");
-                String operation = rs.getString("operator_type");
-                String options = null;
-                String object_owner = rs.getString("object_schema");
-                String object_name = rs.getString("object_name");
-                String optimizer = null;
-                int cardinality = rs.getInt("cpu_cost");
-                if (rs.wasNull()) {
-                    cardinality = -1;
-                }
-
-                int cost = rs.getInt("cost");
-                if (rs.wasNull())
-                    cost = -1;
-                int parentID = rs.getInt("parent_id");
-                if (rs.wasNull()) {
-                    parentID = -1;
-                }
-                int id = rs.getInt("id");
-
-                if (id != lastId) {
-
-                    lastId = id;
-                    ExplainNode nd_parent = (ExplainNode) mp.get(new Integer(parentID));
-                    ExplainNode nd = new ExplainNode(nd_parent);
-                    mp.put(new Integer(id), nd);
-
-                    nd_parent.add(nd);
-                    nd.setId(id);
-                    nd.setCardinality(cardinality);
-                    nd.setCost(cost);
-                    nd.setObject_name(object_name);
-                    nd.setObject_owner(object_owner);
-                    nd.setObject_type(object_type);
-                    nd.setOperation(operation);
-                    nd.setOptimizer(optimizer);
-                    nd.setOptions(options);
-                }
-            }
-            rs.close();
-            _prepStmt.close();
-            _prepStmt = null;
-
-            if (_isCancelled) {
-                return;
-            }
-            
-            displayResults(baseNode);
+	            int id_ = new Random().nextInt(1000);
+	
+	            _prepStmt = _connection.prepareStatement(
+	                    "delete from SYSTOOLS.explain_statement where queryno = ? ");
+	            _prepStmt.setInt(1, id_);
+	            _prepStmt.executeUpdate();
+	            _prepStmt.close();
+	            _prepStmt = null;
+	
+	            if (_isCancelled) {
+	                return;
+	            }
+	            
+	            _stmt = _connection.createStatement();
+	            _stmt.execute("EXPLAIN PLAN SET queryno = " + id_ + " FOR " + query.getQuerySql());
+	            _stmt.close();
+	            _stmt = null;
+	
+	            if (_isCancelled) {
+	                return;
+	            }
+	            
+	            _prepStmt = _connection.prepareStatement(
+	                    "SELECT O.Operator_ID as id, S2.Target_ID as parent_id, O.Operator_Type, "
+	                            + "S.OBJECT_SCHEMA, EOB.OBJECT_TYPE, S.Object_Name, O.CPU_COST,  "
+	                            + "CAST(O.Total_Cost AS INTEGER) Cost FROM SYSTOOLS.EXPLAIN_OPERATOR O "
+	                            + "LEFT OUTER JOIN SYSTOOLS.EXPLAIN_STREAM S2 ON O.Operator_ID=S2.Source_ID "
+	                            + "LEFT OUTER JOIN SYSTOOLS.EXPLAIN_STREAM S  ON O.Operator_ID = S.Target_ID "
+	                            + "AND O.Explain_Time = S.Explain_Time AND S.Object_Name IS NOT NULL "
+	                            + "LEFT OUTER JOIN SYSTOOLS.explain_object EOB ON O.Explain_Time = EOB.Explain_Time     "
+	                            + "AND S.OBJECT_NAME = EOB.OBJECT_NAME "
+	                            + "where o.explain_time =  (select max(explain_time) from SYSTOOLS.explain_statement where queryno = ?) "
+	                            + "ORDER BY O.Operator_ID ASC, S2.TARGET_ID ASC ");
+	            _prepStmt.setInt(1, id_);
+	            ResultSet rs = _prepStmt.executeQuery();
+	
+	            if (_isCancelled) {
+	                return;
+	            }
+	            
+	            HashMap mp = new HashMap();
+	            ExplainNode baseNode = new ExplainNode(null);
+	            mp.put(new Integer(-1), baseNode);
+	            int lastId = -1;
+	
+	            while (rs.next()) {
+	                String object_type = rs.getString("object_type");
+	                String operation = rs.getString("operator_type");
+	                String options = null;
+	                String object_owner = rs.getString("object_schema");
+	                String object_name = rs.getString("object_name");
+	                String optimizer = null;
+	                int cardinality = rs.getInt("cpu_cost");
+	                if (rs.wasNull()) {
+	                    cardinality = -1;
+	                }
+	
+	                int cost = rs.getInt("cost");
+	                if (rs.wasNull())
+	                    cost = -1;
+	                int parentID = rs.getInt("parent_id");
+	                if (rs.wasNull()) {
+	                    parentID = -1;
+	                }
+	                int id = rs.getInt("id");
+	
+	                if (id != lastId) {
+	
+	                    lastId = id;
+	                    ExplainNode nd_parent = (ExplainNode) mp.get(new Integer(parentID));
+	                    ExplainNode nd = new ExplainNode(nd_parent);
+	                    mp.put(new Integer(id), nd);
+	
+	                    nd_parent.add(nd);
+	                    nd.setId(id);
+	                    nd.setCardinality(cardinality);
+	                    nd.setCost(cost);
+	                    nd.setObject_name(object_name);
+	                    nd.setObject_owner(object_owner);
+	                    nd.setObject_type(object_type);
+	                    nd.setOperation(operation);
+	                    nd.setOptimizer(optimizer);
+	                    nd.setOptions(options);
+	                }
+	            }
+	            rs.close();
+	            _prepStmt.close();
+	            _prepStmt = null;
+	
+	            if (_isCancelled) {
+	                return;
+	            }
+	            
+	            displayResults(baseNode, query);
+        	}
 
         } catch (Exception e) {
 

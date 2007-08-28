@@ -36,6 +36,7 @@ public class DictionaryLoader extends Job {
     /**
      * Hidden constructor.
      */
+    @SuppressWarnings("unused")
     private DictionaryLoader() {
         super(null);
     }

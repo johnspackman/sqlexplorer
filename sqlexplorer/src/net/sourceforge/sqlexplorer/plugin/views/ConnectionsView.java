@@ -28,6 +28,7 @@ import net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAct
 import net.sourceforge.sqlexplorer.connections.actions.NewAliasAction;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
+import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModelChangedListener;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
@@ -155,6 +156,34 @@ public class ConnectionsView extends ViewPart implements SessionTreeModelChanged
         
     }
 
+    public SessionTreeNode getDefaultSession() {
+    	IStructuredSelection selection = (IStructuredSelection)_treeViewer.getSelection();
+    	if (selection == null)
+    		return null;
+    	
+    	Object element = selection.getFirstElement();
+        RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
+        Object[] sessions = sessionRoot.getChildren();
+    	
+    	// If this is a database alias (i.e. top level of the tree), return the first child
+    	if (element instanceof ISQLAlias) {
+            SQLAlias alias = (SQLAlias) selection.getFirstElement();
+            if (sessions != null) {
+                for (int i = 0; i < sessions.length; i++) {
+                    SessionTreeNode session = (SessionTreeNode) sessions[i];
+                    if (session.getAlias().getIdentifier().equals(alias.getIdentifier()))
+                    	return session;
+                }
+            }
+    	} else if (element instanceof SessionTreeNode)
+    		return (SessionTreeNode)element;
+
+    	// If there is only one session, this must be it
+    	if (sessions.length == 1)
+    		return (SessionTreeNode)sessions[0];
+    	
+    	return null;
+    }
 
     /**
      * @see org.eclipse.ui.IWorkbenchPart#setFocus()

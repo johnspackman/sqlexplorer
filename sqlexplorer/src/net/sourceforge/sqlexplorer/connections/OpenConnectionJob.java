@@ -63,6 +63,7 @@ public class OpenConnectionJob extends Job {
     /**
      * Hidden constructor.
      */
+    @SuppressWarnings("unused")
     private OpenConnectionJob() {
 
         super(null);

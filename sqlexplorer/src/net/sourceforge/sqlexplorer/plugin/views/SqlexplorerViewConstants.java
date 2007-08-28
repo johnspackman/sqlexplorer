@@ -1,8 +1,6 @@
-package net.sourceforge.sqlexplorer.plugin.views;
-
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2007 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,6 +16,8 @@ package net.sourceforge.sqlexplorer.plugin.views;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package net.sourceforge.sqlexplorer.plugin.views;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,8 +33,6 @@ public final class SqlexplorerViewConstants {
     private static SqlexplorerViewConstants singleton = null;
 
     public static final String SQLEXPLORER_CONNECTIONS = "net.sourceforge.sqlexplorer.plugin.views.ConnectionsView";
-
-    public static final String SQLEXPLORER_SQLRESULT = "net.sourceforge.sqlexplorer.plugin.views.SqlResultsView";
 
     public static final String SQLEXPLORER_DBSTRUCTURE = "net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView";
     
@@ -71,7 +69,6 @@ public final class SqlexplorerViewConstants {
         defaultViewList.add(SQLEXPLORER_CONNECTIONS);
         defaultViewList.add(SQLEXPLORER_DBSTRUCTURE);
         defaultViewList.add(SQLEXPLORER_DBDETAIL);
-        defaultViewList.add(SQLEXPLORER_SQLRESULT);
         defaultViewList.add(SQLEXPLORER_SQLHISTORY);
     }
 

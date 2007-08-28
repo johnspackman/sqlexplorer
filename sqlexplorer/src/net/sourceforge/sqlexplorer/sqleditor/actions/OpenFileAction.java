@@ -28,7 +28,6 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.text.Document;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
@@ -74,7 +73,17 @@ public class OpenFileAction extends AbstractEditorAction {
 
             StringBuffer all = new StringBuffer();
             String str = null;
-            String delimiter = _editor.sqlTextViewer.getTextWidget().getLineDelimiter();
+            //String delimiter = _editor.getSqlTextViewer().getTextWidget().getLineDelimiter();
+            
+            /*
+             * Note: I have changed the delimiter to a hardcoded \n because this a) allows the
+             * interface to SQLEditor to be cleaner (see SQLEditor for refactoring description)
+             * and I can find several other places where text will be passed to the same text 
+             * editor and \n is hard coded.  If there is an issue with how the view encodes
+             * line delimiters, it is likely to be a global problem and we should handle it in 
+             * SQLEditor.setText() instead.
+             * 
+             */
 
             for (int i = 0; i < files.length; i++) {
 
@@ -88,15 +97,15 @@ public class OpenFileAction extends AbstractEditorAction {
 
                 while ((str = reader.readLine()) != null) {
                     all.append(str);
-                    all.append(delimiter);
+                    all.append('\n');
                 }
 
                 if (files.length > 1) {
-                    all.append(delimiter);
+                    all.append('\n');
                 }
             }
 
-            _editor.sqlTextViewer.setDocument(new Document(all.toString()));
+            _editor.setText(all.toString());
 
         } catch (Throwable e) {
             SQLExplorerPlugin.error("Error loading document", e);

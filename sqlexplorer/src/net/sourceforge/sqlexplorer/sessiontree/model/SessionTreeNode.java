@@ -27,6 +27,8 @@ import java.util.List;
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.IdentifierFactory;
 import net.sourceforge.sqlexplorer.dbdetail.DetailTabManager;
+import net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct;
+import net.sourceforge.sqlexplorer.dbproduct.DatabaseProductFactory;
 import net.sourceforge.sqlexplorer.dbstructure.DatabaseModel;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
@@ -35,6 +37,7 @@ import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.DictionaryLoader;
 import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
+import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDatabaseMetaData;
 
@@ -42,7 +45,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.swt.widgets.Table;
 
 /**
  * The SessionTreeNode represents one active database session.
@@ -51,6 +53,14 @@ import org.eclipse.swt.widgets.Table;
  */
 public class SessionTreeNode implements ISessionTreeNode {
 
+    private static final Log _logger = LogFactory.getLog(SessionTreeNode.class);
+    
+    private static final int COMMIT_REQUEST = -1;
+    
+    private static final int ROLLBACK_REQUEST = -2;
+    
+    private static final int CATALOG_CHANGE_REQUEST = -3;
+    
     private ISQLAlias _alias;
 
     boolean _assistanceEnabled;
@@ -85,17 +95,9 @@ public class SessionTreeNode implements ISessionTreeNode {
        
     private ArrayList ls = new ArrayList(10);
     
-    Table table;
-    
-    private static final int COMMIT_REQUEST = -1;
-    
-    private static final int ROLLBACK_REQUEST = -2;
-    
-    private static final int CATALOG_CHANGE_REQUEST = -3;
-    
     private String _newCatalog;
     
-    private static final Log _logger = LogFactory.getLog(SessionTreeNode.class);
+    private DatabaseProduct _databaseProduct;
     
     public SessionTreeNode(final SQLConnection[] conn, ISQLAlias alias, SessionTreeModel md, IProgressMonitor monitor, final String password)
             throws InterruptedException {
@@ -196,6 +198,10 @@ public class SessionTreeNode implements ISessionTreeNode {
 
     public ISQLAlias getAlias() {
         return _alias;
+    }
+    
+    public ISQLDriver getDriver() {
+    	return SQLExplorerPlugin.getDefault().getDriver(_alias);
     }
 
 
@@ -429,6 +435,16 @@ public class SessionTreeNode implements ISessionTreeNode {
         return getRoot().supportsCatalogs();
     }
 
+    /**
+     * Returns the DatabaseProduct for this connection
+     * @return
+     */
+    public DatabaseProduct getDatabaseProduct() {
+    	if (_databaseProduct == null)
+   			_databaseProduct = DatabaseProductFactory.getInstance(getDriver());
+    	return _databaseProduct;
+    }
+
 
     
     /**
@@ -445,6 +461,5 @@ public class SessionTreeNode implements ISessionTreeNode {
             return "";
         }
     }
-
     
 }

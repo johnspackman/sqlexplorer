@@ -95,6 +95,7 @@ public class SQLTextViewer extends SourceViewer {
         super(parent, ruler, style);
         this.store = store;
         this.dictionary = dictionary;
+        this.
 
         sqlTextTools = new SQLTextTools(store, dictionary);
         this.getControl().addDisposeListener(new DisposeListener() {

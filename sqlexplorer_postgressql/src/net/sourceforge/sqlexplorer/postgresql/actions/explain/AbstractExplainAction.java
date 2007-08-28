@@ -1,17 +1,12 @@
 package net.sourceforge.sqlexplorer.postgresql.actions.explain;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
+import net.sourceforge.sqlexplorer.parsers.ParserException;
+import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqleditor.actions.AbstractEditorAction;
-import net.sourceforge.sqlexplorer.util.QueryTokenizer;
 
-import org.eclipse.core.runtime.Preferences;
+import org.eclipse.jface.dialogs.MessageDialog;
 
 /**
  * Class plugging into SQL editor to provide explain support for PostgreSQL.
@@ -56,38 +51,18 @@ public abstract class AbstractExplainAction extends AbstractEditorAction {
 		if (session == null)
 			return;
 
-		Preferences prefs = SQLExplorerPlugin.getDefault()
-				.getPluginPreferences();
-		String delimiter = prefs.getString(IConstants.SQL_QRY_DELIMITER);
-		String alternateDelimiter = prefs
-				.getString(IConstants.SQL_ALT_QRY_DELIMITER);
-		String commentDelimiter = prefs
-				.getString(IConstants.SQL_COMMENT_DELIMITER);
 
-		QueryTokenizer qt = new QueryTokenizer(_editor.getSQLToBeExecuted(),
-				delimiter, alternateDelimiter, commentDelimiter);
-		final List<String> queryStrings = new ArrayList<String>();
-		while (qt.hasQuery()) {
-			final String query = qt.nextQuery().trim();
-			if (!query.startsWith("--"))
-				queryStrings.add(query);
-		}
-
-		try {
-			SqlResultsView res = (SqlResultsView) _editor
-					.getSite()
-					.getPage()
-					.showView(
-							"net.sourceforge.sqlexplorer.plugin.views.SqlResultsView");
-			while (!queryStrings.isEmpty()) {
-				String q = queryStrings.remove(0);
-				if (q != null && q.trim().length() != 0)
-					res.addSQLExecution(new ExplainExecution(_editor, res, q,
-							session, type));
-			}
-		} catch (Exception e) {
-			SQLExplorerPlugin.error(Messages.getString("postgresql.explain.error.tab"), e);
-		}
+        // execute explain plan for all statements
+        QueryParser qt = session.getDatabaseProduct().getQueryParser(_editor.getSQLToBeExecuted());
+        try {
+            qt.parse();
+        }catch(final ParserException e) {
+            _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+                public void run() {
+                    MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("SQLResultsView.Error.Title"), e.getClass().getCanonicalName() + ": " + e.getMessage());
+                }
+            });
+        }
+        new ExplainExecution(_editor, qt, session, type).startExecution();
 	}
-
 }

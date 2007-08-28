@@ -20,20 +20,16 @@ package net.sourceforge.sqlexplorer.db2.actions;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
-import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.db2.actions.explain.ExplainExecution;
+import net.sourceforge.sqlexplorer.parsers.ParserException;
+import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.views.SqlResultsView;
 import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqleditor.actions.AbstractEditorAction;
-import net.sourceforge.sqlexplorer.util.QueryTokenizer;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
-import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 /**
@@ -70,22 +66,6 @@ public class ExplainAction extends AbstractEditorAction {
         }
 
         
-        Preferences prefs = SQLExplorerPlugin.getDefault().getPluginPreferences();
-
-        String queryDelimiter = prefs.getString(IConstants.SQL_QRY_DELIMITER);
-        String alternateDelimiter = prefs.getString(IConstants.SQL_ALT_QRY_DELIMITER);
-        String commentDelimiter = prefs.getString(IConstants.SQL_COMMENT_DELIMITER);
-
-        QueryTokenizer qt = new QueryTokenizer(_editor.getSQLToBeExecuted(), queryDelimiter, alternateDelimiter, commentDelimiter);
-        final List queryStrings = new ArrayList();
-        while (qt.hasQuery()) {
-            final String querySql = qt.nextQuery();
-            // ignore commented lines.
-            if (!querySql.startsWith("--")) {
-                queryStrings.add(querySql);
-            }
-        }
-
         // check if we can run explain plans
         try {
             Statement st = runNode.getInteractiveConnection().createStatement();
@@ -147,24 +127,17 @@ public class ExplainAction extends AbstractEditorAction {
         
         
         // execute explain plan for all statements
-        
+        QueryParser qt = runNode.getDatabaseProduct().getQueryParser(_editor.getSQLToBeExecuted());
         try {
-
-            SqlResultsView resultsView = (SqlResultsView) _editor.getSite().getPage().showView(
-                    "net.sourceforge.sqlexplorer.plugin.views.SqlResultsView");
-
-            while (!queryStrings.isEmpty()) {
-
-                String querySql = (String) queryStrings.remove(0);
-
-                if (querySql != null) {
-                    resultsView.addSQLExecution(new ExplainExecution(_editor, resultsView, querySql, runNode));
+            qt.parse();
+        }catch(final ParserException e) {
+            _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+                public void run() {
+                    MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("SQLResultsView.Error.Title"), e.getClass().getCanonicalName() + ": " + e.getMessage());
                 }
-            }
-
-        } catch (Exception e) {
-            SQLExplorerPlugin.error("Error creating sql execution tab", e);
+            });
         }
+        new ExplainExecution(_editor, qt, runNode);
     }
     
  

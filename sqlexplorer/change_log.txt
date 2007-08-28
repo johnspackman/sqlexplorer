@@ -1,3 +1,37 @@
+3.5.0.beta1 - John Spackman
+===========================
+SQL Editor
+* The separate SqlResultsView has been removed and the query results are now part of 
+	the editor that executed them (they appear as tabs in the bottom part of the editor 
+	view
+* Messages from the database server are now checked for and retrieved after each query,
+	and then added to a Messages tab (attached to the editor next to the result tabs).
+	The line/column that caused the error is recorded and clicking on a row in the
+	Messages tab takes you to the line/character that caused the error
+* A new QueryParser and Tokenizer have been written which accurately parse SQL; this is
+	used to parse SQL and automatically determine how to break up the text into individual
+	SQL queries to be passed to the database, based on the grammar of the SQL.  This is
+	abstracted so that there are pluggable database-specific implementations for different
+	database products - currently only Oracle is supported but new additions are fairly 
+	trivial.
+* Database-specific extensions are required to abstract database specific components which
+	do not easily fit into the Eclipse plugin architecture (see DatabaseProduct).
+* Added Structured Comments for macros, conditional compilation, and other scriptable 
+	functionality without compromising compatability with other, standard SQL tools (this
+	can be disabled in preferences).
+* Refactored the Preference pages, simplifying the code and extracting commonality, and 
+	added new preferences:
+	a) Clear result tabs on execute
+	b) Use long captions on result tabs
+	c) Stop processing queries when an error is found
+	d) prompt to save modified editors when closing
+* Prompt to save files before closing (optional - see preferences)
+* Added support for opening files from Eclipse, EG via a Project
+* Basic online help (based on website, plus a few extra bits)
+
+
+
+
 2006.09.01 - 2006.XX.XX v3.0.1 Enhancements - Davy Vanherbergen
 ==========================================================
 * new preference to choose if new editor should be opened when connection is opened.

@@ -26,7 +26,7 @@ package net.sourceforge.sqlexplorer.dataset;
  */
 public class DataSetRow {
 
-    private Object[] _values;
+    private Comparable[] _values;
 
     /**
      * Create new DataSetRow with columnCount values
@@ -34,7 +34,7 @@ public class DataSetRow {
      * @param columnCount number of columns
      */
     public DataSetRow(int columnCount) {
-        _values = new Object[columnCount];
+        _values = new Comparable[columnCount];
     }
 
 
@@ -79,7 +79,7 @@ public class DataSetRow {
      * @param column first column is 0
      * @param value
      */
-    public void setValue(int column, Object value) {
+    public void setValue(int column, Comparable value) {
         _values[column] = value;
     }
 

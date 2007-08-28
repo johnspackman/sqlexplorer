@@ -88,7 +88,6 @@ public class PropertyDataSet {
 
 		return new DataSet(new String[] {
 				Messages.getString("postgresql.hdr.property"),
-				Messages.getString("postgresql.hdr.value") }, data,
-				new int[] { DataSet.TYPE_STRING, DataSet.TYPE_STRING });
+				Messages.getString("postgresql.hdr.value") }, data);
 	}
 }

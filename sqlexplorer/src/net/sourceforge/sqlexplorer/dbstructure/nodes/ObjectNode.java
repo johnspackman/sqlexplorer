@@ -11,6 +11,7 @@ public class ObjectNode extends AbstractNode {
     /**
      * Hidden default constructor.
      */
+    @SuppressWarnings("unused")
     private ObjectNode() {
         
     }

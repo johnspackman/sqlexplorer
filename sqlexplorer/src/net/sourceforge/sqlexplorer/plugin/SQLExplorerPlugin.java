@@ -165,7 +165,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         // load SQL History from previous sessions
         _history = new SQLHistory();
     }
-
+    
 
     /**
      * Open all connections that have the 'open on startup property'. This
@@ -203,6 +203,10 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
             }
         }
         _defaultConnectionsStarted = true;
+    }
+    
+    public ISQLDriver getDriver(ISQLAlias alias) {
+    	return driverModel.getDriver(alias.getDriverIdentifier());
     }
 
 
