@@ -1,0 +1,176 @@
+<tests>
+	<test enable-structured-comments="true">
+		<data>
+			select * from dual;
+			select * from dual;
+			select * from dual;
+			/*${ifdef mymacro} 
+			12345 
+			*/
+			select * from dual;
+		</data>
+		<q line="1">
+			select * from dual
+		</q>
+		<q line="2">
+			select * from dual
+		</q>
+		<q line="3">
+			select * from dual
+		</q>
+		<q line="7">
+			select * from dual
+		</q>
+	</test>
+	<test enable-structured-comments="true">
+		<data>
+			/*${define mymacro} 12345*/
+			create package body abc as
+				procedure myproc as
+				begin
+					begin
+					exception
+						/*${ref mymacro}*/alternative/*${endref}*/
+					end;
+				end;
+			end;
+		</data>
+		<q line="2">
+			create package body abc as
+				procedure myproc as
+				begin
+					begin
+					exception
+						12345
+					end;
+				end;
+			end;
+		</q>
+	</test>
+	<test enable-structured-comments="true">
+		<data>
+			--${define DEBUG}
+			begin
+				--${ifdef DEBUG} 
+					log('in debug...');
+				--${else}
+					log('NOT in debug...');
+				--${endif}
+			end;
+			select * from dual;
+		</data>
+		<q line="2">
+			begin
+				log('in debug...');
+			end;
+		</q>
+		<q line="9">
+			select * from dual
+		</q>
+	</test>
+	<test enable-structured-comments="true">
+		<data>
+			/*${define X} 1 */
+			--${ifdef X} thisisvisible
+		</data>
+		<q line="2">
+			thisisvisible
+		</q>
+	</test>
+	<test enable-structured-comments="true">
+		<data>
+			create or replace procedure myproc as
+			begin
+				if true then
+				end if;
+				while true loop
+				end loop;
+			end;
+			select * from mytable;
+			create package abc as
+			end;
+			select * from table2;
+			/*${define mymacro} 12345*/
+			create package body abc as
+				procedure myproc as
+				begin
+					/*${ifdef mymacro}
+						some conditional code here
+					*/
+					begin
+						/*${ref mymacro}*/ note no "endref"
+					exception
+						/*${ref mymacro}*/alternative/*${endref}*/
+					end;
+				end;
+			end;
+			select * from 
+		</data>
+		<q line="1">
+			create or replace procedure myproc as
+			begin
+				if true then
+				end if;
+				while true loop
+				end loop;
+			end;
+		</q>
+		<q line="8">
+			select * from mytable
+		</q>
+		<q line="9">
+			create package abc as
+			end;
+		</q>
+		<q line="11">
+			select * from table2
+		</q>
+		<q line="13">
+			create package body abc as
+				procedure myproc as
+				begin
+						some conditional code here
+					begin
+						12345 note no "endref"
+					exception
+						12345
+					end;
+				end;
+			end;
+		</q>
+		<q line="26">
+			select * from 
+		</q>
+	</test>
+	<test>
+		<data>
+			create or replace package pkg_x as
+				procedure myproc;
+			end;
+			
+			create or replace package body pkg_x as
+				procedure myproc as
+				begin
+					null;
+				end;
+			end;
+		</data>
+		<q line="1">
+			create or replace package pkg_x as
+				procedure myproc;
+			end;
+		</q>
+		<q line="5">
+			create or replace package body pkg_x as
+				procedure myproc as
+				begin
+					null;
+				end;
+			end;
+		</q>
+	</test>
+	<test>
+		<data>select * from activity_sub_type</data>
+		<q line="1">select * from activity_sub_type</q>
+	</test>
+</tests>

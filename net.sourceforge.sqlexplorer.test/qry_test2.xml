@@ -1,0 +1,141 @@
+<tests>
+	<test enable-structured-comments="true">
+		<data>
+			select * from quality where rownum &lt; 5;
+			
+			create or replace package pkg_x as
+				procedure myproc;
+			end;
+			
+			create or replace package body pkg_x as
+				procedure myproc as
+				begin
+					null;
+				end;
+			end;
+		</data>
+		<q line="1">
+			select * from quality where rownum &lt; 5
+		</q>
+		<q line="3">
+			create or replace package pkg_x as
+				procedure myproc;
+			end;
+		</q>
+		<q line="7">
+			create or replace package body pkg_x as
+				procedure myproc as
+				begin
+					null;
+				end;
+			end;
+		</q>
+	</test>
+	<test enable-structured-comments="true">
+		<data>
+			--${define DEBUG}
+			begin
+				--${ifdef DEBUG} log('in debug...');
+			end;
+		</data>
+		<q line="2">
+			begin
+				log('in debug...');
+			end;
+		</q>
+	</test>
+	<test enable-structured-comments="true">
+		<data>
+			--${define DEBUG}
+			begin
+				--${ifdef DEBUG} 
+					log('in debug...');
+				--${else}
+					log('NOT in debug...');
+				--${endif}
+			end;
+		</data>
+		<q line="2">
+			begin
+				log('in debug...');
+			end;
+		</q>
+	</test>
+	<test enable-structured-comments="true">
+		<data>
+			begin
+				--${ifdef DEBUG} 
+					log('in debug...');
+				--${else}
+					log('NOT in debug...');
+				--${endif}
+			end;
+		</data>
+		<q line="1">
+			begin
+				log('NOT in debug...');
+			end;
+		</q>
+	</test>
+	<test enable-structured-comments="true">
+		<data>
+			--${define DEBUG}
+			begin
+				--${ifdef DEBUG} log('in debug...');
+				--${undef debug}
+				--${ifdef DEBUG} log('still in debug...');
+			end;
+		</data>
+		<q line="2">
+			begin
+				log('in debug...');
+				log('still in debug...');
+			end;
+		</q>
+	</test>
+	<test enable-structured-comments="true">
+		<data>
+			begin
+				--${ifdef !DEBUG} log('in non-debug...');
+			end;
+		</data>
+		<q line="1">
+			begin
+				log('in non-debug...');
+			end;
+		</q>
+	</test>
+	<test enable-structured-comments="true">
+		<data>
+			begin
+				--${ifdef DEBUG} 
+					log('in debug...');
+				--${else}
+					log('NOT in debug...');
+				--${endif}
+			end;
+		</data>
+		<q line="1">
+			begin
+				log('NOT in debug...');
+			end;
+		</q>
+	</test>
+	<test enable-structured-comments="true">
+		<data>
+			/*${define MYMACRO} this is a macro */
+			begin
+				/*${ref MYMACRO} */
+				/*${ref MYMACRO} */alternative/*${endref} */
+				/*${ref MYNONMACRO} */alternative/*${endref} */
+			end;
+		</data>
+		<q line="2">
+			begin
+				this is a macro
+				this is a macro
+				alternative
+			end;
+		</q>
+	</test>
+</tests>

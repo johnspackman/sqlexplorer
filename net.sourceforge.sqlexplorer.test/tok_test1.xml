@@ -1,0 +1,126 @@
+<tests>
+	<test>
+		<data>
+			select
+			some
+			thing
+		</data>
+		<t line="1" type="word">select</t>
+		<t line="2" type="word">some</t>
+		<t line="3" type="word">thing</t>
+	</test>
+	<test>
+		<data>
+			select * from activity_sub_type where rownum &lt; 5;
+			select * from payment_batch_type;
+		</data>
+		<t line="1" type="word">select</t>
+		<t line="1" type="punctuation">*</t>
+		<t line="1" type="word">from</t>
+		<t line="1" type="word">activity_sub_type</t>
+		<t line="1" type="word">where</t>
+		<t line="1" type="word">rownum</t>
+		<t line="1" type="punctuation">&lt;</t>
+		<t line="1" type="number">5</t>
+		<t line="1" type="punctuation">;</t>
+		<t line="2" type="word">select</t>
+		<t line="2" type="punctuation">*</t>
+		<t line="2" type="word">from</t>
+		<t line="2" type="word">payment_batch_type</t>
+		<t line="2" type="punctuation">;</t>
+	</test>
+	<test>
+		<data>
+			hello'this is a string' -- and a comment
+		</data>
+		<t line="1" type="word">hello</t>
+		<t line="1" type="quoted">'this is a string'</t>
+		<t line="1" type="eol_comment">-- and a comment</t>
+	</test>
+	<test>
+		<data>
+			'that''s an escape'
+			"this isn't"
+		</data>
+		<t line="1" type="quoted">'that''s an escape'</t>
+		<t line="2" type="quoted">"this isn't"</t>
+	</test>
+	<test>
+		<data>
+			abc def
+			/* this
+			is
+			a comment */
+			this is not
+			/* this comment "has a string" in it */
+			-- and "so" does this
+			/*comment*/identifier/*endcomment*/
+		</data>
+		<t line="1" type="word">abc</t>
+		<t line="1" type="word">def</t>
+		<t line="2" type="ml_comment">/* this is a comment */</t>
+		<t line="5" type="word">this</t>
+		<t line="5" type="word">is</t>
+		<t line="5" type="word">not</t>
+		<t line="6" type="ml_comment">/* this comment "has a string" in it */</t>
+		<t line="7" type="eol_comment">-- and "so" does this</t>
+		<t line="8" type="ml_comment">/*comment*/</t>
+		<t line="8" type="word">identifier</t>
+		<t line="8" type="ml_comment">/*endcomment*/</t>
+	</test>
+	<test>
+		<data>
+			what is 4 + .45 - 33 / 10 * 100
+		</data>
+		<t line="1" type="word">what</t>
+		<t line="1" type="word">is</t>
+		<t line="1" type="number">4</t>
+		<t line="1" type="punctuation">+</t>
+		<t line="1" type="number">.45</t>
+		<t line="1" type="punctuation">-</t>
+		<t line="1" type="number">33</t>
+		<t line="1" type="punctuation">/</t>
+		<t line="1" type="number">10</t>
+		<t line="1" type="punctuation">*</t>
+		<t line="1" type="number">100</t>
+	</test>
+	<test>
+		<data>
+			_anIdentifier123 4.5
+			2anotherId34 6.7
+			_3third
+			
+		</data>
+		<t line="1" type="word">_anIdentifier123</t>
+		<t line="1" type="number">4.5</t>
+		<t line="2" type="number">2</t>
+		<t line="2" type="word">anotherId34</t>
+		<t line="2" type="number">6.7</t>
+		<t line="3" type="word">_3third</t>
+	</test>
+	<test>
+		<data>
+			if myfunc() != true then
+				blah;
+			end if;
+		</data>
+		<t line="1" type="word">if</t>
+		<t line="1" type="word">myfunc</t>
+		<t line="1" type="punctuation">()</t>
+		<t line="1" type="punctuation">!=</t>
+		<t line="1" type="word">true</t>
+		<t line="1" type="word">then</t>
+		<t line="2" type="word">blah</t>
+		<t line="2" type="punctuation">;</t>
+		<t line="3" type="word">end</t>
+		<t line="3" type="word">if</t>
+		<t line="3" type="punctuation">;</t>
+	</test>
+	<test>
+		<data>select * from activity_sub_type</data>
+		<t line="1" type="word">select</t>
+		<t line="1" type="punctuation">*</t>
+		<t line="1" type="word">from</t>
+		<t line="1" type="word">activity_sub_type</t>
+	</test>
+</tests>
