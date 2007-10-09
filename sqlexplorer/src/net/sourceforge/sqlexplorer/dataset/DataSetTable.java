@@ -91,7 +91,10 @@ public class DataSetTable {
         composite.setLayoutData(gridData);
         
         // check column labels & types
-        String[] columnLabels = dataSet.getColumnLabels();
+        DataSet.Column[] columns = dataSet.getColumns();
+        String[] columnLabels = new String[columns.length];
+        for (int i = 0; i < columnLabels.length; i++)
+        	columnLabels[i] = columns[i].getCaption();
 
         if (columnLabels == null || columnLabels.length == 0)
             throw new Exception("Invalid columnLabel or columnTypes in DataSet ");
@@ -148,11 +151,12 @@ public class DataSetTable {
         table.setData(dataSet);
         
         // add all column headers to our table
-        for (int i = 0; i < columnLabels.length; i++) {
+        for (int i = 0; i < columns.length; i++) {
+            DataSet.Column colDef = columns[i];
             
             // add column header
-            TableColumn column = new TableColumn(table, SWT.LEFT);           
-            column.setText(columnLabels[i]);
+            TableColumn column = new TableColumn(table, colDef.isRightJustify() ? SWT.RIGHT : SWT.LEFT);           
+            column.setText(colDef.getCaption());
             column.setMoveable(true);
             column.setResizable(true);            
             column.addListener(SWT.Selection, sortListener);
@@ -163,11 +167,6 @@ public class DataSetTable {
         tableViewer.setLabelProvider(new DataSetTableLabelProvider());
         tableViewer.setInput(dataSet);
 
-        // make columns full size
-        for(int i = 0; i < table.getColumnCount(); i++) {
-            table.getColumn(i).pack();      
-        }
-        
         // add status bar labels
         Label infoLabel = new Label(composite, SWT.NULL);
         infoLabel.setText(info);
@@ -176,8 +175,7 @@ public class DataSetTable {
         final Label positionLabel = new Label(composite, SWT.NULL);
         positionLabel.setText("");
         positionLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.NULL, true, false));
-       
-         
+
         // create a TableCursor to navigate around the table
         final TableCursor cursor = new TableCursor(table, SWT.NONE);
         cursor.setBackground(table.getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
@@ -267,6 +265,9 @@ public class DataSetTable {
             }
         });
                     
+        tableViewer.getTable().pack();
+        for (TableColumn column : tableViewer.getTable().getColumns())
+            column.pack(); 
     }
 
 }

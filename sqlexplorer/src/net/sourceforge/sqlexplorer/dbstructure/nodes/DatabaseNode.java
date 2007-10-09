@@ -18,14 +18,14 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDatabaseMetaData;
 
@@ -42,8 +42,6 @@ import org.eclipse.core.runtime.Platform;
  * @author Davy Vanherbergen
  */
 public class DatabaseNode extends AbstractNode {
-
-    private SQLAlias _alias;
 
     private List _childNames = new ArrayList();
 
@@ -64,16 +62,13 @@ public class DatabaseNode extends AbstractNode {
      * @param name
      * @param alias
      */
-    public DatabaseNode(String name, SessionTreeNode session) {
-
-        _name = name;
-        _sessionNode = session;
-        _alias = (SQLAlias) _sessionNode.getAlias();
-        _imageKey = "Images.DatabaseIcon";
+    public DatabaseNode(String name, Session session) throws SQLException {
+    	super(name, session);
+    	setImageKey("Images.DatabaseIcon");
         
-        SQLDatabaseMetaData metadata = _sessionNode.getMetaData();
-
         try {
+            SQLDatabaseMetaData metadata = _session.getMetaData();
+
             if (metadata.supportsCatalogs()) {
                 _supportsCatalogs = true;
             }
@@ -84,13 +79,9 @@ public class DatabaseNode extends AbstractNode {
             _databaseVersion = " [v" + metadata.getJDBCMetaData().getDatabaseMajorVersion() + "." 
                 + metadata.getJDBCMetaData().getDatabaseMinorVersion() + "]";
             
-        } catch (Exception e) {
-            SQLExplorerPlugin.error("Error loading database product name.", e);
         } catch (AbstractMethodError e) {
             SQLExplorerPlugin.error("Error loading database product name.", e);
         }
-
-        
     }
 
 
@@ -135,7 +126,7 @@ public class DatabaseNode extends AbstractNode {
      */
     public String getLabelText() {
 
-        if (_alias.isFiltered()) {
+        if (_session.getUser().getAlias().isFiltered()) {
             return _databaseProductName + " " + _databaseVersion + " " + Messages.getString("DatabaseStructureView.filteredPostfix");
         } else {
             return _databaseProductName + " " + _databaseVersion;
@@ -224,16 +215,15 @@ public class DatabaseNode extends AbstractNode {
 
         _childNames = new ArrayList();
 
-        String metaFilterExpression = _alias.getSchemaFilterExpression();
+        String metaFilterExpression = _session.getUser().getAlias().getSchemaFilterExpression();
         if (metaFilterExpression != null && metaFilterExpression.trim().length() != 0) {
             _filterExpressions = metaFilterExpression.split(",");
         } else {
             _filterExpressions = null;
         }
 
-        SQLDatabaseMetaData metadata = _sessionNode.getMetaData();
-
         try {
+            SQLDatabaseMetaData metadata = _session.getMetaData();
 
             if (_supportsCatalogs) {
 
@@ -241,7 +231,7 @@ public class DatabaseNode extends AbstractNode {
                 for (int i = 0; i < catalogs.length; ++i) {
                     _childNames.add(catalogs[i]);
                     if (!isExcludedByFilter(catalogs[i])) {
-                        addChildNode(new CatalogNode(this, catalogs[i], _sessionNode));
+                        addChildNode(new CatalogNode(this, catalogs[i], _session));
                     }
                 }
 
@@ -251,13 +241,13 @@ public class DatabaseNode extends AbstractNode {
                 for (int i = 0; i < schemas.length; ++i) {
                     _childNames.add(schemas[i]);
                     if (!isExcludedByFilter(schemas[i])) {
-                        addChildNode(new SchemaNode(this, schemas[i], _sessionNode));
+                        addChildNode(new SchemaNode(this, schemas[i], _session));
                     }
                 }
 
             } else {
 
-                addChildNode(new CatalogNode(this, Messages.getString("NoCatalog_2"), _sessionNode));
+                addChildNode(new CatalogNode(this, Messages.getString("NoCatalog_2"), _session));
             }
 
             // load extension nodes
@@ -316,7 +306,7 @@ public class DatabaseNode extends AbstractNode {
 
                         AbstractNode childNode = (AbstractNode) ces[j].createExecutableExtension("class");
                         childNode.setParent(this);
-                        childNode.setSession(_sessionNode);
+                        childNode.setSession(_session);
                         childNode.setType(type);
 
                         addChildNode(childNode);

@@ -1,13 +1,16 @@
 package net.sourceforge.sqlexplorer.db2.actions;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.TextUtil;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,14 +26,16 @@ public class ReactiveViewAction extends AbstractDBTreeContextAction {
 
 	public void run() {
 		Statement stmt = null;
+		ResultSet rs = null;
+		SQLConnection connection = null;
+		Session session = null;
 
 		try {
-
 			INode tableNode = _selectedNodes[0];
 			if (tableNode != null) {
 				boolean confirmed = MessageDialog
 						.openConfirm(
-								_view.getSite().getShell(),
+								getView().getSite().getShell(),
 								Messages
 										.getString("db2.editor.actions.reactive.confirm.title"),
 								Messages
@@ -51,9 +56,10 @@ public class ReactiveViewAction extends AbstractDBTreeContextAction {
 							+ "' and viewname = '" + tableNode.getName() + "'";
 
 					_logger.debug("SQL to query view source: " + sqlViewSource);
-					stmt = tableNode.getSession().getInteractiveConnection()
-							.createStatement();
-					ResultSet rs = stmt.executeQuery(sqlViewSource);
+					session = tableNode.getSession();
+					connection = session.grabConnection();
+					stmt = connection.createStatement();
+					rs = stmt.executeQuery(sqlViewSource);
 					String viewSource = null;
 					while (rs.next()) {
 						viewSource = rs.getString(1);
@@ -86,12 +92,18 @@ public class ReactiveViewAction extends AbstractDBTreeContextAction {
 			}
 		} catch (Exception e) {
 			// something went wrong, so we display an error message.
-			MessageDialog.openError(_view.getSite().getShell(), Messages
+			MessageDialog.openError(getView().getSite().getShell(), Messages
 					.getString("db2.editor.actions.reactive.error"), e
 					.getMessage());
 
 		} finally {
 
+			if (rs != null)
+				try {
+					rs.close();
+				} catch(SQLException e) {
+					SQLExplorerPlugin.error("Error closing result set", e);
+				}
 			// close our statement
 			if (stmt != null) {
 				try {
@@ -101,6 +113,8 @@ public class ReactiveViewAction extends AbstractDBTreeContextAction {
 					SQLExplorerPlugin.error("Error closing statement.", e);
 				}
 			}
+			if (connection != null)
+				session.releaseConnection(connection);
 		}
 	}
 }

@@ -24,7 +24,7 @@ package net.sourceforge.sqlexplorer.parsers;
  * 
  * QueryParsers are not re-usable primarily because the structured comment parser
  * can edit the code and tokens which is generated, therefore removing the possibility
- * of useful caching; they are tpiocally low-cost to allocate a new one and new
+ * of useful caching; they are typically low-cost to allocate a new one and new
  * parsers should be defined with that in mind.
  * 
  * @modified John Spackman
@@ -52,4 +52,10 @@ public interface QueryParser extends Iterable<Query> {
 	 * @return
 	 */
 	public int adjustLineNo(int lineNo);
+	
+	/**
+	 * Adds a Named Parameter
+	 * @param parameter
+	 */
+	public void addParameter(NamedParameter parameter);
 }

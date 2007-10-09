@@ -24,7 +24,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 
 import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.runtime.CoreException;
@@ -36,10 +36,10 @@ import org.eclipse.ui.IStorageEditorInput;
 
 public class SQLEditorInput implements IStorageEditorInput, IPersistableElement
 {
-	private IStorage fStorage;;
-	File fFile;
+	private IStorage fStorage;
+	private File fFile;
 	private String fName;
-	private SessionTreeNode sessionNode;
+	private Session sessionNode;
 
 	public SQLEditorInput(String name)
 	{
@@ -169,14 +169,14 @@ public class SQLEditorInput implements IStorageEditorInput, IPersistableElement
 	/**
 	 * @return
 	 */
-	public SessionTreeNode getSessionNode() {
+	public Session getSessionNode() {
 		return sessionNode;
 	}
 
 	/**
 	 * @param node
 	 */
-	public void setSessionNode(SessionTreeNode node) {
+	public void setSessionNode(Session node) {
 		sessionNode = node;
 	}
 

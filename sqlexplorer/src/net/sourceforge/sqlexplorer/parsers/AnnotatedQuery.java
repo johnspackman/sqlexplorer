@@ -18,6 +18,9 @@
  */
 package net.sourceforge.sqlexplorer.parsers;
 
+import net.sourceforge.sqlexplorer.util.BackedCharSequence;
+
+
 
 /**
  * Implementation of Query that provides for more a sophisticated description of
@@ -26,18 +29,18 @@ package net.sourceforge.sqlexplorer.parsers;
  * 
  * @author John Spackman
  */
-public class AnnotatedQuery implements Query {
+public class AnnotatedQuery extends AbstractQuery {
 	
-	private CharSequence buffer;
+	private BackedCharSequence buffer;
 	private int lineNo;
 
-	public AnnotatedQuery(CharSequence buffer, int lineNo) {
+	public AnnotatedQuery(BackedCharSequence buffer, int lineNo) {
 		super();
 		this.buffer = buffer;
 		this.lineNo = lineNo;
 	}
 
-	public CharSequence getQuerySql() {
+	public BackedCharSequence getQuerySql() {
 		return buffer;
 	}
 

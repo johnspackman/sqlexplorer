@@ -17,14 +17,13 @@ public class FunctionFolder extends AbstractFunctionFolder {
 			+ "AND NOT (lanname = 'edbspl' AND format_type(type.oid,NULL) = 'void' ) "
 			+ "AND pr.oid NOT IN (SELECT DISTINCT conproc FROM pg_conversion)";
 
-	@Override
-	public String getChildType() {
-		return TYPE;
+	public FunctionFolder() {
+		super(Messages.getString("postgresql.node.function"));
 	}
 
 	@Override
-	public String getName() {
-		return Messages.getString("postgresql.node.function");
+	public String getChildType() {
+		return TYPE;
 	}
 
 	@Override

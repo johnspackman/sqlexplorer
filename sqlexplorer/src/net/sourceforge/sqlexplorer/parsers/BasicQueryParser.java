@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
+import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentException;
+import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.core.runtime.Preferences;
@@ -33,20 +35,12 @@ import org.eclipse.core.runtime.Preferences;
  * 
  * This parser is based on scanning the SQL text looking for separators (eg ";", "go", or 
  * "/") that show where to split the text into separate queries; conversely, the new 
- * AbstractQueryParser derived style is based on scanning the SQL text for language grammar
+ * AbstractSyntaxQueryParser derived style is based on scanning the SQL text for language grammar
  * tokens so that it can split the SQL by natural syntax.
- * 
- * Also, this parser does not support Structured Comments - it could, but it will need to
- * be modified to tokenise the SQL to get all comments to feed them to StructuredCommentParser
- * and it would be easier (and better) to implement an AbstractQueryParser-derived implementation
- * for the database product.  See the Help for more information on writing QueryParsers for
- * a specific database product.
- * 
- * See DefaultQueryParser for an up to date, database-neutral query parser.
  * 
  * @modified John Spackman
  */
-public class BasicQueryParser implements QueryParser {
+public class BasicQueryParser extends AbstractQueryParser {
 
     private static String _alternateQuerySeparator;
 

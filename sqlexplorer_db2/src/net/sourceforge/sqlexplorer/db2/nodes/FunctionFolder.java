@@ -5,12 +5,12 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 
 public class FunctionFolder extends AbstractSQLFolderNode {
 
-	public String getChildType() {
-		return "function";
+	public FunctionFolder() {
+		super(Messages.getString("db2.dbstructure.functions"));
 	}
 
-	public String getName() {
-		return Messages.getString("db2.dbstructure.functions");
+	public String getChildType() {
+		return "function";
 	}
 
 	public String getSQL() {

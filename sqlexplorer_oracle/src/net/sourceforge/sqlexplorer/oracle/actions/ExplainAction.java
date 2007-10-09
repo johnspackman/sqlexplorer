@@ -18,17 +18,18 @@
  */
 package net.sourceforge.sqlexplorer.oracle.actions;
 
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.oracle.actions.explain.ExplainExecution;
 import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqleditor.actions.AbstractEditorAction;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 
@@ -79,79 +80,66 @@ public class ExplainAction extends AbstractEditorAction {
      * @see net.sourceforge.sqlexplorer.sqleditor.actions.AbstractEditorAction#run()
      */
     public void run() {
-
-        SessionTreeNode runNode = _editor.getSessionTreeNode();
-        if (runNode == null) {
+        Session session = getSession();
+        if (session == null)
             return;
-        }
-
-        // check if we can run explain plans
+        
+    	SQLConnection connection = null;
+    	Statement stmt = null;
+    	ResultSet rs = null;
+    	
         try {
-            Statement st = runNode.getInteractiveConnection().createStatement();
+        	connection = session.grabConnection();
+            Statement st = connection.createStatement();
             boolean createPlanTable = false;
             boolean notFoundTable = true;
             try {
-                ResultSet rs = st.executeQuery("select statement_id from plan_table");
+                rs = st.executeQuery("select statement_id from plan_table");
                 notFoundTable = false;
                 rs.close();
-            } catch (Throwable e) {
+                rs = null;
+            } catch (SQLException e) {
                 createPlanTable = MessageDialog.openQuestion(null,
                         Messages.getString("oracle.editor.actions.explain.notFound.Title"),
                         Messages.getString("oracle.editor.actions.explain.notFound"));
-            } finally {
-                try {
-                    st.close();
-                } catch (Throwable e) {
-                }
             }
+            st.close();
+            st = null;
             if (notFoundTable && !createPlanTable) {
                 return;
             }
 
             if (notFoundTable && createPlanTable) {
-
-                SQLConnection conn = runNode.getInteractiveConnection();
-                st = conn.createStatement();
-
-                try {
-                    st.execute(createPlanTableScript);
-
-                    if (!conn.getAutoCommit()) {
-                        conn.commit();
-                    }
-
-                } catch (Throwable e) {
-                    SQLExplorerPlugin.error("Error creating the plan table", e);
-                    MessageDialog.openError(null,
-                            Messages.getString("oracle.editor.actions.explain.createError.Title"),
-                            Messages.getString("oracle.editor.actions.explain.createError"));
-                    try {
-                        st.close();
-                    } catch (Throwable e1) {
-                    }
-                    return;
-                }
-                try {
-                    st.close();
-                } catch (Throwable e) {
-                }
+                st = connection.createStatement();
+	            st.execute(createPlanTableScript);
+                st.close();
+                st = null;
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // execute explain plan for all statements
-        QueryParser qt = runNode.getDatabaseProduct().getQueryParser(_editor.getSQLToBeExecuted());
-        try {
+            // execute explain plan for all statements
+            QueryParser qt = session.getDatabaseProduct().getQueryParser(_editor.getSQLToBeExecuted());
             qt.parse();
-        }catch(final ParserException e) {
-            _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
-                public void run() {
-                    MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("SQLResultsView.Error.Title"), e.getClass().getCanonicalName() + ": " + e.getMessage());
-                }
-            });
+            new ExplainExecution(_editor, qt).schedule();
+            
+        } catch (SQLException e) {
+            SQLExplorerPlugin.error("Error creating explain plan", e);
+        }catch(ParserException e) {
+        	SQLExplorerPlugin.error("Cannot parse query", e);
+        } finally {
+        	if (rs != null)
+        		try {
+        			rs.close();
+        		} catch(SQLException e) {
+        			SQLExplorerPlugin.error("Cannot close result set", e);
+        		}
+        	if (stmt != null)
+        		try {
+        			stmt.close();
+        		} catch(SQLException e) {
+        			SQLExplorerPlugin.error("Cannot close statement", e);
+        		}
+        	if (connection != null)
+       			session.releaseConnection(connection);
         }
-        new ExplainExecution(_editor, qt, runNode).startExecution();
     };
 }

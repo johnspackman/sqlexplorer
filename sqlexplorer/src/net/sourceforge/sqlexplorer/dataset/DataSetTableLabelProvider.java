@@ -18,13 +18,8 @@
  */
 package net.sourceforge.sqlexplorer.dataset;
 
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-
-import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import java.text.Format;
 
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -41,112 +36,70 @@ import org.eclipse.swt.graphics.Image;
  */
 public class DataSetTableLabelProvider implements ITableLabelProvider {
 
-    private SimpleDateFormat _dateFormatter = new SimpleDateFormat(
-            SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_FORMAT));
-
     private DecimalFormat _decimalFormat = new DecimalFormat();
 
-    private boolean _formatDates = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(
-            IConstants.DATASETRESULT_FORMAT_DATES);
-
-
     public DataSetTableLabelProvider() {
-
         _decimalFormat.setGroupingUsed(false);
     }
 
-
     /*
      * (non-Javadoc)
-     * 
      * @see org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
      */
     public void addListener(ILabelProviderListener listener) {
-
         // noop
     }
 
-
     /*
      * (non-Javadoc)
-     * 
      * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
      */
     public void dispose() {
-
         // noop
-
     }
-
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object,
-     *      int)
+     * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
      */
     public Image getColumnImage(Object element, int columnIndex) {
-
         return null;
     }
 
-
     /*
      * (non-Javadoc)
-     * 
-     * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object,
-     *      int)
+     * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
      */
     public String getColumnText(Object element, int columnIndex) {
-
         DataSetRow row = (DataSetRow) element;
 
-        Object tmp = row.getPrettyObjectValue(columnIndex);
-
-        if (tmp != null) {
-
-            Class clazz = tmp.getClass();
-
-            // filter out scientific values
-            if (clazz == Double.class || clazz == Integer.class) {
-                return _decimalFormat.format(tmp);
-            }
-
-            // format dates
-            if (_formatDates && clazz == Timestamp.class) {
-                return _dateFormatter.format(new java.util.Date(((Timestamp) tmp).getTime()));
-            }
-            if (_formatDates && clazz == Date.class) {
-                return _dateFormatter.format(new java.util.Date(((Date) tmp).getTime()));
-            }
-
-            return tmp.toString();
-        }
-        return "<null>";
-
+        Object tmp = row.getRawObjectValue(columnIndex);
+        if (tmp == null)
+        	return "<null>";
+        
+        // Get the column definition and have it do the formatting  
+        DataSet.Column column = row.getDataset().getColumns()[columnIndex];
+        Format format = column.getFormat();
+        if (format != null)
+        	return format.format(tmp);
+        
+        // No formatting, default output 
+        return tmp.toString();
     }
-
 
     /*
      * (non-Javadoc)
-     * 
-     * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object,
-     *      java.lang.String)
+     * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
      */
     public boolean isLabelProperty(Object element, String property) {
-
         return false;
     }
 
-
     /*
      * (non-Javadoc)
-     * 
      * @see org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
      */
     public void removeListener(ILabelProviderListener listener) {
-
         // noop
     }
-
 }

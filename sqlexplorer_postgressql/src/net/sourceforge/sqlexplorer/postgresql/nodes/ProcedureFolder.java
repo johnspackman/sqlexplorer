@@ -14,14 +14,13 @@ public class ProcedureFolder extends AbstractFunctionFolder {
 
 	private static final String RESTRICT = "format_type(type.oid,NULL) = 'void' AND lanname = 'edbspl'";
 
-	@Override
-	public String getChildType() {
-		return TYPE;
+	public ProcedureFolder() {
+		super(Messages.getString("postgresql.node.procedure"));
 	}
 
 	@Override
-	public String getName() {
-		return Messages.getString("postgresql.node.procedure");
+	public String getChildType() {
+		return TYPE;
 	}
 
 	@Override

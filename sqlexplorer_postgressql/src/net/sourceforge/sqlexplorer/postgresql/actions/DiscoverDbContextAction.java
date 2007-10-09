@@ -4,12 +4,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.postgresql.dataset.tree.ITreeDataSet;
 import net.sourceforge.sqlexplorer.postgresql.dataset.tree.SqlTreeDataSet;
 import net.sourceforge.sqlexplorer.postgresql.dialogs.TreeDataDialog;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 /**
  * Extension class providing dialog with server's database list.
@@ -32,8 +32,7 @@ public class DiscoverDbContextAction extends AbstractDBTreeContextAction {
 			String lOwner = Messages.getString("postgresql.hdr.owner");
 			String lEnc = Messages.getString("postgresql.hdr.encoding");
 			String lDesc = Messages.getString("postgresql.hdr.description");
-			SQLConnection c = _selectedNodes[0].getSession()
-					.getInteractiveConnection();
+			Session session = _selectedNodes[0].getSession();
 			String sql = "SELECT "
 					+ "    datname,"
 					+ "    us.usename AS \"" + lOwner + "\", "
@@ -43,7 +42,7 @@ public class DiscoverDbContextAction extends AbstractDBTreeContextAction {
 					+ "    pg_database db JOIN pg_user us ON db.datdba = us.usesysid LEFT JOIN pg_description des ON db.oid = des.objoid "
 					+ "WHERE " + "    datallowconn " + "ORDER BY "
 					+ "    datname";
-			ITreeDataSet set = new SqlTreeDataSet(c, sql, new int[] { 1 },
+			ITreeDataSet set = new SqlTreeDataSet(session, sql, new int[] { 1 },
 					new int[] { 2, 3, 4 }, "Database");
 			Shell shell = PlatformUI.getWorkbench().getDisplay()
 					.getActiveShell();

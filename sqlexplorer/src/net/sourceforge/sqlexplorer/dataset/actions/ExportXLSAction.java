@@ -110,10 +110,10 @@ public class ExportXLSAction extends AbstractDataSetTableContextAction {
                     if (includeColumnNames) {
                         
                         buffer.append("<tr>");
-                        String[] columnNames = dataSet.getColumnLabels();
-                        for (int i = 0; i < columnNames.length; i++) {
+                        DataSet.Column[] columns = dataSet.getColumns();
+                        for (int i = 0; i < columns.length; i++) {
                             buffer.append("<th>");
-                            buffer.append(TextUtil.htmlEscape(columnNames[i]));
+                            buffer.append(TextUtil.htmlEscape(columns[i].getCaption()));
                             buffer.append("</th>");
                         }
                         buffer.append("</tr>");

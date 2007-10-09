@@ -1,7 +1,6 @@
-package net.sourceforge.sqlexplorer.sessiontree.model;
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2007 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,9 +16,21 @@ package net.sourceforge.sqlexplorer.sessiontree.model;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package net.sourceforge.sqlexplorer.parsers.scp;
 
-public interface ISessionTreeNode {
-	Object[] getChildren();
-	Object getParent();
+import net.sourceforge.sqlexplorer.parsers.Tokenizer;
+import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
+import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandType;
+
+/*package*/ class ElseCommand extends PeeredCommand {
+
+	public ElseCommand(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+		super(parser, CommandType.ELSE, comment, tokenizer, data);
+		if (tokens.size() != 0)
+			throw new StructuredCommentException("else has extra text");
+	}
+	
+	public String toString() {
+		return "else";
+	}
 }
-

@@ -5,22 +5,8 @@ import org.eclipse.swt.graphics.Image;
 
 public class ObjectNode extends AbstractNode {
 
-    private String _type;
-    
-    
-    /**
-     * Hidden default constructor.
-     */
-    @SuppressWarnings("unused")
-    private ObjectNode() {
-        
-    }
-    
     public ObjectNode(String name, String type, INode parent, Image image) {
-        _type = type;
-        _name = name;
-        _sessionNode = parent.getSession();
-        _parent = parent;
+    	super(parent, name, parent.getSession(), type);
         _image = image;
     }
     
@@ -39,10 +25,6 @@ public class ObjectNode extends AbstractNode {
         return;
     }
 
-
-    public String getType() {
-        return _type;
-    }
 
     public String getQualifiedName() {
         return "\"" + getSchemaOrCatalogName() + "\".\"" + getName() + "\"";

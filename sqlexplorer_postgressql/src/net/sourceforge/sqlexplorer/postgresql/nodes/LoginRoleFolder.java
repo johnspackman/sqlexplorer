@@ -25,14 +25,13 @@ public class LoginRoleFolder extends AbstractRoleFolder {
 
 	private static final Object[] DEFAULT_LIMIT = { "%", "%" };
 
-	@Override
-	public String getChildType() {
-		return TYPE;
+	public LoginRoleFolder() {
+		super(Messages.getString("postgresql.node.role.login"));
 	}
 
 	@Override
-	public String getName() {
-		return Messages.getString("postgresql.node.role.login");
+	public String getChildType() {
+		return TYPE;
 	}
 
 	@Override

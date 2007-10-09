@@ -23,11 +23,18 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.ExplorerException;
+import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 /**
  * Generic DataSet to hold values for TableViewer.
@@ -46,15 +53,55 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
  * @modified John Spackman
  */
 public class DataSet {
+	
+	public static class Column {
+		private String caption;
+		private boolean rightJustify;
+		
+		public Column(String caption, boolean rightJustify) {
+			super();
+			this.caption = caption;
+			this.rightJustify = rightJustify;
+		}
 
-    private String[] _columnLabels;
+		public String getCaption() {
+			return caption;
+		}
+
+		public boolean isRightJustify() {
+			return rightJustify;
+		}
+
+		public Format getFormat() {
+			return null;
+		}
+	}
+	
+	public static class FormattedColumn extends Column {
+		private Format format;
+
+		public FormattedColumn(String caption, boolean rightJustify, Format format) {
+			super(caption, rightJustify);
+			this.format = format;
+		}
+
+		public Format getFormat() {
+			return format;
+		}
+	}
+
+    private Column[] columns;
 
     private DataSetRow[] _rows;
 
     private DataSetTableSorter _sorter;
     
-    protected ISQLAlias alias;
+    // Whether dates are formatted (from preferences)
+    private Boolean formatDates;
 
+    // Default date format (from preferences)
+	private SimpleDateFormat dateFormat; 
+	
     /**
      * Create a new dataSet based on an existing ResultSet.
      * 
@@ -64,13 +111,8 @@ public class DataSet {
      *            null if all columns should be included.
      * @throws Exception if the dataset could not be created
      */
-    public DataSet(ISQLAlias alias, String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
-
-    	this.alias = alias;
-        initialize(columnLabels, resultSet, relevantIndeces);
-    }
     public DataSet(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
-    	this(null, columnLabels, resultSet, relevantIndeces);
+        initialize(columnLabels, resultSet, relevantIndeces);
     }
 
     /**
@@ -84,18 +126,33 @@ public class DataSet {
      * @param connection An open SQLConnection [mandatory]
      * @throws Exception if dataSet could not be created
      */
-    public DataSet(String[] columnLabels, String sql, int[] relevantIndeces, SQLConnection connection) throws SQLException {
-  	
-        Statement statement = connection.createStatement();
-
-        statement.execute(sql);
-        ResultSet resultSet = statement.getResultSet();
-
-        initialize(columnLabels, resultSet, relevantIndeces);
-        
-        statement.close();
+    public DataSet(String[] columnLabels, String sql, int[] relevantIndeces, Session session) throws SQLException, ExplorerException {
+    	SQLConnection connection = null;
+    	Statement statement = null;
+    	ResultSet resultSet = null;
+    	try {
+    		connection = session.grabConnection();
+    		statement = connection.createStatement();
+    		statement.execute(sql);
+    		resultSet = statement.getResultSet();
+    		initialize(columnLabels, resultSet, relevantIndeces);
+    	}finally {
+            if (resultSet != null)
+            	try {
+            		resultSet.close();
+            	}catch(SQLException e) {
+            		SQLExplorerPlugin.error("Error closing result set", e);
+            	}
+            if (statement != null)
+                try {
+                	statement.close();
+                } catch (SQLException e) {
+                    SQLExplorerPlugin.error("Error closing statement", e);
+                }
+            if (connection != null)
+            	session.releaseConnection(connection);
+    	}
     }
-
 
     /**
      * Create new dataset based on String[][].
@@ -104,16 +161,108 @@ public class DataSet {
      * @param data string[][] with values for dataset [mandatory]
      * @throws Exception if dataSet could not be created
      */
-    public DataSet(String[] columnLabels, String[][] data) throws Exception {
-        _columnLabels = columnLabels;
+    public DataSet(String[] columnLabels, Comparable[][] data) {
+        columns = convertColumnLabels(columnLabels);
 
         _rows = new DataSetRow[data.length];
 
-        for (int i = 0; i < data.length; i++) {
-            _rows[i] = new DataSetRow(data[i]);
-        }
+        for (int i = 0; i < data.length; i++)
+            _rows[i] = new DataSetRow(this, data[i]);
     }
 
+    /**
+     * Initialize dataSet based on an existing ResultSet.
+     * 
+     * @param columnLabels String[] of column labels [mandatory]
+     * @param resultSet ResultSet with values [mandatory]
+     * @param relevantIndeces int[] of all columns to add to the dataSet, use
+     *            null if all columns should be included.
+     * @throws Exception if the dataset could not be created
+     */
+    private void initialize(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
+
+        ResultSetMetaData metadata = resultSet.getMetaData();
+
+        int[] ri = relevantIndeces;
+        
+        // create default column indexes
+        if (ri == null || ri.length == 0) {
+            ri = new int[metadata.getColumnCount()];
+            for (int i = 1; i <= metadata.getColumnCount(); i++) {
+                ri[i - 1] = i;
+            }
+        }
+
+        // create column labels
+        if (columnLabels != null && columnLabels.length != 0) {
+            columns = convertColumnLabels(columnLabels);
+        } else {
+            columns = new Column[ri.length];
+            for (int i = 0; i < ri.length; i++) {
+            	int columnIndex = ri[i];
+            	columns[i] = createColumn(metadata, columnIndex);
+            }
+        }
+
+        loadRows(resultSet, ri);
+    }
+    
+    /**
+     * Called to create a Column object from the given metadata; this is broken out into
+     * a separate method so that database-specific implementations can override it
+     * @param metadata
+     * @param columnIndex
+     * @return
+     * @throws SQLException
+     */
+    protected Column createColumn(ResultSetMetaData metadata, int columnIndex) throws SQLException {
+    	int type = metadata.getColumnType(columnIndex);
+    	
+    	// Numeric - figure out a display format
+    	if (type == Types.DECIMAL || type == Types.NUMERIC || type == Types.DOUBLE || type == Types.FLOAT || type == Types.REAL) {
+        	int precision = metadata.getPrecision(columnIndex);
+        	int scale = metadata.getScale(columnIndex);
+        	if (precision < 1)
+            	return new FormattedColumn(metadata.getColumnName(columnIndex), true, new DecimalFormat("#.#"));
+        	
+    		/*
+    		 * NOTE: Scale can be negative (although possibly limited to Oracle), but we cope with 
+    		 * this by specifing # after the decimal place precision-1 times; eg a precision of 10 
+    		 * will return  #.#########
+    		 */
+        	StringBuffer sb = new StringBuffer(precision + 2);
+        	for (int j = 0; j < precision; j++)
+        		if (scale < 0 || j < precision - scale - 1)
+        			sb.append('#');
+        		else
+        			sb.append('0');
+        	
+        	if (scale > 0)
+        		sb.insert(precision - scale, '.');
+        	else if (scale < 0)
+        		sb.insert(1, '.');
+        	
+        	return new FormattedColumn(metadata.getColumnName(columnIndex), true, new DecimalFormat(sb.toString()));
+    	}
+    	
+    	if (type == Types.DATE || type == Types.TIMESTAMP || type == Types.TIME) {
+    		return new FormattedColumn(metadata.getColumnName(columnIndex), false, getDateFormat());
+    	}
+
+    	return new Column(metadata.getColumnName(columnIndex), false);
+    }
+    
+    /**
+     * Creates an array of Column descriptors from an array of strings
+     * @param columnLabels
+     * @return
+     */
+    private Column[] convertColumnLabels(String[] columnLabels) {
+    	Column[] result = new Column[columnLabels.length];
+    	for (int i = 0; i < columnLabels.length; i++)
+    		result[i] = new Column(columnLabels[i], false);
+    	return result;
+    }
 
     /**
      * Get the column index for a given column name
@@ -122,28 +271,17 @@ public class DataSet {
      * @return index of column whose name matches or 0 if none found
      */
     public int getColumnIndex(String name) {
-        for (int i = 0; i < _columnLabels.length; i++) {
-            if (_columnLabels[i].equalsIgnoreCase(name)) {
+        for (int i = 0; i < columns.length; i++)
+            if (columns[i].getCaption().equalsIgnoreCase(name))
                 return i;
-            }
-        }
         return 0;
     }
-    
-    /**
-     * Returns the number of columns
-     * @return
-     */
-    public int getNumberOfColumns() {
-    	return _columnLabels.length;
-    }
-
 
     /**
      * @return String[] with all column labels
      */
-    public String[] getColumnLabels() {
-        return _columnLabels;
+    public Column[] getColumns() {
+        return columns;
     }
 
     /**
@@ -174,42 +312,6 @@ public class DataSet {
     }
 
     /**
-     * Initialize dataSet based on an existing ResultSet.
-     * 
-     * @param columnLabels String[] of column labels [mandatory]
-     * @param resultSet ResultSet with values [mandatory]
-     * @param relevantIndeces int[] of all columns to add to the dataSet, use
-     *            null if all columns should be included.
-     * @throws Exception if the dataset could not be created
-     */
-    private void initialize(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
-
-        ResultSetMetaData metadata = resultSet.getMetaData();
-
-        int[] ri = relevantIndeces;
-        
-        // create default column indexes
-        if (ri == null || ri.length == 0) {
-            ri = new int[metadata.getColumnCount()];
-            for (int i = 1; i <= metadata.getColumnCount(); i++) {
-                ri[i - 1] = i;
-            }
-        }
-
-        // create column labels
-        if (columnLabels != null && columnLabels.length != 0) {
-            _columnLabels = columnLabels;
-        } else {
-            _columnLabels = new String[ri.length];
-            for (int i = 0; i < ri.length; i++) {
-                _columnLabels[i] = metadata.getColumnName(ri[i]);
-            }
-        }
-
-        loadRows(resultSet, ri);
-    }
-    
-    /**
      * Called to load rows from the specified result set; the default implementation
      * simply uses standard JDBC data types to  inten to be
      * overridden.
@@ -224,13 +326,14 @@ public class DataSet {
         ArrayList rows = new ArrayList(100);
         while (resultSet.next()) {
 
-            DataSetRow row = new DataSetRow(getNumberOfColumns());
-            for (int i = 0; i < getNumberOfColumns(); i++) {
-            	int columnIndex = relevantIndeces[i];
+            DataSetRow row = new DataSetRow(this);
+            for (int i = 0; i < columns.length; i++) {
+            	int columnIndex = relevantIndeces != null ? relevantIndeces[i] : i;
             	Comparable obj = loadCellValue(columnIndex, metadata.getColumnType(columnIndex), resultSet);
-            	row.setValue(i, obj);
                 if (resultSet.wasNull())
                     row.setValue(i, null);
+                else
+                	row.setValue(i, obj);
             }
             rows.add(row);
         }
@@ -253,11 +356,17 @@ public class DataSet {
 	        case Types.TINYINT:
 	            return new Long(resultSet.getInt(columnIndex));
 	
+	        case Types.BIGINT:
+	            return new Long(resultSet.getLong(columnIndex));
+		            
 	        case Types.DECIMAL:
 	        case Types.NUMERIC:
 	        case Types.DOUBLE:
 	        case Types.FLOAT:
 	        case Types.REAL:
+	        	int precision = resultSet.getMetaData().getPrecision(columnIndex);
+	        	if (precision > 16)
+	        		return resultSet.getBigDecimal(columnIndex);
 	            return new Double(resultSet.getDouble(columnIndex));
 	
 	        case Types.DATE:
@@ -266,9 +375,6 @@ public class DataSet {
 	            
 	        case Types.TIME:
 	            return resultSet.getTime(columnIndex);
-	            
-	        case Types.BIGINT:
-	            return new Long(resultSet.getLong(columnIndex));
 	            
 	        default:
 	            return resultSet.getString(columnIndex);
@@ -288,4 +394,17 @@ public class DataSet {
     	
     	Arrays.sort(_rows, _sorter);
     }
+	
+	private DateFormat getDateFormat() {
+		if (formatDates == null)
+		    formatDates = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.DATASETRESULT_FORMAT_DATES);
+		if (!formatDates)
+			return null;
+		
+		if (dateFormat == null)
+			dateFormat = new SimpleDateFormat(
+	            SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_FORMAT));
+		
+		return dateFormat;
+	}
 }

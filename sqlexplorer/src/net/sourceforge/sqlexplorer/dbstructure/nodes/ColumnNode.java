@@ -18,7 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 
 /**
  * @author Davy Vanherbergen
@@ -35,29 +35,26 @@ public class ColumnNode extends AbstractNode {
     private TableNode _parentTable;
 
    
-    public ColumnNode(INode node, String name, SessionTreeNode session, TableNode parentTable, boolean showKeyLabels) throws Exception {
-
-        _parent = node;
+    public ColumnNode(INode parent, String name, Session session, TableNode parentTable, boolean showKeyLabels) {
+    	super(parent, name, session, "column");
         _parentTable = parentTable;
-        _sessionNode = session;
-        _name = name;
-        _imageKey = "Images.ColumnNodeIcon";
+        setImageKey("Images.ColumnNodeIcon");
 
         if (showKeyLabels) {
-        if (_parentTable.getPrimaryKeyNames().contains(_name)) {
-            _isPrimaryKey = true;
-            _imageKey = "Images.PrimaryKeyIcon";
-        }
-        // this has been disabled for now.
-        // foreign key determination turns out to be a real performance hog for oracle
-//        if (_parentTable.getForeignKeyNames().contains(_name)) {
-//            _isForeignKey = true;
-//            if (_isPrimaryKey) {
-//                _imageKey = "Images.PKForeignKeyIcon";
-//            } else {
-//                _imageKey = "Images.ForeignKeyIcon";
-//            }
-//        }
+	        if (_parentTable.getPrimaryKeyNames().contains(_name)) {
+	            _isPrimaryKey = true;
+	            _imageKey = "Images.PrimaryKeyIcon";
+	        }
+	        // this has been disabled for now.
+	        // foreign key determination turns out to be a real performance hog for oracle
+	//        if (_parentTable.getForeignKeyNames().contains(_name)) {
+	//            _isForeignKey = true;
+	//            if (_isPrimaryKey) {
+	//                _imageKey = "Images.PKForeignKeyIcon";
+	//            } else {
+	//                _imageKey = "Images.ForeignKeyIcon";
+	//            }
+	//        }
         }
     }
 
@@ -81,17 +78,6 @@ public class ColumnNode extends AbstractNode {
     public String getQualifiedName() {
 
         return _parentTable.getName() + "." + _name;
-    }
-
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
-     */
-    public String getType() {
-
-        return "column";
     }
 
 

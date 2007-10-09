@@ -29,14 +29,13 @@ public class ConversionFolder extends AbstractSQLFolderNode implements
 			+ "JOIN pg_namespace ns ON con.connamespace = ns.oid "
 			+ "WHERE ns.nspname LIKE ? AND conname LIKE ?";
 
-	@Override
-	public String getChildType() {
-		return TYPE;
+	public ConversionFolder() {
+		super(Messages.getString("postgresql.node.conversion"));
 	}
 
 	@Override
-	public String getName() {
-		return Messages.getString("postgresql.node.conversion");
+	public String getChildType() {
+		return TYPE;
 	}
 
 	@Override

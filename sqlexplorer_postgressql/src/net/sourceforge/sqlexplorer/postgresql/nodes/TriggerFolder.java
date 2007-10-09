@@ -14,14 +14,13 @@ public class TriggerFolder extends AbstractFunctionFolder {
 
 	private static final String RESTRICT = "format_type(type.oid,NULL) = '\"trigger\"' AND lanname <> 'edbspl'";
 
-	@Override
-	public String getChildType() {
-		return TYPE;
+	public TriggerFolder() {
+		super(Messages.getString("postgresql.node.trigger"));
 	}
 
 	@Override
-	public String getName() {
-		return Messages.getString("postgresql.node.trigger");
+	public String getChildType() {
+		return TYPE;
 	}
 
 	@Override

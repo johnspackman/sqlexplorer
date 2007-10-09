@@ -18,10 +18,12 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
-import net.sourceforge.sqlexplorer.plugin.views.ConnectionsView;
+import net.sourceforge.sqlexplorer.connections.ConnectionsView;
+import net.sourceforge.sqlexplorer.dbproduct.AliasManager;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.ui.IViewPart;
 
 /**
  * Abstract implementation for a context menu action in the connection view.
@@ -30,28 +32,6 @@ import org.eclipse.jface.viewers.TreeViewer;
  * @author Davy Vanherbergen
  */
 public abstract class AbstractConnectionTreeAction extends Action {
-
-    protected TreeViewer _treeViewer;
-
-    protected ConnectionsView _view;
-
-    /**
-     * Store treeViewer for use in the actions
-     * 
-     * @param treeViewer
-     */
-    public void setTreeViewer(TreeViewer treeViewer) {
-        _treeViewer = treeViewer;
-    }
-
-
-    /**
-     * Store view for use in the actions
-     */ 
-    public void setView(ConnectionsView view) {    
-        _view = view;
-    }
-
 
     /**
      * Implement this method to return true when your action is available for
@@ -64,4 +44,15 @@ public abstract class AbstractConnectionTreeAction extends Action {
     public boolean isAvailable() {
         return true;
     }
+    
+    public void init(IViewPart view) {
+    }
+    
+    public AliasManager getAliases() {
+    	return SQLExplorerPlugin.getDefault().getAliasManager();
+    }
+
+	protected ConnectionsView getView() {
+		return SQLExplorerPlugin.getDefault().getConnectionsView();
+	}
 }

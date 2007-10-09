@@ -21,6 +21,8 @@ package net.sourceforge.sqlexplorer.plugin.views;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.sqlexplorer.connections.ConnectionsView;
+
 /**
  * Constants that define all the available views in this plugin, and what we
  * want the default views to be. Each view constant is the string ID provided in
@@ -32,13 +34,13 @@ public final class SqlexplorerViewConstants {
 
     private static SqlexplorerViewConstants singleton = null;
 
-    public static final String SQLEXPLORER_CONNECTIONS = "net.sourceforge.sqlexplorer.plugin.views.ConnectionsView";
+    public static final String SQLEXPLORER_CONNECTIONS = ConnectionsView.class.getName();
 
-    public static final String SQLEXPLORER_DBSTRUCTURE = "net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView";
+    public static final String SQLEXPLORER_DBSTRUCTURE = DatabaseStructureView.class.getName();
     
-    public static final String SQLEXPLORER_DBDETAIL = "net.sourceforge.sqlexplorer.plugin.views.DatabaseDetailView";
+    public static final String SQLEXPLORER_DBDETAIL = DatabaseDetailView.class.getName();
 
-    public static final String SQLEXPLORER_SQLHISTORY = "net.sourceforge.sqlexplorer.plugin.views.SQLHistoryView";
+    public static final String SQLEXPLORER_SQLHISTORY = SQLHistoryView.class.getName();
 
     
     

@@ -84,7 +84,7 @@ public class SQLHistoryLabelProvider implements ITableLabelProvider {
             case 1:
                 return el.getFormattedTime();
             case 2:
-                return el.getSessionName();
+                return el.getSessionDescription();
             case 3:
                 return "" + el.getExecutionCount();
             default:

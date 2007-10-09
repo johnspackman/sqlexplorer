@@ -2,5 +2,5 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SQLExplorer Help
 Bundle-SymbolicName: net.sourceforge.sqlexplorer.help; singleton:=true
-Bundle-Version: 3.5.0
+Bundle-Version: 3.5.0.beta2
 Bundle-Vendor: SQLExplorer

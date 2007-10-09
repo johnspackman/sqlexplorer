@@ -18,9 +18,12 @@
  */
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
+import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.MessageDialog;
 
 
 /**
@@ -32,6 +35,8 @@ import org.eclipse.jface.action.Action;
  */
 public abstract class AbstractEditorAction extends Action {
    
+    protected SQLEditor _editor;
+    
     public abstract String getText();
     
     public String getToolTipText() {
@@ -40,16 +45,25 @@ public abstract class AbstractEditorAction extends Action {
     
     public abstract void run();
     
-    protected SQLEditor _editor;
-    
     public final void setEditor(SQLEditor editor) {
         _editor = editor;
     }
 
     public boolean isDisabled() {
-
-        boolean active = _editor.getSessionTreeNode() != null;
-        return !active;
+    	Session session = _editor.getSession();
+        return session == null || session.isConnectionInUse();
     }
     
+    protected Session getSession() {
+    	Session session = _editor.getSession();
+        if (session != null && session.isConnectionInUse()) {
+            _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+                public void run() {
+                    MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("SQLResultsView.Error.InUseTitle"), Messages.getString("SQLResultsView.Error.InUse"));
+                }
+            });
+            return null;
+        }
+        return session;
+    }
 }

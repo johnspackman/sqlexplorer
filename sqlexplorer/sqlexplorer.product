@@ -26,9 +26,10 @@
       <plugin id="com.ibm.icu"/>
       <plugin id="net.sourceforge.sqlexplorer"/>
       <plugin id="net.sourceforge.sqlexplorer.db2" fragment="true"/>
+      <plugin id="net.sourceforge.sqlexplorer.help"/>
       <plugin id="net.sourceforge.sqlexplorer.mysql" fragment="true"/>
       <plugin id="net.sourceforge.sqlexplorer.oracle" fragment="true"/>
-      <plugin id="net.sourceforge.sqlexplorer.sybase" fragment="true"/>
+      <plugin id="net.sourceforge.sqlexplorer.postgresql" fragment="true"/>
       <plugin id="org.apache.xerces"/>
       <plugin id="org.eclipse.ant.core"/>
       <plugin id="org.eclipse.core.commands"/>

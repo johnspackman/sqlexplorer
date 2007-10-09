@@ -18,19 +18,9 @@
  */
 package net.sourceforge.sqlexplorer.oracle.dbproduct;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.sql.SQLException;
 
+import org.dom4j.Element;
 import oracle.sql.OPAQUE;
-import oracle.xdb.XMLType;
-
-import net.n3.nanoxml.IXMLElement;
-import net.n3.nanoxml.IXMLParser;
-import net.n3.nanoxml.IXMLReader;
-import net.n3.nanoxml.StdXMLReader;
-import net.n3.nanoxml.XMLException;
-import net.n3.nanoxml.XMLParserFactory;
 import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.dataset.XmlDataType;
 
@@ -62,7 +52,7 @@ public class OracleXmlDataType implements XmlDataType {
 	/* (non-JavaDoc)
 	 * @see net.sourceforge.sqlexplorer.dataset.XmlDataType#getRootElement()
 	 */
-	public IXMLElement getRootElement() throws ExplorerException {
+	public Element getRootElement() throws ExplorerException {
 		return null;
 /*
 		try {

@@ -16,13 +16,14 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package net.sourceforge.sqlexplorer.parsers;
+package net.sourceforge.sqlexplorer.parsers.scp;
 
-import java.util.Iterator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import net.sourceforge.sqlexplorer.parsers.QueryParser;
+import net.sourceforge.sqlexplorer.parsers.Tokenizer;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.TokenType;
 
@@ -59,6 +60,14 @@ import net.sourceforge.sqlexplorer.parsers.Tokenizer.TokenType;
  * 
  * 	${endref}
  * 		Needed to complete multi-line versions of ref
+ * 
+ * 	${parameter name [("output"|"inout")] [datatype] [arguments]} [value]
+ * 		Declares a named parameter, it's datatype (decimal, int, string, or cursor), whether it is
+ * 		an output variable, and an optional value.  If the datatype is "cursor" then it is an output 
+ * 		variable only; if not specified, it is input only.  Parameters are specified in queries
+ * 		using the notation ":name", eg "select * from people where age = :agetofind".  If input
+ * 		or output is not specified, then input is assumed (unless it is a cursor).  Some datatypes
+ * 		have additional parameters - eg parameters of type "date", where the format can be specified.
  * 
  * Up and coming:
  * 	${question [id=id] [datatype=(char|int|decimal|date)]} data
@@ -123,256 +132,71 @@ public class StructuredCommentParser {
 	/*
 	 * Type of command; knows how to instantiate a Command 
 	 */
-	private enum CommandType { 
+	public enum CommandType { 
 		DEFINE {
 			@Override
 			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-				return parser.new DefineCommand(comment, tokenizer, data);
+				return new DefineCommand(parser, comment, tokenizer, data);
 			}
 		}, 
 		UNDEF {
 			@Override
 			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-				return parser.new UndefCommand(comment, tokenizer, data);
+				return new UndefCommand(parser, comment, tokenizer, data);
 			}
 		}, 
 		IFDEF {
 			@Override
 			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-				return parser.new IfdefCommand(comment, tokenizer, data);
+				return new IfdefCommand(parser, comment, tokenizer, data);
 			}
 		}, 
 		ELSE {
 			@Override
 			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-				return parser.new ElseCommand(comment, tokenizer, data);
+				return new ElseCommand(parser, comment, tokenizer, data);
 			}
 		}, 
 		ENDIF {
 			@Override
 			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-				return parser.new EndifCommand(comment, tokenizer, data);
+				return new EndifCommand(parser, comment, tokenizer, data);
 			}
 		}, 
 		REF {
 			@Override
 			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-				return parser.new RefCommand(comment, tokenizer, data);
+				return new RefCommand(parser, comment, tokenizer, data);
 			}
 		}, 
 		ENDREF {
 			@Override
 			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-				return parser.new EndrefCommand(comment, tokenizer, data);
+				return new EndrefCommand(parser, comment, tokenizer, data);
+			}
+		},
+		PARAMETER {
+			@Override
+			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+				new ParameterCommand(parser, comment, tokenizer, data);
+				return null;
 			}
 		};
 		
 		public abstract Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException;
 	};
 	
-	/*
-	 * Represents a command, eg define or ifdef. 
-	 */
-	private static abstract class Command {
-		protected Token comment;
-		protected CommandType commandType;
-		protected LinkedList<Token> tokens = new LinkedList<Token>();
-		protected CharSequence data;
-		
-		/**
-		 * Constructor
-		 * @param comment the original comment
-		 * @param tokenizer a tokenizer built to parse the comment; it is expected 
-		 * 	that the comment start and leading ${ have already been be skipped over 
-		 * @throws StructuredCommentException
-		 */
-		public Command(CommandType commandType, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-			this.commandType = commandType;
-			this.comment = comment;
-			this.data = data;
-			Token token;
-			while ((token = tokenizer.nextToken()) != null)
-				tokens.add(token);
-		}
-	}
-	
-	/*
-	 * Commands which have a macro name (eg define, ifdef, and ref)
-	 */
-	private abstract class MacroNameCommand extends Command {
-		protected String macroName;
-
-		public MacroNameCommand(CommandType commandType, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-			super(commandType, comment, tokenizer, data);
-			if (tokens.size() == 0)
-				throw new StructuredCommentException(commandType + " is missing a macro name");
-			Token token = tokens.getFirst();
-			if (token.getTokenType() != TokenType.WORD)
-				throw new StructuredCommentException("Macro names must be valid identifiers");
-			macroName = token.toString();
-		}
-		
-	}
-	
-	/*
-	 * "define" command
-	 */
-	private class DefineCommand extends MacroNameCommand {
-
-		public DefineCommand(Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-			super(CommandType.DEFINE, comment, tokenizer, data);
-			if (tokens.size() != 1)
-				throw new StructuredCommentException("define has extra text after the macro name");
-		}
-		
-		public String toString() {
-			return "define " + tokens.get(0);
-		}
-	}
-	
-	/*
-	 * "undef" command
-	 */
-	private class UndefCommand extends MacroNameCommand {
-
-		public UndefCommand(Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-			super(CommandType.UNDEF, comment, tokenizer, data);
-			if (tokens.size() != 1)
-				throw new StructuredCommentException("undef has extra text after the macro name");
-		}
-		
-		public String toString() {
-			return "undef " + tokens.get(0);
-		}
-	}
-	
-	/*
-	 * PeeredCommands are commands with peers that are linked together during addComment()
-	 */
-	private static class PeeredCommand extends Command {
-		protected PeeredCommand previous;
-		protected PeeredCommand next;
-		
-		public PeeredCommand(CommandType commandType, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-			super(commandType, comment, tokenizer, data);
-		}
-	}
-	
-	/*
-	 * "ifdef"
-	 */
-	private class IfdefCommand extends PeeredCommand {
-		protected String macroName;
-		protected boolean negated;
-
-		public IfdefCommand(Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-			super(CommandType.IFDEF, comment, tokenizer, data);
-			if (tokens.size() == 0)
-				throw new StructuredCommentException(commandType + " is missing a macro name");
-			Iterator<Token> iter = tokens.iterator();
-			Token token = iter.next();
-			if (token.getTokenType() == TokenType.PUNCTUATION && token.toString().equals("!")) {
-				negated = true;
-				if (!iter.hasNext())
-					throw new StructuredCommentException(commandType + " is missing a macro name");
-				token = iter.next();
-			}
-			if (token.getTokenType() != TokenType.WORD)
-				throw new StructuredCommentException("Macro names must be valid identifiers");
-			macroName = token.toString();
-			if (iter.hasNext())
-				throw new StructuredCommentException("ifdef has extra text after the macro name");
-		}
-		
-		public boolean evaluate() {
-			boolean eval = macros.containsKey(macroName);
-			if (negated)
-				eval = !eval;
-			return eval;
-		}
-		
-		public String toString() {
-			return "ifdef " + (negated ? "!" : "") + macroName;
-		}
-	}
-
-	/*
-	 * "else" command
-	 */
-	private class ElseCommand extends PeeredCommand {
-
-		public ElseCommand(Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-			super(CommandType.ELSE, comment, tokenizer, data);
-			if (tokens.size() != 0)
-				throw new StructuredCommentException("else has extra text");
-		}
-		
-		public String toString() {
-			return "else";
-		}
-	}
-
-	/*
-	 * "endif" command
-	 */
-	private class EndifCommand extends PeeredCommand {
-
-		public EndifCommand(Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-			super(CommandType.ENDIF, comment, tokenizer, data);
-			if (tokens.size() != 0)
-				throw new StructuredCommentException("endif has extra text");
-		}
-		
-		public String toString() {
-			return "endif";
-		}
-	}
-
-	/*
-	 * "ref" command
-	 */
-	private class RefCommand extends MacroNameCommand {
-		protected EndrefCommand endref;
-
-		public RefCommand(Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-			super(CommandType.REF, comment, tokenizer, data);
-			if (tokens.size() != 1)
-				throw new StructuredCommentException("ref has extra text after the macro name");
-		}
-		
-		public String toString() {
-			return "ref " + tokens.get(0);
-		}
-	}
-
-	/*
-	 * "endref" command
-	 */
-	private class EndrefCommand extends Command {
-		protected RefCommand ref; 
-
-		public EndrefCommand(Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
-			super(CommandType.ENDREF, comment, tokenizer, data);
-			if (tokens.size() != 0)
-				throw new StructuredCommentException("endref has extra text");
-		}
-		
-		public String toString() {
-			return "endref";
-		}
-	}
-	
 	// The QueryParser
-	private QueryParser parser;
+	protected QueryParser parser;
 	
 	// Master buffer
-	private StringBuffer buffer;
+	protected StringBuffer buffer;
 
 	// Structured comments
-	private LinkedList<Command> commands = new LinkedList<Command>();
+	protected LinkedList<Command> commands = new LinkedList<Command>();
 	
 	// Macros which have been defined
-	private HashMap<String, CharSequence> macros = new HashMap<String, CharSequence>();
+	HashMap<String, CharSequence> macros = new HashMap<String, CharSequence>();
 
 	/**
 	 * Constructor.  <code>buffer</code> must be a writable buffer against which all
@@ -478,7 +302,7 @@ public class StructuredCommentParser {
 		// EndRef
 		} else if (command instanceof EndrefCommand) {
 			EndrefCommand endref = (EndrefCommand)command;
-			Command last = commands.size() == 0 ? null : commands.getLast();
+			Command last = commands.size() == 0 ? null : (Command)commands.getLast();
 			if (last == null || !(last instanceof RefCommand))
 				throw new StructuredCommentException("Unexpected endref - no preceeding ref");
 			
@@ -495,7 +319,7 @@ public class StructuredCommentParser {
 	/**
 	 * Applies structured comments onto onto the buffer.
 	 */
-	protected void process() {
+	public void process() {
 		ListIterator<Command> iter = commands.listIterator();
 		
 		while (iter.hasNext()) {
@@ -580,10 +404,57 @@ public class StructuredCommentParser {
 					replace(iter, ref, seq);
 				}
 				
-			} else {
-				delete(iter, command, command, true);
+			} else if (command.commandType == CommandType.PARAMETER) {
+				
 			}
 		}
+	}
+	
+	/**
+	 * Attempts to create a AbstractCommand from a comment token
+	 * @param comment the comment to parse
+	 * @return the new AbstractCommand, or null if it is not a structured comment
+	 * @throws StructuredCommentException
+	 */
+	protected Command createCommand(Token comment) throws StructuredCommentException {
+		StringBuffer sb = new StringBuffer(comment);
+		sb.delete(0, 2);
+		if (comment.getTokenType() == TokenType.ML_COMMENT)
+			sb.delete(sb.length() - 2, sb.length());
+		
+		// Make sure it begins ${, but silently ignore it if not
+		int pos = sb.indexOf("}", 2);
+		if (sb.length() < 3 || !sb.substring(0, 2).equals("${") || pos < 0)
+			return null;
+		
+		// Extract the command (ie the bit between "${" and "}") and the data (the bit after the "}")
+		String data = null;
+		if (pos < sb.length()) {
+			data = sb.substring(pos + 1).trim();
+			if (data.length() == 0)
+				data = null;
+		}
+		sb = new StringBuffer(sb.substring(2, pos));
+		
+		// ...and has a word as the first token
+		Tokenizer tokenizer = new Tokenizer(sb);
+		Token token = tokenizer.nextToken();
+		if (token == null)
+			return null;
+		if (token.getTokenType() != TokenType.WORD)
+			throw new StructuredCommentException("Unexpected command in structured comment: " + token.toString());
+		
+		// Create a new AbstractCommand
+		CommandType type;
+		try {
+			// I've kept the determination of CommandType outside of the constructor in case we want 
+			//	to instantiate different classes for the different commands. 
+			type = CommandType.valueOf(token.toString().toUpperCase());
+		} catch(IllegalArgumentException e) {
+			throw new StructuredCommentException("Unrecognised structured comment command \"" + token.toString() + "\"");
+		}
+		
+		return type.createInstance(this, comment, tokenizer, data);
 	}
 	
 	/**
@@ -595,7 +466,7 @@ public class StructuredCommentParser {
 	 * @param endCmd
 	 * @param endInclusive
 	 */
-	private void delete(ListIterator<Command> iter, Command startCmd, Command endCmd, boolean endInclusive) {
+	protected void delete(ListIterator<Command> iter, Command startCmd, Command endCmd, boolean endInclusive) {
 		int numLines = endCmd.comment.getLineNo() - startCmd.comment.getLineNo();
 		for (char c : endCmd.comment)
 			if (c == '\n')
@@ -630,7 +501,7 @@ public class StructuredCommentParser {
 	 * @param endCmd
 	 * @param replacement the replacement text
 	 */
-	private void replace(ListIterator<Command> iter, Command startCmd, Command endCmd, CharSequence replacement) {
+	protected void replace(ListIterator<Command> iter, Command startCmd, Command endCmd, CharSequence replacement) {
 		int numLines = endCmd.comment.getLineNo() - startCmd.comment.getLineNo();
 		for (char c : endCmd.comment)
 			if (c == '\n')
@@ -665,56 +536,8 @@ public class StructuredCommentParser {
 	 * @param startCmd
 	 * @param replacement the replacement text
 	 */
-	private void replace(ListIterator<Command> iter, Command token, CharSequence replacement) {
+	protected void replace(ListIterator<Command> iter, Command token, CharSequence replacement) {
 		replace(iter, token, token, replacement);
 	}
-	
-	/**
-	 * Attempts to create a Command from a comment token
-	 * @param comment the comment to parse
-	 * @return the new Command, or null if it is not a structured comment
-	 * @throws StructuredCommentException
-	 */
-	private Command createCommand(Token comment) throws StructuredCommentException {
-		StringBuffer sb = new StringBuffer(comment);
-		sb.delete(0, 2);
-		if (comment.getTokenType() == TokenType.ML_COMMENT)
-			sb.delete(sb.length() - 2, sb.length());
-		
-		// Make sure it begins ${, but silently ignore it if not
-		int pos = sb.indexOf("}", 2);
-		if (sb.length() < 3 || !sb.substring(0, 2).equals("${") || pos < 0)
-			return null;
-		
-		// Extract the command (ie the bit between "${" and "}") and the data (the bit after the "}")
-		String data = null;
-		if (pos < sb.length()) {
-			data = sb.substring(pos + 1).trim();
-			if (data.length() == 0)
-				data = null;
-		}
-		sb = new StringBuffer(sb.substring(2, pos));
-		
-		// ...and has a word as the first token
-		Tokenizer tokenizer = new Tokenizer(sb);
-		Token token = tokenizer.nextToken();
-		if (token == null)
-			return null;
-		if (token.getTokenType() != TokenType.WORD)
-			throw new StructuredCommentException("Unexpected command in structured comment: " + token.toString());
-		
-		// Create a new Command
-		CommandType type;
-		Command command;
-		try {
-			// I've kept the determination of CommandType outside of the constructor in case we want 
-			//	to instantiate different classes for the different commands. 
-			type = CommandType.valueOf(token.toString().toUpperCase());
-		} catch(IllegalArgumentException e) {
-			throw new StructuredCommentException("Unrecognised structured comment command \"" + token.toString() + "\"");
-		}
-		command = type.createInstance(this, comment, tokenizer, data);
-		
-		return command;
-	}
+
 }

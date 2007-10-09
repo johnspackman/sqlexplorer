@@ -21,15 +21,17 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Driver;
+import java.util.List;
 
+import net.sourceforge.sqlexplorer.dbproduct.ManagedDriver;
 import net.sourceforge.squirrel_sql.fw.util.MyURLClassLoader;
 import net.sourceforge.squirrel_sql.fw.util.log.ILogger;
 
 public class SQLDriverClassLoader extends MyURLClassLoader
 {
-	public SQLDriverClassLoader(ClassLoader parent, ISQLDriver sqlDriver) throws MalformedURLException
+	public SQLDriverClassLoader(ClassLoader parent, ManagedDriver sqlDriver) throws MalformedURLException
 	{
-		super(parent, createURLs(sqlDriver.getJarFileNames()));
+		super(parent, createURLs(sqlDriver.getJars()));
 	}
 
 	public SQLDriverClassLoader(ClassLoader parent, URL url)
@@ -42,17 +44,15 @@ public class SQLDriverClassLoader extends MyURLClassLoader
 		return getAssignableClasses(Driver.class, logger);
 	}
 
-	private static URL[] createURLs(String[] fileNames)
-		throws MalformedURLException
-	{
+	private static URL[] createURLs(List<String> fileNames) throws MalformedURLException {
+		URL[] urls;
 		if (fileNames == null)
-		{
-			fileNames = new String[0];
-		}
-		URL[] urls = new URL[fileNames.length];
-		for (int i = 0; i < fileNames.length; ++i)
-		{
-			urls[i] = new File(fileNames[i]).toURL();
+			urls = new URL[0];
+		else {
+			urls = new URL[fileNames.size()];
+			int i = 0;
+			for (String fileName : fileNames)
+				urls[i++] = new File(fileName).toURI().toURL();
 		}
 		return urls;
 	}

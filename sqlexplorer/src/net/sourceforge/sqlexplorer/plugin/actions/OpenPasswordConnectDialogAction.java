@@ -18,79 +18,88 @@
  */
 package net.sourceforge.sqlexplorer.plugin.actions;
 
-import net.sourceforge.sqlexplorer.DriverModel;
-import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.SQLDriverManager;
+import java.sql.SQLException;
+
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.connections.OpenConnectionJob;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.dialogs.PasswordConnDlg;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class OpenPasswordConnectDialogAction extends Action {
 
-    private Shell _shell;
+	// The Alias to login - this MUST be the same as the user's alias; the
+	//	reason we keep this in addition to the User object is in case we are
+	//	logging in a new user that we have no initial definition for
+	private Alias alias;
+	
+	// The user to try and login
+    private User user;
+    
+    // Whether to prompt for the password, even if the user is auto-logon etc
+    private boolean alwaysPrompt;
 
-    private ISQLAlias _alias;
-
-    private DriverModel _driverModel;
-
-    private IPreferenceStore _store;
-
-    private SQLDriverManager _dmgr;
-
-    private IWorkbenchPartSite _site;
-
-
-    public OpenPasswordConnectDialogAction(IWorkbenchPartSite site, ISQLAlias alias, DriverModel model,
-            IPreferenceStore store, SQLDriverManager dmgr) {
-
-        _site = site;
-        _shell = site.getShell();
-        _alias = alias;
-        _driverModel = model;
-        _store = store;
-        _dmgr = dmgr;
-
+    public OpenPasswordConnectDialogAction(Alias alias, User user, boolean alwaysPrompt) {
+    	super();
+    	if (alias == null)
+    		throw new IllegalArgumentException("Alias cannot be null!");
+    	if (user != null && alias != user.getAlias())
+    		throw new IllegalArgumentException("User is attached the wrong alias");
+    	this.alias = alias;
+        this.user = user;
+        this.alwaysPrompt = alwaysPrompt;
     }
 
-
     public void run() {
+    	IWorkbenchSite site = SQLExplorerPlugin.getDefault().getSite();
 
-        String user = _alias.getUserName();
-        String pswd = _alias.getPassword();
-        boolean autoCommit = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.AUTO_COMMIT);
-        boolean commitOnClose = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(
-                IConstants.COMMIT_ON_CLOSE);
-
-        if (!_alias.isAutoLogon()) {
-
-            PasswordConnDlg dlg = new PasswordConnDlg(_shell, _alias, _driverModel, _store);
-            if (dlg.open() == Window.OK) {
-                pswd = dlg.getPassword();
-                user = dlg.getUser();
-                autoCommit = dlg.getAutoCommit();
-                commitOnClose = dlg.getCommitOnClose();
-            } else {
-                return;
+    	/*
+    	 * Loop until we can connect to the database or the user cancels; this is done in the
+    	 * foreground to simplify error/retry logic (eg invalid password).  Connection should
+    	 * not normally take too long, it's getting the schema data that needs to run in
+    	 * the background
+    	 */
+    	while (true) {
+    		if (alwaysPrompt || !alias.isAutoLogon() || user == null || !user.equals(alias.getDefaultUser())) { 
+	            PasswordConnDlg dlg = new PasswordConnDlg(site.getShell(), alias, user);
+	            if (dlg.open() != Window.OK)
+	            	return;
+	            user = new User(dlg.getUserName(), dlg.getPassword());
+	        	user.setAutoCommit(dlg.getAutoCommit());
+	        	user.setCommitOnClose(dlg.getCommitOnClose());
+	            user = alias.addUser(user);
+	        }
+    		
+            SQLConnection connection = null;
+            try {
+            	connection = user.getConnection();
+            	break;
+            }catch(SQLException e) {
+            	alwaysPrompt = true;
+            	MessageDialog.openError(site.getShell(), Messages.getString("Login.Error"), e.getMessage());
+            } finally {
+            	if (connection != null)
+            		try {
+            			user.releaseConnection(connection);
+            		} catch(SQLException e) {
+            			SQLExplorerPlugin.error(e);
+            		}
+            	
             }
-        }
+    	}
 
-        ISQLDriver dv = _driverModel.getDriver(_alias.getDriverIdentifier());
+        OpenConnectionJob bgJob = new OpenConnectionJob(user, site.getShell());
 
-        OpenConnectionJob bgJob = new OpenConnectionJob(_dmgr, dv, _alias, user, pswd, autoCommit, commitOnClose,
-                _shell);
-
-        IWorkbenchSiteProgressService siteps = (IWorkbenchSiteProgressService) _site.getAdapter(IWorkbenchSiteProgressService.class);
-        siteps.showInDialog(_shell, bgJob);
+        IWorkbenchSiteProgressService siteps = (IWorkbenchSiteProgressService) site.getAdapter(IWorkbenchSiteProgressService.class);
+        siteps.showInDialog(site.getShell(), bgJob);
         bgJob.schedule();
-
     }
 }

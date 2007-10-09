@@ -1,15 +1,28 @@
 /*
- * Created on Apr 11, 2004
- * 
+ * Copyright (C) 2007 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package net.sourceforge.sqlexplorer.sessiontree.actions;
 
-import net.sourceforge.sqlexplorer.AliasModel;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
@@ -47,15 +60,14 @@ public class NewConnectionDropDownAction extends Action implements IMenuCreator,
             menu = null;
         }
 
-        AliasModel aliasModel = SQLExplorerPlugin.getDefault().getAliasModel();
-        Object[] aliases = aliasModel.getElements();
-        if (aliases != null) {
-            menu = new Menu(parent);
-            for (int i = 0; i < aliases.length; i++) {
-                NewConnection action = new NewConnection((ISQLAlias) aliases[i]);
+        for (Alias alias : SQLExplorerPlugin.getDefault().getAliasManager().getAliases())
+        	for (User user : alias.getUsers()) {
+        		if (menu == null)
+        			menu = new Menu(parent);
+                NewConnection action = new NewConnection(user);
                 addActionToMenu(menu, action);
-            }
-        }
+        	}
+
         return menu;
     }
 

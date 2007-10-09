@@ -34,14 +34,13 @@ public class AggregateFolder extends AbstractSQLFolderNode implements InfoNode,
 			+ "JOIN pg_namespace NS on proc.pronamespace = ns.oid WHERE proc.proisagg=true "
 			+ "AND ns.nspname LIKE ? AND proc.proname LIKE ?";
 
-	@Override
-	public String getChildType() {
-		return TYPE;
+	public AggregateFolder() {
+		super(Messages.getString("postgresql.node.aggregate"));
 	}
 
 	@Override
-	public String getName() {
-		return Messages.getString("postgresql.node.aggregate");
+	public String getChildType() {
+		return TYPE;
 	}
 
 	@Override

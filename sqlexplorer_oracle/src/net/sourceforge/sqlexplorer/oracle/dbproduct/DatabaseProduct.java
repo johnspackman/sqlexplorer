@@ -30,14 +30,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import oracle.jdbc.driver.OracleTypes;
+
 import net.sourceforge.sqlexplorer.dataset.DataSet;
+import net.sourceforge.sqlexplorer.dbproduct.AbstractDatabaseProduct;
+import net.sourceforge.sqlexplorer.dbproduct.ManagedDriver;
+import net.sourceforge.sqlexplorer.parsers.NamedParameter;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor.Message;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverClassLoader;
 
 /**
@@ -45,7 +48,7 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLDriverClassLoader;
  * @author John Spackman
  *
  */
-public class DatabaseProduct implements net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct {
+public class DatabaseProduct extends AbstractDatabaseProduct {
 	
 	private static DatabaseProduct s_instance = null;
 	
@@ -64,9 +67,9 @@ public class DatabaseProduct implements net.sourceforge.sqlexplorer.dbproduct.Da
 	}
 	
 	/* (non-JavaDoc)
-	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#getDriver(net.sourceforge.squirrel_sql.fw.sql.ISQLDriver)
+	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#getDriver(net.sourceforge.squirrel_sql.fw.sql.ManagedDriver)
 	 */
-	public Driver getDriver(ISQLDriver driver) throws ClassNotFoundException {
+	public Driver getDriver(ManagedDriver driver) throws ClassNotFoundException {
 		try {
 	        ClassLoader loader = new SQLDriverClassLoader(getClass().getClassLoader(), driver);
 	        Class driverCls = loader.loadClass(driver.getDriverClassName());
@@ -84,8 +87,8 @@ public class DatabaseProduct implements net.sourceforge.sqlexplorer.dbproduct.Da
 	/* (non-JavaDoc)
 	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#createDataSet(java.sql.ResultSet)
 	 */
-	public DataSet createDataSet(ISQLAlias alias, ResultSet resultSet) throws SQLException {
-		return new OracleDataSet(alias, null, resultSet, null);
+	public DataSet createDataSet(ResultSet resultSet) throws SQLException {
+		return new OracleDataSet(null, resultSet, null);
 	}
 	
 	/* (non-JavaDoc)
@@ -180,7 +183,7 @@ public class DatabaseProduct implements net.sourceforge.sqlexplorer.dbproduct.Da
 		//	so just add it as text
 		if (start == -1) {
 			if (msg.length() > 0)
-				messages.add(new SQLEditor.Message(false, msg));
+				messages.add(new SQLEditor.Message(false, lineNoOffset, 1, msg));
 			start = msg.length();
 		}
 		
@@ -297,6 +300,22 @@ public class DatabaseProduct implements net.sourceforge.sqlexplorer.dbproduct.Da
 		}
 		
 		return new SQLEditor.Message(false, lineNo + lineNoOffset, charNo, text);
+	}
+
+	@Override
+	protected void configureStatement(CallableStatement stmt, NamedParameter param, int columnIndex) throws SQLException {
+		if (param.getDataType() == NamedParameter.DataType.CURSOR) {
+			stmt.registerOutParameter(columnIndex, OracleTypes.CURSOR);
+		} else
+			super.configureStatement(stmt, param, columnIndex);
+	}
+
+	@Override
+	public ResultSet getResultSet(CallableStatement stmt, NamedParameter param, int columnIndex) throws SQLException {
+		if (param.getDataType() == NamedParameter.DataType.CURSOR)
+			return (ResultSet)stmt.getObject(columnIndex);
+
+		return super.getResultSet(stmt, param, columnIndex);
 	}
 
 }

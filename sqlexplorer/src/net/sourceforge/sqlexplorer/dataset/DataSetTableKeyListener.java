@@ -19,10 +19,7 @@
 package net.sourceforge.sqlexplorer.dataset;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dbdetail.IDetailTab;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sqlpanel.SQLExecution;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableCursor;
 import org.eclipse.swt.dnd.Clipboard;
@@ -42,7 +39,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -60,7 +56,7 @@ import org.eclipse.swt.widgets.Text;
  */
 public class DataSetTableKeyListener implements KeyListener {
 
-    private IDetailTab _tab = null;
+//    private IDetailTab _tab = null;
 
     private Composite _parent = null;
 
@@ -95,11 +91,10 @@ public class DataSetTableKeyListener implements KeyListener {
         _parent = parent;
         _cursor = cursor;
         
-        Object o = _parent.getData("IDetailTab");
+        /*Object o = _parent.getData("IDetailTab");
         if (o != null) {
             _tab = (IDetailTab) o;
-        }        
-
+        } */       
     }
 
 
@@ -156,7 +151,7 @@ public class DataSetTableKeyListener implements KeyListener {
 
             case SWT.F5:
                 // refresh tab
-                if (_tab != null) {
+                /*if (_tab != null) {
                     _tab.refresh();
                 }
                 disposePopup();
@@ -172,7 +167,7 @@ public class DataSetTableKeyListener implements KeyListener {
                     }
                 } catch (Exception e1) {
                     SQLExplorerPlugin.error("Error refreshing", e1);
-                }
+                }*/
 
                 break;
 

@@ -18,23 +18,32 @@
  */
 package net.sourceforge.sqlexplorer.parsers;
 
+import java.util.Map;
+
+
 
 /**
- * The QueryParser produces a series of Query objects 
+ * The QueryParser produces a series of Query objects; they are expected to be fairly light-weight
+ * and to use the CharSequence to point into the original buffer rather than take a copy of the
+ * entire string. 
  *  
  * @author John Spackman
- *
  */
 public interface Query {
 
 	/**
-	 * @return the querySql
+	 * @return Returns the SQL to be executed
 	 */
-	public abstract CharSequence getQuerySql();
+	public CharSequence getQuerySql();
 
 	/**
-	 * @return the lineNo
+	 * @return Returns the line number of the original which the query started on 
 	 */
-	public abstract int getLineNo();
+	public int getLineNo();
 
+	/**
+	 * Returns a map of NamedParameters index by their name
+	 * @return
+	 */
+	public Map<String, NamedParameter> getNamedParameters();
 }

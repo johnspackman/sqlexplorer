@@ -12,6 +12,11 @@ import net.sourceforge.sqlexplorer.postgresql.util.PgUtil;
  */
 public abstract class AbstractRoleFolder extends AbstractFolder {
 
+	
+	public AbstractRoleFolder(String name) {
+		super(name);
+	}
+
 	/**
 	 * Get the OID subquery for the current node.
 	 * 
@@ -61,7 +66,7 @@ public abstract class AbstractRoleFolder extends AbstractFolder {
 				+ "SELECT rl.rolname, 'd', null, datname, null "
 				+ "FROM pg_database db, pg_roles rl "
 				+ "UNION ALL "
-				+ (PgUtil.hasVersion(_sessionNode, 7, 5) ? "SELECT rl.rolname, 'M', null, spcname, null "
+				+ (PgUtil.hasVersion(_session, 7, 5) ? "SELECT rl.rolname, 'M', null, spcname, null "
 						+ "FROM pg_tablespace ns JOIN pg_roles rl ON ns.spcowner = rl.oid "
 						+ "UNION ALL "
 						: "")

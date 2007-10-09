@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2007 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,14 +16,18 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package net.sourceforge.sqlexplorer.sessiontree.model;
+package net.sourceforge.sqlexplorer.dbproduct;
+
 
 /**
- * @author Mazzolini
+ * Stubbed out implementation of ConnectionListener, which by default calls
+ * modelChanged() to reflect all changes
+ * @author John Spackman
  *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public interface ISessionTreeClosedListener {
-	public void sessionTreeClosed();
+public class ConnectionAdapter implements ConnectionListener {
+
+	public void modelChanged() {
+		// Nothing
+	}
 }

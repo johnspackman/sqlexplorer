@@ -1,32 +1,9 @@
 package net.sourceforge.sqlexplorer.sessiontree.actions;
 
-/*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-import net.sourceforge.sqlexplorer.DriverModel;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
 import net.sourceforge.sqlexplorer.util.TextUtil;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
-import net.sourceforge.sqlexplorer.SQLDriverManager;
-
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.preference.IPreferenceStore;
 
 /**
  * @author Mazzolini
@@ -34,28 +11,22 @@ import org.eclipse.jface.preference.IPreferenceStore;
  */
 public class NewConnection extends Action {
 
-    ISQLAlias alias;
+    private User user;
 
     /**
      * @param alias
      */
-    public NewConnection(ISQLAlias alias) {
-        this.alias = alias;
+    public NewConnection(User user) {
+        this.user = user;
     }
 
     public void run() {
-        final DriverModel driverModel = SQLExplorerPlugin.getDefault().getDriverModel();
-        final IPreferenceStore store = SQLExplorerPlugin.getDefault().getPreferenceStore();
-        final SQLDriverManager driverMgr = SQLExplorerPlugin.getDefault().getSQLDriverManager();
-
-        OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(null, alias, driverModel,
-                store, driverMgr);
+        OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(user.getAlias(), user, false);
         openDlgAction.run();
-
     }
 
     public String getText() {
-        String name = alias.getName();
+        String name = user.getAlias().getName() + '/' + user.getUserName();
         name = TextUtil.replaceChar(name, '@', "_");
         return name;
     }

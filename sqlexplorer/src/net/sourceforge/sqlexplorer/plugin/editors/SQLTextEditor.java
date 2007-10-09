@@ -19,10 +19,9 @@
 package net.sourceforge.sqlexplorer.plugin.editors;
 
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.dbproduct.ConnectionAdapter;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModel;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModelChangedListener;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.sqleditor.SQLTextViewer;
 import net.sourceforge.sqlexplorer.sqleditor.actions.ExecSQLAction;
@@ -65,34 +64,23 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
  */
 public class SQLTextEditor extends TextEditor {
 
-	private class SQLEditorSessionListener implements SessionTreeModelChangedListener {
+	private class SQLEditorSessionListener extends ConnectionAdapter {
 
 		/*
 		 * (non-Javadoc)
 		 * 
 		 * @see net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModelChangedListener#modelChanged()
 		 */
-		public void modelChanged(SessionTreeNode nd) {
-
-			SessionTreeNode[] sessionNodes = SQLExplorerPlugin.getDefault().stm
-					.getRoot().getSessionTreeNodes();
-
-			boolean sessionFound = false;
-			for (int i = 0; i < sessionNodes.length; i++) {
-				if (editor.getSessionTreeNode() == sessionNodes[i]) {
-					sessionFound = true;
-					break;
-				}
-			}
+		public void modelChanged(Session nd) {
 
 			// do full refresh of toolbar
-			if (!sessionFound) {
-				SQLTextEditor.this.editor.setSessionTreeNode(null);
-				SQLTextEditor.this.editor.getEditorToolBar().refresh(true);
+			if (editor.getSession() != null && !editor.getSession().isValidSession()) {
+				editor.setSession(null);
+				editor.getEditorToolBar().refresh(true);
 
 			// only update the combo selection
 			} else {
-				SQLTextEditor.this.editor.getEditorToolBar().refresh(false);
+				editor.getEditorToolBar().refresh(false);
 			}
 		}
 	}
@@ -107,8 +95,6 @@ public class SQLTextEditor extends TextEditor {
 
 	/* package */SQLTextViewer sqlTextViewer;
 
-	private SessionTreeModel stm = SQLExplorerPlugin.getDefault().stm;
-
 	private boolean _enableContentAssist = SQLExplorerPlugin.getDefault()
 			.getPluginPreferences().getBoolean(IConstants.SQL_ASSIST);
 
@@ -122,6 +108,23 @@ public class SQLTextEditor extends TextEditor {
 		setPreferenceStore(SQLExplorerPlugin.getDefault().getPreferenceStore());
 	}
 
+	@Override
+	protected boolean isLineNumberRulerVisible() {
+		return true;
+	}
+	@Override
+	protected boolean isOverviewRulerVisible() {
+		return true;
+	}
+	@Override
+	protected boolean isPrefQuickDiffAlwaysOn() {
+		return true;
+	}
+	@Override
+	public boolean isChangeInformationShowing() {
+		return true;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -176,7 +179,7 @@ public class SQLTextEditor extends TextEditor {
 		myParent.setLayout(layout);
 
 		listener = new SQLEditorSessionListener();
-		stm.addListener(listener);
+		SQLExplorerPlugin.getDefault().getAliasManager().addListener(listener);
 
 		// create divider line
 
@@ -197,8 +200,8 @@ public class SQLTextEditor extends TextEditor {
 		gid.horizontalAlignment = gid.verticalAlignment = GridData.FILL;
 
 		Dictionary dictionary = null;
-		if (editor.getSessionTreeNode() != null && _enableContentAssist) {
-			dictionary = editor.getSessionTreeNode().getDictionary();
+		if (editor.getSession() != null && _enableContentAssist) {
+			dictionary = editor.getSession().getDictionary();
 		}
 		sqlTextViewer = new SQLTextViewer(myParent, style, store, dictionary,
 				ruler);
@@ -258,7 +261,7 @@ public class SQLTextEditor extends TextEditor {
 	
 					if (sqlTextViewer != null) {
 						sqlTextViewer.setNewDictionary(dictionary);
-						if (editor.getSessionTreeNode() != null) {
+						if (editor.getSession() != null) {
 							sqlTextViewer.refresh();
 						}
 					}
@@ -269,8 +272,8 @@ public class SQLTextEditor extends TextEditor {
 
 	public void onChangeSession() {
 
-		if (editor.getSessionTreeNode() != null && _enableContentAssist) {
-			setNewDictionary(editor.getSessionTreeNode().getDictionary());
+		if (editor.getSession() != null && _enableContentAssist) {
+			setNewDictionary(editor.getSession().getDictionary());
 		} else {
 			setNewDictionary(null);
 		}
@@ -285,7 +288,7 @@ public class SQLTextEditor extends TextEditor {
 	public void dispose() {
 		if (partListener != null)
 			editor.getEditorSite().getPage().removePartListener(partListener);
-		stm.removeListener(listener);
+		SQLExplorerPlugin.getDefault().getAliasManager().removeListener(listener);
 		mcl.uninstall();
 		super.dispose();
 	}

@@ -18,8 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.dataset;
 
-
-import net.n3.nanoxml.IXMLElement;
+import org.dom4j.Element;
 import net.sourceforge.sqlexplorer.ExplorerException;
 
 /**
@@ -34,5 +33,5 @@ public interface XmlDataType extends DataType {
 	 * @return
 	 * @throws ExplorerException 
 	 */
-	public IXMLElement getRootElement() throws ExplorerException;
+	public Element getRootElement() throws ExplorerException;
 }

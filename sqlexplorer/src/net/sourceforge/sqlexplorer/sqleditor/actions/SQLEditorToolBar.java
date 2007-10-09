@@ -3,9 +3,9 @@ package net.sourceforge.sqlexplorer.sqleditor.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
@@ -121,7 +121,7 @@ public class SQLEditorToolBar {
         // initialize catalog actions
 
         _catalogToolBarMgr = new ToolBarManager(SWT.FLAT);
-        if (_editor.getSessionTreeNode() != null && _editor.getSessionTreeNode().supportsCatalogs()) {
+        if (_editor.getSession() != null && _editor.getSession().supportsCatalogs()) {
             _catalogSwitcher = new SQLEditorCatalogSwitcher(editor);
             _catalogToolBarMgr.add(_catalogSwitcher);
         }
@@ -183,7 +183,7 @@ public class SQLEditorToolBar {
      */
     private IAction[] getEditorActions() {
 
-        SessionTreeNode tree = _editor.getSessionTreeNode();
+        Session tree = _editor.getSession();
         if (tree == null) {
             return null;
         }
@@ -265,6 +265,9 @@ public class SQLEditorToolBar {
 	
 	            public void run() {
 	
+	            	if (_coolBar.isDisposed())
+	            		return;
+	            	
 	                if (sessionChanged) {
 	
 	                    // reset actions
@@ -277,12 +280,11 @@ public class SQLEditorToolBar {
 	                }
 	
 	                // update session toolbar
-	                _sessionSwitcher.refresh();
 	                _sessionToolBarMgr.update(true);
 	
 	                // update catalog toolbar
 	                _catalogToolBarMgr.removeAll();
-	                if (_editor.getSessionTreeNode() != null && _editor.getSessionTreeNode().supportsCatalogs()) {
+	                if (_editor.getSession() != null && _editor.getSession().supportsCatalogs()) {
 	                    _catalogSwitcher = new SQLEditorCatalogSwitcher(_editor);
 	                    _catalogToolBarMgr.add(_catalogSwitcher);
 	                }

@@ -25,9 +25,9 @@
       <view
             allowMultiple="false"
             category="SQLExplorerPlugin"
-            class="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            class="net.sourceforge.sqlexplorer.connections.ConnectionsView"
             icon="icons/alias.gif"
-            id="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView"
+            id="net.sourceforge.sqlexplorer.connections.ConnectionsView"
             name="Connections">
       </view>
       <view
@@ -43,7 +43,7 @@
             category="SQLExplorerPlugin"
             class="net.sourceforge.sqlexplorer.plugin.views.DataPreviewView"
             id="net.sourceforge.sqlexplorer.plugin.views.DataPreviewView"
-            name="DataPreviewView">
+            name="Data Preview">
       </view>
    </extension>
    <extension

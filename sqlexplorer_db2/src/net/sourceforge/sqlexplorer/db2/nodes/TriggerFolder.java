@@ -7,12 +7,12 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 
 public class TriggerFolder extends AbstractSQLFolderNode {
 
-    public String getChildType() {
+    public TriggerFolder() {
+		super(Messages.getString("db2.dbstructure.triggers"));
+	}
+
+	public String getChildType() {
         return "TRIGGER";
-    }
-   
-    public String getName() {
-        return Messages.getString("db2.dbstructure.triggers");
     }
     
     public String getSQL() {

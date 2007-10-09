@@ -18,7 +18,6 @@
  */
 package net.sourceforge.sqlexplorer.dataset;
 
-
 /**
  * DataSetRow, represents one row in a dataSet.
  * 
@@ -26,27 +25,28 @@ package net.sourceforge.sqlexplorer.dataset;
  */
 public class DataSetRow {
 
+	private DataSet dataset;
     private Comparable[] _values;
 
-    /**
+	/**
      * Create new DataSetRow with columnCount values
      * 
      * @param columnCount number of columns
      */
-    public DataSetRow(int columnCount) {
-        _values = new Comparable[columnCount];
+    public DataSetRow(DataSet dataset) {
+    	this.dataset = dataset;
+        _values = new Comparable[dataset.getColumns().length];
     }
-
 
     /**
      * Create initialized dataSetRow
      * 
      * @param values
      */
-    public DataSetRow(String[] values) {
+    public DataSetRow(DataSet dataset, Comparable[] values) {
+    	this.dataset = dataset;
         _values = values;
     }
-
 
     /**
      * Returns value of given column. It's pretty, i.e. guaranteed to be
@@ -56,11 +56,9 @@ public class DataSetRow {
      * @return Pretty column value.
      */
     public Object getPrettyObjectValue(int column) {
-
         Object tmp = _values[column];
-        if (tmp != null) {
+        if (tmp != null)
             return tmp;
-        }
         return "<null>";
     }
 
@@ -82,15 +80,17 @@ public class DataSetRow {
     public void setValue(int column, Comparable value) {
         _values[column] = value;
     }
-
     
     /**
      * @return number of columns in this row
      */
     public int length() {
-        if (_values == null) {
+        if (_values == null)
             return 0;
-        }
         return _values.length;
     }
+
+    public DataSet getDataset() {
+		return dataset;
+	}
 }

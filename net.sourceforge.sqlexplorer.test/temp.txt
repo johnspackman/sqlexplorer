@@ -1,0 +1,28 @@
+drop table x;
+create table x (z varchar(10) null, a number(10,4) not null);
+insert into x values ('a', 123456.4321);
+insert into x values ('a', 12345.6432);
+insert into x values ('a', 1234.5643);
+insert into x values ('a', 123.4564);
+insert into x values ('a', 12.3456);
+insert into x values ('a', 1.2345);
+insert into x values ('a', 123.456);
+insert into x values ('a', 12.34);
+insert into x values ('a', 1.2);
+select * from x
+
+
+drop table y;
+create table y (a number(16,2) not null);
+insert into y values(12345678901234.12);
+insert into y values(12345678901234.23);
+insert into y values(12345678901234.34);
+select * from y
+
+
+drop table x;
+create table x (a integer not null);
+insert into x values(1);
+insert into x values(2);
+insert into x values(3);
+select * from x;

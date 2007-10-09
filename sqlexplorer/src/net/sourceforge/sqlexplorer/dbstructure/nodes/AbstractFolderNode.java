@@ -1,6 +1,6 @@
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
-import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
@@ -10,32 +10,31 @@ public abstract class AbstractFolderNode extends AbstractNode {
 
     private String[] _filterExpressions;
 
+    public AbstractFolderNode(String name) {
+		super(name);
+	}
 
-    public AbstractFolderNode() {
+	public AbstractFolderNode(String name, Session session) {
+		super(name, session);
+	}
 
-        _imageKey = "Images.closedFolder";
-        _expandedImageKey = "Images.OpenFolder";
+	public AbstractFolderNode(INode parent, String name, Session session, String type) {
+		super(parent, name, session, type);
+        setImageKey("Images.closedFolder");
+        setExpandedImageKey("Images.OpenFolder");
     }
-
 
     /**
      * Override this method to change the image that is displayed for this node
      * in the database structure outline.
      */
     public Image getImage() {
-
-        if (_imageKey == null) {
-            return _image;
-        }
-        return ImageUtil.getImage(_imageKey);
+        if (get_imageKey() == null)
+        	return super.getImage();
+        return ImageUtil.getImage(get_imageKey());
     }
 
-
-    public abstract String getName();
-
-
     public final String getUniqueIdentifier() {
-
         return getParent().getName() + '.' + getType();
     }
 
@@ -49,7 +48,7 @@ public abstract class AbstractFolderNode extends AbstractNode {
     protected boolean isExcludedByFilter(String name) {
 
         if (_filterExpressions == null) {
-            String filter = ((SQLAlias) getSession().getAlias()).getNameFilterExpression();
+            String filter = getSession().getUser().getAlias().getNameFilterExpression();
             if (filter != null) {
                 _filterExpressions = filter.split(",");
             }

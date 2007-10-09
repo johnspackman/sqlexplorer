@@ -22,13 +22,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Comparator;
 
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.ColumnNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 /**
  * @author Davy Vanherbergen
@@ -39,13 +39,10 @@ public class TableIndexNode extends AbstractNode {
     private TableNode _parentTable;
 
 
-    public TableIndexNode(INode node, String name, SessionTreeNode session, TableNode parentTable) throws Exception {
-
+    public TableIndexNode(INode parent, String name, Session session, TableNode parentTable) {
+    	super(parent, name, session, "index");
         _parentTable = parentTable;
-        _parent = node;
-        _sessionNode = session;
-        _name = name;
-        _imageKey = "Images.IndexIcon";
+        setImageKey("Images.IndexIcon");
     }
 
 
@@ -70,17 +67,6 @@ public class TableIndexNode extends AbstractNode {
     /*
      * (non-Javadoc)
      * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
-     */
-    public String getType() {
-
-        return "index";
-    }
-
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getUniqueIdentifier()
      */
     public String getUniqueIdentifier() {
@@ -96,12 +82,13 @@ public class TableIndexNode extends AbstractNode {
      */
     public void loadChildren() {
 
-        SQLConnection connection = getSession().getInteractiveConnection();
+        SQLConnection connection = null;
         ResultSet rs = null;
         PreparedStatement pStmt = null;
 
         try {
-
+        	connection = getSession().grabConnection();
+        	
             // use prepared statement
             pStmt = connection.prepareStatement("select column_name , descend from sys.all_ind_columns where index_name = ? and table_owner = ? and table_name = ? order by column_position");
             pStmt.setString(1, getName());
@@ -114,7 +101,7 @@ public class TableIndexNode extends AbstractNode {
                 String columnName = rs.getString(1);
                 String sort = rs.getString(2);
 
-                ColumnNode col = new ColumnNode(this, columnName, _sessionNode, _parentTable, false);
+                ColumnNode col = new ColumnNode(this, columnName, _session, _parentTable, false);
                 col.setLabelDecoration(sort);
                 addChildNode(col);
             }
@@ -134,6 +121,8 @@ public class TableIndexNode extends AbstractNode {
                     SQLExplorerPlugin.error("Error closing statement", e);
                 }
             }
+            if (connection != null)
+           		getSession().releaseConnection(connection);
         }
 
     }

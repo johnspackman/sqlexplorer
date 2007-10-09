@@ -61,8 +61,7 @@ public class DatabaseDetailView extends ViewPart {
         setSelectedNode(null);
         
         // synchronize with structure view that may already exist
-        DatabaseStructureView structureView = (DatabaseStructureView) getSite().getPage().findView(
-                SqlexplorerViewConstants.SQLEXPLORER_DBSTRUCTURE);
+        DatabaseStructureView structureView = SQLExplorerPlugin.getDefault().getDatabaseStructureView();
 
         if (structureView != null) {
             structureView.synchronizeDetailView(this);

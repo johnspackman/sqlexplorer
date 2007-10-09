@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.dbdetail.tab;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import net.sourceforge.sqlexplorer.IConstants;
@@ -27,6 +28,7 @@ import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 /**
  * @author Davy Vanherbergen
@@ -56,16 +58,37 @@ public class PreviewTab extends AbstractDataSetTab {
                 maxResults = 50;
             }
             
-            Statement statement = tableNode.getSession().getInteractiveConnection().createStatement();
-            statement.setMaxRows(maxResults);
-            statement.execute("select * from " + tableNode.getQualifiedName());
-            ResultSet resultSet = statement.getResultSet();
-            
-              
-            DataSet dataSet = new DataSet(null, resultSet, null);
-            
-            statement.close();            
-            resultSet.close();
+            SQLConnection connection = null;
+            Statement statement = null;
+            ResultSet resultSet = null;
+            DataSet dataSet = null;
+            try {
+            	connection = tableNode.getSession().grabConnection();
+                statement = connection.createStatement();
+                statement.setMaxRows(maxResults);
+                statement.execute("select * from " + tableNode.getQualifiedName());
+                resultSet = statement.getResultSet();
+                
+                dataSet = new DataSet(null, resultSet, null);
+                
+                statement.close();            
+                resultSet.close();
+            } finally {
+                if (statement != null)
+                    try {
+                        statement.close();
+                    } catch (SQLException e) {
+                        SQLExplorerPlugin.error("Error closing statement", e);
+                    }
+                if (resultSet != null)
+                	try {
+                		resultSet.close();
+                	}catch(SQLException e) {
+                		SQLExplorerPlugin.error("Error closing result set", e);
+                	}
+                if (connection != null)
+                	getNode().getSession().releaseConnection(connection);
+            }
             return dataSet;
         }
         

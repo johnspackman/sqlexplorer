@@ -32,14 +32,13 @@ public class TablespaceFolder extends AbstractFolder {
 	private static final String OID_QUERY = "SELECT DISTINCT oid FROM "
 			+ "pg_tablespace WHERE ? LIKE '%' AND spcname = ?";
 
-	@Override
-	public String getChildType() {
-		return TYPE;
+	public TablespaceFolder() {
+		super(Messages.getString("postgresql.node.tablespace"));
 	}
 
 	@Override
-	public String getName() {
-		return Messages.getString("postgresql.node.tablespace");
+	public String getChildType() {
+		return TYPE;
 	}
 
 	@Override

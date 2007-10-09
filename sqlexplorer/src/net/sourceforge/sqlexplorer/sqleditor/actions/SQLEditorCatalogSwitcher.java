@@ -44,9 +44,9 @@ public class SQLEditorCatalogSwitcher extends ControlContribution {
                 
                 int selIndex = _catalogCombo.getSelectionIndex();
                 String newCat = _catalogCombo.getItem(selIndex);
-                if (_editor.getSessionTreeNode() != null) {
+                if (_editor.getSession() != null) {
                     try {
-                        _editor.getSessionTreeNode().setCatalog(newCat);
+                        _editor.getSession().setCatalog(newCat);
                     } catch (Exception e1) {
                         SQLExplorerPlugin.error("Error changing catalog", e1);
                     }
@@ -56,11 +56,10 @@ public class SQLEditorCatalogSwitcher extends ControlContribution {
         
         _catalogCombo.add("");
         
-        
-        if (_editor.getSessionTreeNode() != null && _editor.getSessionTreeNode().supportsCatalogs()) {
+        if (_editor.getSession() != null && _editor.getSession().supportsCatalogs()) {
                        
-            String catalogs[] = _editor.getSessionTreeNode().getRoot().getChildNames();
-            String currentCatalog = _editor.getSessionTreeNode().getCatalog();
+            String catalogs[] = _editor.getSession().getRoot().getChildNames();
+            String currentCatalog = _editor.getSession().getCatalog();
             
             for (int i = 0; i < catalogs.length; i++) {
                 _catalogCombo.add(catalogs[i]);
@@ -69,7 +68,7 @@ public class SQLEditorCatalogSwitcher extends ControlContribution {
                 }
             }
             
-        } 
+        }
         
         return _catalogCombo;
     }

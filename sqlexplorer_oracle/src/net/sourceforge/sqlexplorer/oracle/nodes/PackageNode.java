@@ -25,19 +25,18 @@
 
 package net.sourceforge.sqlexplorer.oracle.nodes;
 
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
 public class PackageNode extends AbstractNode {
 	
-	public PackageNode(INode parent, String name, SessionTreeNode sessionNode, String owner) {
-		_type = "package";
-		initialize(parent, name, sessionNode);
+	public PackageNode(INode parent, String name, Session sessionNode, String owner) {
+		super(parent, name, sessionNode, "package");
 	}
 
 	public void loadChildren() {
-		addChildNode(new ProcedureFolder(this, _sessionNode));
+		addChildNode(new ProcedureFolder(this, _session));
 	}
 	
 }

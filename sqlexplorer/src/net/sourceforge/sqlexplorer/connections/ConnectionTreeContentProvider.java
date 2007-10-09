@@ -18,14 +18,11 @@
  */
 package net.sourceforge.sqlexplorer.connections;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.sourceforge.sqlexplorer.AliasModel;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.AliasManager;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -36,7 +33,7 @@ import org.eclipse.jface.viewers.Viewer;
  * @author Davy Vanherbergen
  */
 public class ConnectionTreeContentProvider implements ITreeContentProvider {
-
+	
     /**
      * Cleanup. We don't do anything here.
      * 
@@ -54,38 +51,25 @@ public class ConnectionTreeContentProvider implements ITreeContentProvider {
      */
     public Object[] getChildren(Object parentElement) {
 
-        if (parentElement instanceof AliasModel) {
+        if (parentElement instanceof AliasManager) {
+        	AliasManager aliases = (AliasManager)parentElement;
         
-            Object[] children = ((AliasModel) parentElement).getElements();
+            Object[] children = aliases.getAliases().toArray();
             return children;
             
-        } else if (parentElement instanceof ISQLAlias){
+        } else if (parentElement instanceof Alias){
+        	Alias alias = (Alias)parentElement;
             
-            ISQLAlias alias = (ISQLAlias) parentElement;
-            
-            // locate open sessions
-            RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
-            Object[] sessions = sessionRoot.getChildren();
-            List children = new ArrayList();
-            if (sessions != null) {
-                for (int i = 0; i < sessions.length; i++) {
-                    SessionTreeNode session = (SessionTreeNode) sessions[i];
-                    if (session.getAlias().getIdentifier().equals(alias.getIdentifier())) {
-                        children.add(session);
-                    }
-                }
-            }
-            if (children.size() != 0) {
-                return children.toArray(new Object[] {});
-            } else {
-                return null;
-            }
-            
-        } else {
-            // no children for sessions
-            return null;
+        	Object[] children = alias.getUsers().toArray();
+        	return children;
+        	
+        } else if (parentElement instanceof User) {
+        	User user = (User)parentElement;
+        	
+        	return user.getConnections().toArray();
         }
         
+        return null;
     }
 
 
@@ -95,7 +79,6 @@ public class ConnectionTreeContentProvider implements ITreeContentProvider {
      * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
      */
     public Object[] getElements(Object inputElement) {
-
         return getChildren(inputElement);
     }
 
@@ -107,27 +90,22 @@ public class ConnectionTreeContentProvider implements ITreeContentProvider {
      */
     public Object getParent(Object element) {
 
-        if (element instanceof AliasModel) {
-            // this is root node
+        // this is root node
+        if (element instanceof AliasManager)
             return null;
             
-        } else if (element instanceof ISQLAlias){
+        // return alias
+        else if (element instanceof Alias)
+            return SQLExplorerPlugin.getDefault().getAliasManager();
+        
+        else if (element instanceof User)
+        	return ((User)element).getAlias();
 
-            // return root node
-            return SQLExplorerPlugin.getDefault().getAliasModel();            
-
-        } else if (element instanceof SessionTreeNode){
-
-            // return alias
-            SessionTreeNode node = (SessionTreeNode) element;
-            return node.getAlias();
-            
-        } else {
-            
-            return null;
-        }
+        else if (element instanceof SQLConnection)
+        	return ((SQLConnection)element).getUser();
+        
+        return null;
     }
-
 
     /**
      * Returns true if the INode has children.
@@ -135,16 +113,10 @@ public class ConnectionTreeContentProvider implements ITreeContentProvider {
      * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
      */
     public boolean hasChildren(Object element) {
-        
         Object[] tmp = getChildren(element);
         
-        if (tmp != null) {
-            return tmp.length != 0;    
-        }
-        
-        return false;
+        return tmp != null && tmp.length != 0;    
     }
-
 
     /**
      * We don't do anything here..

@@ -40,11 +40,8 @@ public class IndexFolderNode extends AbstractFolderNode {
      * @param sessionNode session for this node
      */
     public IndexFolderNode(INode parent, ITableInfo tableInfo) {
-
+    	super(parent, Messages.getString("DatabaseStructureView.node.Indexes"), parent.getSession(), "index_folder");
         _tableInfo = tableInfo;
-        _sessionNode = parent.getSession();
-        _parent = parent;
-        _name = Messages.getString("DatabaseStructureView.node.Indexes");
     }
 
 
@@ -56,7 +53,7 @@ public class IndexFolderNode extends AbstractFolderNode {
         List indexNames = new ArrayList();
 
         try {
-            ResultSet resultSet = _sessionNode.getMetaData().getIndexInfo(_tableInfo);
+            ResultSet resultSet = _session.getMetaData().getIndexInfo(_tableInfo);
             while (resultSet.next()) {
                 String name = resultSet.getString(6);
                 if (!(name == null || indexNames.contains(name))) {
@@ -84,19 +81,6 @@ public class IndexFolderNode extends AbstractFolderNode {
 
         return getParent().getQualifiedName() + "." + getType();
     }
-
-
-    /**
-     * Returns the table info type as the type for this node.
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
-     */
-    public String getType() {
-
-        return "index_folder";
-    }
-
-
     /**
      * 
      * 
@@ -107,7 +91,7 @@ public class IndexFolderNode extends AbstractFolderNode {
         try {
             Iterator it = getIndexNames().iterator();
             while (it.hasNext()) {
-                addChildNode(new IndexNode(this, (String) it.next(), _sessionNode, (TableNode) getParent()));
+                addChildNode(new IndexNode(this, (String) it.next(), _session, (TableNode) getParent()));
             }
         } catch (Exception e) {
             SQLExplorerPlugin.error("Could not create child nodes for " + getName(), e);

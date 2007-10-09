@@ -25,14 +25,13 @@ public class LanguageFolder extends AbstractSQLFolderNode implements InfoNode,
 
 	private static final String OID_QUERY = "SELECT DISTINCT oid FROM pg_language where ? LIKE '%' AND lanname LIKE ?";
 
-	@Override
-	public String getChildType() {
-		return TYPE;
+	public LanguageFolder() {
+		super(Messages.getString("postgresql.node.language"));
 	}
 
 	@Override
-	public String getName() {
-		return Messages.getString("postgresql.node.language");
+	public String getChildType() {
+		return TYPE;
 	}
 
 	@Override

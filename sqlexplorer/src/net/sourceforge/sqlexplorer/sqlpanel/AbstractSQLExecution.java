@@ -28,15 +28,19 @@ import java.util.Iterator;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.util.TextUtil;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
@@ -57,7 +61,7 @@ import org.eclipse.swt.widgets.Shell;
  *
  * @modified John Spackman
  */
-public abstract class AbstractSQLExecution {
+public abstract class AbstractSQLExecution extends Job {
 	
 	// Maximum size of the files used to log queries for debugging
 	private static final long MAX_DEBUG_LOG_SIZE = 64 * 1024;
@@ -66,76 +70,9 @@ public abstract class AbstractSQLExecution {
 	//	IConstants.USE_LONG_CAPTIONS_ON_RESULTS is true
 	public static final int MAX_CAPTION_LENGTH = 25;
 
-	/*
-	 * LocalThread is used to execute the query in the background by calling doExecute()
-	 * in AbstractSQLExecution.
-	 */
-	private class LocalThread extends Thread {
-
-		public void run() {
-
-			try {
-				// Wait until we can get a free connection from the queue
-				while (_connection == null) {
-					if (_isCancelled)
-						break;
-					_connection = _session .getQueuedConnection(_connectionNumber);
-
-					if (_connection == null)
-						sleep(100);
-				}
-
-				// Make sure the user hasn't tried to terminate us and then run the SQL
-				if ((!_isCancelled) && _connection != null) {
-					doExecution();
-					checkForMessages();
-				}
-
-			} catch (final RuntimeException e) {
-				// Switch back into the main thread to report the error
-				final Shell shell = getEditor().getSite().getShell();
-				shell.getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						MessageDialog.openError(shell, Messages
-								.getString("SQLResultsView.Error.Title"), 
-								e.getClass().getName() + ":" + e.getMessage());
-					}
-				});
-
-			} catch (final Exception e) {
-				if (!(e instanceof java.sql.SQLException || e instanceof InterruptedException)) {
-					// only log non-sql errors
-					SQLExplorerPlugin.error("Error executing.", e);
-				}
-
-				// Switch back into the main thread to report the error
-				final Shell shell = getEditor().getSite().getShell();
-				shell.getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						if (!(e instanceof InterruptedException)) {
-							MessageDialog.openError(shell, Messages
-									.getString("SQLResultsView.Error.Title"), e
-									.getMessage());
-						}
-					}
-				});
-
-			} finally {
-				_session.releaseQueuedConnection(_connectionNumber);
-				_connection = null;
-			}
-		}
-	}
-
-	private Integer _connectionNumber;
-
-	protected boolean _isCancelled = false;
-
 	private SQLEditor _editor;
 
-	private LocalThread _executionThread;
-
-	protected SessionTreeNode _session;
+	protected Session _session;
 	
 	protected SQLConnection _connection;
 
@@ -148,13 +85,74 @@ public abstract class AbstractSQLExecution {
 	 * @param statement the SQL to be executed
 	 * @param _session the session
 	 */
-	public AbstractSQLExecution(SQLEditor _editor, QueryParser queryParser, SessionTreeNode _session) {
-		super();
-		this._editor = _editor;
-		this._session = _session;
-		
+	public AbstractSQLExecution(SQLEditor editor, QueryParser queryParser) {
+		super(Messages.getString("SQLExecution.Progress"));
+		this._editor = editor;
+		this._session = editor.getSession();
 		this.queryParser = queryParser;
 	}
+	
+	public IStatus run(IProgressMonitor monitor) {
+		monitor.setTaskName(Messages.getString("SQLExecution.Progress"));
+		final Shell shell = getEditor().getSite().getShell();
+		
+		try {
+			// Wait until we can get a free connection from the queue
+			_connection = _session.grabConnection();
+			
+			// Update status
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					_editor.getEditorToolBar().refresh(true);
+				}
+			});
+
+			// Make sure the user hasn't tried to terminate us and then run the SQL
+			if (!monitor.isCanceled() && _connection != null) {
+				doExecution(monitor);
+				checkForMessages();
+			}
+
+		} catch (final RuntimeException e) {
+			errorDialog(Messages.getString("SQLResultsView.Error.Title"), e.getClass().getName() + ":" + e.getMessage());
+			
+		} catch (final Exception e) {
+			// only log non-sql errors
+			if (!(e instanceof java.sql.SQLException || e instanceof InterruptedException))
+				SQLExplorerPlugin.error("Error executing.", e);
+			errorDialog(Messages.getString("SQLResultsView.Error.Title"), e.getMessage());
+
+		} finally {
+			if (_connection != null)
+				_session.releaseConnection(_connection);
+			_connection = null;
+			
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					_editor.getEditorToolBar().refresh(true);
+				}
+			});
+		}
+		
+		return new Status(IStatus.OK, getClass().getName(), IStatus.OK, "OK", null);
+	}
+	
+	/**
+	 * Main execution method.  Note that this method is called from a background thread
+	 * and therefore many SWT operations will need to be done via Display.[a]syncExec()
+	 * @param monitor
+	 * @throws Exception
+	 */
+	protected abstract void doExecution(IProgressMonitor monitor) throws Exception;
+
+	/**
+	 * This method will be called from the UI thread when execution is cancelled
+	 * and the tab will be disposed. Do any cleanups required in here.  Note that this 
+	 * method is called from a background thread and therefore many SWT operations will
+	 * need to be done via Display.[a]syncExec()
+	 * @throws Exception
+	 */
+	protected abstract void doStop() throws Exception;
 	
 	/**
 	 * Creates a new tab for the results in SQLEditor
@@ -265,54 +263,6 @@ public abstract class AbstractSQLExecution {
 	}
 
 	/**
-	 * Main execution method.  Note that this method is called from a background thread
-	 * and therefore many SWT operations will need to be done via Display.[a]syncExec()
-	 * @throws Exception
-	 */
-	protected abstract void doExecution() throws Exception;
-
-	/**
-	 * This method will be called from the UI thread when execution is cancelled
-	 * and the tab will be disposed. Do any cleanups required in here.  Note that this 
-	 * method is called from a background thread and therefore many SWT operations will
-	 * need to be done via Display.[a]syncExec()
-	 * @throws Exception
-	 */
-	protected abstract void doStop() throws Exception;
-
-	/**
-	 * Start exection
-	 */
-	public final void startExecution() {
-		_connectionNumber = _session.getQueuedConnectionNumber();
-
-		// start execution in seperate thread
-		_executionThread = new LocalThread();
-		_executionThread.start();
-	}
-
-	/**
-	 * Cancel execution.
-	 */
-	public final void stop() {
-		try {
-			_isCancelled = true;
-			doStop();
-			
-		} catch (final Exception e) {
-			// Switch back to the UI thread and tell the user
-			final Shell shell = getEditor().getSite().getShell();
-			shell.getDisplay().asyncExec(new Runnable() {
-				public void run() {
-					MessageDialog.openError(shell, Messages
-							.getString("SQLResultsView.Error.Title"), e
-							.getMessage());
-				}
-			});
-		}
-	}
-	
-	/**
 	 * Logs the query to the debug log file, but only if the preferences require
 	 * it.  If the query failed, the exception should be included too. 
 	 * @param query
@@ -359,6 +309,20 @@ public abstract class AbstractSQLExecution {
 		} catch(IOException e) {
 			SQLExplorerPlugin.error("Failed to log query", e);
 		}
+	}
+
+	/**
+	 * Helper method that switches to the UI thread and presents an Error dialog
+	 * @param title
+	 * @param message
+	 */
+	protected void errorDialog(final String title, final String message) {
+		final Shell shell = getEditor().getSite().getShell();
+		shell.getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				MessageDialog.openError(shell, title, message);
+			}
+		});
 	}
 
 	/**

@@ -1,8 +1,6 @@
-package net.sourceforge.sqlexplorer.dialogs;
-
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2007 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,19 +16,20 @@ package net.sourceforge.sqlexplorer.dialogs;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package net.sourceforge.sqlexplorer.dialogs;
 
-import net.sourceforge.sqlexplorer.AliasModel;
-import net.sourceforge.sqlexplorer.DriverModel;
+import java.util.HashMap;
+import java.util.Map.Entry;
+
+import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.IdentifierFactory;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.DriverManager;
+import net.sourceforge.sqlexplorer.dbproduct.ManagedDriver;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
-import net.sourceforge.squirrel_sql.fw.persist.ValidationException;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
-import net.sourceforge.squirrel_sql.fw.util.DuplicateObjectException;
-
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -55,38 +54,36 @@ import org.eclipse.swt.widgets.Text;
  * 
  */
 public class CreateAliasDlg extends TitleAreaDialog {
+	
+	public enum Type {
+		CREATE, CHANGE, COPY
+	}
 
-    Button _btnAutoLogon;
+    private Button _btnAutoLogon;
 
-    private SQLAlias alias;
+    private Alias alias;
 
-    private AliasModel aliasModel;
+    private Button btnActivate;
 
-    Button btnActivate;
+    private Combo combo;
+    private HashMap<Integer, ManagedDriver> comboDrivers = new HashMap<Integer, ManagedDriver>();
 
-    Combo combo;
+    private Text nameField;
 
-    DriverModel driverModel;
+    private Text passwordField;
 
-    Text nameField;
+    private Type type;
 
-    Text passwordField;
+    private Text urlField;
 
-    int type;
-
-    Text urlField;
-
-    Text userField;
+    private Text userField;
 
     private static final int SIZING_TEXT_FIELD_WIDTH = 250;
 
 
-    public CreateAliasDlg(Shell parentShell, DriverModel dm, int type, SQLAlias al, AliasModel am) {
-
+    public CreateAliasDlg(Shell parentShell, Type type, Alias alias) {
         super(parentShell);
-        driverModel = dm;
-        alias = al;
-        aliasModel = am;
+        this.alias = alias;
         this.type = type;
     }
 
@@ -94,11 +91,11 @@ public class CreateAliasDlg extends TitleAreaDialog {
     protected void configureShell(Shell shell) {
 
         super.configureShell(shell);
-        if (type == 1) {
+        if (type == Type.CREATE) {
             shell.setText(Messages.getString("AliasDialog.Create.Title")); //$NON-NLS-1$
-        } else if (type == 2) {
+        } else if (type == Type.CHANGE) {
             shell.setText(Messages.getString("AliasDialog.Change.Title")); //$NON-NLS-1$
-        } else if (type == 3) {
+        } else if (type == Type.COPY) {
             shell.setText(Messages.getString("AliasDialog.Copy.Title")); //$NON-NLS-1$
         }
     }
@@ -115,13 +112,13 @@ public class CreateAliasDlg extends TitleAreaDialog {
 
         Control contents = super.createContents(parent);
 
-        if (type == 1) {
+        if (type == Type.CREATE) {
             setTitle(Messages.getString("AliasDialog.Create.Title")); //$NON-NLS-1$
             setMessage("Create a new alias"); //$NON-NLS-1$
-        } else if (type == 2) {
+        } else if (type == Type.CHANGE) {
             setTitle(Messages.getString("AliasDialog.Change.Title")); //$NON-NLS-1$
             setMessage("Modify the alias"); //$NON-NLS-1$			
-        } else if (type == 3) {
+        } else if (type == Type.COPY) {
             setTitle(Messages.getString("AliasDialog.Copy.Title")); //$NON-NLS-1$
             setMessage("Copy the alias"); //$NON-NLS-1$						
         }
@@ -191,18 +188,21 @@ public class CreateAliasDlg extends TitleAreaDialog {
         combo = new Combo(nameGroup, SWT.BORDER | SWT.DROP_DOWN | SWT.READ_ONLY);
         data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
-
-        int size = driverModel.size();
-        String defaultDriverName = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DEFAULT_DRIVER);
-        int defaultDriver = 0;
-        for (int i = 0; i < size; i++) {
-            String driverName = driverModel.getElement(i).toString();
-            if (driverName.startsWith(defaultDriverName)) {
-                defaultDriver = i;
-            }
-            combo.add(driverName);
-        }
         combo.setLayoutData(data);
+
+        final DriverManager driverModel = SQLExplorerPlugin.getDefault().getDriverModel();
+        String defaultDriverName = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DEFAULT_DRIVER);
+        ManagedDriver defaultDriver = null;
+        int defaultDriverIndex = 0;
+        populateCombo();
+        for (Entry<Integer, ManagedDriver> entry : comboDrivers.entrySet()) {
+        	ManagedDriver driver = entry.getValue();
+        	if (driver.getName().startsWith(defaultDriverName)) {
+        		defaultDriver = driver;
+        		defaultDriverIndex = entry.getKey();
+        		break;
+        	}
+        }
 
         Button button = new Button(nameGroup, SWT.NULL);
         button.setText(Messages.getString("New_Driver..._9")); //$NON-NLS-1$
@@ -212,15 +212,10 @@ public class CreateAliasDlg extends TitleAreaDialog {
 
             public void widgetSelected(SelectionEvent event) {
 
-                final IdentifierFactory factory = IdentifierFactory.getInstance();
-                final ISQLDriver driver = driverModel.createDriver(factory.createIdentifier());
-
-                CreateDriverDlg dlg = new CreateDriverDlg(CreateAliasDlg.this.getShell(), driverModel, 1, driver);
+            	ManagedDriver newDriver = new ManagedDriver(driverModel.createUniqueId());
+                CreateDriverDlg dlg = new CreateDriverDlg(CreateAliasDlg.this.getShell(), CreateDriverDlg.Type.CREATE, newDriver);
                 dlg.open();
-                combo.removeAll();
-                int size = driverModel.size();
-                for (int i = 0; i < size; i++)
-                    combo.add(driverModel.getElement(i).toString());
+                populateCombo();
             }
         });
 
@@ -296,54 +291,51 @@ public class CreateAliasDlg extends TitleAreaDialog {
         btnActivate.setLayoutData(data);
 
         _btnAutoLogon.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				boolean active = ((Button) event.widget).getSelection();
+				btnActivate.setEnabled(active);
+				if (!active) {
+					btnActivate.setSelection(false);
+				}
+			}
+		});
 
-            public void widgetSelected(SelectionEvent event) {
-
-                boolean active = ((Button)event.widget).getSelection();
-                btnActivate.setEnabled(active);
-               if (!active) {
-                   btnActivate.setSelection(false);
-               }
-            }
-        });
-        
-        
-
-        combo.addSelectionListener(new org.eclipse.swt.events.SelectionListener() {
-
-            public void widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent e) {
-
-            }
-
-
+        combo.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-
                 int selIndex = combo.getSelectionIndex();
-                urlField.setText(driverModel.getElement(selIndex).getUrl());
+                ManagedDriver driver = comboDrivers.get(selIndex);
+                urlField.setText(driver.getUrl());
                 CreateAliasDlg.this.validate();
             };
         });
         
-        if (size > 0) {            
-            combo.select(defaultDriver);
-            urlField.setText(driverModel.getElement(defaultDriver).getUrl());
+        if (!comboDrivers.isEmpty()) {            
+            combo.select(defaultDriverIndex);
+            urlField.setText(defaultDriver.getUrl());
         }     
-        
-        
         
         loadData();
         return parentComposite;
-        
-        
-        
     }
 
+    private void populateCombo() {
+        DriverManager driverModel = SQLExplorerPlugin.getDefault().getDriverModel();
+        combo.removeAll();
+        int index = 0;
+        for (ManagedDriver driver : driverModel.getDrivers()) {
+            combo.add(driver.getName());
+            comboDrivers.put(new Integer(index++), driver);
+        }
+    }
 
     private void loadData() {
 
-        nameField.setText(alias.getName());
-        userField.setText(alias.getUserName());
-        passwordField.setText(alias.getPassword());
+    	if (type != Type.CREATE)
+    		nameField.setText(alias.getName());
+        if (alias.getDefaultUser() != null) {
+	        userField.setText(alias.getDefaultUser().getUserName());
+	        passwordField.setText(alias.getDefaultUser().getPassword());
+        }
         _btnAutoLogon.setSelection(alias.isAutoLogon());
         if(!alias.isAutoLogon()) {
             btnActivate.setEnabled(false);
@@ -352,9 +344,8 @@ public class CreateAliasDlg extends TitleAreaDialog {
             btnActivate.setSelection(alias.isConnectAtStartup());
         }
         
-        if (type != 1) {
-            ISQLDriver iSqlDriver = driverModel.getDriver(alias.getDriverIdentifier());
-            combo.setText(iSqlDriver.getName());
+        if (type != Type.CREATE) {
+            combo.setText(alias.getDriver().getName());
             urlField.setText(alias.getUrl());
         }
     }
@@ -363,28 +354,41 @@ public class CreateAliasDlg extends TitleAreaDialog {
     protected void okPressed() {
 
         try {
+        	User previousUser = alias.getDefaultUser();
+        	
             alias.setName(nameField.getText().trim());
             int selIndex = combo.getSelectionIndex();
-            alias.setDriverIdentifier(driverModel.getElement(selIndex).getIdentifier());
+            ManagedDriver driver = comboDrivers.get(selIndex);
+            alias.setDriver(driver);
             alias.setUrl(urlField.getText().trim());
-            alias.setUserName(userField.getText().trim());
+            alias.setDefaultUser(new User(userField.getText().trim(), passwordField.getText().trim()));
             alias.setName(this.nameField.getText().trim());
             alias.setSchemaFilterExpression("");
             alias.setNameFilterExpression("");
             alias.setFolderFilterExpression("");
             alias.setConnectAtStartup(btnActivate.getSelection());
-            alias.setPassword(passwordField.getText().trim());
             alias.setAutoLogon(_btnAutoLogon.getSelection());
-            if ((this.type == 1) || (type == 3)) {
-                aliasModel.addAlias(alias);
+            
+            if (type != Type.CHANGE)
+                SQLExplorerPlugin.getDefault().getAliasManager().addAlias(alias);
+            
+            // If we changed the default user and the previous default user is not in use,
+            //	remove it (note: Alias maintains one User instance per username, merging 
+            //	new additions into the existing instance which is why it is valid to compare
+            //	objects even though we have explicitly created a new instance of User above)
+            else if (alias.getDefaultUser() != previousUser) {
+            	if (!previousUser.isInUse())
+            		alias.removeUser(previousUser);
             }
-        } catch (ValidationException excp) {
+            
+        } catch (ExplorerException excp) {
             SQLExplorerPlugin.error("Validation Exception", excp);//$NON-NLS-1$
             // System.out.println(Messages.getString("Error_Validation_Exception_4"));//$NON-NLS-1$
-        } catch (DuplicateObjectException excp1) {
-            SQLExplorerPlugin.error("Duplicate Exception", excp1);//$NON-NLS-1$
-            // System.out.println(Messages.getString("Error_DuplicateObjectException_5"));//$NON-NLS-1$
         }
+        
+        // Notify that ther has been changes
+        SQLExplorerPlugin.getDefault().getAliasManager().modelChanged();
+        
         close();
     }
 

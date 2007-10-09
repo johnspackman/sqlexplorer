@@ -97,7 +97,7 @@ public class TableDependencyTab extends AbstractDataSetTab {
         sql.append("ORDER BY ROOTTYPE, ROOTSCHEMA, ROOTNAME, LEVEL");
 
         _logger.debug("sql to get dependency for procedure is: " + sql.toString());
-        return new DataSet(null, sql.toString(), null, getNode().getSession().getInteractiveConnection());
+        return new DataSet(null, sql.toString(), null, getNode().getSession());
     }
 
     public String getStatusMessage() {

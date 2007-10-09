@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sqlexplorer"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/sqlexplorer_oracle"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry path="src" kind="src"/>
+	<classpathentry path="/sqlexplorer" combineaccessrules="false" kind="src"/>
+	<classpathentry path="/sqlexplorer_oracle" combineaccessrules="false" kind="src"/>
+	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
+	<classpathentry path="lib/dom4j-1.6.1.jar" kind="lib"/>
+	<classpathentry path="bin" kind="output"/>
 </classpath>

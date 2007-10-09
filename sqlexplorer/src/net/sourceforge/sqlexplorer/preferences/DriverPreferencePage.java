@@ -1,9 +1,7 @@
-package net.sourceforge.sqlexplorer.preferences;
-
 /*
- **********************************************************************
- * Copyright (c) 1984-2005 by Progress Software Corporation  
- *                                                           
+ * Copyright (C) 2007 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -16,19 +14,24 @@ package net.sourceforge.sqlexplorer.preferences;
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  
- * USA
- **********************************************************************
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package net.sourceforge.sqlexplorer.preferences;
 
-import net.sourceforge.sqlexplorer.DriverModel;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+
+import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.IdentifierFactory;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.DriverManager;
+import net.sourceforge.sqlexplorer.dbproduct.ManagedDriver;
 import net.sourceforge.sqlexplorer.dialogs.CreateDriverDlg;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -79,7 +82,7 @@ public class DriverPreferencePage extends PreferencePage implements IWorkbenchPr
 
     private IPreferenceStore _prefs;
 
-    private DriverModel _driverModel;
+    private DriverManager _driverModel;
 
 
     /**
@@ -187,10 +190,9 @@ public class DriverPreferencePage extends PreferencePage implements IWorkbenchPr
         add.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent e) {
-                final IdentifierFactory factory = IdentifierFactory.getInstance();
-                final ISQLDriver driver = _driverModel.createDriver(factory.createIdentifier());
+                ManagedDriver driver = new ManagedDriver(SQLExplorerPlugin.getDefault().getDriverModel().createUniqueId());
 
-                CreateDriverDlg dlg = new CreateDriverDlg(getShell(), _driverModel, 1, driver);
+                CreateDriverDlg dlg = new CreateDriverDlg(getShell(), CreateDriverDlg.Type.CREATE, driver);
                 dlg.open();
 
                 _tableViewer.refresh();
@@ -219,9 +221,9 @@ public class DriverPreferencePage extends PreferencePage implements IWorkbenchPr
 
             public void widgetSelected(SelectionEvent e) {
                 StructuredSelection sel = (StructuredSelection) _tableViewer.getSelection();
-                ISQLDriver dv = (ISQLDriver) sel.getFirstElement();
+                ManagedDriver dv = (ManagedDriver) sel.getFirstElement();
                 if (dv != null) {
-                    CreateDriverDlg dlg = new CreateDriverDlg(getShell(), _driverModel, 3, dv);
+                    CreateDriverDlg dlg = new CreateDriverDlg(getShell(), CreateDriverDlg.Type.COPY, dv);
                     dlg.open();
                     _tableViewer.refresh();
                 }
@@ -242,7 +244,7 @@ public class DriverPreferencePage extends PreferencePage implements IWorkbenchPr
                                 + Messages.getString("Preferences.Drivers.ConfirmDelete.Postfix"));
                 if (okToDelete) {
                     StructuredSelection sel = (StructuredSelection) _tableViewer.getSelection();
-                    ISQLDriver dv = (ISQLDriver) sel.getFirstElement();
+                    ManagedDriver dv = (ManagedDriver) sel.getFirstElement();
                     if (dv != null) {
                         _driverModel.removeDriver(dv);
                         _tableViewer.refresh();
@@ -278,9 +280,13 @@ public class DriverPreferencePage extends PreferencePage implements IWorkbenchPr
         bRestore.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent e) {
-                _driverModel.restoreDrivers();
-                _tableViewer.refresh();
-                selectFirst();
+            	try {
+	                _driverModel.restoreDrivers();
+	                _tableViewer.refresh();
+	                selectFirst();
+            	}catch(ExplorerException ex) {
+            		SQLExplorerPlugin.error("Cannot restore default driver configuration", ex);
+            	}
             }
         });
 
@@ -325,9 +331,9 @@ public class DriverPreferencePage extends PreferencePage implements IWorkbenchPr
 
     private void changeDriver() {
         StructuredSelection sel = (StructuredSelection) _tableViewer.getSelection();
-        ISQLDriver dv = (ISQLDriver) sel.getFirstElement();
+        ManagedDriver dv = (ManagedDriver) sel.getFirstElement();
         if (dv != null) {
-            CreateDriverDlg dlg = new CreateDriverDlg(getShell(), _driverModel, 2, dv);
+            CreateDriverDlg dlg = new CreateDriverDlg(getShell(), CreateDriverDlg.Type.MODIFY, dv);
             dlg.open();
             _tableViewer.refresh();
             selectFirst();
@@ -336,9 +342,9 @@ public class DriverPreferencePage extends PreferencePage implements IWorkbenchPr
 
 
     void selectFirst() {
-        if (_driverModel.getElements().length > 0) {
-            Object obj = (_driverModel.getElements())[0];
-            StructuredSelection sel = new StructuredSelection(obj);
+    	Iterator<ManagedDriver> iter = _driverModel.getDrivers().iterator();
+        if (iter.hasNext()) {
+            StructuredSelection sel = new StructuredSelection(iter.next());
             _tableViewer.setSelection(sel);
         }
     }
@@ -346,38 +352,35 @@ public class DriverPreferencePage extends PreferencePage implements IWorkbenchPr
 
     // Bold the default driver element
     void selectDefault(Table table) {
-        
-        if (_driverModel.getElements().length == 0) {
-            return;
-        }
-            
         String defaultDriver = _prefs.getString(IConstants.DEFAULT_DRIVER);
-        if (defaultDriver == null) {
+        if (defaultDriver == null)
             return;
-        }
 
-        Object[] obj = (_driverModel.getElements());
-        for (int i = 0; i < obj.length; i++) {
-            if (obj[i].toString().toLowerCase().startsWith(defaultDriver.toLowerCase())) {
+        int index = 0;
+        for (ManagedDriver driver : _driverModel.getDrivers()) {
+            if (driver.getName().toLowerCase().startsWith(defaultDriver.toLowerCase())) {
                 _boldfont = new Font(_tableViewer.getTable().getDisplay(), table.getFont().toString(),
                         table.getFont().getFontData()[0].getHeight(), SWT.BOLD);
-                _tableViewer.getTable().getItem(i).setFont(0, _boldfont);
+                _tableViewer.getTable().getItem(index).setFont(0, _boldfont);
                 _tableViewer.getTable().pack(true);
                 break;
             }
+            index++;
         }
     }
-   
-
 }
 
 class DriverContentProvider implements IStructuredContentProvider {
 
-    DriverModel iResource;
-
-
     public Object[] getElements(Object input) {
-        return ((DriverModel) input).getElements();
+    	ArrayList<ManagedDriver> drivers = new ArrayList<ManagedDriver>();
+    	drivers.addAll(((DriverManager) input).getDrivers());
+    	Collections.sort(drivers, new Comparator<ManagedDriver>() {
+			public int compare(ManagedDriver left, ManagedDriver right) {
+				return left.getName().compareTo(right.getName());
+			}
+    	});
+        return drivers.toArray();
     }
 
 
@@ -397,9 +400,14 @@ class DriverLabelProvider extends LabelProvider implements ITableLabelProvider {
 
 
     public Image getColumnImage(Object element, int i) {
-        ISQLDriver dv = (ISQLDriver) element;
+        ManagedDriver dv = (ManagedDriver) element;
         
-        if (dv.isJDBCDriverClassLoaded() == true) {
+        try {
+        	dv.registerSQLDriver();
+        } catch(SQLException e) {
+        	// Nothing
+        }
+        if (dv.isDriverClassLoaded() == true) {
             return ImageUtil.getImage("Images.OkDriver");
         } else {
             return ImageUtil.getImage("Images.ErrorDriver");
@@ -417,7 +425,7 @@ class DriverLabelProvider extends LabelProvider implements ITableLabelProvider {
 
 
     public String getColumnText(Object element, int i) {
-        ISQLDriver dv = (ISQLDriver) element;
+        ManagedDriver dv = (ManagedDriver) element;
         return dv.getName();
     }
 

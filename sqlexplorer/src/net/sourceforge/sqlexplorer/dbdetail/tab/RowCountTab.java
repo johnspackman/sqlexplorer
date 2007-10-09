@@ -18,6 +18,9 @@
  */
 package net.sourceforge.sqlexplorer.dbdetail.tab;
 
+import java.sql.SQLException;
+
+import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
@@ -33,7 +36,7 @@ public class RowCountTab extends AbstractDataSetTab {
         return Messages.getString("DatabaseDetailView.Tab.RowCount");
     }
 
-    public DataSet getDataSet() throws Exception {       
+    public DataSet getDataSet() throws ExplorerException {       
         
         String nodeName = getNode().toString();
         
@@ -42,7 +45,11 @@ public class RowCountTab extends AbstractDataSetTab {
             nodeName = tableNode.getQualifiedName();
         }
         
-        return new DataSet(null, "select count(*) from " + nodeName, null, getNode().getSession().getInteractiveConnection());
+        try {
+        	return new DataSet(null, "select count(*) from " + nodeName, null, getNode().getSession());
+        }catch(SQLException e) {
+        	throw new ExplorerException(e);
+        }
     }
  
     public String getStatusMessage() {

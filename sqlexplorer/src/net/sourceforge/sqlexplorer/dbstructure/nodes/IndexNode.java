@@ -21,8 +21,8 @@ package net.sourceforge.sqlexplorer.dbstructure.nodes;
 import java.sql.ResultSet;
 import java.util.Comparator;
 
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
 /**
  * @author Davy Vanherbergen
@@ -33,13 +33,10 @@ public class IndexNode extends AbstractNode {
     private TableNode _parentTable;
 
 
-    public IndexNode(INode node, String name, SessionTreeNode session, TableNode parentTable) throws Exception {
-
+    public IndexNode(INode parent, String name, Session session, TableNode parentTable) {
+    	super(parent, name, session, "index");
         _parentTable = parentTable;
-        _parent = node;
-        _sessionNode = session;
-        _name = name;
-        _imageKey = "Images.IndexIcon";
+        setImageKey("Images.IndexIcon");
     }
 
 
@@ -59,19 +56,7 @@ public class IndexNode extends AbstractNode {
 
         return _parent.getParent().getName() + "." + _name;
     }
-
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
-     */
-    public String getType() {
-
-        return "index";
-    }
-
-
+    
     /*
      * (non-Javadoc)
      * 
@@ -91,7 +76,7 @@ public class IndexNode extends AbstractNode {
     public void loadChildren() {
 
         try {
-            ResultSet resultSet = _sessionNode.getMetaData().getIndexInfo(_parentTable.getTableInfo());
+            ResultSet resultSet = _session.getMetaData().getIndexInfo(_parentTable.getTableInfo());
             while (resultSet.next()) {
 
                 String indexName = resultSet.getString(6);
@@ -99,7 +84,7 @@ public class IndexNode extends AbstractNode {
                 String sort = resultSet.getString(10);
                                 
                 if (indexName != null && indexName.equalsIgnoreCase(_name)) {
-                    ColumnNode col = new ColumnNode(this, columnName, _sessionNode, _parentTable, true);
+                    ColumnNode col = new ColumnNode(this, columnName, _session, _parentTable, true);
                     if (sort == null || sort.equalsIgnoreCase("A")) {
                         col.setLabelDecoration("ASC");
                     } else {

@@ -33,9 +33,9 @@ import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -48,8 +48,6 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableTreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -57,7 +55,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
@@ -98,8 +95,8 @@ public class ExplainExecution extends AbstractSQLExecution {
     private PreparedStatement _prepStmt;
     private Statement _stmt;
     
-    public ExplainExecution(SQLEditor editor, QueryParser queryParser, SessionTreeNode sessionTreeNode) {
-    	super(editor, queryParser, sessionTreeNode);
+    public ExplainExecution(SQLEditor editor, QueryParser queryParser) {
+    	super(editor, queryParser);
     	
         // set initial message
         setProgressMessage(Messages.getString("SQLResultsView.ConnectionWait"));
@@ -196,6 +193,7 @@ public class ExplainExecution extends AbstractSQLExecution {
                         table.getColumn(i).pack();
                     }
 
+                    /*
                     final Composite parent = composite;
                     table.addKeyListener(new KeyAdapter() {
 
@@ -224,7 +222,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 
                         }
 
-                    });
+                    });*/
                     
                     // add context menu to table & cursor
                     final ExplainPlanActionGroup actionGroup = new ExplainPlanActionGroup(tv, node.getChildren()[0]);
@@ -263,7 +261,7 @@ public class ExplainExecution extends AbstractSQLExecution {
     }
 
 
-    protected void doExecution() throws Exception {
+    protected void doExecution(IProgressMonitor monitor) throws Exception {
         int numErrors = 0;
         SQLException lastSQLException = null;
         Query query = null;
@@ -273,7 +271,7 @@ public class ExplainExecution extends AbstractSQLExecution {
         		
             	for (Iterator<Query> iter = getQueryParser().iterator(); iter.hasNext(); ) {
             		query = iter.next();
-        			if (_isCancelled)
+        			if (monitor.isCanceled())
         				break;
 	
 		            _stmt = _connection.createStatement();
@@ -282,7 +280,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 		            _stmt.close();
 		            _stmt = null;
 		
-		            if (_isCancelled) {
+		            if (monitor.isCanceled()) {
 		                return;
 		            }
 		
@@ -291,7 +289,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 		            _stmt.close();
 		            _stmt = null;
 		
-		            if (_isCancelled) {
+		            if (monitor.isCanceled()) {
 		                return;
 		            }
 		
@@ -303,7 +301,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 		            _prepStmt.setString(2, id_);
 		            ResultSet rs = _prepStmt.executeQuery();
 		
-		            if (_isCancelled) {
+		            if (monitor.isCanceled()) {
 		                return;
 		            }
 		
@@ -358,7 +356,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 		            _prepStmt = null;
 		            ExplainNode nd_parent = (ExplainNode) mp.get(new Integer(-1));
 		
-		            if (_isCancelled) {
+		            if (monitor.isCanceled()) {
 		                return;
 		            }
 		
@@ -411,7 +409,6 @@ public class ExplainExecution extends AbstractSQLExecution {
 
         Exception t = null;
 
-        _isCancelled = true;
         if (_stmt != null) {
             try {
                 _stmt.cancel();

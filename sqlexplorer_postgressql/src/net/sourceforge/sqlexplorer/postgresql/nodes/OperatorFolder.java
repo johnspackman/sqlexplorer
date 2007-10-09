@@ -32,14 +32,13 @@ public class OperatorFolder extends AbstractSQLFolderNode implements InfoNode,
 			+ " op JOIN pg_namespace ns ON op.oprnamespace=ns.oid WHERE ns.nspname = ? AND op.oprname LIKE "
 			+ " REPLACE(?, '%', '_%') ESCAPE '_'";
 
-	@Override
-	public String getChildType() {
-		return TYPE;
+	public OperatorFolder() {
+		super(Messages.getString("postgresql.node.operator"));
 	}
 
 	@Override
-	public String getName() {
-		return Messages.getString("postgresql.node.operator");
+	public String getChildType() {
+		return TYPE;
 	}
 
 	@Override

@@ -1,0 +1,82 @@
+<tests>
+	<test enable-structured-comments="true">
+		<data>
+			drop table x;
+			create table x as 
+				select *
+					from supplier_recharge_history 
+					where 
+						sysdate between srh_eff_from and nvl(srh_eff_to, TO_DATE('31/12/2999 23:59:59', 'DD/MM/YYYY HH24:MI:SS'))
+					order by org_id, srh_eff_from;
+			
+			
+			declare
+				dt date;
+				lastOrgId number(10) := 0;
+			begin
+				for rc in (select * from supplier_recharge_history where org_id in (select org_id from x) order by org_id, srh_eff_from desc) loop
+					if lastOrgId = 0 and lastOrgId != rc.org_id then
+						dt := null;
+					end if;
+					if rc.srh_eff_to is null and dt is not null then
+						update supplier_recharge_history
+							set srh_eff_to = dt - (1/(24*60*60))
+							where srh_id = rc.srh_id;
+					end if;
+					dt := rc.srh_eff_from;
+					lastOrgId := rc.org_id;
+				end loop;
+			end;
+		</data>
+		<q line="1">
+			drop table x
+		</q>
+		<q line="2">
+			create table x as 
+				select *
+					from supplier_recharge_history 
+					where 
+						sysdate between srh_eff_from and nvl(srh_eff_to, TO_DATE('31/12/2999 23:59:59', 'DD/MM/YYYY HH24:MI:SS'))
+					order by org_id, srh_eff_from
+		</q>
+		<q line="10">
+			declare
+				dt date;
+				lastOrgId number(10) := 0;
+			begin
+				for rc in (select * from supplier_recharge_history where org_id in (select org_id from x) order by org_id, srh_eff_from desc) loop
+					if lastOrgId = 0 and lastOrgId != rc.org_id then
+						dt := null;
+					end if;
+					if rc.srh_eff_to is null and dt is not null then
+						update supplier_recharge_history
+							set srh_eff_to = dt - (1/(24*60*60))
+							where srh_id = rc.srh_id;
+					end if;
+					dt := rc.srh_eff_from;
+					lastOrgId := rc.org_id;
+				end loop;
+			end;
+		</q>
+	</test>
+	<test enable-structured-comments="true">
+		<data>
+			drop table x;
+			create table x (a number(10,4) not null);
+			insert into x values (123456.4321);
+			insert into x values (12345.6432);
+		</data>
+		<q line="1">
+			drop table x
+		</q>
+		<q line="2">
+			create table x (a number(10,4) not null)
+		</q>
+		<q line="3">
+			insert into x values (123456.4321)
+		</q>
+		<q line="4">
+			insert into x values (12345.6432)
+		</q>
+	</test>
+</tests>

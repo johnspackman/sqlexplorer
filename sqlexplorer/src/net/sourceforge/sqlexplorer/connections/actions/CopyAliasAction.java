@@ -18,19 +18,11 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
-import net.sourceforge.sqlexplorer.AliasModel;
-import net.sourceforge.sqlexplorer.DriverModel;
-import net.sourceforge.sqlexplorer.IdentifierFactory;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dialogs.CreateAliasDlg;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
-import net.sourceforge.squirrel_sql.fw.persist.ValidationException;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
-
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -41,49 +33,31 @@ public class CopyAliasAction extends AbstractConnectionTreeAction {
 
     ImageDescriptor _image = ImageUtil.getDescriptor("Images.CopyAlias");
 
-
     public String getToolTipText() {
         return Messages.getString("ConnectionsView.Actions.CopyAliasToolTip");
     }
-
 
     public String getText() {
         return Messages.getString("ConnectionsView.Actions.CopyAlias");
     }
 
-
     public ImageDescriptor getHoverImageDescriptor() {
         return _image;
     }
-
 
     public ImageDescriptor getImageDescriptor() {
         return _image;
     };
 
-
     public void run() {
-
-        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
-        if (!(sel.getFirstElement() instanceof ISQLAlias)) {
-            return;
-        }
-        SQLAlias al = (SQLAlias) sel.getFirstElement();
-        IdentifierFactory factory = IdentifierFactory.getInstance();
-        DriverModel driverModel = SQLExplorerPlugin.getDefault().getDriverModel();
-        AliasModel aliasModel = SQLExplorerPlugin.getDefault().getAliasModel();
-        SQLAlias alias = aliasModel.createAlias(factory.createIdentifier());
-        if (al != null) {
-            try {
-                alias.assignFrom(al);
-            } catch (ValidationException e) {
-            }
-            CreateAliasDlg dlg = new CreateAliasDlg(Display.getCurrent().getActiveShell(), driverModel, 3, alias, aliasModel);
-            dlg.open();
-            _treeViewer.refresh();
-        }
+    	Alias alias = getView().getSelectedAlias(false);
+    	if (alias == null)
+    		return;
+    	
+    	CreateAliasDlg dlg = new CreateAliasDlg(Display.getCurrent().getActiveShell(), CreateAliasDlg.Type.COPY, new Alias(alias));
+    	dlg.open();
+    	getView().refresh();
     }
-
 
     /**
      * Only show action when there is 1 alias selected
@@ -91,16 +65,8 @@ public class CopyAliasAction extends AbstractConnectionTreeAction {
      * @see net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction#isAvailable()
      */
     public boolean isAvailable() {
-
-        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
-
-        if (sel.size() != 1) {
-            return false;
-        }
-        if (sel.getFirstElement() instanceof ISQLAlias) {
-            return true;
-        }
-
-        return false;
+    	if (getView() == null)
+    		return false;
+        return getView().getSelectedAlias(false) != null;
     }
 }

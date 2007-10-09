@@ -18,32 +18,36 @@
  */
 package net.sourceforge.sqlexplorer.plugin.editors;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.connections.ConnectionsView;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.views.ConnectionsView;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.sqleditor.actions.SQLEditorToolBar;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 import net.sourceforge.sqlexplorer.util.PartAdapter2;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IStatusLineManager;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabFolder2Adapter;
 import org.eclipse.swt.custom.CTabFolderEvent;
@@ -71,7 +75,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
@@ -103,7 +106,7 @@ import org.eclipse.ui.part.EditorPart;
  * The editors now prompt to save when they're closed; this is part of the slight
  * paradigm shift of SQLExplorer - instead of the SQL window being a scratch pad
  * for executing ad-hoc SQL, it's becoming part of a development environment
- * for stored procedures and 
+ * for stored procedures and queries.
  * 
  * @modified John Spackman
  * 
@@ -282,11 +285,10 @@ public class SQLEditor extends EditorPart {
 	private static final Color SASH_COLOR = BORDER_COLOR;
 
 	// Typical file extensions
-	public static final String[] SUPPORTED_FILETYPES = new String[] { "*.txt",
-			"*.sql", "*.*" };
+	public static final String[] SUPPORTED_FILETYPES = new String[] { "*.sql", "*.txt", "*.*" };
 
 	// The Session node from the Connections view
-	private SessionTreeNode sessionTreeNode;
+	private Session session;
 
 	// Toolbar
 	private SQLEditorToolBar toolBar;
@@ -326,7 +328,6 @@ public class SQLEditor extends EditorPart {
 		textEditor = new SQLTextEditor(this);
 		textEditor.init(site, input);
 		
-		
 		// Make sure we get notification that our editor is closing because
 		//	we may need to stop running queries
 		getSite().getPage().addPartListener(new PartAdapter2() {
@@ -343,75 +344,28 @@ public class SQLEditor extends EditorPart {
 		});
 
 		// If we havn't got a view, then try for the current session in the ConnectionsView
-		if (sessionTreeNode == null) {
-			IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			if (page != null) {
-		        ConnectionsView view = (ConnectionsView)page.findView(ConnectionsView.class.getName());
-		        if (view != null)
-		        	setSessionTreeNode(view.getDefaultSession());
-			}
+		if (getSession() == null) {
+	        ConnectionsView view = SQLExplorerPlugin.getDefault().getConnectionsView();
+	        if (view != null)
+	        	try {
+	        		Alias alias = view.getDefaultAlias();
+	        		if (alias != null) {
+	        			User user = alias.getDefaultUser();
+	        			if (user != null)
+	    	        		setSession(user.createSession());
+	        		}
+	        	}catch(SQLException e) {
+	        		SQLExplorerPlugin.error(e.getMessage(), e);
+	        	}
 		}
 	}
-
-    /* (non-JavaDoc)
-	 * @see org.eclipse.ui.part.EditorPart#setInput(org.eclipse.ui.IEditorInput)
-	 */
-	protected void setInput(IEditorInput input) {
-		super.setInput(input);
-		
-		// Handle our own form of input
-		if (input instanceof SQLEditorInput) {
-			SQLEditorInput sqlInput = (SQLEditorInput) input;
-			if (input != null) {
-				setSessionTreeNode(sqlInput.getSessionNode());
-				isDirty = true;
-				isUntitled = true;
-			}
-//		} else if (input instanceof IPathEditorInput) {
-//			IPathEditorInput partInput = (IPathEditorInput)input;
-//		} else if (input instanceof IURIEditorInput) {
-//			
-//		} else if (input instanceof IStorageEditorInput) {
-//			
-		}
-
-		setPartName(input.getName());
-	}
-
-	/**
-     * Loads a file into the editor
-     * @param file file to load
-     */
-    public void loadFile(File file) throws IOException {
-        BufferedReader reader = null;
-
-        StringBuffer all = new StringBuffer((int)file.length());
-        String str = null;
-        //String delimiter = _editor.getSqlTextViewer().getTextWidget().getLineDelimiter();
-        
-        /*
-         * Note: I have changed the delimiter to a hardcoded \n because this a) allows the
-         * interface to SQLEditor to be cleaner (see SQLEditor for refactoring description)
-         * and I can find several other places where text will be passed to the same text 
-         * editor and \n is hard coded.  If there is an issue with how the view encodes
-         * line delimiters, it is likely to be a global problem and we should handle it in 
-         * SQLEditor.setText() instead.
-         * 
-         */
-        reader = new BufferedReader(new FileReader(file));
-        try {
-	        while ((str = reader.readLine()) != null) {
-	            all.append(str);
-	            all.append('\n');
-	        }
-	
-	        setText(all.toString());
-	        isDirty = false;
-        } finally {
-        	reader.close();
-        }
-    }
     
+	@Override
+	public void dispose() {
+		setSession(null);
+		super.dispose();
+	}
+
 	/*
 	 * (non-JavaDoc)
 	 * 
@@ -626,7 +580,7 @@ public class SQLEditor extends EditorPart {
 			 */
 			public void close(CTabFolderEvent event) {
 				super.close(event);
-				CTabItem tabItem = (CTabItem)event.data;
+				CTabItem tabItem = (CTabItem)event.item;
 				event.doit = onCloseTab(tabItem);
 			}
 	    	
@@ -634,7 +588,28 @@ public class SQLEditor extends EditorPart {
 	    
 		return tabFolder;
 	}
-	
+
+    /* (non-JavaDoc)
+	 * @see org.eclipse.ui.part.EditorPart#setInput(org.eclipse.ui.IEditorInput)
+	 */
+	protected void setInput(IEditorInput input) {
+		super.setInput(input);
+		if (textEditor != null)
+			textEditor.setInput(input);
+		
+		// Handle our own form of input
+		if (input instanceof SQLEditorInput) {
+			SQLEditorInput sqlInput = (SQLEditorInput) input;
+			if (input != null) {
+				setSession(sqlInput.getSessionNode());
+				isDirty = true;
+				isUntitled = true;
+			}
+		}
+
+		setPartName(input.getName());
+	}
+
 	/*
 	 * (non-JavaDoc)
 	 * 
@@ -644,10 +619,26 @@ public class SQLEditor extends EditorPart {
 		if (isUntitled) {
 			if (!doSaveAsInternal())
 				monitor.setCanceled(true);
-		} else {
-			textEditor.doSave(monitor);
-			setIsDirty(false);
+			return;
 		}
+		
+		// If it's a SQLEditorInput then we have to handle saving ourselves; once the file
+		//	has been saved into a project (via SaveAs) then the input becomes IFileEditorInput
+		//	and Eclipse knows how to deal with it
+	    IEditorInput input = getEditorInput();
+	    if (input instanceof SQLEditorInput) 
+	    	try {
+		    	SQLEditorInput sqlInput = (SQLEditorInput)input;
+		    	saveToFile(sqlInput.getFile());
+	    	} catch(IOException e) {
+	    		SQLExplorerPlugin.error(e);
+	    		monitor.setCanceled(true);
+	    		return;
+	    	}
+	    else
+	    	textEditor.doSave(monitor);
+	    
+		setIsDirty(textEditor.isDirty());
 	}
 
 	/**
@@ -665,47 +656,158 @@ public class SQLEditor extends EditorPart {
 	 * @return true if saved, false if cancelled
 	 */
 	private boolean doSaveAsInternal() {
-		FileDialog dialog = new FileDialog(getSite().getShell(), SWT.SAVE);
-		dialog.setText(Messages.getString("SQLEditor.SaveAsDialog.Title"));
-		dialog.setFilterExtensions(SUPPORTED_FILETYPES);
-		dialog.setFilterNames(SUPPORTED_FILETYPES);
-		dialog.setFileName("sql_editor.txt");
-
-		String path = dialog.open();
-		if (path == null)
-			return false;
-
-		try {
-			File file = new File(path);
-			if (file.exists()) {
-				file.delete();
+		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		boolean haveProjects = projects != null && projects.length > 0;
+	    IEditorInput input = getEditorInput();
+	    
+	    // Check before saving outside the project
+	    boolean saveInsideProject = false;
+	    if (input instanceof SQLEditorInput) {
+	    	IConstants.Confirm confirm = IConstants.Confirm.ASK;
+	    	try {
+	    		confirm = IConstants.Confirm.valueOf(SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.CONFIRM_SAVING_INSIDE_PROJECT));
+	    	} catch(IllegalArgumentException e) {
+	    		// Nothing
+	    	}
+	    	
+	    	// If we're supposed to ask the user...
+	    	if (confirm == IConstants.Confirm.ASK) {
+	    		// Build up the message to ask
+		        String msg = Messages.getString("Confirm.SaveInsideProject.Intro") + "\n\n";
+				if (!haveProjects)
+		        	msg = msg + Messages.getString("Confirm.SaveInsideProject.NoProjectsConfigured") + "\n\n";
+		    	msg = msg + Messages.getString("Confirm.SaveInsideProject.SaveInProject");
+		    	
+		    	// Ask them
+		    	MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoCancelQuestion(getSite().getShell(), Messages.getString("SQLEditor.SaveAsDialog.Title"), 
+		    			msg, Messages.getString("Confirm.SaveInsideProject.Toggle"), 
+		    			false, null, null);
+		    	if (dialog.getReturnCode() == IDialogConstants.CANCEL_ID)
+		    		return false;
+		    	
+		    	// If they turned on the toggle ("Use this answer in the future"), update the preferences
+		    	if (dialog.getToggleState()) {
+		    		confirm = dialog.getReturnCode() == IDialogConstants.YES_ID ? IConstants.Confirm.YES : IConstants.Confirm.NO;
+		    		SQLExplorerPlugin.getDefault().getPreferenceStore().setValue(IConstants.CONFIRM_SAVING_INSIDE_PROJECT, confirm.toString());
+		    	}
+		    	
+		    	// Whether to save inside or outside
+		    	saveInsideProject = dialog.getReturnCode() == IDialogConstants.YES_ID;
+	    	} else
+	    		saveInsideProject = confirm == IConstants.Confirm.YES;
+	    }
+	    
+	    // Saving inside a project - convert SQLEditorInput into a Resource by letting TextEditor do the work for us
+	    if (saveInsideProject) {
+	    	if (!haveProjects) {
+	    		MessageDialog.openError(getSite().getShell(), Messages.getString("Confirm.SaveInsideProject.Title"), Messages.getString("Confirm.SaveInsideProject.CreateAProject"));
+	    		return false;
+	    	}
+	    	
+	    	// Save it and use their EditorInput
+			textEditor.doSaveAs();
+			if (input.equals(textEditor.getEditorInput()))
+				return false;
+			input = textEditor.getEditorInput();
+			setInput(input);
+			
+			// Update the display
+			setPartName(input.getName());
+			setTitleToolTip(input.getToolTipText());
+			
+	    } else {
+			FileDialog dialog = new FileDialog(getSite().getShell(), SWT.SAVE);
+			dialog.setText(Messages.getString("SQLEditor.SaveAsDialog.Title"));
+			dialog.setFilterExtensions(SUPPORTED_FILETYPES);
+			dialog.setFilterNames(SUPPORTED_FILETYPES);
+			dialog.setFileName("*.sql");
+	
+			String path = dialog.open();
+			if (path == null)
+				return false;
+			
+			try {
+				// Save it
+				File file = new File(path);
+				saveToFile(file);
+				
+				// Update the editor input
+				input = new SQLEditorInput(file);
+				setInput(input);
+				setPartName(input.getName());
+				setTitleToolTip(input.getToolTipText());
+				
+			} catch (IOException e) {
+				SQLExplorerPlugin.error("Couldn't save sql", e);
+				MessageDialog.openError(getSite().getShell(), Messages.getString("SQLEditor.SaveAsDialog.Error"), e.getMessage());
+				return false;
 			}
+			
+	    }
 
-			file.createNewFile();
-
-			String content = textEditor.sqlTextViewer.getDocument().get();
-
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-			writer.write(content, 0, content.length());
-			writer.close();
-
-		} catch (Exception e) {
-
-			SQLExplorerPlugin.error("Couldn't save sql history.", e);
-			MessageDialog.openError(getSite().getShell(), Messages
-					.getString("SQLEditor.SaveAsDialog.Error"), e.getMessage());
-			return false;
-		}
-
-		setIsDirty(false);
+		setIsDirty(textEditor.isDirty());
 		return true;
 	}
 
+	/**
+     * Loads a file into the editor
+     * @param file file to load
+     */
+	/*
+    private void loadFromFile(File file) throws IOException {
+        BufferedReader reader = null;
+
+        StringBuffer all = new StringBuffer((int)file.length());
+        String str = null;
+        //String delimiter = _editor.getSqlTextViewer().getTextWidget().getLineDelimiter();
+        
+        // Note: I have changed the delimiter to a hardcoded \n because this a) allows the
+        // interface to SQLEditor to be cleaner (see SQLEditor for refactoring description)
+        // and I can find several other places where text will be passed to the same text 
+        // editor and \n is hard coded.  If there is an issue with how the view encodes
+        // line delimiters, it is likely to be a global problem and we should handle it in 
+        // SQLEditor.setText() instead.
+        // 
+        reader = new BufferedReader(new FileReader(file));
+        try {
+	        while ((str = reader.readLine()) != null) {
+	            all.append(str);
+	            all.append('\n');
+	        }
+	
+	        setText(all.toString());
+	        isDirty = false;
+        } finally {
+        	reader.close();
+        }
+    }*/
+	
+	/**
+	 * Saves the text to a file on the filing system - IE outside of any projects
+	 */
+	private void saveToFile(File file) throws IOException {
+		if (file.exists())
+			file.delete();
+
+		file.createNewFile();
+
+		String content = textEditor.sqlTextViewer.getDocument().get();
+
+		BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+		writer.write(content, 0, content.length());
+		writer.close();
+	}
+	
 	/**
 	 * Adds a message to the message window
 	 * @param message
 	 */
 	public void addMessage(Message message) {
+		// Don't log success messages unless we're supposed to
+		if (message.isSuccess() &&
+				!SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.LOG_SUCCESS_MESSAGES))
+			return;
+
 		TableItem tableRow = new TableItem(messagesTable, SWT.NONE);
 		tableRow.setText(message.getTableText());
 		tableRow.setData(message);
@@ -721,16 +823,16 @@ public class SQLEditor extends EditorPart {
 	 * @param sqlExec
 	 * @return
 	 */
-	public ResultsTab createResultsTab(AbstractSQLExecution sqlExec) {
+	public ResultsTab createResultsTab(AbstractSQLExecution job) {
 
 		// Create the new tab, make it second to last (IE keep the messages tab
 		//	always at the end) and set the new tab's title to the 1-based index
-		CTabItem tabItem = new CTabItem(tabFolder, SWT.NONE, tabFolder.getItems().length - 1);
+		CTabItem tabItem = new CTabItem(tabFolder, SWT.CLOSE, tabFolder.getItems().length - 1);
 		tabItem.setText(Integer.toString(tabFolder.getItems().length - 1));
 		tabFolder.setSelection(tabItem);
 		
 		// Make sure we can track the execution
-		tabItem.setData(sqlExec);
+		tabItem.setData(job);
 
 		// Create a composite to add all controls to
 		Composite composite = new Composite(tabFolder, SWT.NONE);
@@ -757,17 +859,12 @@ public class SQLEditor extends EditorPart {
 		//	left and that the thread should terminate as soon as possible.
 		synchronized(this) {
 			// Get the SQL execution
-	        final AbstractSQLExecution sqlExecution = getSqlExecution(tabItem);
+			AbstractSQLExecution job = getSqlExecution(tabItem);
         
 			// Stop the statement - but allow it to happen asynchronously
-	        if (sqlExecution != null) {
+	        if (job != null) {
 		        tabItem.setData(null);
-		        
-		        BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
-		            public void run() {
-	                	sqlExecution.stop();
-		            }
-		        });
+		        job.cancel();
 	        }
 		}
 		
@@ -778,6 +875,8 @@ public class SQLEditor extends EditorPart {
 	 * Called internally when the user tries to close the editor
 	 */
 	private void onCloseEditor() {
+		textEditor.getDocumentProvider().disconnect(getEditorInput());
+		textEditor.setInput(null);
 		clearResults();
 	}
 
@@ -886,17 +985,26 @@ public class SQLEditor extends EditorPart {
 	 * 
 	 * @param pSessionTreeNode
 	 */
-	public void setSessionTreeNode(SessionTreeNode sessionTreeNode) {
-		this.sessionTreeNode = sessionTreeNode;
+	public void setSession(Session session) {
+		// If we already have a session and we're changing to a different one, close the current one
+		if (getSession() != null && session != this.session)
+			this.session.close();
+		this.session = session;
 		if (textEditor != null)
 			textEditor.onChangeSession();
 	}
 
 	/**
-	 * @return the sessionTreeNode
+	 * @return the session
 	 */
-	public SessionTreeNode getSessionTreeNode() {
-		return sessionTreeNode;
+	public Session getSession() {
+		// In theory, if our session is somehow closed by something else then we will have already
+		//	had our session changed or reset; however, just in case this doesn't happen we can
+		//	detect it because the session has it's user set to null when it is detached.  If that
+		//	happened, then we reset the session to null
+		if (session != null && session.getUser() == null)
+			session = null;
+		return session;
 	}
 
 	/**

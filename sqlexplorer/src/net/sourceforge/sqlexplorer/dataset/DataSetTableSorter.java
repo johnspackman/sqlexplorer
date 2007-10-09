@@ -36,7 +36,7 @@ public class DataSetTableSorter implements Comparator {
 
     public DataSetTableSorter(DataSet dataSet) {
         
-    	int length = dataSet.getNumberOfColumns();
+    	int length = dataSet.getColumns().length;
         _priorities = new int[length];
         _directions = new int[length];
 

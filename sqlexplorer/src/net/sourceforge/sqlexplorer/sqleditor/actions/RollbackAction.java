@@ -57,11 +57,11 @@ public class RollbackAction extends AbstractEditorAction {
      */
     public boolean isDisabled() {
 
-        if (_editor.getSessionTreeNode() == null) {
+        if (_editor.getSession() == null) {
             return true;
         }
 
-        return _editor.getSessionTreeNode().isAutoCommitMode();
+        return _editor.getSession().isAutoCommitMode();
     }
 
 
@@ -69,7 +69,7 @@ public class RollbackAction extends AbstractEditorAction {
 
         try {
 
-            _editor.getSessionTreeNode().rollback();
+            _editor.getSession().rollback();
             _editor.setMessage(Messages.getString("SQLEditor.Actions.RollBack.Success"));
             
         } catch (final Exception e) {

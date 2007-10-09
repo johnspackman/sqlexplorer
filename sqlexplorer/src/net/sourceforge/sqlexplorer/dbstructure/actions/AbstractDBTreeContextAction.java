@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.dbstructure.actions;
 
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
 
 import org.eclipse.jface.action.Action;
@@ -37,8 +38,6 @@ public abstract class AbstractDBTreeContextAction extends Action {
     
     protected TreeViewer _treeViewer;
     
-    protected DatabaseStructureView _view;
-
     /**
      * Store nodes for use in the actions.
      * @param nodes
@@ -56,14 +55,6 @@ public abstract class AbstractDBTreeContextAction extends Action {
        _treeViewer = treeViewer;        
     }
 
-    
-    /**
-     * Store view for use in actions
-     */
-    public void setView(DatabaseStructureView view) {    
-        _view = view;
-    }
-
 
     /**
      * Implement this method to return true when your action is available
@@ -76,4 +67,8 @@ public abstract class AbstractDBTreeContextAction extends Action {
     public boolean isAvailable() {
         return true;
     }
+
+	protected DatabaseStructureView getView() {
+		return SQLExplorerPlugin.getDefault().getDatabaseStructureView();
+	}
 }

@@ -18,19 +18,16 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
-import java.util.Iterator;
+import java.util.Set;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.plugin.views.ConnectionsView;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IViewActionDelegate;
-import org.eclipse.ui.IViewPart;
 
 /**
  * @author Davy Vanherbergen
@@ -42,62 +39,19 @@ public class CloseConnectionAction extends AbstractConnectionTreeAction implemen
 
     private ImageDescriptor _disabledImage = ImageUtil.getDescriptor("Images.DisabledCloseConnIcon");
 
-
-    public void init(IViewPart view) {
-        _treeViewer = ((ConnectionsView) view).getTreeViewer();
-    }
-
-
     public void run(IAction action) {
         run();
     }
-
 
     public void selectionChanged(IAction action, ISelection selection) {
         action.setEnabled(isAvailable());
     }
 
-
     public void run() {
-
-        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
-
-        Iterator it = sel.iterator();
-        while (it.hasNext()) {
-
-            Object o = it.next();
-
-            if (o instanceof SessionTreeNode) {
-                SessionTreeNode node = (SessionTreeNode) o;
-                node.close();
-            }
-
-        }
-
-        _treeViewer.refresh();
-
+    	for (SQLConnection connection : getView().getSelectedConnections(false))
+   			connection.getUser().releaseFromPool(connection);
+        getView().refresh();
     }
-
-
-    public String getText() {
-        return Messages.getString("ConnectionsView.Actions.CloseConnection");
-    }
-
-
-    public String getToolTipText() {
-        return Messages.getString("ConnectionsView.Actions.CloseConnectionToolTip");
-    }
-
-
-    public ImageDescriptor getImageDescriptor() {
-        return _image;
-    }
-
-
-    public ImageDescriptor getDisabledImageDescriptor() {
-        return _disabledImage;
-    }
-
 
     /**
      * Action is available when there is at least one session selected.
@@ -105,21 +59,29 @@ public class CloseConnectionAction extends AbstractConnectionTreeAction implemen
      * @see net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction#isAvailable()
      */
     public boolean isAvailable() {
+    	if (getView() == null)
+    		return false;
+    	Set<SQLConnection> connections = getView().getSelectedConnections(false);
+    	for (SQLConnection connection : connections)
+    		if (connection.getUser().isInPool(connection))
+    			return true;
+    	return false;
+    }
 
-        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
+    public String getText() {
+        return Messages.getString("ConnectionsView.Actions.CloseConnection");
+    }
 
-        Iterator it = sel.iterator();
-        while (it.hasNext()) {
+    public String getToolTipText() {
+        return Messages.getString("ConnectionsView.Actions.CloseConnectionToolTip");
+    }
 
-            Object o = it.next();
+    public ImageDescriptor getImageDescriptor() {
+        return _image;
+    }
 
-            if (o instanceof SessionTreeNode) {
-                return true;
-            }
-
-        }
-
-        return false;
+    public ImageDescriptor getDisabledImageDescriptor() {
+        return _disabledImage;
     }
 
 }

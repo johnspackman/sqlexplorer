@@ -20,35 +20,24 @@ package net.sourceforge.sqlexplorer.dbproduct;
 
 import java.net.MalformedURLException;
 import java.sql.Driver;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.parsers.BasicQueryParser;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor.Message;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverClassLoader;
 
-public class DefaultDatabaseProduct implements DatabaseProduct {
+public class DefaultDatabaseProduct extends AbstractDatabaseProduct {
 
 	/* (non-JavaDoc)
-	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#createDataSet(java.sql.ResultSet)
+	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#getDriver(net.sourceforge.squirrel_sql.fw.sql.ManagedDriver)
 	 */
-	public DataSet createDataSet(ISQLAlias alias, ResultSet resultSet) throws SQLException {
-		return new DataSet(null, resultSet, null);
-	}
-
-	/* (non-JavaDoc)
-	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#getDriver(net.sourceforge.squirrel_sql.fw.sql.ISQLDriver)
-	 */
-	public Driver getDriver(ISQLDriver driver) throws ClassNotFoundException {
+	public Driver getDriver(ManagedDriver driver) throws ClassNotFoundException {
 		try {
 	        ClassLoader loader = new SQLDriverClassLoader(getClass().getClassLoader(), driver);
 	        Class driverCls = loader.loadClass(driver.getDriverClassName());

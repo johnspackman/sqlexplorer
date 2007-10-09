@@ -40,14 +40,13 @@ public class TypeFolder extends AbstractSQLFolderNode implements InfoNode,
 			+ "LEFT OUTER JOIN pg_class ct ON ct.oid=t.typrelid AND ct.relkind <> 'c'"
 			+ "WHERE t.typtype != 'd' AND SUBSTR(t.typname,1,1) <> '_' AND ns.nspname LIKE ? AND format_type(t.oid,NULL) LIKE ?";
 
-	@Override
-	public String getChildType() {
-		return TYPE;
+	public TypeFolder() {
+		super(Messages.getString("postgresql.node.type"));
 	}
 
 	@Override
-	public String getName() {
-		return Messages.getString("postgresql.node.type");
+	public String getChildType() {
+		return TYPE;
 	}
 
 	@Override

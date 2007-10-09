@@ -25,7 +25,7 @@ public class FunctionPrivilegeTab extends AbstractDataSetTab {
 
         String sql = "select distinct GRANTEE,SCHEMA,'" + nodeName + "' as NAME ,SPECIFICNAME,GRANTOR,GRANTEETYPE,EXECUTEAUTH,GRANT_TIME from syscat.routineauth where schema = '" + schemaName + "' and specificname = '" + specificName + "'";
         _logger.debug("sql to get privilege for procedure is: " + sql);
-        return new DataSet(null, sql, null, getNode().getSession().getInteractiveConnection());
+        return new DataSet(null, sql, null, getNode().getSession());
     }
 
     public String getStatusMessage() {
@@ -36,7 +36,7 @@ public class FunctionPrivilegeTab extends AbstractDataSetTab {
         String nodeName = getNode().toString();
     	String sql = "select specificname from syscat.routines where routineschema = '" + schemaName + "' and routinename = '" + nodeName + "'";
     	_logger.debug("sql to get specific name: " + sql);
-    	DataSet ds = new DataSet(null, sql, null, getNode().getSession().getInteractiveConnection());
+    	DataSet ds = new DataSet(null, sql, null, getNode().getSession());
     	DataSetRow dsw[] = ds.getRows();
     	_logger.debug("DataSetRow size during query specific name" + dsw.length);
     	String specificName = (String)dsw[0].getPrettyObjectValue(0);

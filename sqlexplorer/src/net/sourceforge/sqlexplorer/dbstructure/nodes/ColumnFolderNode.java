@@ -35,10 +35,7 @@ public class ColumnFolderNode extends AbstractFolderNode {
      * @param sessionNode session for this node
      */
     public ColumnFolderNode(INode parent, ITableInfo tableInfo) {
-
-        _sessionNode = parent.getSession();
-        _parent = parent;
-        _name = Messages.getString("DatabaseStructureView.node.Columns");
+    	super(parent, Messages.getString("DatabaseStructureView.node.Columns"), parent.getSession(), "column_folder");
     }
 
 
@@ -76,30 +73,11 @@ public class ColumnFolderNode extends AbstractFolderNode {
         };
     }
 
-
-    public String getName() {
-
-        return _name;
-    }
-
-
     /**
      * @return Qualified table name
      */
     public String getQualifiedName() {
-
         return getParent().getQualifiedName() + "." + getType();
-    }
-
-
-    /**
-     * Returns the table info type as the type for this node.
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
-     */
-    public String getType() {
-
-        return "column_folder";
     }
 
 
@@ -113,7 +91,7 @@ public class ColumnFolderNode extends AbstractFolderNode {
         try {
             Iterator it = ((TableNode) _parent).getColumnNames().iterator();
             while (it.hasNext()) {
-                addChildNode(new ColumnNode(this, (String) it.next(), _sessionNode, (TableNode) _parent, true));
+                addChildNode(new ColumnNode(this, (String) it.next(), _session, (TableNode) _parent, true));
             }
         } catch (Exception e) {
             SQLExplorerPlugin.error("Could not create child nodes for " + getName(), e);

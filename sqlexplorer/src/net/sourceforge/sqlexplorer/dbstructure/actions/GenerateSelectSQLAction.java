@@ -180,13 +180,12 @@ public class GenerateSelectSQLAction extends AbstractDBTreeContextAction {
                 return;
             }
 
-            SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getNextElement()
+            SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo()
                     + ").sql");
             input.setSessionNode(_selectedNodes[0].getSession());
             IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
-            SQLEditor editorPart = (SQLEditor) page.openEditor((IEditorInput) input,
-                    "net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
+            SQLEditor editorPart = (SQLEditor) page.openEditor((IEditorInput) input, SQLEditor.class.getName());
             editorPart.setText(query);
 
         } catch (Throwable e) {

@@ -28,14 +28,13 @@ public class DomainFolder extends AbstractSQLFolderNode implements InfoNode,
 			+ "FROM pg_constraint con JOIN pg_namespace ns ON ns.oid = con.connamespace "
 			+ "WHERE ns.nspname LIKE ? AND conname LIKE ?";
 
-	@Override
-	public String getChildType() {
-		return TYPE;
+	public DomainFolder() {
+		super(Messages.getString("postgresql.node.domain"));
 	}
 
 	@Override
-	public String getName() {
-		return Messages.getString("postgresql.node.domain");
+	public String getChildType() {
+		return TYPE;
 	}
 
 	@Override

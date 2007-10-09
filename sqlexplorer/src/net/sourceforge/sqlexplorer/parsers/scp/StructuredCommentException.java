@@ -1,8 +1,6 @@
-package net.sourceforge.sqlexplorer.sessiontree.model;
-
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * http://sourceforge.net/projects/eclipsesql
+ * Copyright (C) 2007 SQL Explorer Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,8 +16,30 @@ package net.sourceforge.sqlexplorer.sessiontree.model;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
- 
-public interface SessionTreeModelChangedListener {
-	void modelChanged(SessionTreeNode newNode);
-}
+package net.sourceforge.sqlexplorer.parsers.scp;
 
+import net.sourceforge.sqlexplorer.parsers.ParserException;
+
+
+/**
+ * Thrown by the structured comment parser
+ * 
+ * @author John Spackman
+ */
+public class StructuredCommentException extends ParserException {
+
+	private static final long serialVersionUID = 1L;
+
+	public StructuredCommentException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public StructuredCommentException(String message) {
+		super(message);
+	}
+
+	public StructuredCommentException(Throwable cause) {
+		super(cause);
+	}
+
+}

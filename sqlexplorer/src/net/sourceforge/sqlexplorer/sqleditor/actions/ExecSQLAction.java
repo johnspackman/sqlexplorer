@@ -21,10 +21,11 @@ package net.sourceforge.sqlexplorer.sqleditor.actions;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 import net.sourceforge.sqlexplorer.sqlpanel.SQLExecution;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
@@ -103,12 +104,11 @@ public class ExecSQLAction extends AbstractEditorAction {
     }
 
     protected void run(int maxRows) {
-        SessionTreeNode runNode = _editor.getSessionTreeNode();
-      
-        if (runNode == null)
+        Session session = getSession();
+        if (session == null)
             return;
 
-        QueryParser qt = runNode.getDatabaseProduct().getQueryParser(_editor.getSQLToBeExecuted());
+        QueryParser qt = session.getDatabaseProduct().getQueryParser(_editor.getSQLToBeExecuted());
         try {
             qt.parse();
         }catch(final ParserException e) {
@@ -123,7 +123,8 @@ public class ExecSQLAction extends AbstractEditorAction {
         	boolean clearResults = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.CLEAR_RESULTS_ON_EXECUTE);
         	if (clearResults)
         		_editor.clearResults();
-        	new SQLExecution(_editor, qt, maxRows, runNode).startExecution();
+        	AbstractSQLExecution job = new SQLExecution(_editor, qt, maxRows);
+        	job.schedule();
         }
     }
 }

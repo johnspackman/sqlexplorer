@@ -3,10 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="lib" path="/sqlexplorer/lib/commons-logging.jar"/>
-	<classpathentry kind="lib" path="/sqlexplorer/lib/log4j.jar"/>
-	<classpathentry kind="lib" path="/sqlexplorer/lib/nanoxml.jar"/>
-	<classpathentry kind="lib" path="/sqlexplorer/lib/rowset.jar"/>
 	<classpathentry kind="lib" path="/sqlexplorer/lib/squirrel.jar"/>
+	<classpathentry kind="lib" path="/sqlexplorer/lib/commons-logging.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

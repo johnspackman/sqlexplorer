@@ -14,6 +14,9 @@
       <toc
             file="tocdevelopers.xml">
       </toc>
+      <toc
+            file="tocstructuredcomments.xml"
+            />
    </extension>
 
 </plugin>

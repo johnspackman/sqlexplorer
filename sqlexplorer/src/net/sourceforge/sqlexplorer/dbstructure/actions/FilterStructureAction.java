@@ -18,7 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure.actions;
 
-import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dialogs.FilterStructureDialog;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
@@ -28,76 +28,70 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 
-
 public class FilterStructureAction extends Action {
 
-    private DatabaseStructureView _view;
+	public ImageDescriptor getImageDescriptor() {
+		return ImageUtil.getDescriptor("Images.FilterIcon");
+	}
 
-    public FilterStructureAction(DatabaseStructureView view) {
-        _view = view;
-    }
-    
-    public ImageDescriptor getImageDescriptor() {
+	public void run() {
 
-        return ImageUtil.getDescriptor("Images.FilterIcon");
-    }
+		try {
 
-    public void run() {
+			DatabaseStructureView view = SQLExplorerPlugin.getDefault().getDatabaseStructureView();
+			FilterStructureDialog dialog = new FilterStructureDialog();
 
-        try {
-        
-        FilterStructureDialog dialog = new FilterStructureDialog(_view);
-        
-        SQLAlias alias = (SQLAlias) _view.getActiveDatabase().getSession().getAlias();
-        
-        if (alias.getSchemaFilterExpression() != null && alias.getSchemaFilterExpression().length() != 0) {
-            dialog.setSchemaFilter(alias.getSchemaFilterExpression().split(","));
-        }
-        if (alias.getFolderFilterExpression() != null && alias.getFolderFilterExpression().length() != 0) {
-            dialog.setFolderFilter(alias.getFolderFilterExpression().split(","));
-        }
-        if (alias.getNameFilterExpression() != null && alias.getNameFilterExpression().length() != 0) {
-            dialog.setNameFilter(alias.getNameFilterExpression());
-        }
-        
-        if (dialog.open() != Window.OK) {
-            return;
-        }
-        
-        String[] schemaFilter = dialog.getSchemaFilter();
-        StringBuffer schemaFilterString = new StringBuffer("");
-        String sep = "";
-        if (schemaFilter != null) {
-            for (int i = 0; i < schemaFilter.length; i++) {
-                schemaFilterString.append(sep);
-                schemaFilterString.append(schemaFilter[i]);
-                sep = ",";
-            }
-        }
-        alias.setSchemaFilterExpression(schemaFilterString.toString());
-        
-        String[] folderFilter = dialog.getFolderFilter();
-        StringBuffer folderFilterString = new StringBuffer("");
-        sep = "";
-        if (folderFilter != null) {
-            for (int i = 0; i < folderFilter.length; i++) {
-                folderFilterString.append(sep);
-                folderFilterString.append(folderFilter[i]);
-                sep = ",";
-            }
-        }
-        alias.setFolderFilterExpression(folderFilterString.toString());
-        
-        alias.setNameFilterExpression(dialog.getNameFilter());
-        
-        _view.refreshSessionTrees(_view.getActiveDatabase().getSession().toString());
-        
-        } catch (Exception e) {
-            SQLExplorerPlugin.error("Error creating dialog", e);
-        }
-    }
+			Alias alias = (Alias) view.getActiveDatabase().getSession().getUser().getAlias();
 
-    
-    
-    
+			if (alias.getSchemaFilterExpression() != null
+					&& alias.getSchemaFilterExpression().length() != 0) {
+				dialog.setSchemaFilter(alias.getSchemaFilterExpression().split(","));
+			}
+			if (alias.getFolderFilterExpression() != null
+					&& alias.getFolderFilterExpression().length() != 0) {
+				dialog.setFolderFilter(alias.getFolderFilterExpression().split(","));
+			}
+			if (alias.getNameFilterExpression() != null
+					&& alias.getNameFilterExpression().length() != 0) {
+				dialog.setNameFilter(alias.getNameFilterExpression());
+			}
+
+			if (dialog.open() != Window.OK) {
+				return;
+			}
+
+			String[] schemaFilter = dialog.getSchemaFilter();
+			StringBuffer schemaFilterString = new StringBuffer("");
+			String sep = "";
+			if (schemaFilter != null) {
+				for (int i = 0; i < schemaFilter.length; i++) {
+					schemaFilterString.append(sep);
+					schemaFilterString.append(schemaFilter[i]);
+					sep = ",";
+				}
+			}
+			alias.setSchemaFilterExpression(schemaFilterString.toString());
+
+			String[] folderFilter = dialog.getFolderFilter();
+			StringBuffer folderFilterString = new StringBuffer("");
+			sep = "";
+			if (folderFilter != null) {
+				for (int i = 0; i < folderFilter.length; i++) {
+					folderFilterString.append(sep);
+					folderFilterString.append(folderFilter[i]);
+					sep = ",";
+				}
+			}
+			alias.setFolderFilterExpression(folderFilterString.toString());
+
+			alias.setNameFilterExpression(dialog.getNameFilter());
+
+			view.refreshSessionTrees(view.getActiveDatabase().getSession()
+					.toString());
+
+		} catch (Exception e) {
+			SQLExplorerPlugin.error("Error creating dialog", e);
+		}
+	}
+
 }

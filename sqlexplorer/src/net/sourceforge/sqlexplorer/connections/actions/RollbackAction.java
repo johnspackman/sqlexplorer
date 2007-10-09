@@ -18,19 +18,17 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
-import java.util.Iterator;
+import java.sql.SQLException;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.plugin.views.ConnectionsView;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IViewActionDelegate;
-import org.eclipse.ui.IViewPart;
 
 /**
  * @author Davy Vanherbergen
@@ -40,54 +38,35 @@ public class RollbackAction extends AbstractConnectionTreeAction implements IVie
 
     private ImageDescriptor _image = ImageUtil.getDescriptor("Images.RollbackIcon");
 
-
-    public void init(IViewPart view) {
-        _treeViewer = ((ConnectionsView) view).getTreeViewer();
-    }
-
-
     public String getText() {
         return Messages.getString("ConnectionsView.Actions.Rollback");
     }
-
 
     public void run(IAction action) {
         run();
     }
 
-
     public void run() {
-        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
-
-        Iterator it = sel.iterator();
-        while (it.hasNext()) {
-
-            Object o = it.next();
-
-            if (o instanceof SessionTreeNode) {
-                SessionTreeNode node = (SessionTreeNode) o;
-                if (!node.isAutoCommitMode()) {
-                    node.rollback();
-                }
-            }
-        }
+    	for (SQLConnection connection: getView().getSelectedConnections(true))
+			try {
+				if (!connection.getAutoCommit())
+    				connection.rollback();
+			}catch(SQLException e) {
+				SQLExplorerPlugin.error("Cannot rollback session", e);
+			}
     }
-
 
     public void selectionChanged(IAction action, ISelection selection) {
         action.setEnabled(isAvailable());
     }
 
-
     public ImageDescriptor getImageDescriptor() {
         return _image;
     }
 
-
     public ImageDescriptor getHoverImageDescriptor() {
         return _image;
     }
-
 
     /**
      * Action is available when there is at least one session without autocommit
@@ -96,22 +75,15 @@ public class RollbackAction extends AbstractConnectionTreeAction implements IVie
      * @see net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction#isAvailable()
      */
     public boolean isAvailable() {
-
-        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
-
-        Iterator it = sel.iterator();
-        while (it.hasNext()) {
-
-            Object o = it.next();
-
-            if (o instanceof SessionTreeNode) {
-                SessionTreeNode node = (SessionTreeNode) o;
-                if (!node.isAutoCommitMode()) {
-                    return true;
-                }
-            }
-
-        }
+    	if (getView() == null)
+    		return false;
+    	for (SQLConnection connection: getView().getSelectedConnections(true))
+			try {
+				if (!connection.getAutoCommit())
+    				return true;
+			}catch(SQLException e) {
+				SQLExplorerPlugin.error("Cannot rollback session", e);
+			}
 
         return false;
     }

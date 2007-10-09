@@ -16,28 +16,15 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package net.sourceforge.sqlexplorer.parsers;
-
+package net.sourceforge.sqlexplorer.dbproduct;
 
 /**
- * Thrown by the structured comment parser
+ * Listener which is notified when the list of available connections
+ * changes.
  * 
  * @author John Spackman
  */
-public class StructuredCommentException extends ParserException {
+public interface ConnectionListener {
 
-	private static final long serialVersionUID = 1L;
-
-	public StructuredCommentException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
-	public StructuredCommentException(String message) {
-		super(message);
-	}
-
-	public StructuredCommentException(Throwable cause) {
-		super(cause);
-	}
-
+	public void modelChanged();
 }

@@ -7,7 +7,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 /**
  * An {@link ITreeDataSet} implementation based on a SQL query. The caller
@@ -46,14 +47,16 @@ public class SqlTreeDataSet implements ITreeDataSet {
 	 * @throws Exception
 	 *             In case something goes wrong.
 	 */
-	public SqlTreeDataSet(SQLConnection connection, String sql,
+	public SqlTreeDataSet(Session session, String sql,
 			int[] treeColumns, int[] dataColumns, String treeColumnLabel)
 			throws Exception {
 		this.treeColumnLabel = treeColumnLabel;
 		root = new TreeDataSetNode("root", null);
 		Statement s = null;
 		ResultSet rs = null;
+		SQLConnection connection = null;
 		try {
+			connection = session.grabConnection();
 			Connection c = connection.getConnection();
 			s = c.createStatement();
 			rs = s.executeQuery(sql);
@@ -95,6 +98,8 @@ public class SqlTreeDataSet implements ITreeDataSet {
 					s.close();
 				} catch (Exception e) {
 				}
+			if (connection != null)
+				session.releaseConnection(connection);
 		}
 	}
 

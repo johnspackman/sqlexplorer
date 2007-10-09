@@ -94,6 +94,9 @@
 <p>Firstly, derive a class from AbstractQueryParser and implement the <span class="code">parseQueries()</span>  method; <span class="code">parseQueries()</span> should use the methods listed above to locate the edges of each query and perform the separation, calling addQuery() to store the individual Query. </p>
 <p>Parsing a full grammar for your database platform would be a complex and difficult process, not to mention the fact that new releases of the database could make your parser incompatible - but you should note that it is <em>not</em> necessary to parse an entire grammar. Generally speaking, all you have to do is a) detect the start of a stored procedure, and b) count begin/end pairs in the code until you have matched every &quot;end&quot; to a &quot;begin&quot;. The only gotcha here is that the &quot;end&quot; command may be used for more than just pairing with &quot;begin&quot;; for example, Oracle has &quot;BEGIN...END&quot; and &quot;IF...THEN...END IF&quot;, so you have to count the &quot;IF&quot; etc as an implicit begin. Don't stop parsing immediately after the begin/end count reaches zero either - you should do it at the first semi-colon after the end, or the at the end of the Tokens. </p>
 <p>Have a look at the <span class="code">net.sourceforge.sqlexplorer.oracle.dbproduct.OracleQueryParser</span> for a working example - you should find it fairly self-explanitory but if you need any help please post in the Developer forum and I'll provide any help I can.</p>
-<p>&nbsp;</p>
+<h3>Testing the Query Parser</h3>
+<p>There is a test case project under the SQL Explorer CVS tree with a module called &quot;net.sourceforge.sqlexplorer.test&quot;; this there are two test case applications, one for the Tokenizer (TokenizerTest) and another for the QueryParsers (QueryTest). QueryTest is hard coded to test the OracleQueryParser at the moment - just edit it to put your own one in.</p>
+<p>The test apps look for files called &quot;tok_test*.xml&quot; or &quot;qry_test*.xml&quot; which contain test data and expected results; see the comments in the .java files for details.</p>
+<p>&nbsp; </p>
 </body>
 </html>

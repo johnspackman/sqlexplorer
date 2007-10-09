@@ -27,8 +27,6 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.CatalogNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.SchemaNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -102,10 +100,9 @@ public class FilterStructureDialog extends Dialog {
     private Table _schemaTable;
 
 
-    public FilterStructureDialog(DatabaseStructureView view) {
-
-        super(view.getSite().getShell());
-        _db = view.getActiveDatabase().getRoot();
+    public FilterStructureDialog() {
+        super(SQLExplorerPlugin.getDefault().getDatabaseStructureView().getSite().getShell());
+        _db = SQLExplorerPlugin.getDefault().getDatabaseStructureView().getActiveDatabase().getRoot();
 
     }
 

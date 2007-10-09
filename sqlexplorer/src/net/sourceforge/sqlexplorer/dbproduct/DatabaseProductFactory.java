@@ -24,7 +24,6 @@ import java.sql.Driver;
 import java.util.HashMap;
 
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 
 /**
  * Accessor class for obtaining a platform-specific instance of DatabaseProduct.
@@ -50,7 +49,9 @@ public final class DatabaseProductFactory {
 	
 	private static HashMap<String, DatabaseProduct> instances = new HashMap<String, DatabaseProduct>();
 	
-	public static Driver loadDriver(ISQLDriver driver) throws ClassNotFoundException {
+	public static Driver loadDriver(ManagedDriver driver) throws ClassNotFoundException {
+        if (driver.getDriverClassName() == null)
+        	return null;
 		DatabaseProduct product = getInstance(driver);
 		if (product == null)
 			throw new ClassNotFoundException(driver.getDriverClassName());
@@ -63,7 +64,7 @@ public final class DatabaseProductFactory {
 	 * @param node the connected node
 	 * @return a DatabaseProduct for the platform, never returns null
 	 */
-	public static DatabaseProduct getInstance(ISQLDriver driver) {
+	public static DatabaseProduct getInstance(ManagedDriver driver) {
 		DatabaseProduct product = getProductInternal(driver);
 		if (product != null)
 			return product;
@@ -74,7 +75,7 @@ public final class DatabaseProductFactory {
         return s_defaultProduct;
 	}
 
-	private static DatabaseProduct getProductInternal(ISQLDriver driver) {
+	private static DatabaseProduct getProductInternal(ManagedDriver driver) {
 		// This gets us, eg, "oracle" or "mssql"
         //String productName = node.getRoot().getDatabaseProductName().toLowerCase().trim();
 		String productName = driver.getUrl().split(":")[1];

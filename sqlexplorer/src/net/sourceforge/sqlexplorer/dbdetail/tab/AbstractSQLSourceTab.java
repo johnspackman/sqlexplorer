@@ -5,11 +5,12 @@ package net.sourceforge.sqlexplorer.dbdetail.tab;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 
 /**
@@ -27,7 +28,7 @@ public abstract class AbstractSQLSourceTab extends AbstractSourceTab {
         
         String source = null;
         
-        SQLConnection connection = getNode().getSession().getInteractiveConnection();
+        SQLConnection connection = null;
         ResultSet rs = null;
         Statement stmt = null;
         PreparedStatement pStmt = null;
@@ -35,7 +36,7 @@ public abstract class AbstractSQLSourceTab extends AbstractSourceTab {
         int timeOut = SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(IConstants.INTERACTIVE_QUERY_TIMEOUT);
         
         try {
-                    
+            connection = getNode().getSession().grabConnection();
             Object[] params = getSQLParameters();
             if (params == null || params.length == 0) {
                 
@@ -78,21 +79,26 @@ public abstract class AbstractSQLSourceTab extends AbstractSourceTab {
             SQLExplorerPlugin.error("Couldn't load source for: " + getNode().getName(), e);
             
         } finally {
-            
-            if (stmt != null) {
+            if (rs != null)
+            	try {
+            		rs.close();
+            	}catch(SQLException e) {
+            		SQLExplorerPlugin.error("Error closing result set", e);
+            	}
+            if (stmt != null)
                 try {
                     stmt.close();
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     SQLExplorerPlugin.error("Error closing statement", e);
                 }
-            }
-            if (pStmt != null) {
+            if (pStmt != null)
                 try {
                     pStmt.close();
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     SQLExplorerPlugin.error("Error closing statement", e);
                 }
-            }         
+            if (connection != null)
+            	getNode().getSession().releaseConnection(connection);
         }
         return source;
     }

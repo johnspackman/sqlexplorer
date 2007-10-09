@@ -25,7 +25,6 @@ import oracle.jdbc.driver.OracleResultSet;
 import oracle.jdbc.OracleTypes;
 import oracle.sql.OPAQUE;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 
 /**
  * Oracle-specific DataSet
@@ -34,8 +33,8 @@ import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
  */
 public class OracleDataSet extends DataSet {
 
-	public OracleDataSet(ISQLAlias alias, String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
-		super(alias, columnLabels, resultSet, relevantIndeces);
+	public OracleDataSet(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
+		super(columnLabels, resultSet, relevantIndeces);
 	}
 
 	/* (non-JavaDoc)

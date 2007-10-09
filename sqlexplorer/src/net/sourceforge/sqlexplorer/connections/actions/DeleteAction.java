@@ -18,35 +18,30 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
-import java.util.Iterator;
-
-import net.sourceforge.sqlexplorer.AliasModel;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SQLAlias;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 
-
 /**
+ * Deletes a selected item; as of 3.5.0.beta2, this is a generic "delete", not just specific to
+ * Aliases, hence the change in name
  * @author Davy Vanherbergen
- *
  */
-public class DeleteAliasAction extends AbstractConnectionTreeAction {
+public class DeleteAction extends AbstractConnectionTreeAction {
 
-    ImageDescriptor _image = ImageUtil.getDescriptor("Images.DeleteAlias");
+    ImageDescriptor _image = ImageUtil.getDescriptor("Images.Delete");
 
     public String getToolTipText() {
-        return Messages.getString("ConnectionsView.Actions.DeleteAliasToolTip");
+        return Messages.getString("ConnectionsView.Actions.DeleteToolTip");
     }
 
     public String getText() {
-        return Messages.getString("ConnectionsView.Actions.DeleteAlias");
+        return Messages.getString("ConnectionsView.Actions.Delete");
     }
     
     public ImageDescriptor getHoverImageDescriptor() {
@@ -63,23 +58,14 @@ public class DeleteAliasAction extends AbstractConnectionTreeAction {
                 Messages.getString("ConnectionsView.ConfirmDelete.WindowTitle"),
                 Messages.getString("ConnectionsView.ConfirmDelete.Message"));
 
-        if (!okToDelete) {
+        if (!okToDelete)
             return;
-        }
-        
-        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
-        AliasModel aliasModel = SQLExplorerPlugin.getDefault().getAliasModel();
-        
-        Iterator it = sel.iterator();
-        while (it.hasNext()) {
-            
-            Object o = it.next();            
-            if (o instanceof SQLAlias) {
-                aliasModel.removeAlias((SQLAlias) o);
-            }
-        }
-        _treeViewer.refresh();
-        
+
+        for (User user : getView().getSelectedUsers(false))
+        	user.getAlias().removeUser(user);
+        for (Alias alias : getView().getSelectedAliases(false))
+           	alias.remove();
+        getView().refresh();
     }
     
     
@@ -89,24 +75,8 @@ public class DeleteAliasAction extends AbstractConnectionTreeAction {
      * @see net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction#isAvailable()
      */
     public boolean isAvailable() {
-
-        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
-
-        if (sel.size() == 0) {
-            return false;
-        }
-        
-        Iterator it = sel.iterator();
-        
-        while (it.hasNext()) {
-            
-            Object o = it.next();
-            if (o instanceof ISQLAlias) {
-                return true;
-            }
-            
-        }        
-
-        return false;
+    	if (getView() == null)
+    		return false;
+    	return !getView().getSelectedAliases(false).isEmpty() || !getView().getSelectedUsers(false).isEmpty();
     }
 }

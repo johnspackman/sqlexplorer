@@ -13,9 +13,9 @@ import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -24,15 +24,12 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableTreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
@@ -75,8 +72,8 @@ public class ExplainExecution extends AbstractSQLExecution {
     private Statement _stmt;
 
 
-    public ExplainExecution(SQLEditor editor, QueryParser queryParser, SessionTreeNode sessionTreeNode) {
-    	super(editor, queryParser, sessionTreeNode);
+    public ExplainExecution(SQLEditor editor, QueryParser queryParser) {
+    	super(editor, queryParser);
         
         // set initial message
         setProgressMessage(Messages.getString("SQLResultsView.ConnectionWait"));
@@ -172,6 +169,7 @@ public class ExplainExecution extends AbstractSQLExecution {
                         table.getColumn(i).pack();
                     }
                     
+                    /*
                     final Composite parent = composite;                    
                     table.addKeyListener(new KeyAdapter() {
                         
@@ -200,7 +198,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 
                         }
 
-                    });
+                    });*/
                     
                     composite.layout();
                     composite.redraw();
@@ -221,7 +219,7 @@ public class ExplainExecution extends AbstractSQLExecution {
     }
 
 
-    protected void doExecution() throws Exception {
+    protected void doExecution(IProgressMonitor monitor) throws Exception {
 
         try {
 
@@ -230,7 +228,7 @@ public class ExplainExecution extends AbstractSQLExecution {
             Query query = null;
         	for (Iterator<Query> iter = getQueryParser().iterator(); iter.hasNext(); ) {
         		query = iter.next();
-    			if (_isCancelled)
+    			if (monitor.isCanceled())
     				break;
 
 	            int id_ = new Random().nextInt(1000);
@@ -242,7 +240,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 	            _prepStmt.close();
 	            _prepStmt = null;
 	
-	            if (_isCancelled) {
+	            if (monitor.isCanceled()) {
 	                return;
 	            }
 	            
@@ -251,7 +249,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 	            _stmt.close();
 	            _stmt = null;
 	
-	            if (_isCancelled) {
+	            if (monitor.isCanceled()) {
 	                return;
 	            }
 	            
@@ -269,7 +267,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 	            _prepStmt.setInt(1, id_);
 	            ResultSet rs = _prepStmt.executeQuery();
 	
-	            if (_isCancelled) {
+	            if (monitor.isCanceled()) {
 	                return;
 	            }
 	            
@@ -322,7 +320,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 	            _prepStmt.close();
 	            _prepStmt = null;
 	
-	            if (_isCancelled) {
+	            if (monitor.isCanceled()) {
 	                return;
 	            }
 	            

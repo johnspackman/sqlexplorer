@@ -1,9 +1,9 @@
 package net.sourceforge.sqlexplorer.postgresql.actions.explain;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqleditor.actions.AbstractEditorAction;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -47,7 +47,7 @@ public abstract class AbstractExplainAction extends AbstractEditorAction {
 
 	@Override
 	public void run() {
-		SessionTreeNode session = _editor.getSessionTreeNode();
+		Session session = getSession();
 		if (session == null)
 			return;
 
@@ -63,6 +63,6 @@ public abstract class AbstractExplainAction extends AbstractEditorAction {
                 }
             });
         }
-        new ExplainExecution(_editor, qt, session, type).startExecution();
+        new ExplainExecution(_editor, qt, type).schedule();
 	}
 }

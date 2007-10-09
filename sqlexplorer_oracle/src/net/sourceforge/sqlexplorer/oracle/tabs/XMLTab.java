@@ -21,11 +21,12 @@ package net.sourceforge.sqlexplorer.oracle.tabs;
 import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
+import java.sql.SQLException;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSourceTab;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 
 public class XMLTab extends AbstractSourceTab {
@@ -40,18 +41,20 @@ public class XMLTab extends AbstractSourceTab {
         String objectType = getNode().getType().toUpperCase();
         String sql = "SELECT DBMS_METADATA.GET_XML(?,?,?) FROM dual";
         
-        SQLConnection connection = getNode().getSession().getInteractiveConnection();
-        ResultSet rs = null;
-        PreparedStatement pStmt = null;
-        
+        Session session = getNode().getSession();
+    	SQLConnection connection = null;
+    	PreparedStatement stmt = null;
+    	ResultSet rs = null;
+    	
         try {
-              
+        	connection = session.grabConnection();
+        	
             // use prepared statement
-            pStmt = connection.prepareStatement(sql);
-            pStmt.setString(1, objectType);
-            pStmt.setString(2, getNode().getName());
-            pStmt.setString(3, getNode().getSchemaOrCatalogName());
-            rs = pStmt.executeQuery();
+            stmt = connection.prepareStatement(sql);
+            stmt.setString(1, objectType);
+            stmt.setString(2, getNode().getName());
+            stmt.setString(3, getNode().getSchemaOrCatalogName());
+            rs = stmt.executeQuery();
         
             source = "";
             if (rs.next()) {
@@ -60,21 +63,26 @@ public class XMLTab extends AbstractSourceTab {
             }
             
             rs.close();
-            
-        } catch (Exception e) {
-            
-            SQLExplorerPlugin.error("Couldn't load xml for: " + getNode().getName(), e);
-            
+
+        } catch (SQLException e) {
+            SQLExplorerPlugin.error("Error loading XML", e);
         } finally {
-            
-            if (pStmt != null) {
-                try {
-                    pStmt.close();
-                } catch (Exception e) {
-                    SQLExplorerPlugin.error("Error closing statement", e);
-                }
-            }         
+        	if (rs != null)
+        		try {
+        			rs.close();
+        		} catch(SQLException e) {
+        			SQLExplorerPlugin.error("Cannot close result set", e);
+        		}
+        	if (stmt != null)
+        		try {
+        			stmt.close();
+        		} catch(SQLException e) {
+        			SQLExplorerPlugin.error("Cannot close statement", e);
+        		}
+        	if (connection != null)
+       			session.releaseConnection(connection);
         }
+
         return source;
     }
     

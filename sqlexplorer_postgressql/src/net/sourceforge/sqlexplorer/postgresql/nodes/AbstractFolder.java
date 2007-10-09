@@ -2,9 +2,12 @@ package net.sourceforge.sqlexplorer.postgresql.nodes;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.util.log.ILogger;
 import net.sourceforge.squirrel_sql.fw.util.log.LoggerController;
 
@@ -21,6 +24,10 @@ public abstract class AbstractFolder extends AbstractSQLFolderNode implements
 	private static final ILogger logger = LoggerController
 			.createLogger(AbstractFolder.class);
 
+	public AbstractFolder(String name) {
+		super(name);
+	}
+
 	/**
 	 * Obtain a query's first columns as comma separated list. This is useful
 	 * to, for example, get a list of login roles given a query joining on login
@@ -35,9 +42,9 @@ public abstract class AbstractFolder extends AbstractSQLFolderNode implements
 
 		Statement stmt = null;
 		ResultSet rs = null;
+		SQLConnection connection = null;
 		try {
-			Connection c = _sessionNode.getInteractiveConnection()
-					.getConnection();
+			Connection c = _session.grabConnection().getConnection();
 			stmt = c.createStatement();
 			logger.debug("Running [" + sql + "]");
 			rs = stmt.executeQuery(sql);
@@ -54,13 +61,17 @@ public abstract class AbstractFolder extends AbstractSQLFolderNode implements
 			if (rs != null)
 				try {
 					rs.close();
-				} catch (Exception e) {
+				} catch (SQLException e) {
+					SQLExplorerPlugin.error("Cannot close result set", e);
 				}
 			if (stmt != null)
 				try {
 					stmt.close();
-				} catch (Exception e) {
+				} catch (SQLException e) {
+					SQLExplorerPlugin.error("Cannot close result set", e);
 				}
+			if (connection != null)
+				_session.releaseConnection(connection);
 		}
 
 		return ret;

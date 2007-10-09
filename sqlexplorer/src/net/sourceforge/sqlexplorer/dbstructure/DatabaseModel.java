@@ -18,10 +18,12 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure;
 
+import java.sql.SQLException;
+
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -36,7 +38,7 @@ public class DatabaseModel implements INode {
 
     private DatabaseNode _root;
 
-    private SessionTreeNode _sessionNode;
+    private Session _sessionNode;
 
 
     /**
@@ -45,7 +47,7 @@ public class DatabaseModel implements INode {
      * @param sessionNode
      * @param pm
      */
-    public DatabaseModel(SessionTreeNode sessionNode) {
+    public DatabaseModel(Session sessionNode) throws SQLException {
 
         _root = new DatabaseNode(Messages.getString("Database_1"), sessionNode);
 
@@ -174,7 +176,7 @@ public class DatabaseModel implements INode {
     /**
      * @return SessionTreeNode for this node.
      */
-    public final SessionTreeNode getSession() {
+    public final Session getSession() {
 
         if (_sessionNode == null) {
             _sessionNode = getRoot().getSession();
@@ -224,7 +226,7 @@ public class DatabaseModel implements INode {
      *      java.lang.String,
      *      net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode)
      */
-    public void initialize(INode parent, String name, SessionTreeNode sessionNode) {
+    public void initialize(INode parent, String name, Session sessionNode) {
 
         // noop
     }

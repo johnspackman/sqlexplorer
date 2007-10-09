@@ -19,17 +19,21 @@
 package net.sourceforge.sqlexplorer.mysql.actions;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 
 /**
  * Generates a create table script for the selected nodes in the editor.
@@ -70,35 +74,27 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
      */
     public void run() {
 
+    	Session session = _selectedNodes[0].getSession();
+    	SQLConnection connection = null;
+    	Statement stmt = null;
+    	ResultSet rs = null;
+    	
         try {
+        	connection = session.grabConnection();
 
-            StringBuffer script = new StringBuffer("");
+            StringBuffer script = new StringBuffer();
             String queryDelimiter = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(
                     IConstants.SQL_QRY_DELIMITER);
 
-            Statement stmt = _selectedNodes[0].getSession().getInteractiveConnection().createStatement();
-
-            try {
-                for (int i = 0; i < _selectedNodes.length; i++) {
-
-                    if (_selectedNodes[i].getType().equalsIgnoreCase("table")) {
-
-                        ResultSet rs = null;
-                        try {
-                            rs = stmt.executeQuery("show create table " + _selectedNodes[i].getQualifiedName());
-                            if (rs.next()) {
-                                script.append(rs.getString(2)).append(queryDelimiter).append('\n');
-                            }
-                        } finally {
-                            rs.close();
-                        }
+            stmt = connection.createStatement();
+            for (int i = 0; i < _selectedNodes.length; i++) {
+                if (_selectedNodes[i].getType().equalsIgnoreCase("table")) {
+                    rs = stmt.executeQuery("show create table " + _selectedNodes[i].getQualifiedName());
+                    if (rs.next()) {
+                        script.append(rs.getString(2)).append(queryDelimiter).append('\n');
                     }
-                }
-            } finally {
-                try {
-                    stmt.close();
-                } catch (Exception e) {
-                    SQLExplorerPlugin.error("Error closing statement.", e);
+                    rs.close();
+                    rs = null;
                 }
             }
 
@@ -106,7 +102,7 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
                 return;
             }
 
-            SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getNextElement()
+            SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo()
                     + ").sql");
             input.setSessionNode(_selectedNodes[0].getSession());
             IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -115,9 +111,25 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
                     "net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
             editorPart.setText(script.toString());
 
-        } catch (Throwable e) {
+        } catch (SQLException e) {
             SQLExplorerPlugin.error("Error creating export script", e);
+        } catch (PartInitException e) {
+            SQLExplorerPlugin.error("Error creating export script", e);
+        } finally {
+        	if (rs != null)
+        		try {
+        			rs.close();
+        		} catch(SQLException e) {
+        			SQLExplorerPlugin.error("Cannot close result set", e);
+        		}
+        	if (stmt != null)
+        		try {
+        			stmt.close();
+        		} catch(SQLException e) {
+        			SQLExplorerPlugin.error("Cannot close statement", e);
+        		}
+        	if (connection != null)
+       			session.releaseConnection(connection);
         }
-
     }
 }

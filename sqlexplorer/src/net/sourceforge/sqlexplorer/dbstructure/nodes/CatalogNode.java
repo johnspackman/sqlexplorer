@@ -21,9 +21,9 @@ package net.sourceforge.sqlexplorer.dbstructure.nodes;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
@@ -58,13 +58,9 @@ public class CatalogNode extends AbstractNode {
      * @param name of this node
      * @param sessionNode session for this node
      */
-    public CatalogNode(INode parent, String name, SessionTreeNode sessionNode) {
-
-        _sessionNode = sessionNode;
-        _parent = parent;
-        _name = name;
-
-        _imageKey = "Images.CatalogNodeIcon";
+    public CatalogNode(INode parent, String name, Session sessionNode) {
+    	super(parent, name, sessionNode, "catalog");
+        setImageKey("Images.CatalogNodeIcon");
     }
 
 
@@ -127,7 +123,7 @@ public class CatalogNode extends AbstractNode {
 
                     AbstractNode childNode = (AbstractNode) ces[j].createExecutableExtension("class");
                     childNode.setParent(this);
-                    childNode.setSession(_sessionNode);
+                    childNode.setSession(_session);
                     childNode.setType(type);
 
                     String fragmentId = id.substring(0, id.indexOf('.', 28));
@@ -216,7 +212,7 @@ public class CatalogNode extends AbstractNode {
 
                     AbstractNode childNode = (AbstractNode) ces[j].createExecutableExtension("class");
                     childNode.setParent(this);
-                    childNode.setSession(_sessionNode);
+                    childNode.setSession(_session);
 
                     return childNode;
 
@@ -236,17 +232,6 @@ public class CatalogNode extends AbstractNode {
             getChildNodes();
         }
         return (String[]) _childNames.toArray(new String[] {});
-    }
-
-
-    /**
-     * Returns "catalog" as the type for this node.
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
-     */
-    public String getType() {
-
-        return "catalog";
     }
 
 
@@ -270,7 +255,7 @@ public class CatalogNode extends AbstractNode {
     protected boolean isExcludedByFilter(String name) {
 
         if (_filteredNames == null) {
-            String filter = ((SQLAlias) getSession().getAlias()).getFolderFilterExpression();
+            String filter = ((Alias) getSession().getUser().getAlias()).getFolderFilterExpression();
             if (filter != null) {
                 _filteredNames = filter.split(",");
             }
@@ -306,10 +291,10 @@ public class CatalogNode extends AbstractNode {
         try {
 
             ITableInfo[] tables = null;
-            String[] tableTypes = _sessionNode.getMetaData().getTableTypes();
+            String[] tableTypes = _session.getMetaData().getTableTypes();
 
             try {
-                tables = _sessionNode.getMetaData().getTables(_name, null, "%", tableTypes);
+                tables = _session.getMetaData().getTables(_name, null, "%", tableTypes);
             } catch (Throwable e) {
                 _logger.debug("Loading all tables at once is not supported");
             }
@@ -323,7 +308,7 @@ public class CatalogNode extends AbstractNode {
                         addChildNode(childNode);
                     }
                 } else {
-                    TableFolderNode node = new TableFolderNode(this, tableTypes[i], _sessionNode, tables);
+                    TableFolderNode node = new TableFolderNode(this, tableTypes[i], _session, tables);
                     _childNames.add(node.getLabelText());
                     if (!isExcludedByFilter(node.getLabelText())) {
                         addChildNode(node);

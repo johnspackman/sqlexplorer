@@ -19,11 +19,11 @@ import net.sourceforge.sqlexplorer.dbdetail.tab.RowCountTab;
 import net.sourceforge.sqlexplorer.dbdetail.tab.RowIdsTab;
 import net.sourceforge.sqlexplorer.dbdetail.tab.TableInfoTab;
 import net.sourceforge.sqlexplorer.dbdetail.tab.VersionsTab;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.apache.commons.logging.Log;
@@ -80,7 +80,7 @@ public class DetailTabManager {
      * 
      * @param session SessionTreeNode
      */
-    public static void clearCacheForSession(SessionTreeNode session) {
+    public static void clearCacheForSession(Session session) {
 
         if (_logger.isDebugEnabled()) {
             _logger.debug("Clearing tab cache for: " + session.toString());

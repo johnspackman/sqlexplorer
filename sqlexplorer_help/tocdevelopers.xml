@@ -8,7 +8,6 @@
 		<topic label="Structure Actions" href="html/developers/structureactions.html" />
 		<topic label="Editor Actions" href="html/developers/editoractions.html" />
 		<topic label="Result Actions" href="html/developers/resultactions.html" />
-		<topic label="Database-Specific Features (including Stored Procedures)"  href="html/developers/storedprocs.html" />
 	</topic>
 	<topic label="Help Wanted"  href="html/developers/helpwanted.html" />
 </toc>

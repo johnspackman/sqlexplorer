@@ -34,7 +34,6 @@ public class DataSetTableContentProvider implements IStructuredContentProvider {
      * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
      */
     public Object[] getElements(Object inputElement) {
-        
         DataSet dataSet = (DataSet) inputElement;
         return dataSet.getRows();
     }

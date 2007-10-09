@@ -25,14 +25,11 @@ import java.net.MalformedURLException;
 import java.sql.Driver;
 import java.util.StringTokenizer;
 
-import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.ManagedDriver;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.MyURLClassLoader;
-import net.sourceforge.squirrel_sql.fw.persist.ValidationException;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
-import net.sourceforge.squirrel_sql.fw.util.DuplicateObjectException;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -68,14 +65,12 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 
 public class CreateDriverDlg extends TitleAreaDialog {
+	
+	public enum Type {
+		CREATE, MODIFY, COPY
+	}
 
-    protected void setShellStyle(int newShellStyle) {
-        super.setShellStyle(newShellStyle | SWT.RESIZE);
-    }
-
-    private DriverModel driverModel;
-
-    private ISQLDriver driver;
+    private ManagedDriver driver;
 
     private static final int SIZING_TEXT_FIELD_WIDTH = 250;
 
@@ -97,7 +92,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
 
     ListViewer javaClassPathList;
 
-    int type;
+    Type type;
 
     Text nameField;
 
@@ -108,21 +103,20 @@ public class CreateDriverDlg extends TitleAreaDialog {
     Text exampleUrlField;
 
 
-    public CreateDriverDlg(Shell parentShell, DriverModel dm, int type, ISQLDriver dv) {
+    public CreateDriverDlg(Shell parentShell, Type type, ManagedDriver driver) {
         super(parentShell);
-        driverModel = dm;
-        driver = dv;
+        this.driver = driver;
         this.type = type;
     }
 
 
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
-        if (type == 1) {
+        if (type == Type.CREATE) {
             shell.setText(Messages.getString("DriverDialog.Create.WindowTitle"));
-        } else if (type == 2) {
+        } else if (type == Type.MODIFY) {
             shell.setText(Messages.getString("DriverDialog.Modify.WindowTitle"));
-        } else if (type == 3) {
+        } else if (type == Type.COPY) {
             shell.setText(Messages.getString("DriverDialog.Copy.WindowTitle"));
         }
     }
@@ -132,13 +126,13 @@ public class CreateDriverDlg extends TitleAreaDialog {
 
         Control contents = super.createContents(parent);
 
-        if (type == 1) {
+        if (type == Type.CREATE) {
             setTitle(Messages.getString("DriverDialog.Create.Title"));
             setMessage(Messages.getString("DriverDialog.Create.Message"));
-        } else if (type == 2) {
+        } else if (type == Type.MODIFY) {
             setTitle(Messages.getString("DriverDialog.Modify.Title"));
             setMessage(Messages.getString("DriverDialog.Modify.Message"));
-        } else if (type == 3) {
+        } else if (type == Type.COPY) {
             setTitle(Messages.getString("DriverDialog.Copy.Title"));
             setMessage(Messages.getString("DriverDialog.Copy.Message"));
         }
@@ -178,29 +172,15 @@ public class CreateDriverDlg extends TitleAreaDialog {
             return;
         }
 
-        try {
-            driver.setName(name);
-            driver.setJarFileNames(defaultModel.getFileNames());
+        driver.setName(name);
+        driver.setJars(defaultModel.getFileNames());
 
-            driver.setDriverClassName(driverClassName);
+        driver.setDriverClassName(driverClassName);
 
-            driver.setUrl(url);
+        driver.setUrl(url);
 
-            if ((type == 1) || (type == 3)) {
-                driverModel.addDriver(driver);
-            }
-        } catch (ValidationException excp) {
-            SQLExplorerPlugin.error("Validation Exception", excp);
-
-            MessageDialog.openError(this.getShell(), Messages.getString("Error..._2"), Messages.getString("Error_Validation_Exception_12")); //$NON-NLS-2$
-
-        } catch (DuplicateObjectException excp1) {
-            SQLExplorerPlugin.error("Duplicate Exception", excp1);
-            MessageDialog.openError(this.getShell(), Messages.getString("Error..._2"), Messages.getString("Error_DuplicateObjectException_13")); //$NON-NLS-2$
-        } catch (java.lang.Exception e) {
-            SQLExplorerPlugin.error("Exception when adding driver", e);
-            MessageDialog.openError(this.getShell(), Messages.getString("Error..._2"), "Error Adding Driver:" + e.getMessage()); //$NON-NLS-2$
-        }
+        if (type != Type.MODIFY)
+            SQLExplorerPlugin.getDefault().getDriverModel().addDriver(driver);
 
         close();
     }
@@ -367,11 +347,9 @@ public class CreateDriverDlg extends TitleAreaDialog {
             combo.setText(driver.getDriverClassName());
         exampleUrlField.setText(driver.getUrl());
 
-        String[] fileNames = driver.getJarFileNames();
+        for (String jar : driver.getJars())
+            defaultModel.addFile(new File(jar));
 
-        for (int i = 0; i < fileNames.length; ++i) {
-            defaultModel.addFile(new File(fileNames[i]));
-        }
         if (extraClassPathList != null) {
             extraClassPathList.refresh();
             if (defaultModel.size() > 0)
@@ -643,6 +621,11 @@ public class CreateDriverDlg extends TitleAreaDialog {
         });
 
     }
+    
+    protected void setShellStyle(int newShellStyle) {
+        super.setShellStyle(newShellStyle | SWT.RESIZE);
+    }
+
 }
 
 class DefaultFileListBoxModel extends java.util.Vector {

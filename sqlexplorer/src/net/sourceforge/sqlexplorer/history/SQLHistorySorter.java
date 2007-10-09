@@ -58,7 +58,7 @@ public class SQLHistorySorter implements Comparator {
                 }
                 break;
             case 2:
-                result = el1.getSessionName().compareTo(el2.getSessionName());
+                result = el1.getSessionDescription().compareTo(el2.getSessionDescription());
                 break;
             case 3:
                 result = new Integer(el1.getExecutionCount()).compareTo(new Integer(el2.getExecutionCount()));

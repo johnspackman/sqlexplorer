@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import net.sourceforge.sqlexplorer.parsers.Tokenizer;
 
+@SuppressWarnings("serial")
 public class TestException extends Exception {
 
 	private LinkedList<Tokenizer.Token> tokens;

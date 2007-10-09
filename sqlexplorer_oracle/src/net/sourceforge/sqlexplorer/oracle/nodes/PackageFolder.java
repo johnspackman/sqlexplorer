@@ -20,31 +20,30 @@ package net.sourceforge.sqlexplorer.oracle.nodes;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 
 public class PackageFolder extends AbstractFolderNode {
 	
 	public PackageFolder() {
+		super(Messages.getString("oracle.dbstructure.packages"));
 		_type = "FOLDER"; 
 	}
 	
-    public String getName() {
-        return Messages.getString("oracle.dbstructure.packages");
-    }
-
 	public void loadChildren() {
 		
-        SQLConnection connection = getSession().getInteractiveConnection();
+        SQLConnection connection = null;
         ResultSet rs = null;
         PreparedStatement pStmt = null;
 
         try {
-
+        	connection = getSession().grabConnection();
+        	
             // use prepared statement
             pStmt = connection.prepareStatement("select object_name from sys.all_objects where owner = ? and object_type = 'PACKAGE'");
             pStmt.setString(1, _parent.getQualifiedName());
@@ -53,11 +52,9 @@ public class PackageFolder extends AbstractFolderNode {
 
             while (rs.next()) {
             	if (!isExcludedByFilter(rs.getString(1))) {
-            		addChildNode(new PackageNode(this, rs.getString(1), _sessionNode, getParent().getName()));
+            		addChildNode(new PackageNode(this, rs.getString(1), _session, getParent().getName()));
             	}
             }
-
-            rs.close();
 
         } catch (Exception e) {
 
@@ -72,6 +69,15 @@ public class PackageFolder extends AbstractFolderNode {
                     SQLExplorerPlugin.error("Error closing statement", e);
                 }
             }
+            if (rs != null) {
+            	try {
+            		rs.close();
+            	} catch(SQLException e) {
+            		SQLExplorerPlugin.error("Cannot close result set", e);
+            	}
+            }
+            if (connection != null)
+           		getSession().releaseConnection(connection);
         }
 	}
 }

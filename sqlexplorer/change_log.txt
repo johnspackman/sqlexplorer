@@ -1,3 +1,41 @@
+
+
+3.5.0.beta2 - John Spackman
+===========================
+* Fixed StringIndexOutOfBounds bug in parser
+* Fixed Oracle query parser bug where "declare" was not handled properly, plus a few other 
+	associated bugs, eg NullPointerException in comments, etc etc
+* Fixed bug where DDL commands which caused a SQLException did not record line number info
+* Added preference to not log "Success" messages in Messages Tab
+* Fixed cannot close result tab by clicking "x"
+* Use ResultSetMetaData to get precision & scale for numerical values, and made them right 
+	justified.  Note changes to DataSet.
++. Fixed bad title in Export to Excel
++. Fixed bug where compile errors in Oracle could be duplicated
++. Added PostgreSQL plugin back in
++. Connections view now breaks down into alias -> user -> sessions & connections; connections 
+	view API; drivers & aliases saved using custom code rather than the JavaBeans style given by
+	SquirrelSQL; 
++. History stored as XML rather than custom text format (changes reqd for multiple users)
++. Editors will refuse to run more than one query at a time, and toolbar is disabled during query
+	execution
++. Fixed bug where numbers with a high precision (17 or more) were truncated
++. Added support for multiple result sets returned from a single query
++. Added support for named input & output parameters, including Oracle cursors
++. SQL History now records all queries, including those that failed - this allows the user to see 
+	which query caused an error
++. When saving untitled (i.e. scratch) files, SE now prompts the user to ask whether these should
+	be saved within a project or in the filing system; Eclipse pretty much requires a project in 
+	order to work properly so this is a good workaround.  The user can choose to set a default and
+	not be asked again.
++. Document JSE versions, making Eclipse use JSE5 even if you're developing for 1.4, etc
++. Adjusted the perspective so that it includes the project explorer, and has a little rearranging
++. Fixed OracleXE login problem
++. NanoXml was not being used, so I removed it in favour of DOM4J
++. AbstractSQLExecution now inherits from Job, for better progress feedback and integration 
+	with Eclipse thread management
+
+
 3.5.0.beta1 - John Spackman
 ===========================
 SQL Editor

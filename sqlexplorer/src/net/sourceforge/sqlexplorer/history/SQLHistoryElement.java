@@ -3,7 +3,12 @@ package net.sourceforge.sqlexplorer.history;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.dom4j.Element;
+import org.dom4j.tree.DefaultElement;
+
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
@@ -12,6 +17,12 @@ import net.sourceforge.sqlexplorer.util.TextUtil;
  */
 public class SQLHistoryElement {
 
+	public static final String ELEMENT = "element";
+    private static final String ALIAS = "alias";
+    private static final String EXECUTION_COUNT = "execution-count";
+    private static final String LAST_EXECUTION_TIME = "last-execution-time";
+    private static final String USER_NAME = "user-name";
+    
     private int _executionCount = 1;
 
     private String _formattedTime;
@@ -20,7 +31,7 @@ public class SQLHistoryElement {
 
     private String _searchableString;
 
-    private String _sessionName;
+    private User user;
 
     private String _singleLineText;
 
@@ -30,19 +41,16 @@ public class SQLHistoryElement {
             SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_FORMAT));
 
 
-    public SQLHistoryElement(String rawSQLString, String sessionName) {
-
+    public SQLHistoryElement(String rawSQLString, User user) {
         _rawSQLString = rawSQLString;
-        _sessionName = sessionName;
+        this.user = user;
         _time = System.currentTimeMillis();
-        intialize();
+        initialize();
     }
 
-
-    public SQLHistoryElement(String rawSQLString, String sessionName, String time, String executions) {
-
+    public SQLHistoryElement(String rawSQLString, User user, String time, String executions) {
         _rawSQLString = rawSQLString;
-        _sessionName = sessionName;
+        this.user = user;
 
         if (time != null && time.length() != 0) {
             _time = Long.parseLong(time);
@@ -56,7 +64,41 @@ public class SQLHistoryElement {
             _executionCount = 1;
         }
 
-        intialize();
+        initialize();
+    }
+
+    /**
+     * Constructor; loads from the specified Element, which was previously generated
+     * by a call to describeAsXml()
+     * @param root
+     */
+    public SQLHistoryElement(Element root) {
+    	_executionCount = Integer.parseInt(root.attributeValue(EXECUTION_COUNT));
+    	_time = Long.parseLong(root.attributeValue(LAST_EXECUTION_TIME));
+    	String aliasName = root.attributeValue(ALIAS);
+    	Alias alias = SQLExplorerPlugin.getDefault().getAliasManager().getAlias(aliasName);
+    	String userName = root.attributeValue(USER_NAME);
+    	user = alias.getUser(userName);
+    	if (user == null) {
+    		user = new User(userName, "");
+    		alias.addUser(user);
+    	}
+    	_rawSQLString = root.getTextTrim();
+    	initialize();
+    }
+
+    /**
+     * Creates an Element which can be used to reconstruct this instance at a later date
+     * @return
+     */
+    public Element describeAsXml() {
+    	Element root = new DefaultElement(ELEMENT);
+    	root.addAttribute(EXECUTION_COUNT, Integer.toString(_executionCount));
+    	root.addAttribute(LAST_EXECUTION_TIME, Long.toString(_time));
+    	root.addAttribute(ALIAS, user.getAlias().getName());
+    	root.addAttribute(USER_NAME, user.getUserName());
+    	root.setText(_rawSQLString);
+    	return root;
     }
 
 
@@ -102,16 +144,16 @@ public class SQLHistoryElement {
     }
 
 
-    /**
-     * @return name of session under which the statement was executed
-     */
-    public String getSessionName() {
-
-        return _sessionName;
+    public User getUser() {
+		return user;
+	}
+    
+    public String getSessionDescription() {
+    	return user.getAlias().getName() + '/' + user.getUserName();
     }
 
 
-    /**
+	/**
      * Return all text without newline separators.
      */
     public String getSingleLineText() {
@@ -134,7 +176,7 @@ public class SQLHistoryElement {
 
         _executionCount++;
         _time = System.currentTimeMillis();
-        intialize();
+        initialize();
     }
 
 
@@ -142,20 +184,16 @@ public class SQLHistoryElement {
      * initialize our search string immediately, this allows for very fast
      * searching in the history view
      */
-    private void intialize() {
+    private void initialize() {
 
         _formattedTime = _dateFormatter.format(new Date(_time));
-        _searchableString = (_rawSQLString + " " + _sessionName + " " + _formattedTime).toLowerCase();
+        _searchableString = (_rawSQLString + " " + user.getUserName() + " " + _formattedTime).toLowerCase();
         _singleLineText = TextUtil.removeLineBreaks(_rawSQLString);
     }
 
 
-    /**
-     * @param sessionName new SessionName for this element
-     */
-    public void setSessionName(String sessionName) {
-
-        _sessionName = sessionName;
-        intialize();
-    }
+    public void setUser(User user) {
+		this.user = user;
+        initialize();
+	}
 }

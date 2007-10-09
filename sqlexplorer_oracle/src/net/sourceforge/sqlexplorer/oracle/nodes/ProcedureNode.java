@@ -26,7 +26,9 @@
 package net.sourceforge.sqlexplorer.oracle.nodes;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.swt.graphics.Image;
@@ -41,17 +43,21 @@ public class ProcedureNode extends AbstractNode {
 	 */
 	protected int _overload;
 
+	
+	public ProcedureNode() {
+		super(null, null, null, "PROCEDURE");
+	}
+
+	public ProcedureNode(INode parent, String name, Session session) {
+		super(parent, name, session, "PROCEDURE");
+	}
+
 	public int getOverload() {
 		return _overload;
 	}
 
 	public void setOverload(int overload) {
 		_overload = overload;
-	}
-
-	public ProcedureNode() {
-		_type = "PROCEDURE";
-		_package = null;
 	}
 
 	public String getPackage() {

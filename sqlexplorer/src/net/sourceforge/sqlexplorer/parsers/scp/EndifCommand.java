@@ -1,8 +1,6 @@
-package net.sourceforge.sqlexplorer;
-
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2007 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,20 +16,21 @@ package net.sourceforge.sqlexplorer;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package net.sourceforge.sqlexplorer.parsers.scp;
 
-import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
-import net.sourceforge.squirrel_sql.fw.id.UidIdentifier;
+import net.sourceforge.sqlexplorer.parsers.Tokenizer;
+import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
+import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandType;
 
-public class IdentifierFactory {
-	private static final IdentifierFactory s_instance = new IdentifierFactory();
+/*package*/ class EndifCommand extends PeeredCommand {
 
-	public static IdentifierFactory getInstance() {
-		return s_instance;
+	public EndifCommand(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+		super(parser, CommandType.ENDIF, comment, tokenizer, data);
+		if (tokens.size() != 0)
+			throw new StructuredCommentException("endif has extra text");
 	}
-
-	public IIdentifier createIdentifier() {
-		return new UidIdentifier();
+	
+	public String toString() {
+		return "endif";
 	}
-
 }
-

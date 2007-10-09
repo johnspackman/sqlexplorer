@@ -20,7 +20,7 @@
 package net.sourceforge.sqlexplorer.dbstructure.actions;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -63,12 +63,12 @@ public class RemoveNodeFilterAction extends AbstractDBTreeContextAction {
      */
     public void run() {
 
-        SQLAlias alias = (SQLAlias) _selectedNodes[0].getSession().getAlias();
+        Alias alias = (Alias) _selectedNodes[0].getSession().getUser().getAlias();
         alias.setNameFilterExpression("");
         alias.setFolderFilterExpression("");
         alias.setSchemaFilterExpression("");
         
-        _view.refreshSessionTrees(_selectedNodes[0].getSession().toString());
+        getView().refreshSessionTrees(_selectedNodes[0].getSession().toString());
     }
 
 
@@ -83,7 +83,7 @@ public class RemoveNodeFilterAction extends AbstractDBTreeContextAction {
             return false;
         }
 
-        SQLAlias alias = (SQLAlias) _selectedNodes[0].getSession().getAlias();
+        Alias alias = (Alias) _selectedNodes[0].getSession().getUser().getAlias();
         if (alias.isFiltered()) {
             return true;
         }

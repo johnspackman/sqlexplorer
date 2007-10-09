@@ -91,8 +91,8 @@ public class QueryTest {
 		boolean enabled = (strEnabled != null) ? Boolean.parseBoolean(strEnabled) : false;
 		QueryParser parser = new OracleQueryParser(sql, enabled);
 		parser.parse();
+		
 		for (Query query : parser) {
-			
 			if (expectedResults.isEmpty())
 				throw new TestException("Parser returned too many queries");
 			Element expect = expectedResults.remove(0);

@@ -1,13 +1,12 @@
 package net.sourceforge.sqlexplorer.postgresql.actions;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.postgresql.dataset.tree.ITreeDataSet;
 import net.sourceforge.sqlexplorer.postgresql.dataset.tree.SqlTreeDataSet;
 import net.sourceforge.sqlexplorer.postgresql.dialogs.TreeDataDialog;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
-
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
@@ -33,8 +32,7 @@ public class SqlFeaturesContextAction extends AbstractDBTreeContextAction {
 			String lSupported = Messages.getString("postgresql.hdr.supported");
 			String lComments = Messages.getString("postgresql.hdr.comments");
 			String lFeature = Messages.getString("postgresql.hdr.feature");
-			SQLConnection c = _selectedNodes[0].getSession()
-					.getInteractiveConnection();
+			Session session = _selectedNodes[0].getSession();
 			String sql = "SELECT "
 					+ "    SUBSTR(feature_id,1,1), "
 					+ "    SUBSTR(feature_id,1,2), "
@@ -46,11 +44,11 @@ public class SqlFeaturesContextAction extends AbstractDBTreeContextAction {
 					+ "    comments AS \"" + lComments + "\" " + "FROM "
 					+ "    information_schema.sql_features " + "ORDER BY "
 					+ "    1,2,3,4,5";
-			ITreeDataSet set = new SqlTreeDataSet(c, sql, new int[] { 1, 2, 3,
+			ITreeDataSet set = new SqlTreeDataSet(session, sql, new int[] { 1, 2, 3,
 					4, 5 }, new int[] { 6, 7, 8 }, lFeature);
 			Shell shell = PlatformUI.getWorkbench().getDisplay()
 					.getActiveShell();
-			String t = _selectedNodes[0].getSession().getAlias().getName();
+			String t = session.getUser().getAlias().getName();
 			String title = Messages.getString("postgresql.feature.title");
 			String message = Messages.getString("postgresql.feature.message", t);
 			TreeDataDialog dlg = new TreeDataDialog(shell, title, message, set);

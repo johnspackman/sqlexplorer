@@ -7,14 +7,14 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 
 public class TableTriggerFolder extends AbstractSQLFolderNode {
 
-    public String getChildType() {
+    public TableTriggerFolder() {
+		super(Messages.getString("oracle.dbstructure.triggers"));
+	}
+
+	public String getChildType() {
         return "TRIGGER";
     }
    
-    public String getName() {
-        return Messages.getString("oracle.dbstructure.triggers");
-    }
-    
     public String getSQL() {
         return "select trigger_name from sys.all_triggers where table_name = ? and table_owner = ?";
     }

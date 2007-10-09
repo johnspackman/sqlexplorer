@@ -32,14 +32,13 @@ public class CastFolder extends AbstractSQLFolderNode implements InfoNode,
 			+ "JOIN pg_type t ON c.casttarget=t.oid WHERE ? LIKE '%' AND "
 			+ "REPLACE(format_type(s.oid,NULL),'\"','')||' -> '||REPLACE(format_type (t.oid,NULL),'\"','') LIKE ?";
 
-	@Override
-	public String getChildType() {
-		return TYPE;
+	public CastFolder() {
+		super(Messages.getString("postgresql.node.cast"));
 	}
 
 	@Override
-	public String getName() {
-		return Messages.getString("postgresql.node.cast");
+	public String getChildType() {
+		return TYPE;
 	}
 
 	@Override

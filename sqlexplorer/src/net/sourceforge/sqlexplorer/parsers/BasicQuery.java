@@ -19,13 +19,14 @@
 package net.sourceforge.sqlexplorer.parsers;
 
 
+
 /**
  * Query encapsulates a command to be executed
  * 
  * @author John Spackman
  *
  */
-public class BasicQuery implements Query {
+public class BasicQuery extends AbstractQuery {
 
 	private String querySql;
 	private int lineNo;

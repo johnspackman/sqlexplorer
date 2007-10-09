@@ -26,6 +26,10 @@ public abstract class AbstractFunctionFolder extends AbstractSQLFolderNode
 
 	private static final String OID_QUERY = "SELECT DISTINCT pr.oid FROM pg_proc pr JOIN pg_namespace ns ON pr.pronamespace=ns.oid WHERE nspname LIKE ? AND proname LIKE ?";
 
+	public AbstractFunctionFolder(String name) {
+		super(name);
+	}
+
 	@Override
 	public Object[] getSQLParameters() {
 		return new Object[] { getSchemaOrCatalogName() };

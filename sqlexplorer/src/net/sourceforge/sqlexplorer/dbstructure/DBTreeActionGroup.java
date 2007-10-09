@@ -25,7 +25,6 @@ import java.util.List;
 import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
@@ -50,18 +49,15 @@ public class DBTreeActionGroup extends ActionGroup {
 
     private TreeViewer _treeViewer;
 
-    private DatabaseStructureView _view;
-
 
     /**
      * Construct a new action group for a given database structure outline.
      * 
      * @param treeViewer TreeViewer used for this outline.
      */
-    public DBTreeActionGroup(TreeViewer treeViewer, DatabaseStructureView view) {
+    public DBTreeActionGroup(TreeViewer treeViewer) {
 
         _treeViewer = treeViewer;
-        _view = view;
     }
 
 
@@ -197,7 +193,6 @@ public class DBTreeActionGroup extends ActionGroup {
                     AbstractDBTreeContextAction action = (AbstractDBTreeContextAction) ces[j].createExecutableExtension("class");
                     action.setSelectedNodes(nodes);
                     action.setTreeViewer(_treeViewer);
-                    action.setView(_view);
 
                     String fragmentId = id.substring(0, id.indexOf('.', 28));
 

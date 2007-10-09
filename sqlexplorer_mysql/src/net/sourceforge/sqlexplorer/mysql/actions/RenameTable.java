@@ -1,14 +1,16 @@
 package net.sourceforge.sqlexplorer.mysql.actions;
 
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 
 
 public class RenameTable extends AbstractDBTreeContextAction {
@@ -29,15 +31,18 @@ public class RenameTable extends AbstractDBTreeContextAction {
      */
     public void run() {
         
-        Statement stmt = null;
-        
+    	Session session = _selectedNodes[0].getSession();
+    	SQLConnection connection = null;
+    	Statement stmt = null;
+    	
         try {
+        	connection = session.grabConnection();
             
             // get the currently selected node
             INode tableNode = _selectedNodes[0];
             
             // create prompt for new name
-            InputDialog dialog = new InputDialog(_view.getSite().getShell(), 
+            InputDialog dialog = new InputDialog(getView().getSite().getShell(), 
                     Messages.getString("mysql.dbstructure.actions.RenameTable.Prompt.Title"), 
                     Messages.getString("mysql.dbstructure.actions.RenameTable.Prompt.Message") 
                     + " " + tableNode.getName(), 
@@ -54,7 +59,7 @@ public class RenameTable extends AbstractDBTreeContextAction {
             // create a new statement to do the rename
             String sql = "RENAME TABLE " + tableNode.getQualifiedName() + " TO "
                 + "`" + tableNode.getSchemaOrCatalogName() + "`.`" + newTableName + "`";
-            stmt = tableNode.getSession().getInteractiveConnection().createStatement();
+            stmt = connection.createStatement();
             
             // do the rename;
             stmt.execute(sql);
@@ -63,25 +68,18 @@ public class RenameTable extends AbstractDBTreeContextAction {
             // starting from the table's parent node.
             tableNode.getParent().refresh();
             _treeViewer.refresh(tableNode.getParent());
-
             
-        } catch (Exception e) {
-            // something went wrong, so we display an error message.
-            MessageDialog.openError(_view.getSite().getShell(), 
-                    Messages.getString("mysql.dbstructure.actions.RenameTable.Error.Title"), 
-                    e.getMessage());
-            
+        } catch (SQLException e) {
+            SQLExplorerPlugin.error("Cannot rename table", e);
         } finally {
-            
-            // close our statement
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (Exception e) {
-                    // fail silently, but log the error.
-                    SQLExplorerPlugin.error("Error closing statement.", e);
-                }
-            }
+        	if (stmt != null)
+        		try {
+        			stmt.close();
+        		} catch(SQLException e) {
+        			SQLExplorerPlugin.error("Cannot close statement", e);
+        		}
+        	if (connection != null)
+       			session.releaseConnection(connection);
         }
     }
 

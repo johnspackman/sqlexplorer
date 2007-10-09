@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.dbstructure.actions;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import net.sourceforge.sqlexplorer.Messages;
@@ -33,6 +34,7 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLDatabaseMetaData;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 
 /**
  * Create table script for the selected node.
@@ -75,13 +77,12 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
         TableNode tableNode = (TableNode) _selectedNodes[0];
         ITableInfo info = tableNode.getTableInfo();
 
-        SQLDatabaseMetaData metaData = tableNode.getSession().getMetaData();
-
         ResultSet resultSet;
         StringBuffer buf = new StringBuffer(4 * 1024);
         String sep = System.getProperty("line.separator");
 
         try {
+            SQLDatabaseMetaData metaData = tableNode.getSession().getMetaData();
 
             ArrayList pks = new ArrayList();
             ResultSet rsPks = metaData.getPrimaryKeys(info);
@@ -159,16 +160,17 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
             resultSet.close();
             buf.append(")" + sep);
 
-            SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getNextElement() + ").sql");
+            SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo() + ").sql");
             input.setSessionNode(_selectedNodes[0].getSession());
             IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
             SQLEditor editorPart = (SQLEditor) page.openEditor((IEditorInput) input, "net.sourceforge.sqlexplorer.plugin.editors.SQLEditor");
             editorPart.setText(buf.toString());
-        } catch (Throwable e) {
+        } catch (SQLException e) {
+            SQLExplorerPlugin.error("Error creating export script", e);
+        } catch (PartInitException e) {
             SQLExplorerPlugin.error("Error creating export script", e);
         }
-
     }
 
 

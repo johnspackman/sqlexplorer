@@ -132,7 +132,7 @@ public class NewSQLEditorPage extends WizardNewFileCreationPage {
 	 */
 	public void createControl(Composite parent) {
 		super.createControl(parent);
-		setFileName("sql_"+SQLExplorerPlugin.getDefault().getNextElement()+"_.sql");
+		setFileName("sql_"+SQLExplorerPlugin.getDefault().getEditorSerialNo()+"_.sql");
 	}
 
 }

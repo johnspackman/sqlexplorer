@@ -19,16 +19,12 @@
 package net.sourceforge.sqlexplorer.connections;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -46,17 +42,12 @@ public class ConnectionTreeLabelProvider extends LabelProvider {
 
     private Image _sessionImage = ImageUtil.getImage("Images.ConnectionIcon");
 
-
     public void dispose() {
-        
         super.dispose();
-        
         ImageUtil.disposeImage("Images.AliasIcon");
         ImageUtil.disposeImage("Images.ConnectedAliasIcon");
         ImageUtil.disposeImage("Images.ConnectionIcon");
-        
     }
-
 
     /**
      * Return the image used for the given node.
@@ -64,36 +55,16 @@ public class ConnectionTreeLabelProvider extends LabelProvider {
      * @see org.eclipse.jface.viewers.ILabelProvider#getImage(java.lang.Object)
      */
     public Image getImage(Object element) {
+        if (element instanceof Alias) {
+        	Alias alias = (Alias) element;
 
-        if (element instanceof ISQLAlias) {
-
-            ISQLAlias alias = (ISQLAlias) element;
-
-            // locate open sessions
-            RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
-            Object[] sessions = sessionRoot.getChildren();
-            List children = new ArrayList();
-            if (sessions != null) {
-                for (int i = 0; i < sessions.length; i++) {
-                    SessionTreeNode session = (SessionTreeNode) sessions[i];
-                    if (session.getAlias().getIdentifier().equals(alias.getIdentifier())) {
-                        children.add(session);
-                    }
-                }
-            }
-            if (children.size() != 0) {
-                return _activeAliasImage;
-            } else {
-                return _inactiveAliasImage;
-            }
-
-        } else {
-
-            return _sessionImage;
+        	for (User user : alias.getUsers())
+        		if (!user.getSessions().isEmpty())
+        			return _activeAliasImage;
+        	return _inactiveAliasImage;
         }
-
+        return _sessionImage;
     }
-
 
     /**
      * Return the text to display
@@ -101,47 +72,35 @@ public class ConnectionTreeLabelProvider extends LabelProvider {
      * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
      */
     public String getText(Object element) {
+        if (element instanceof Alias) {
+        	Alias alias = (Alias) element;
 
-        if (element instanceof ISQLAlias) {
-
-            ISQLAlias alias = (ISQLAlias) element;
             String label = alias.getName();
+            int numSessions = 0;
 
-            // locate open sessions
-            RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
-            Object[] sessions = sessionRoot.getChildren();
-            List children = new ArrayList();
-            if (sessions != null) {
-                for (int i = 0; i < sessions.length; i++) {
-                    SessionTreeNode session = (SessionTreeNode) sessions[i];
-                    if (session.getAlias().getIdentifier().equals(alias.getIdentifier())) {
-                        children.add(session);
-                    }
-                }
-            }
-            if (children.size() == 0) {
-                return label;
-            }
+        	for (User user : alias.getUsers())
+        		numSessions += user.getConnections().size();
+        	
+            if (numSessions == 1)
+                return label + " (" + numSessions + " " + Messages.getString("ConnectionsView.ConnectedAlias.single.Postfix") + ")";
 
-            if (children.size() == 1) {
-                return label += " (" + children.size() + " " + Messages.getString("ConnectionsView.ConnectedAlias.single.Postfix") + ")";
-            }
-
-            if (children.size() > 1) {
-                return label += " (" + children.size() + " " + Messages.getString("ConnectionsView.ConnectedAlias.multiple.Postfix") + ")";
-            }
+            if (numSessions > 1)
+                return label + " (" + numSessions + " " + Messages.getString("ConnectionsView.ConnectedAlias.multiple.Postfix") + ")";
 
             return label;
 
-        } else {
-
+        } else if (element instanceof User) {
+        	User user = (User)element;
+        	return user.getUserName();
+        	
+        } else if (element instanceof SQLConnection) {
+        	SQLConnection connection = (SQLConnection)element;
             String label = Messages.getString("ConnectionsView.ConnectedAlias.activeSession");            
-            SessionTreeNode session = (SessionTreeNode) element;
             
             SimpleDateFormat fmt = new SimpleDateFormat("HH:mm:ss");
-            return label + " " + fmt.format(new Date(session.getCreated()));
+            return label + " " + fmt.format(new Date(connection.getCreatedTime()));
         }
-
+        
+        return null;
     }
-
 }

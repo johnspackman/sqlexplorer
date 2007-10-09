@@ -22,6 +22,14 @@ import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
  */
 
 public interface IConstants {
+	
+	// Used for confirmations where the user can choose to always have the
+	//	question answered in the same way in the future
+	public enum Confirm {
+		ASK,
+		YES,
+		NO
+	}
 
     String AUTO_COMMIT = "SQLEditor.AutoCommit";
 
@@ -102,6 +110,8 @@ public interface IConstants {
     //	in the message tab
     String STOP_ON_ERROR = "SQLEditor.StopOnError";
     
+    String LOG_SUCCESS_MESSAGES = "SQLEditor.LogSuccess Messages";
+    
     // Whether unsaved editors should prompt to be saved when they are closed 
     String REQUIRE_SAVE_ON_CLOSE_EDITOR = "SQLEditor.RequireSaveOnClose";
     
@@ -116,4 +126,6 @@ public interface IConstants {
     String QUERY_DEBUG_OFF = "off";
     String QUERY_DEBUG_FAILED = "failed";
     String QUERY_DEBUG_ALL = "all";
+    
+    String CONFIRM_SAVING_INSIDE_PROJECT = "Confirm.SavingOutsideProject";
 }

@@ -23,14 +23,13 @@ public class GroupRoleFolder extends AbstractRoleFolder {
 
 	private static final String TAIL = " FROM pg_group gp JOIN pg_roles rl ON gp.grosysid = rl.oid WHERE ? LIKE '%' AND groname LIKE ?";
 
-	@Override
-	public String getChildType() {
-		return TYPE;
+	public GroupRoleFolder() {
+		super(Messages.getString("postgresql.node.role.group"));
 	}
 
 	@Override
-	public String getName() {
-		return Messages.getString("postgresql.node.role.group");
+	public String getChildType() {
+		return TYPE;
 	}
 
 	@Override

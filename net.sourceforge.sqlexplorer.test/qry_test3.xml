@@ -15,4 +15,32 @@ create or replace package SparConst AS
 end;
 		</q>
 	</test>
+	<test>
+		<data>
+CREATE OR REPLACE PROCEDURE UP_S_GuildMemberStores
+(
+	iBusId 	IN OUT	ORGANISATION.ORG_ID%TYPE ,
+	iActive 		INTEGER ,
+	RC1 	IN OUT	UP_S_GuildMemberStoresPkg.RCT1
+)
+AS
+	iExists		INTEGER := 0;
+BEGIN
+
+END UP_S_GuildMemberStores;
+		</data>
+		<q line="1">
+CREATE OR REPLACE PROCEDURE UP_S_GuildMemberStores
+(
+	iBusId 	IN OUT	ORGANISATION.ORG_ID%TYPE ,
+	iActive 		INTEGER ,
+	RC1 	IN OUT	UP_S_GuildMemberStoresPkg.RCT1
+)
+AS
+	iExists		INTEGER := 0;
+BEGIN
+
+END UP_S_GuildMemberStores;
+		</q>
+	</test>
 </tests>

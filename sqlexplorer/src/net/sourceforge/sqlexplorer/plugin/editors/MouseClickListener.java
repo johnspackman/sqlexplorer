@@ -24,7 +24,6 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
-import net.sourceforge.sqlexplorer.plugin.views.SqlexplorerViewConstants;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.sqleditor.SQLTextViewer;
 
@@ -534,12 +533,7 @@ class MouseClickListener implements KeyListener, MouseListener,
 				public void run() {
 
 					try {
-						DatabaseStructureView structureView = (DatabaseStructureView) 
-								editor.getEditorSite()
-								.getWorkbenchWindow()
-								.getActivePage()
-								.findView(
-										SqlexplorerViewConstants.SQLEXPLORER_DBSTRUCTURE);
+						DatabaseStructureView structureView = SQLExplorerPlugin.getDefault().getDatabaseStructureView();
 						if (structureView != null) {
 							editor.getEditorSite()
 									.getWorkbenchWindow().getActivePage()

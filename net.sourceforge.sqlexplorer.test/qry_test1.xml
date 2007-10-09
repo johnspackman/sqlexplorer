@@ -1,6 +1,26 @@
 <tests>
 	<test enable-structured-comments="true">
 		<data>
+			drop table x;
+			create table x (a number(10,4) not null);
+			insert into x values (123456.4321);
+			insert into x values (12345.6432);
+		</data>
+		<q line="1">
+			drop table x
+		</q>
+		<q line="2">
+			create table x (a number(10,4) not null)
+		</q>
+		<q line="3">
+			insert into x values (123456.4321)
+		</q>
+		<q line="4">
+			insert into x values (12345.6432)
+		</q>
+	</test>
+	<test enable-structured-comments="true">
+		<data>
 			select * from dual;
 			select * from dual;
 			select * from dual;

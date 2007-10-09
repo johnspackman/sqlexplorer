@@ -33,8 +33,7 @@ public class TableStatisticsTab extends AbstractDataSetTab {
 	@Override
 	public DataSet getDataSet() throws Exception {
 		INode node = getNode();
-		return PropertyDataSet.getPropertyDataSet(node.getSession()
-				.getInteractiveConnection(), QUERY, new Object[] {
+		return PropertyDataSet.getPropertyDataSet(node.getSession(), QUERY, new Object[] {
 				node.getSchemaOrCatalogName(), node.getName() });
 	}
 

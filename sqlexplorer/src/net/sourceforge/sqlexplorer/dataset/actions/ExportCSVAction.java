@@ -102,9 +102,9 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
                     // export column names if we need to 
                     if (includeColumnNames) {
                         
-                        String[] columnNames = dataSet.getColumnLabels();
-                        for (int i = 0; i < columnNames.length; i++) {
-                            buffer.append(columnNames[i]);
+                        DataSet.Column[] columns = dataSet.getColumns();
+                        for (int i = 0; i < columns.length; i++) {
+                            buffer.append(columns[i].getCaption());
                             buffer.append(columnSeparator);
                         }
                         writer.println(buffer.toString());

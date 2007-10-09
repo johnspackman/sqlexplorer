@@ -5,8 +5,9 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 /**
  * Static PosgreSQL utility methods.
@@ -18,7 +19,7 @@ public class PgUtil {
 	/**
 	 * Test whether server is running at least a given version.
 	 * 
-	 * @param sessionTreeNode
+	 * @param session
 	 *            Our session to get connection from.
 	 * @param major
 	 *            Minimum major version required.
@@ -27,11 +28,12 @@ public class PgUtil {
 	 * @return <tt>true</tt> if the server runs at least the given version,
 	 *         <tt>false</tt> otherwise.
 	 */
-	public static boolean hasVersion(SessionTreeNode sessionTreeNode,
+	public static boolean hasVersion(Session session,
 			int major, int minor) {
-		Connection c = sessionTreeNode.getInteractiveConnection()
-				.getConnection();
+		SQLConnection sqlConnection = null;
 		try {
+			sqlConnection = session.grabConnection();
+			Connection c = sqlConnection.getConnection();
 			DatabaseMetaData meta = c.getMetaData();
 			if (meta.getDatabaseMajorVersion() > major)
 				return true;
@@ -40,6 +42,8 @@ public class PgUtil {
 			return false;
 		} catch (SQLException e) {
 			SQLExplorerPlugin.error(Messages.getString("postresql.version.error"), e);
+		} finally {
+			session.releaseConnection(sqlConnection);
 		}
 		return false;
 	}

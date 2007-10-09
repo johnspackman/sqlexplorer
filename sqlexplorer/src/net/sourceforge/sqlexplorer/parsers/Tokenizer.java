@@ -72,6 +72,15 @@ public class Tokenizer {
 			return charNo;
 		}
 
+		/**
+		 * Returns the value without quotes, if applicable
+		 * @return
+		 */
+		public CharSequence getUnquotedValue() {
+			if (tokenType == TokenType.QUOTED)
+				return new BackedCharSequence(buffer, start + 1, end - 1);
+			return this;
+		}
 	}
 	
 	// The SQL being parsed
@@ -295,15 +304,16 @@ public class Tokenizer {
 				start++;
 				continue;
 			}
+
+			// If we're already on punctuation, stop there (punctuation is always only one character)
+			if (tokenType == TokenType.PUNCTUATION)
+				break;
 			
 			// Anything else is considered punctuation
 			if (tokenType != null && tokenType != TokenType.PUNCTUATION)
 				break;
-			if (tokenType == null || tokenType == TokenType.PUNCTUATION) {
+			if (tokenType == null)
 				tokenType = TokenType.PUNCTUATION;
-				continue;
-			}
-			nextType = TokenType.PUNCTUATION;
 		}
 		
 		// Nothing found?

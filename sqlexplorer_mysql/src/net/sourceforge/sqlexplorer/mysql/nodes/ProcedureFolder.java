@@ -5,6 +5,7 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 public class ProcedureFolder extends AbstractSQLFolderNode {
 
     public ProcedureFolder() {
+    	super(Messages.getString("mysql.dbstructure.procedures"));
     }
 
     /**
@@ -12,13 +13,6 @@ public class ProcedureFolder extends AbstractSQLFolderNode {
      */
     public String getChildType() {
         return "procedure";
-    }
-
-    /**
-     * Label for the procedure folder node.
-     */
-    public String getName() {
-        return Messages.getString("mysql.dbstructure.procedures");
     }
 
     /**

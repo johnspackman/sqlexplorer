@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.apache.commons.logging.Log;
@@ -40,28 +40,43 @@ import org.eclipse.swt.widgets.Composite;
  */
 public abstract class AbstractNode implements INode {
 
-    protected ArrayList _children = new ArrayList();
+    private static final Log _logger = LogFactory.getLog(AbstractNode.class);
 
-    private boolean _childrenLoaded = false;
+    protected ArrayList<INode> _children = new ArrayList<INode>();
 
-    protected String _expandedImageKey = null;
+    protected boolean _childrenLoaded = false;
 
     protected Image _image;
 
     protected String _imageKey = "Images.DefaultNodeImage";
 
-    private boolean _isExpanded = false;
+    protected String _expandedImageKey = null;
+
+    protected boolean _isExpanded = false;
 
     protected String _name;
 
     protected INode _parent;
 
-    protected SessionTreeNode _sessionNode;
+    protected Session _session;
 
     protected String _type;
 
-    private static final Log _logger = LogFactory.getLog(AbstractNode.class);
+    public AbstractNode(String name) {
+    	this._name = name;
+    }
 
+    public AbstractNode(String name, Session session) {
+    	this._name = name;
+    	this._session = session;
+    }
+
+    public AbstractNode(INode parent, String name, Session session, String type) {
+    	this._parent = parent;
+    	this._name = name;
+    	this._session = session;
+    	this._type = type;
+    }
 
     /**
      * Adds a new child node to this node
@@ -201,7 +216,6 @@ public abstract class AbstractNode implements INode {
      * @return simple name for this node.
      */
     public String getName() {
-
         if (_name == null) {
             return "<null>";
         }
@@ -248,9 +262,9 @@ public abstract class AbstractNode implements INode {
     /**
      * @return SessionTreeNode for this node.
      */
-    public final SessionTreeNode getSession() {
+    public final Session getSession() {
 
-        return _sessionNode;
+        return _session;
     }
 
 
@@ -290,21 +304,6 @@ public abstract class AbstractNode implements INode {
         }
 
         return true;
-    }
-
-
-    /**
-     * Initialize this node.
-     * 
-     * @param parent the parent INode of this node.
-     * @param name the name of this node.
-     * @param sessionNode the session this node belongs too.
-     */
-    public void initialize(INode parent, String name, SessionTreeNode sessionNode) {
-
-        _parent = parent;
-        _name = name;
-        _sessionNode = sessionNode;
     }
 
 
@@ -377,14 +376,27 @@ public abstract class AbstractNode implements INode {
 
 
     public final void setExpanded(boolean expanded) {
-
         _isExpanded = expanded;
     }
 
-
     public void setImage(Image image) {
+        this._image = image;
+    }
+    
+    protected void setImageKey(String imageKey) {
+    	this._imageKey = imageKey;
+    }
+    
+    public String getExpandedImageKey() {
+		return _expandedImageKey;
+	}
 
-        _image = image;
+	public String get_imageKey() {
+		return _imageKey;
+	}
+
+	protected void setExpandedImageKey(String expandedImageKey) {
+    	this._expandedImageKey = expandedImageKey;
     }
 
 
@@ -395,7 +407,7 @@ public abstract class AbstractNode implements INode {
      */
     public final void setParent(INode parent) {
 
-        _parent = parent;
+        this._parent = parent;
     }
 
 
@@ -404,15 +416,15 @@ public abstract class AbstractNode implements INode {
      * 
      * @param session
      */
-    public final void setSession(SessionTreeNode session) {
+    public final void setSession(Session session) {
 
-        _sessionNode = session;
+        this._session = session;
     }
 
 
     public void setType(String type) {
 
-        _type = type;
+        this._type = type;
     }
 
 

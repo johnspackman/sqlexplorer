@@ -1,7 +1,5 @@
-package net.sourceforge.sqlexplorer;
-
 /*
- * Copyright (C) 2006 SQL Explorer Development Team
+ * Copyright (C) 2007 SQL Explorer Development Team
  * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
@@ -18,14 +16,14 @@ package net.sourceforge.sqlexplorer;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package net.sourceforge.sqlexplorer;
 
 import java.lang.reflect.InvocationTargetException;
 
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
-import net.sourceforge.sqlexplorer.SQLDriverManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,168 +32,99 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 
 public class LoginProgress implements IRunnableWithProgress {
 
-    private class BackgroundConnectionThread extends Thread {
-
-        public void run() {
-
-               try {
-                   
-                   long start = System.currentTimeMillis();
-                    _backgroundConnection = _driverMgr.getConnection(_driver, _alias, _user, _pwd);
-                    _logger.debug("# " + (System.currentTimeMillis() - start) + " ms to open background connection.");
-                    
-                } catch (Throwable e) {
-                    _backgroundError = e;
-                    _backgroundErrorMsg = e.getClass().getName() + ": " + e.getMessage();
-                    SQLExplorerPlugin.error("Error logging to database", e);
-
-                }
-        }
-    }
-    
-    private class InteractiveConnectionThread extends Thread {
-
-        public void run() {
-
-               try {
-                   
-                   long start = System.currentTimeMillis();
-                    _interActiveConnection = _driverMgr.getConnection(_driver, _alias, _user, _pwd);
-                    _logger.debug("# " + (System.currentTimeMillis() - start) + " ms to open interactive connection.");
-                     
-                } catch (Throwable e) {
-                    _interactiveError = e;
-                    _interactiveErrorMsg = e.getClass().getName() + ": " + e.getMessage();
-                    SQLExplorerPlugin.error("Error logging to database", e);
-
-                }
-        }
-    }
-    
-    private ISQLAlias _alias;
-    
-    private SQLConnection _backgroundConnection;
-
-    private Throwable _backgroundError;
-
-    private String _backgroundErrorMsg;
-
-    private ISQLDriver _driver;
-
-    /**
-     * @see org.eclipse.jface.operation.IRunnableWithProgress#run(IProgressMonitor)
-     */
-    private SQLDriverManager _driverMgr;
-
-    private SQLConnection _interActiveConnection;
-    
-    private Throwable _interactiveError;
-
-    private String _interactiveErrorMsg;
-    
-    private String _pwd;
-    
-    private String _user;
-
     private static final Log _logger = LogFactory.getLog(LoginProgress.class);
 
-    public LoginProgress(SQLDriverManager dm, ISQLDriver dv, ISQLAlias al, String user, String pwd) {
-
-        _driverMgr = dm;
-        _driver = dv;
-        _alias = al;
-        _user = user;
-        _pwd = pwd;
-    };
-
-
-    public SQLConnection[] getConnections() {
-        return new SQLConnection[] {_interActiveConnection, _backgroundConnection};
-    }
-
-
-    public String getError() {
-        if (_interactiveErrorMsg == null) {
-            return _backgroundErrorMsg;
+    private class ConnectionThread extends Thread {
+        public void run() {
+        	try {
+        		long start = System.currentTimeMillis();
+        		session = user.createSession();
+        		SQLConnection connection = null;
+        		try {
+                	connection = session.grabConnection();
+                } finally {
+                	if (connection != null)
+                		session.releaseConnection(connection);
+                }
+               _logger.debug("# " + (System.currentTimeMillis() - start) + " ms to open interactive connection.");
+            } catch (Exception e) {
+                exception = e;
+                SQLExplorerPlugin.error(e);
+            }
         }
-        return _interactiveErrorMsg;
+    }
+    
+    // User to establish a connection for
+    private User user;
+
+    // Connection established by background thread
+    private Session session;
+    
+    // Exception raised by background thread
+    private Exception exception;
+
+    public LoginProgress(User user) {
+		super();
+		this.user = user;
+	}
+
+	/**
+     * Returns the established connection
+     * @return
+     */
+    public Session getSession() {
+        return session;
     }
 
-
+    /**
+     * Returns true if the connection was established OK
+     * @return
+     */
     public boolean isOk() {
-        return ((_interactiveError == null && _backgroundError == null) ? true : false);
+        return exception == null;
     }
 
-    public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+    public void run(IProgressMonitor monitor) throws InterruptedException, InvocationTargetException {
         monitor.setTaskName(Messages.getString("Logging_to_database..._1"));
         monitor.beginTask(Messages.getString("Logging_to_database..._1"), IProgressMonitor.UNKNOWN);
+        
         try {
-            
             long start = System.currentTimeMillis();
-            
-            InteractiveConnectionThread iThread = new InteractiveConnectionThread();
+            ConnectionThread iThread = new ConnectionThread();
             iThread.start();
             
-            BackgroundConnectionThread bgThread = new BackgroundConnectionThread();
-            bgThread.start();
-            
-            while (true) {
-                
+            while (iThread.isAlive()) {
+            	// If it's cancelled, close the connection (if we established one) and quit
                 if (monitor.isCanceled()) {                    
-                    
-                    if (iThread.isAlive()) {
+                    if (iThread.isAlive())
                         iThread.interrupt();
-                    }
-                    _interactiveError = null;
+                    exception = null;
                     
-                    if (_interActiveConnection != null) {
-                        _interActiveConnection.close();
-                    }
-                    _interActiveConnection = null;
-                    
-                    if (bgThread.isAlive()) {
-                        bgThread.interrupt();
-                    }
-                    _backgroundError = null;
-
-                    if (_backgroundConnection != null) {
-                        _backgroundConnection.close();
-                    }
-                    _backgroundConnection = null;
-                    
+                    if (session != null)
+                        session.close();
+                    session = null;
                     break;
                 }
                 
-                if (_interactiveError != null || _backgroundError != null) {
-                    _interActiveConnection = null;
-                    _backgroundConnection = null;
-                    break;
-                }
-                
-                if (_interActiveConnection != null && _backgroundConnection != null 
-                        && !iThread.isAlive() && !bgThread.isAlive()) {
-                    _logger.debug("# " + (System.currentTimeMillis() - start) + " ms to open both connections.");
+                // Wait until we have a connection and the thread has stopped
+                if (session != null && !iThread.isAlive()) {
+                    _logger.debug("# " + (System.currentTimeMillis() - start) + " ms to open connection.");
                     break;
                 }
                           
+                // Snooze
                 Thread.sleep(100);
             }
             
             // check for cancellation by user
-            if (monitor.isCanceled()) {
-                monitor.done();
+            if (monitor.isCanceled())
                 throw new InterruptedException("Connection cancelled.");
-            }
-            
-            monitor.done();
-            
-        } catch (Throwable e) {
-            _interactiveError = e;
-            _interactiveErrorMsg = e.getMessage();
-            SQLExplorerPlugin.error("Error logging to database", e);
-
+        }catch(Exception e) {
+        	exception = e;
         } finally {
             monitor.done();
         }
+        if (exception != null)
+        	throw new InvocationTargetException(exception);
     }
 }

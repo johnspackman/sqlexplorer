@@ -18,17 +18,11 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
-import net.sourceforge.sqlexplorer.AliasModel;
-import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dialogs.CreateAliasDlg;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
-
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -61,17 +55,11 @@ public class ChangeAliasAction extends AbstractConnectionTreeAction {
 
 
     public void run() {
-
-        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
-        if (sel.getFirstElement() instanceof ISQLAlias) {
-            SQLAlias al = (SQLAlias) sel.getFirstElement();
-            if (al != null) {
-                DriverModel driverModel = SQLExplorerPlugin.getDefault().getDriverModel();
-                AliasModel aliasModel = SQLExplorerPlugin.getDefault().getAliasModel();
-                CreateAliasDlg dlg = new CreateAliasDlg(Display.getCurrent().getActiveShell(), driverModel, 2, al, aliasModel);
-                dlg.open();
-                _treeViewer.refresh();
-            }
+    	Alias alias = getView().getSelectedAlias(false);
+        if (alias != null) {
+            CreateAliasDlg dlg = new CreateAliasDlg(Display.getCurrent().getActiveShell(), CreateAliasDlg.Type.CHANGE, alias);
+            dlg.open();
+            getView().refresh();
         }
     }
 
@@ -82,17 +70,9 @@ public class ChangeAliasAction extends AbstractConnectionTreeAction {
      * @see net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction#isAvailable()
      */
     public boolean isAvailable() {
-
-        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
-
-        if (sel.size() != 1) {
-            return false;
-        }
-        if (sel.getFirstElement() instanceof ISQLAlias) {
-            return true;
-        }
-
-        return false;
+    	if (getView() == null)
+    		return false;
+    	return getView().getSelectedAliases(false).size() == 1;
     }
 
 }

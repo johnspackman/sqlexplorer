@@ -18,24 +18,28 @@
  */
 package net.sourceforge.sqlexplorer.oracle.dbproduct;
 
+import net.sourceforge.sqlexplorer.parsers.AnnotatedQuery;
 import net.sourceforge.sqlexplorer.parsers.ParserException;
-import net.sourceforge.sqlexplorer.parsers.AbstractQueryParser;
-import net.sourceforge.sqlexplorer.parsers.Query;
+import net.sourceforge.sqlexplorer.parsers.AbstractSyntaxQueryParser;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.TokenType;
+import net.sourceforge.sqlexplorer.util.BackedCharSequence;
 
 /**
  * Implements a query parser for Oracle
  * @author John Spackman
  *
  */
-public class OracleQueryParser extends AbstractQueryParser {
+public class OracleQueryParser extends AbstractSyntaxQueryParser {
 
 	/*
 	 * Parser state variables
 	 */
 	// Whether we're in the middle of some PL/SQL
 	private boolean inPlSql;
+	
+	// Whether we've seen at least one BEGIN
+	private boolean seenBegin;
 	
 	// The token at the start of the currently-being-parsed query
 	private Token start;
@@ -77,8 +81,11 @@ public class OracleQueryParser extends AbstractQueryParser {
 		Token token = null;
 		Token lastToken = null;
 		while ((token = nextToken()) != null) {
-			lastToken = token;
 			TokenType type = token.getTokenType();
+			if (start == null && (type == TokenType.EOL_COMMENT || type == TokenType.ML_COMMENT))
+				continue;
+			
+			lastToken = token;
 			
 			if (start == null)
 				start = token;
@@ -88,16 +95,21 @@ public class OracleQueryParser extends AbstractQueryParser {
 				
 				// For SQL*PLUS compatability, a / at the start of a line forces a break
 				if (token.getCharNo() == 1 && value.equals("/")) {
-					addQuery(lastToken());
+					if (start == token)
+						start = null;
+					else
+						addQuery(lastToken());
 					continue;
 				}
 				
 				// Not in PL/SQL and a semi-colon?  Then it's the end of a SQL query
-				if (beginEndDepth == 0 && value.equals(";")) {
+				if (value.equals(";") && (!inPlSql || (beginEndDepth == 0 && seenBegin))) {
 					// If we're at the end of PL/SQL, then we *include* the semi-colon,
 					//	otherwise we skip it
 					if (inPlSql)
 						addQuery(token);
+					else if (start == token)
+						start = null;
 					else
 						addQuery(lastToken());
 					continue;
@@ -145,6 +157,7 @@ public class OracleQueryParser extends AbstractQueryParser {
 						nextToken();
 						inPlSql = true;
 						beginEndDepth++;
+						seenBegin = true;
 						
 					// "CREATE type name" where type is TRIGGER, PROCEDURE, or FUNCTION *does* have a BEGIN
 					} else {
@@ -154,13 +167,14 @@ public class OracleQueryParser extends AbstractQueryParser {
 							inPlSql = true;
 					}
 				
-				// DEFINE also puts us in PL/SQL mode
-				} else if (word.equals("DEFINE")) {
+				// DECLARE also puts us in PL/SQL mode
+				} else if (word.equalsIgnoreCase("DECLARE")) {
 					inPlSql = true;
 				
 				// BEGIN puts us in PL/SQL mode
 				} else if (word.equalsIgnoreCase("BEGIN")) {
 					inPlSql = true;
+					seenBegin = true;
 					beginEndDepth++;
 				
 				// If we're already in PL/SQL, then we have to count BEGIN/END pairs to know when the code
@@ -234,13 +248,15 @@ public class OracleQueryParser extends AbstractQueryParser {
 	}
 	
 	/* (non-Javadoc)
-	 * @see net.sourceforge.sqlexplorer.parsers.AbstractQueryParser#newQueryInstance(java.lang.CharSequence, int)
+	 * @see net.sourceforge.sqlexplorer.parsers.AbstractSyntaxQueryParser#newQueryInstance(java.lang.CharSequence, int)
 	 */
 	@Override
-	protected Query newQueryInstance(CharSequence buffer, int lineNo) {
+	protected AnnotatedQuery newQueryInstance(BackedCharSequence buffer, int lineNo) {
 		OracleQuery query = new OracleQuery(buffer, lineNo);
 		query.setCreateObjectName(createName);
 		query.setCreateObjectType(createType);
+		createName = null;
+		createType = null;
 		return query;
 	}
 
@@ -258,6 +274,7 @@ public class OracleQueryParser extends AbstractQueryParser {
 	 */
 	private void reset() {
 		inPlSql = false;
+		seenBegin = false;
 		beginEndDepth = 0;
 		start = null;
 	}

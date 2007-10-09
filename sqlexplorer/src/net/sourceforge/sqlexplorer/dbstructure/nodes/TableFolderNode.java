@@ -20,8 +20,8 @@
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
 
 /**
@@ -46,35 +46,12 @@ public class TableFolderNode extends AbstractFolderNode {
      * @param name of this node
      * @param sessionNode session for this node
      */
-    public TableFolderNode(INode parent, String name, SessionTreeNode sessionNode, ITableInfo[] tables) {
+    public TableFolderNode(INode parent, String name, Session sessionNode, ITableInfo[] tables) {
+    	super(parent, tidiedName(name), sessionNode, name + "_FOLDER");
 
         _allTables = tables;
-        _sessionNode = sessionNode;
-        _parent = parent;
         _origName = name;
-
-        // cleanup the names a little
-        String[] words = _origName.split(" ");
-        _name = "";
-        for (int i = 0; i < words.length; i++) {
-            _name = _name + words[i].substring(0, 1).toUpperCase() + words[i].substring(1).toLowerCase() + " ";
-        }
-        _name = _name.trim();
-
-        if (_name.equals("View")) {
-            _name = Messages.getString("DatabaseStructureView.view");
-        }
-        if (_name.equals("Table")) {
-            _name = Messages.getString("DatabaseStructureView.table");
-        }
     }
-
-
-    public String getName() {
-
-        return _name;
-    }
-
 
     /*
      * (non-Javadoc)
@@ -82,20 +59,7 @@ public class TableFolderNode extends AbstractFolderNode {
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getQualifiedName()
      */
     public String getQualifiedName() {
-
         return _origName;
-    }
-
-
-    /**
-     * Returns the type for this node. The type is always suffixed with
-     * "_FOLDER".
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
-     */
-    public String getType() {
-
-        return _origName + "_FOLDER";
     }
 
 
@@ -139,7 +103,7 @@ public class TableFolderNode extends AbstractFolderNode {
                 }
 
                 // get all relevant tables
-                tables = _sessionNode.getMetaData().getTables(catalogName, schemaName, "%", new String[] {_origName});
+                tables = _session.getMetaData().getTables(catalogName, schemaName, "%", new String[] {_origName});
 
             }
 
@@ -147,7 +111,7 @@ public class TableFolderNode extends AbstractFolderNode {
             for (int i = 0; i < tables.length; i++) {
                 if (tables[i].getType().equalsIgnoreCase(_origName)) {
                     if (!isExcludedByFilter(tables[i].getSimpleName())) {
-                        addChildNode(new TableNode(this, tables[i].getSimpleName(), _sessionNode, tables[i]));
+                        addChildNode(new TableNode(this, tables[i].getSimpleName(), _session, tables[i]));
                     }
                 }
             }
@@ -157,4 +121,21 @@ public class TableFolderNode extends AbstractFolderNode {
         }
     }
 
+    private static String tidiedName(String name) {
+        // cleanup the names a little
+        String[] words = name.split(" ");
+        name = "";
+        for (int i = 0; i < words.length; i++) {
+            name = name + words[i].substring(0, 1).toUpperCase() + words[i].substring(1).toLowerCase() + " ";
+        }
+        name = name.trim();
+
+        if (name.equals("View")) {
+            name = Messages.getString("DatabaseStructureView.view");
+        }
+        if (name.equals("Table")) {
+            name = Messages.getString("DatabaseStructureView.table");
+        }
+        return name;
+    }
 }

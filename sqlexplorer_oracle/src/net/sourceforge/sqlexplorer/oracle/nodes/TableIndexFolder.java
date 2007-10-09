@@ -3,21 +3,22 @@ package net.sourceforge.sqlexplorer.oracle.nodes;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 
 public class TableIndexFolder extends AbstractFolderNode {
 
-    public String getName() {
-        return Messages.getString("oracle.dbstructure.indexes");
-    }
-    
+    public TableIndexFolder() {
+		super(Messages.getString("oracle.dbstructure.indexes"));
+	}
+
     public String getSQL() {
         return "select index_name from sys.all_indexes where table_name = ? and table_owner = ?";
     }
@@ -32,13 +33,14 @@ public class TableIndexFolder extends AbstractFolderNode {
 
     public void loadChildren() {
 
-        SQLConnection connection = getSession().getInteractiveConnection();
+        SQLConnection connection = null;
         ResultSet rs = null;
         Statement stmt = null;
         PreparedStatement pStmt = null;
 
         try {
-
+        	connection = getSession().grabConnection();
+        	
             Object[] params = getSQLParameters();
             if (params == null || params.length == 0) {
 
@@ -82,13 +84,6 @@ public class TableIndexFolder extends AbstractFolderNode {
 
         } finally {
 
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (Exception e) {
-                    SQLExplorerPlugin.error("Error closing statement", e);
-                }
-            }
             if (pStmt != null) {
                 try {
                     pStmt.close();
@@ -96,6 +91,15 @@ public class TableIndexFolder extends AbstractFolderNode {
                     SQLExplorerPlugin.error("Error closing statement", e);
                 }
             }
+            if (rs != null) {
+            	try {
+            		rs.close();
+            	} catch(SQLException e) {
+            		SQLExplorerPlugin.error("Cannot close result set", e);
+            	}
+            }
+            if (connection != null)
+           		getSession().releaseConnection(connection);
         }
         
     }

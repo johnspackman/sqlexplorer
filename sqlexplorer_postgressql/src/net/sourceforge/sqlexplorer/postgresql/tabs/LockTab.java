@@ -38,7 +38,7 @@ public class LockTab extends AbstractSQLTab {
 
 	@Override
 	public String getStatusMessage() {
-		String s = getNode().getSession().getAlias().getName();
+		String s = getNode().getSession().getUser().getAlias().getName();
 		return Messages.getString("postgresql.detail.db.lock.status", s);
 	}
 

@@ -33,7 +33,7 @@ public class OpenPerspectiveAction extends Action {
 			return;
 		try
 		{
-			PlatformUI.getWorkbench().showPerspective("net.sourceforge.sqlexplorer.plugin.perspectives.SQLExplorerPluginPerspective", page.getWorkbenchWindow());
+			PlatformUI.getWorkbench().showPerspective(SQLExplorerPluginPerspective.class.getName(), page.getWorkbenchWindow());
 		}
 		catch(Throwable e)
 		{

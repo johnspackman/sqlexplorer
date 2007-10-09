@@ -18,18 +18,15 @@
  */
 package net.sourceforge.sqlexplorer.preview;
 
-import java.util.Properties;
-import java.util.Map.Entry;
-
-import net.n3.nanoxml.IXMLElement;
-import net.n3.nanoxml.IXMLParser;
-import net.n3.nanoxml.IXMLReader;
-import net.n3.nanoxml.StdXMLReader;
-import net.n3.nanoxml.XMLException;
-import net.n3.nanoxml.XMLParserFactory;
+import java.io.StringReader;
+import java.util.List;
 import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.dataset.XmlDataType;
 
+import org.dom4j.Attribute;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -45,7 +42,7 @@ import org.eclipse.swt.widgets.Composite;
 public class XmlPreviewer implements Previewer {
 
 	public void createControls(Composite parent, final Object data) throws ExplorerException {
-		IXMLElement rootElem = getXml(data);
+		Element rootElem = getXml(data);
 		if (rootElem == null)
 			return;
 		final Object[] root = new Object[] { rootElem };
@@ -66,17 +63,18 @@ public class XmlPreviewer implements Previewer {
 			 * Called to get the item's children
 			 */
 			public Object[] getElements(Object inputElement) {
-				IXMLElement elem = (IXMLElement)inputElement;
-				return elem.getChildren().toArray();
+				Element elem = (Element)inputElement;
+				return elem.elements().toArray();
 			}
 
 			public boolean hasChildren(Object element) {
-				IXMLElement elem = (IXMLElement)element;
-				return elem.hasChildren();
+				Element elem = (Element)element;
+				List<Element> list = elem.elements();
+				return list != null && list.size() > 0;
 			}
 
 			public Object getParent(Object element) {
-				IXMLElement elem = (IXMLElement)element;
+				Element elem = (Element)element;
 				return elem.getParent();
 			}
 
@@ -87,17 +85,15 @@ public class XmlPreviewer implements Previewer {
 		
 		tree.setLabelProvider(new LabelProvider() {
 			public String getText(Object obj) {
-				IXMLElement elem = (IXMLElement)obj;
+				Element elem = (Element)obj;
 				StringBuffer result = new StringBuffer();
 				result.append('<');
 				result.append(elem.getName());
-				Properties attrs = elem.getAttributes();
-				for (Entry<Object, Object> entry : attrs.entrySet()) {
-					String name = (String)entry.getKey();
-					String value = (String)entry.getValue();
-					result.append(' ').append(name).append('=').append('\"').append(value).append('\"');
+				
+				for (Attribute attr : elem.attributes()) {
+					result.append(' ').append(attr.getName()).append('=').append('\"').append(attr.getValue()).append('\"');
 				}
-				if (!elem.hasChildren())
+				if (!elem.hasContent())
 					result.append('/');
 				result.append('>');
 				return result.toString();
@@ -110,7 +106,7 @@ public class XmlPreviewer implements Previewer {
 	public void dispose() {
 	}
 
-	private IXMLElement getXml(Object data) throws ExplorerException {
+	private Element getXml(Object data) throws ExplorerException {
 		try {
 			if (data == null)
 				return null;
@@ -122,17 +118,9 @@ public class XmlPreviewer implements Previewer {
 			if (text == null)
 				return null;
 
-			IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
-			IXMLReader reader = StdXMLReader.stringReader(text);
-			parser.setReader(reader);
-			return (IXMLElement) parser.parse();
-		}catch(XMLException e) {
-			throw new ExplorerException(e);
-		}catch(InstantiationException e) {
-			throw new ExplorerException(e);
-		}catch(IllegalAccessException e) {
-			throw new ExplorerException(e);
-		}catch(ClassNotFoundException e) {
+			SAXReader reader = new SAXReader();
+			return reader.read(new StringReader(text)).getRootElement();
+		}catch(DocumentException e) {
 			throw new ExplorerException(e);
 		}
 	}

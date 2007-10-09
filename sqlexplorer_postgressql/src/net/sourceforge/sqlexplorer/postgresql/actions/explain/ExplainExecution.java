@@ -14,18 +14,16 @@ import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.postgresql.dataset.tree.TreeDataSet;
 import net.sourceforge.sqlexplorer.postgresql.ui.TreeDataSetViewer;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.util.log.ILogger;
 import net.sourceforge.squirrel_sql.fw.util.log.LoggerController;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.TabItem;
 
 /**
  * Execute an explain.
@@ -48,6 +46,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 
 	private boolean autoCommit = false;
 
+	private SQLConnection sqlConnection;
 	private Connection connection;
 
 	/**
@@ -66,8 +65,8 @@ public class ExplainExecution extends AbstractSQLExecution {
 	 * @see AbstractExplainAction#EXPLAIN_ANALYZE
 	 * @see AbstractExplainAction#EXPLAIN_NORMAL
 	 */
-	public ExplainExecution(final SQLEditor _editor, QueryParser queryParser, final SessionTreeNode session, int type) {
-		super(_editor, queryParser, session);
+	public ExplainExecution(final SQLEditor _editor, QueryParser queryParser, int type) {
+		super(_editor, queryParser);
 		setProgressMessage("SQLResultsView.ConnectionWait");
 		prefix = type == AbstractExplainAction.EXPLAIN_ANALYZE ? " ANALYZE "
 				: "";
@@ -76,43 +75,45 @@ public class ExplainExecution extends AbstractSQLExecution {
 
 	/**
 	 * See if execution has been cancelled.
+	 * @param monitor TODO
 	 * 
 	 * @return Cancelled or not.
 	 */
-	private boolean isCancelled() {
-		boolean r = _isCancelled;
+	private boolean isCancelled(IProgressMonitor monitor) {
+		boolean r = monitor.isCanceled();
 		if (r)
 			logger.debug("Explain cancelled, stopping processing");
 		return r;
 	}
 
 	@Override
-	protected void doExecution() throws Exception {
+	protected void doExecution(IProgressMonitor monitor) throws Exception {
 		setProgressMessage("SQLResultsView.Executing");
 
-		if (isCancelled())
+		if (isCancelled(monitor))
 			return;
 
-		connection = _session.getInteractiveConnection().getConnection();
 		ResultSet rs = null;
 		Query query = null;
 		try {
+			sqlConnection = _session.grabConnection();
+			connection = sqlConnection.getConnection();
 			autoCommit = connection.getAutoCommit();
 			connection.setAutoCommit(false);
-			if (isCancelled())
+			if (isCancelled(monitor))
 				return;
         	for (Iterator<Query> iter = getQueryParser().iterator(); iter.hasNext(); ) {
         		query = iter.next();
-    			if (_isCancelled)
+    			if (monitor.isCanceled())
     				break;
 
     			start = connection.setSavepoint("BEFORE_EXPLAIN");
     			stmt = connection.createStatement();
 				stmt.execute("EXPLAIN " + prefix + query.getQuerySql());
-				if (isCancelled())
+				if (isCancelled(monitor))
 					return;
 				rs = stmt.getResultSet();
-				if (isCancelled()) {
+				if (isCancelled(monitor)) {
 					rs.close();
 					return;
 				}
@@ -126,12 +127,12 @@ public class ExplainExecution extends AbstractSQLExecution {
 					}
 				});
 				rs.close();
-				if (isCancelled())
+				if (isCancelled(monitor))
 					return;
 				connection.rollback(start);
 				connection.setAutoCommit(autoCommit);
 				stmt.close();
-				if (isCancelled())
+				if (isCancelled(monitor))
 					return;
 				b.getRoot().computeStatistics();
 				displayResult(b.getRoot(), query);
@@ -152,6 +153,8 @@ public class ExplainExecution extends AbstractSQLExecution {
 				stmt = null;
 			} catch (Exception e) {
 			}
+			if (sqlConnection != null)
+				_session.releaseConnection(sqlConnection);
 		}
 	}
 
@@ -175,8 +178,8 @@ public class ExplainExecution extends AbstractSQLExecution {
 							connection.setAutoCommit(autoCommit);
 							p.cancel();
 							logger.debug("Did cancel EXPLAIN");
-							p.close();
-							logger.debug("Did close statement");
+							//p.close();
+							//logger.debug("Did close statement");
 						} catch (Exception e) {
 							SQLExplorerPlugin.error(Messages.getString(
 									"postgresql.explain.error.cancel"),	e);
@@ -231,7 +234,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 							v.getTreeViewer().setLabelProvider(
 									new ExplainTreeLabelProvider(type));
 
-							final Composite parent = composite;
+							/*final Composite parent = composite;
 							v.getTree().addKeyListener(new KeyAdapter() {
 								@Override
 								public void keyReleased(KeyEvent e) {
@@ -253,7 +256,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 										}
 									}
 								}
-							});
+							});*/
 							
 							composite.layout();
 							composite.redraw();

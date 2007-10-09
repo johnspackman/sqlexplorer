@@ -19,7 +19,7 @@
 package net.sourceforge.sqlexplorer.sessiontree.model.utility;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -29,7 +29,7 @@ import org.eclipse.core.runtime.jobs.Job;
 
 public class DictionaryLoader extends Job {
 
-    private SessionTreeNode _sessionNode;
+    private Session _sessionNode;
     
     private static final String ID = "net.sourceforge.sqlexplorer";
     
@@ -44,7 +44,7 @@ public class DictionaryLoader extends Job {
     /**
      * Default constructor,
      */
-    public DictionaryLoader(SessionTreeNode sessionNode) {
+    public DictionaryLoader(Session sessionNode) {
         super(Messages.getString("Progress.Dictionary.Title"));
         _sessionNode = sessionNode;
     }

@@ -6,7 +6,6 @@ import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractDataSetTab;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.postgresql.dataset.PropertyDataSet;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 /**
  * Detail tab providing info about database statistics.
@@ -28,13 +27,12 @@ public class DatabaseStatisticsTab extends AbstractDataSetTab {
 	public DataSet getDataSet() throws Exception {
 		INode node = getNode();
 		DatabaseNode db = (DatabaseNode) node;
-		SQLConnection c0 = db.getSession().getInteractiveConnection();
-		return PropertyDataSet.getPropertyDataSet(c0, QUERY, null);
+		return PropertyDataSet.getPropertyDataSet(db.getSession(), QUERY, null);
 	}
 
 	@Override
 	public String getStatusMessage() {
-		String s = getNode().getSession().getAlias().getName();
+		String s = getNode().getSession().getUser().getAlias().getName();
 		return Messages.getString("postgresql.detail.stat.status", s);
 	}
 

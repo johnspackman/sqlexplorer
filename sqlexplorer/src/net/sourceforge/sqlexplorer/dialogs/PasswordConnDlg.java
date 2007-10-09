@@ -19,14 +19,12 @@ package net.sourceforge.sqlexplorer.dialogs;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-//
-import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.User;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
-
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -47,42 +45,38 @@ import org.eclipse.swt.widgets.Text;
 
 public class PasswordConnDlg extends TitleAreaDialog {
 
-    ISQLAlias alias;
+    private static final int SIZING_TEXT_FIELD_WIDTH = 250;
 
-    private ISQLDriver driver;
-
-    private DriverModel driverModel;
+    // Alias; this MUST match the user's alias (if there is a User object)
+    private Alias alias;
+    
+    // User
+    private User user;
 
     private Text userTxt;
 
     private Text pswdTxt;
 
-    Button fAutoCommitBox, fCommitOnCloseBox;
+    private Button fAutoCommitBox;
+    private Button fCommitOnCloseBox;
 
-    String user, passwd;
+    private String userName;
+    private String passwd;
 
     private boolean autoCommit = false;
 
     private boolean commitOnClose = false;
 
-    IPreferenceStore store;
-
-    private static final int SIZING_TEXT_FIELD_WIDTH = 250;
+    public PasswordConnDlg(Shell parentShell, Alias alias, User user) {
+        super(parentShell);
+        this.alias = alias;
+        this.user = user;
+    }
 
     protected void setShellStyle(int newShellStyle) {
-        super.setShellStyle(newShellStyle | SWT.RESIZE);// Make the dialog
-                                                        // resizable
+        super.setShellStyle(newShellStyle | SWT.RESIZE);// Make the dialog resizable
     }
     
-    public PasswordConnDlg(Shell parentShell, ISQLAlias al, DriverModel dm, IPreferenceStore store) {
-        super(parentShell);
-        alias = al;
-        driverModel = dm;
-        this.store = store;
-        net.sourceforge.squirrel_sql.fw.id.IIdentifier id = alias.getDriverIdentifier();
-        driver = driverModel.getDriver(id);
-    }
-
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
         shell.setText(Messages.getString("Connection_1")); //$NON-NLS-1$
@@ -142,7 +136,7 @@ public class PasswordConnDlg extends TitleAreaDialog {
         Label label2 = new Label(nameGroup, SWT.WRAP);
         label2.setText(Messages.getString("Driver_2")); //$NON-NLS-1$
         Label driverTxt = new Label(nameGroup, SWT.WRAP);
-        driverTxt.setText(driver.getName());
+        driverTxt.setText(alias.getDriver().getName());
         Label label3 = new Label(nameGroup, SWT.WRAP);
         label3.setText(Messages.getString("Url_3")); //$NON-NLS-1$
         Label urlTxt = new Label(nameGroup, SWT.WRAP);
@@ -150,10 +144,8 @@ public class PasswordConnDlg extends TitleAreaDialog {
         Label label4 = new Label(nameGroup, SWT.WRAP);
         label4.setText(Messages.getString("User_4")); //$NON-NLS-1$
         userTxt = new Text(nameGroup, SWT.BORDER);
-        String salias = alias.getUserName();
-        String name = salias;
-        String password = alias.getPassword();
-        userTxt.setText(name);
+        if (user != null)
+        	userTxt.setText(user.getUserName());
         data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         data.horizontalSpan = 1;
@@ -162,7 +154,8 @@ public class PasswordConnDlg extends TitleAreaDialog {
         Label label5 = new Label(nameGroup, SWT.WRAP);
         label5.setText(Messages.getString("Password_5")); //$NON-NLS-1$
         pswdTxt = new Text(nameGroup, SWT.BORDER);
-        pswdTxt.setText(password);
+        if (user != null)
+        	pswdTxt.setText(user.getPassword());
         pswdTxt.setEchoChar('*');
 
         data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
@@ -201,6 +194,7 @@ public class PasswordConnDlg extends TitleAreaDialog {
         fAutoCommitBox.getDisplay().asyncExec(new Runnable() {
 
             public void run() {
+            	IPreferenceStore store = SQLExplorerPlugin.getDefault().getPreferenceStore();
                 fCommitOnCloseBox.setSelection(store.getBoolean(IConstants.COMMIT_ON_CLOSE));//$NON-NLS-1$
                 fAutoCommitBox.setSelection(store.getBoolean(IConstants.AUTO_COMMIT));//$NON-NLS-1$
                 if (fAutoCommitBox.getSelection()) {
@@ -219,14 +213,14 @@ public class PasswordConnDlg extends TitleAreaDialog {
 
     protected void okPressed() {
         passwd = pswdTxt.getText();
-        user = userTxt.getText();
+        userName = userTxt.getText();
         autoCommit = fAutoCommitBox.getSelection();
         commitOnClose = fCommitOnCloseBox.getSelection();
         super.okPressed();
     }
 
-    public String getUser() {
-        return user;
+    public String getUserName() {
+        return userName;
     }
 
     public boolean getAutoCommit() {

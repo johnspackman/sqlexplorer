@@ -24,14 +24,15 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 
 public class MaterializedViewFolder extends AbstractSQLFolderNode {
 
-    public String getChildType() {
+	
+    public MaterializedViewFolder() {
+		super(Messages.getString("oracle.dbstructure.materializedViews"));
+	}
+
+	public String getChildType() {
         return "MATERIALIZED_VIEW";
     }
    
-    public String getName() {
-        return Messages.getString("oracle.dbstructure.materializedViews");
-    }
-    
     public String getSQL() {
         return "select object_name from sys.all_objects where owner = ? and object_type = 'MATERIALIZED VIEW'";
     }

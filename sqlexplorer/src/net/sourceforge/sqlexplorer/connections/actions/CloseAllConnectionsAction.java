@@ -18,17 +18,16 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
+import java.util.Set;
+
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.views.ConnectionsView;
-import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
-import org.eclipse.ui.IViewPart;
 
 /**
  * @author Davy Vanherbergen
@@ -40,17 +39,6 @@ public class CloseAllConnectionsAction extends AbstractConnectionTreeAction impl
 
     private ImageDescriptor _disabledImage = ImageUtil.getDescriptor("Images.DisabledCloseAllConnsIcon");
 
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
-     */
-    public void init(IViewPart view) {
-        _treeViewer = ((ConnectionsView) view).getTreeViewer();
-    }
-
-
     /*
      * (non-Javadoc)
      * 
@@ -59,7 +47,6 @@ public class CloseAllConnectionsAction extends AbstractConnectionTreeAction impl
     public void run(IAction action) {
         run();
     }
-
 
     /*
      * (non-Javadoc)
@@ -71,16 +58,13 @@ public class CloseAllConnectionsAction extends AbstractConnectionTreeAction impl
         action.setEnabled(isAvailable());
     }
 
-
     public String getText() {
         return Messages.getString("ConnectionsView.Actions.CloseAllConnections");
     }
 
-
     public String getToolTipText() {
         return Messages.getString("ConnectionsView.Actions.CloseAllConnectionsToolTip");
     }
-
 
     /*
      * (non-Javadoc)
@@ -88,37 +72,31 @@ public class CloseAllConnectionsAction extends AbstractConnectionTreeAction impl
      * @see org.eclipse.jface.action.IAction#run()
      */
     public void run() {
+    	Set<SQLConnection> connections = getView().getSelectedConnections(true);
+    	for (SQLConnection connection : connections)
+    		if (connection.isPooled())
+    			connection.getUser().releaseFromPool(connection);
 
-        // locate open sessions
-        RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
-        sessionRoot.closeAllConnections();        
         setEnabled(false);
-        _treeViewer.refresh();
+        getView().refresh();
     }
-
 
     public ImageDescriptor getImageDescriptor() {
         return _image;
     }
 
-
     public ImageDescriptor getDisabledImageDescriptor() {
         return _disabledImage;
     }
-
 
     /**
      * Action is available when there are open sessions
      */
     public boolean isAvailable() {
-
-        RootSessionTreeNode sessionRoot = SQLExplorerPlugin.getDefault().stm.getRoot();
-        Object[] sessions = sessionRoot.getChildren();
-        if (sessions != null && sessions.length != 0) {
-            return true;
-        }
-
-        return false;
+    	Set<SQLConnection> connections = getView().getSelectedConnections(true);
+    	for (SQLConnection connection : connections)
+    		if (connection.isPooled())
+    			return true;
+    	return false;
     }
-
 }

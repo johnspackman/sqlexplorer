@@ -1,8 +1,6 @@
-package net.sourceforge.sqlexplorer.plugin;
-
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2007 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,29 +16,31 @@ package net.sourceforge.sqlexplorer.plugin;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package net.sourceforge.sqlexplorer.plugin;
 
-import java.util.MissingResourceException;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.MissingResourceException;
 
-import net.sourceforge.sqlexplorer.AliasModel;
-import net.sourceforge.sqlexplorer.DataCache;
-import net.sourceforge.sqlexplorer.DriverModel;
 import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.SQLDriverManager;
-import net.sourceforge.sqlexplorer.connections.OpenConnectionJob;
+import net.sourceforge.sqlexplorer.connections.ConnectionsView;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.AliasManager;
+import net.sourceforge.sqlexplorer.dbproduct.DriverManager;
 import net.sourceforge.sqlexplorer.history.SQLHistory;
-import net.sourceforge.sqlexplorer.sessiontree.model.RootSessionTreeNode;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModel;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
-
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
+import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.core.internal.runtime.RuntimeLog;
+import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchSite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -48,20 +48,14 @@ import org.osgi.framework.BundleContext;
  */
 public class SQLExplorerPlugin extends AbstractUIPlugin {
 
-    private DataCache _cache;
-
-    private SQLDriverManager _driverMgr;
-
-    private AliasModel aliasModel;
+    private AliasManager aliasManager;
 
     private int count = 0;
 
-    private DriverModel driverModel;
+    private DriverManager driverManager;
 
     // Resource bundle.
     private ResourceBundle resourceBundle;
-
-    public SessionTreeModel stm = new SessionTreeModel();
 
     private SQLHistory _history = null;
 
@@ -73,142 +67,97 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     public final static String PLUGIN_ID = "net.sourceforge.sqlexplorer";
 
     private boolean _defaultConnectionsStarted = false;
+    
+    // Cached connections view
+    private ConnectionsView connectionsView;
+    
+    // Cached database structure view
+    private DatabaseStructureView databaseStructureView;
 
 
     /**
      * The constructor. Moved previous logic to the start method.
      */
     public SQLExplorerPlugin() {
-
         super();
         plugin = this;
     }
 
-
-    public AliasModel getAliasModel() {
-
-        return aliasModel;
-    }
-
-
-    public DriverModel getDriverModel() {
-
-        return driverModel;
-    }
-
-
     /**
-     * @return
+     * Initialises the Plugin
      */
-    public int getNextElement() {
-
-        return count++;
-    }
-
-
-    /**
-     * Returns the plugin's resource bundle,
-     */
-    public ResourceBundle getResourceBundle() {
-
-        return resourceBundle;
-    }
-
-
-    public SQLDriverManager getSQLDriverManager() {
-
-        if (_driverMgr == null) {
-            _driverMgr = new SQLDriverManager();
-        }
-
-        return _driverMgr;
-    }
-
-
-    /**
-     * @return SQLHistory Instance
-     */
-    public SQLHistory getSQLHistory() {
-
-        return _history;
-    }
-
-
-    /**
-     * Get the version number as specified in plugin.xml
-     * 
-     * @return version number of SQL Explorer plugin
-     */
-    public String getVersion() {
-
-        String version = (String) plugin.getBundle().getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION);
-        return version;
-    }
-
-
     public void start(BundleContext context) throws Exception {
-
         super.start(context);
-
-        _driverMgr = new SQLDriverManager();
-
-        _cache = new DataCache(_driverMgr);
-        aliasModel = new AliasModel(_cache);
-        driverModel = new DriverModel(_cache);
-
+        
         try {
-            resourceBundle = ResourceBundle.getBundle("net.sourceforge.sqlexplorer.test"); //$NON-NLS-1$
-        } catch (MissingResourceException x) {
-            resourceBundle = null;
+        	RuntimeLog.addLogListener(new ILogListener() {
+				public void logging(IStatus status, String plugin) {
+					System.err.println(status.getMessage());
+					Throwable t = status.getException();
+					if (t != null) {
+						System.err.println(t.getMessage());
+						t.printStackTrace(System.err);
+					}
+				}
+        	});
+	        driverManager = new DriverManager();
+	        driverManager.loadDrivers();
+	        
+	        aliasManager = new AliasManager();
+	        aliasManager.loadAliases();
+	
+	        try {
+	            resourceBundle = ResourceBundle.getBundle("net.sourceforge.sqlexplorer.test"); //$NON-NLS-1$
+	        } catch (MissingResourceException x) {
+	            resourceBundle = null;
+	        }
+	
+	        // load SQL History from previous sessions
+	        _history = new SQLHistory();
+        }catch(Exception e) {
+        	error("Exception during start", e);
+        	throw e;
         }
-
-        // load SQL History from previous sessions
-        _history = new SQLHistory();
     }
     
-
     /**
      * Open all connections that have the 'open on startup property'. This
      * method should be called from within the UI thread!
      */
     public void startDefaultConnections(IWorkbenchSite site) {
-
-        if (_defaultConnectionsStarted) {
+        if (_defaultConnectionsStarted)
             return;
+
+        boolean openEditor = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.AUTO_OPEN_EDITOR);
+        
+        // Get the database structure view - NOTE: we don't use SQLExplorerPlugin.getDatabaseView()
+        //	because it may not have an active page yet
+        DatabaseStructureView dbView = null;
+        if (site.getPage() != null)
+        	dbView = (DatabaseStructureView)site.getPage().findView(DatabaseStructureView.class.getName());
+
+        for (Alias alias : aliasManager.getAliases()) {
+            if (alias.isConnectAtStartup() && alias.isAutoLogon() && alias.getDefaultUser() != null) 
+            	try {
+	                if (dbView != null)
+	                    dbView.addSession(alias.getDefaultUser().createSession());
+	
+	                if (openEditor) {
+	                    SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo() + ").sql");
+	                    input.setSessionNode(alias.getDefaultUser().createSession());
+	                    try {
+	                    	site.getPage().openEditor(input, SQLEditor.class.getName());
+	                    }catch(PartInitException e) {
+	                    	SQLExplorerPlugin.error("Cannot open SQL editor", e);
+	                    }
+	                }
+            	}catch(SQLException e) {
+            		SQLExplorerPlugin.error(e.getMessage(), e);
+            	}
         }
 
-        boolean autoCommit = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.AUTO_COMMIT);
-        boolean commitOnClose = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(
-                IConstants.COMMIT_ON_CLOSE);
-
-        Object[] aliases = (Object[]) aliasModel.getElements();
-        for (int i = 0; i < aliases.length; i++) {
-            final ISQLAlias alias = (ISQLAlias) aliases[i];
-            if (alias.isConnectAtStartup() && alias.isAutoLogon()) {
-                try {
-
-                    ISQLDriver dv = driverModel.getDriver(alias.getDriverIdentifier());
-
-                    OpenConnectionJob bgJob = new OpenConnectionJob(_driverMgr, dv, alias, alias.getUserName(),
-                            alias.getPassword(), autoCommit, commitOnClose, site.getShell());
-
-                    IWorkbenchSiteProgressService siteps = (IWorkbenchSiteProgressService) site.getAdapter(
-                            IWorkbenchSiteProgressService.class);
-                    siteps.showInDialog(site.getShell(), bgJob);
-                    bgJob.schedule();
-
-                } catch (Throwable e) {
-                    error("Error creating sql connection to " + alias.getName(), e);//$NON-NLS-1$
-                }
-            }
-        }
         _defaultConnectionsStarted = true;
     }
-    
-    public ISQLDriver getDriver(ISQLAlias alias) {
-    	return driverModel.getDriver(alias.getDriverIdentifier());
-    }
-
 
     /**
      * Game over. End all..
@@ -216,10 +165,9 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
      * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext context) throws Exception {
-
-        _cache.save();
-        RootSessionTreeNode rstn = stm.getRoot();
-        rstn.closeAllConnections();
+    	driverManager.saveDrivers();
+        aliasManager.saveAliases();
+        aliasManager.closeAllConnections();
 
         // save SQL History for next session
         _history.save();
@@ -227,6 +175,58 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         super.stop(context);
     }
 
+    /**
+     * @return Returns the next serial number for creating new editors (used in the title of the filename)
+     */
+    public int getEditorSerialNo() {
+        return count++;
+    }
+    
+    /**
+     * Returns the DriverModel
+     * @return
+     */
+    public DriverManager getDriverModel() {
+        return driverManager;
+    }
+
+    /**
+     * @return The list of configured Aliases
+     */
+	public AliasManager getAliasManager() {
+		return aliasManager;
+	}
+
+    /**
+     * @return SQLHistory Instance
+     */
+    public SQLHistory getSQLHistory() {
+        return _history;
+    }
+
+    /**
+     * @return Returns the plugin's resource bundle,
+     */
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
+
+    /**
+     * Get the version number as specified in plugin.xml
+     * 
+     * @return version number of SQL Explorer plugin
+     */
+    public String getVersion() {
+        String version = (String) plugin.getBundle().getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION);
+        return version;
+    }
+
+    /**
+     * Returns the shared instance.
+     */
+    public static SQLExplorerPlugin getDefault() {
+        return plugin;
+    }
 
     /**
      * Global log method.
@@ -235,27 +235,24 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
      * @param t
      */
     public static void error(String message, Throwable t) {
-
         getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, String.valueOf(message), t));
         _logger.error(message, t);
     }
 
-
     /**
-     * Returns the shared instance.
+     * Global log method.
+     * @param t
      */
-    public static SQLExplorerPlugin getDefault() {
-
-        return plugin;
+    public static void error(Exception e) {
+        getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, String.valueOf(e.getMessage()), e));
+        _logger.error(e.getMessage(), e);
     }
-
 
     /**
      * Returns the string from the plugin's resource bundle, or 'key' if not
      * found.
      */
     public static String getResourceString(String key) {
-
         ResourceBundle bundle = SQLExplorerPlugin.getDefault().getResourceBundle();
         try {
             return bundle.getString(key);
@@ -264,4 +261,28 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         }
     }
 
+	public ConnectionsView getConnectionsView() {
+		if (connectionsView == null) {
+			IWorkbenchPage page = getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			if (page != null)
+		        connectionsView = (ConnectionsView)page.findView(ConnectionsView.class.getName());
+		}
+			
+		return connectionsView;
+	}
+
+	public DatabaseStructureView getDatabaseStructureView() {
+		if (databaseStructureView == null) {
+			IWorkbenchPage page = getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			if (page != null)
+				databaseStructureView = (DatabaseStructureView) page.findView(DatabaseStructureView.class.getName());
+		}
+		return databaseStructureView;
+	}
+	
+	public IWorkbenchSite getSite() {
+		if (getConnectionsView() == null)
+			return null;
+		return connectionsView.getSite();
+	}
 }

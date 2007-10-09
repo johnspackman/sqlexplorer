@@ -18,17 +18,13 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
-import java.util.Iterator;
+import java.util.Set;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SQLAlias;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
-
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.StructuredSelection;
 
 
 /**
@@ -56,51 +52,22 @@ public class ConnectAliasAction extends AbstractConnectionTreeAction {
     }
 
     public void run() {
-        
-        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
-        
-        Iterator it = sel.iterator();
-        while (it.hasNext()) {
-            
-            Object o = it.next();            
-            if (o instanceof SQLAlias) {
-                
-                ISQLAlias al = (ISQLAlias) o;                
-                OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(_view.getSite(),
-                        al, SQLExplorerPlugin.getDefault().getDriverModel(), SQLExplorerPlugin.getDefault().getPreferenceStore(), SQLExplorerPlugin.getDefault().getSQLDriverManager());
-                openDlgAction.run();
-            }
+    	Set<User> users = getView().getSelectedUsers(true);
+    	for (User user : users) {
+            OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(user.getAlias(), user, false);
+            openDlgAction.run();
         }
-        _treeViewer.refresh();
-        
+        getView().refresh();
     }
     
-    
-
     /**
      * Only show action when there is at least 1 alias selected
      * 
      * @see net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction#isAvailable()
      */
     public boolean isAvailable() {
-
-        StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
-
-        if (sel.size() == 0) {
-            return false;
-        }
-        
-        Iterator it = sel.iterator();
-        
-        while (it.hasNext()) {
-            
-            Object o = it.next();
-            if (o instanceof ISQLAlias) {
-                return true;
-            }
-            
-        }        
-
-        return false;
+    	if (getView() == null)
+    		return false;
+    	return getView().getSelectedUsers(true) != null;
     }
 }

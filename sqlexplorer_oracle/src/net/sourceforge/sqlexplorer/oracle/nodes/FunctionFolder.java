@@ -24,14 +24,15 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 
 public class FunctionFolder extends AbstractSQLFolderNode {
 
-    public String getChildType() {
+	
+    public FunctionFolder() {
+		super(Messages.getString("oracle.dbstructure.functions"));
+	}
+
+	public String getChildType() {
         return "FUNCTION";
     }
    
-    public String getName() {
-        return Messages.getString("oracle.dbstructure.functions");
-    }
-    
     public String getSQL() {
         return "select object_name from sys.all_objects where owner = ? and object_type = 'FUNCTION'";
     }

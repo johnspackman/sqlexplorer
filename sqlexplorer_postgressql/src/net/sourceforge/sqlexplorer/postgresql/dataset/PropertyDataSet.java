@@ -7,7 +7,8 @@ import java.sql.ResultSetMetaData;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.util.log.ILogger;
 import net.sourceforge.squirrel_sql.fw.util.log.LoggerController;
 
@@ -42,14 +43,16 @@ public class PropertyDataSet {
 	 * @throws Exception
 	 *             in case something goes wrong.
 	 */
-	public static DataSet getPropertyDataSet(SQLConnection connection,
+	public static DataSet getPropertyDataSet(Session session,
 			String sql, Object[] params) throws Exception {
-		Connection c = connection.getConnection();
+		SQLConnection sqlConnection = null;
 		String[][] data = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 
 		try {
+			sqlConnection = session.grabConnection();
+			Connection c = sqlConnection.getConnection();
 			pstmt = c.prepareStatement(sql);
 			if (params != null)
 				for (int i = 0; i < params.length; i++)
@@ -68,8 +71,7 @@ public class PropertyDataSet {
 					data[i - 1][1] = rs.getString(i);
 
 			if (rs.next())
-				logger
-						.warn("Creating a PropertyDataSet from a result set with more than 1 row!");
+				logger.warn("Creating a PropertyDataSet from a result set with more than 1 row!");
 
 			rs.close();
 			pstmt.close();
@@ -84,6 +86,8 @@ public class PropertyDataSet {
 					pstmt.close();
 				} catch (Exception e) {
 				}
+			if (sqlConnection != null)
+				session.releaseConnection(sqlConnection);
 		}
 
 		return new DataSet(new String[] {

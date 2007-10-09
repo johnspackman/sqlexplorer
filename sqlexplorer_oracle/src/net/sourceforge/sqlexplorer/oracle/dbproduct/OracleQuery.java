@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.oracle.dbproduct;
 
 import net.sourceforge.sqlexplorer.parsers.AnnotatedQuery;
+import net.sourceforge.sqlexplorer.util.BackedCharSequence;
 
 /**
  * Returned by the OracleQueryParser.  Adds properties to the Query so that
@@ -33,7 +34,7 @@ public class OracleQuery extends AnnotatedQuery {
 	private String createObjectName;
 	private String createObjectType;
 
-	public OracleQuery(CharSequence buffer, int lineNo) {
+	public OracleQuery(BackedCharSequence buffer, int lineNo) {
 		super(buffer, lineNo);
 	}
 

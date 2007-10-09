@@ -57,11 +57,11 @@ public class CommitAction extends AbstractEditorAction {
      */
     public boolean isDisabled() {
 
-        if (_editor.getSessionTreeNode() == null) {
+        if (_editor.getSession() == null) {
             return true;
         }
 
-        return _editor.getSessionTreeNode().isAutoCommitMode();
+        return _editor.getSession().isAutoCommitMode();
     }
 
 
@@ -69,7 +69,7 @@ public class CommitAction extends AbstractEditorAction {
 
         try {
 
-            _editor.getSessionTreeNode().commit();
+            _editor.getSession().commit();
             _editor.setMessage(Messages.getString("SQLEditor.Actions.Commit.Success"));
             
         } catch (final Exception e) {

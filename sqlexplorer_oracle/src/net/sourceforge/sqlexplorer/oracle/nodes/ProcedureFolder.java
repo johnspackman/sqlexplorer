@@ -27,36 +27,33 @@ package net.sourceforge.sqlexplorer.oracle.nodes;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 
 public class ProcedureFolder extends AbstractFolderNode {
 	
 	public ProcedureFolder() {
-	}	
-		
-	public ProcedureFolder(INode parent, SessionTreeNode sessionNode) {
-		_type = "FOLDER";
-		initialize(parent, null, sessionNode);
+		super(Messages.getString("oracle.dbstructure.procedures"));
 	}
-   
-    public String getName() {
-        return Messages.getString("oracle.dbstructure.procedures");
-    }
+
+	public ProcedureFolder(INode parent, Session session) {
+		super(parent, Messages.getString("oracle.dbstructure.procedures"), session, "FOLDER");
+	}
 
 	public void loadChildren() {
-		
-        SQLConnection connection = getSession().getInteractiveConnection();
+        SQLConnection connection = null;
         ResultSet rs = null;
         PreparedStatement pStmt = null;
         
         try {
+        	connection = getSession().grabConnection();
         	
             // use prepared statement
         	if (getParent().getType().equalsIgnoreCase("package")) {
@@ -84,8 +81,7 @@ public class ProcedureFolder extends AbstractFolderNode {
             		continue;
             	}
             	
-            	ProcedureNode newNode = new ProcedureNode();
-            	newNode.initialize(this, rs.getString(1), _sessionNode);
+            	ProcedureNode newNode = new ProcedureNode(this, rs.getString(1), _session);
             	newNode.setOverload(rs.getInt(2));
             	
             	if (getParent().getType().equalsIgnoreCase("package")) {
@@ -94,8 +90,6 @@ public class ProcedureFolder extends AbstractFolderNode {
             	}
                 addChildNode(newNode);
             }
-
-            rs.close();
 
         } catch (Exception e) {
 
@@ -110,6 +104,15 @@ public class ProcedureFolder extends AbstractFolderNode {
                     SQLExplorerPlugin.error("Error closing statement", e);
                 }
             }
+            if (rs != null) {
+            	try {
+            		rs.close();
+            	} catch(SQLException e) {
+            		SQLExplorerPlugin.error("Cannot close result set", e);
+            	}
+            }
+            if (connection != null)
+           		getSession().releaseConnection(connection);
         }
 	}
 

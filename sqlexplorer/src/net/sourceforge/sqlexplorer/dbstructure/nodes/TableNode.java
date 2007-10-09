@@ -22,8 +22,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
@@ -53,13 +53,10 @@ public class TableNode extends AbstractNode {
      * @param name of this node
      * @param sessionNode session for this node
      */
-    public TableNode(INode parent, String name, SessionTreeNode sessionNode, ITableInfo tableInfo) {
-
+    public TableNode(INode parent, String name, Session sessionNode, ITableInfo tableInfo) {
+    	super(parent, name, sessionNode, tableInfo.getType());
         _tableInfo = tableInfo;
-        _sessionNode = sessionNode;
-        _parent = parent;
-        _name = name;
-        _imageKey = "Images.TableNodeIcon";
+        setImageKey("Images.TableNodeIcon");
     }
 
 
@@ -126,7 +123,7 @@ public class TableNode extends AbstractNode {
                     }
                     
                     childNode.setParent(this);
-                    childNode.setSession(_sessionNode);
+                    childNode.setSession(_session);
 
                     addChildNode(childNode);
                     _folderNames.add(childNode.getName());
@@ -149,7 +146,7 @@ public class TableNode extends AbstractNode {
 
             _columnNames = new ArrayList();
             try {
-                ResultSet resultSet = _sessionNode.getMetaData().getColumns(_tableInfo);
+                ResultSet resultSet = _session.getMetaData().getColumns(_tableInfo);
                 while (resultSet.next()) {
                     _columnNames.add(resultSet.getString(4));
                 }
@@ -173,7 +170,7 @@ public class TableNode extends AbstractNode {
 
             _foreignKeyNames = new ArrayList();
             try {
-                ResultSet resultSet = _sessionNode.getMetaData().getImportedKeys(_tableInfo);
+                ResultSet resultSet = _session.getMetaData().getImportedKeys(_tableInfo);
                 while (resultSet.next()) {
                     _foreignKeyNames.add(resultSet.getString(4));
                 }
@@ -197,7 +194,7 @@ public class TableNode extends AbstractNode {
 
             _primaryKeyNames = new ArrayList();
             try {
-                ResultSet resultSet = _sessionNode.getMetaData().getPrimaryKeys(_tableInfo);
+                ResultSet resultSet = _session.getMetaData().getPrimaryKeys(_tableInfo);
                 while (resultSet.next()) {
                     _primaryKeyNames.add(resultSet.getString(4));
                 }
@@ -236,17 +233,6 @@ public class TableNode extends AbstractNode {
     public ITableInfo getTableInfo() {
 
         return _tableInfo;
-    }
-
-
-    /**
-     * Returns the table info type as the type for this node.
-     * 
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getType()
-     */
-    public String getType() {
-
-        return _tableInfo.getType();
     }
 
 

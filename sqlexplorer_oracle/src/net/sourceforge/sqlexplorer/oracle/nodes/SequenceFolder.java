@@ -24,14 +24,14 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 
 public class SequenceFolder extends AbstractSQLFolderNode {
 
-    public String getChildType() {
+    public SequenceFolder() {
+		super(Messages.getString("oracle.dbstructure.sequences"));
+	}
+
+	public String getChildType() {
         return "SEQUENCE";
     }
    
-    public String getName() {
-        return Messages.getString("oracle.dbstructure.sequences");
-    }
-    
     public String getSQL() {
         return "select object_name from sys.all_objects where owner = ? and object_type = 'SEQUENCE'";
     }

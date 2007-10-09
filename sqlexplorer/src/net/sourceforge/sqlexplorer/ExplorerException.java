@@ -23,6 +23,7 @@ package net.sourceforge.sqlexplorer;
  * 
  * @author John Spackman
  */
+@SuppressWarnings("serial")
 public class ExplorerException extends Exception {
 
 	public ExplorerException() {

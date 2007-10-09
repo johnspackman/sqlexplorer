@@ -79,13 +79,16 @@ public class SQLExplorerPluginPerspective implements IPerspectiveFactory {
 
         IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.15f, editorArea);
         topLeft.addView(SqlexplorerViewConstants.SQLEXPLORER_CONNECTIONS);
+        topLeft.addView("org.eclipse.ui.navigator.ProjectExplorer");
 
         IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.3f, "topLeft");
         bottomLeft.addView(SqlexplorerViewConstants.SQLEXPLORER_SQLHISTORY);
         
         IFolderLayout main = layout.createFolder("right", IPageLayout.RIGHT, 0.70f, editorArea);
         main.addView(SqlexplorerViewConstants.SQLEXPLORER_DBSTRUCTURE);
-        main.addView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
+        
+        IFolderLayout bottom = layout.createFolder("bottom", IPageLayout.BOTTOM, 0.85f, editorArea);
+        bottom.addView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
         
         IFolderLayout bottomRight = layout.createFolder("bottomRight", IPageLayout.BOTTOM, 0.90f, "right");
         bottomRight.addView(IPageLayout.ID_PROGRESS_VIEW);

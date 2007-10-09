@@ -18,10 +18,10 @@
 package net.sourceforge.sqlexplorer.history;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,8 +30,16 @@ import java.util.List;
 
 import net.sourceforge.sqlexplorer.ApplicationFiles;
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
+import org.dom4j.tree.DefaultElement;
 import org.eclipse.core.runtime.ListenerList;
 
 /**
@@ -40,9 +48,11 @@ import org.eclipse.core.runtime.ListenerList;
  */
 public class SQLHistory {
 
-    private List _filteredHistory = new ArrayList();
+    private static final String HISTORY = "history";
+    
+    private List<SQLHistoryElement> _filteredHistory = new ArrayList<SQLHistoryElement>();
 
-    private List _history = new ArrayList();
+    private List<SQLHistoryElement> _history = new ArrayList<SQLHistoryElement>();
 
     private ListenerList _listeners = new ListenerList();
 
@@ -58,8 +68,6 @@ public class SQLHistory {
 
     private static final String TAB_REPLACEMENT = "#T#";
 
-    private static final String TAB_SEPARATOR = "\\t";
-    
     private static final String SESSION_HINT_MARKER = "#SH#";
 
     private static final String TIME_HINT_MARKER = "#TH#";
@@ -98,7 +106,7 @@ public class SQLHistory {
      * 
      * @param newSql sql query string
      */
-    public void addSQL(String rawSqlString, String sessionName) {
+    public void addSQL(String rawSqlString, Session session) {
 
         if (rawSqlString == null
             || rawSqlString.equalsIgnoreCase("commit")
@@ -110,14 +118,14 @@ public class SQLHistory {
             SQLHistoryElement el = (SQLHistoryElement) _history.get(i);
             if (el.equals(rawSqlString)) {
                 _history.remove(i);
-                el.setSessionName(sessionName);
+                el.setUser(session.getUser());
                 el.increaseExecutionCount();
                 _history.add(0, el);
                 refreshHistoryView();
                 return;
             }
         }
-        _history.add(0, new SQLHistoryElement(rawSqlString, sessionName));
+        _history.add(0, new SQLHistoryElement(rawSqlString, session.getUser()));
         
         refreshHistoryView();
         
@@ -163,15 +171,36 @@ public class SQLHistory {
         }
     }
 
+    private void loadFromFile() {
+    	if (new File(ApplicationFiles.SQLHISTORY_FILE_NAME_V300).exists())
+        	loadFromFileV300();
+        else if (new File(ApplicationFiles.SQLHISTORY_FILE_NAME_V350).exists())
+        	loadFromFileV350();
+    }
+    
+    private void loadFromFileV350() {
+    	try {
+	    	File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME_V350);
+	        SAXReader reader = new SAXReader();
+	        Element root = reader.read(file).getRootElement();
+	        _history.clear();
+	        _filteredHistory.clear();
+	        for (Element elem : root.elements(SQLHistoryElement.ELEMENT))
+	        	_history.add(new SQLHistoryElement(elem));
+	        	
+    	}catch(DocumentException e) {
+    		SQLExplorerPlugin.error("Cannot load history (v3.5.0 format)", e);
+    	}
+    }
 
     /**
      * Load the sql history from previous sessions.
      */
-    private void loadFromFile() {
+    private void loadFromFileV300() {
 
         try {
 
-            File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME);
+            File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME_V300);
 
             if (!file.exists()) {
                 return;
@@ -217,7 +246,8 @@ public class SQLHistory {
                     }
 
                     if (query != null && query.trim().length() != 0) {
-                        _history.add(new SQLHistoryElement(query, sessionHint, time, executions));
+                    	Alias alias = SQLExplorerPlugin.getDefault().getAliasManager().getAlias(sessionHint);
+                        _history.add(new SQLHistoryElement(query, alias.getDefaultUser(), time, executions));
                     }
 
                 }
@@ -281,43 +311,19 @@ public class SQLHistory {
     public void save() {
 
         try {
+            File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME_V350);
+        	Element root = new DefaultElement(HISTORY);
+        	for (SQLHistoryElement elem : _history)
+        		root.add(elem.describeAsXml());
+        	XMLWriter xmlWriter = new XMLWriter(new FileWriter(file), OutputFormat.createPrettyPrint());
+        	xmlWriter.write(root);
+        	xmlWriter.flush();
+        	xmlWriter.close();
+        	
+        	// Get rid of old versions
+        	new File(ApplicationFiles.SQLHISTORY_FILE_NAME_V300).delete();
 
-            File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME);
-
-            if (file.exists()) {
-                // clear old history
-                file.delete();
-            }
-
-            if (_history.size() == 0) {
-                // nothing to save
-                return;
-            }
-
-            file.createNewFile();
-
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-
-            Iterator it = _history.iterator();
-            while (it.hasNext()) {
-
-                SQLHistoryElement el = (SQLHistoryElement) it.next();
-                String qry = el.getRawSQLString();
-                qry = qry.replaceAll(NEWLINE_SEPARATOR, NEWLINE_REPLACEMENT);
-                qry = qry.replaceAll(TAB_SEPARATOR, TAB_REPLACEMENT);
-
-                String sessionHint = el.getSessionName();
-
-                String tmpLine = sessionHint + SESSION_HINT_MARKER + qry + TIME_HINT_MARKER + el.getTime()
-                        + EXECUTION_HINT_MARKER + el.getExecutionCount();
-
-                writer.write(tmpLine, 0, tmpLine.length());
-                writer.newLine();
-            }
-
-            writer.close();
-
-        } catch (Exception e) {
+        } catch (IOException e) {
             SQLExplorerPlugin.error("Couldn't save sql history.", e);
         }
 

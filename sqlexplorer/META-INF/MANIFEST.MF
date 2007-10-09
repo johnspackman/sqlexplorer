@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SQLExplorer Plugin
 Bundle-SymbolicName: net.sourceforge.sqlexplorer; singleton:=true
-Bundle-Version: 3.5.0.beta1
+Bundle-Version: 3.5.0.beta2
 Bundle-Activator: net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin
 Bundle-Vendor: Eclipse SQL Explorer Project (eclipsesql.sourceforge.net)
 Bundle-Localization: plugin
@@ -17,10 +17,9 @@ Eclipse-LazyStart: true
 Bundle-ClassPath: sqlexplorer.jar,
  lib/commons-logging.jar,
  lib/log4j.jar,
- lib/nanoxml.jar,
  lib/rowset.jar,
- lib/squirrel.jar
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+ lib/squirrel.jar,
+ lib/dom4j.jar
 Export-Package: META-INF,
  com.ice.util,
  com.sun.rowset,
@@ -29,7 +28,6 @@ Export-Package: META-INF,
  javax.sql.rowset,
  javax.sql.rowset.serial,
  javax.sql.rowset.spi,
- net.n3.nanoxml,
  net.sourceforge.sqlexplorer,
  net.sourceforge.sqlexplorer.connections,
  net.sourceforge.sqlexplorer.connections.actions,
@@ -37,10 +35,15 @@ Export-Package: META-INF,
  net.sourceforge.sqlexplorer.dataset.actions,
  net.sourceforge.sqlexplorer.dbdetail,
  net.sourceforge.sqlexplorer.dbdetail.tab,
+ net.sourceforge.sqlexplorer.dbproduct,
  net.sourceforge.sqlexplorer.dbstructure,
  net.sourceforge.sqlexplorer.dbstructure.actions,
  net.sourceforge.sqlexplorer.dbstructure.nodes,
  net.sourceforge.sqlexplorer.dialogs,
+ net.sourceforge.sqlexplorer.history,
+ net.sourceforge.sqlexplorer.history.actions,
+ net.sourceforge.sqlexplorer.parsers,
+ net.sourceforge.sqlexplorer.parsers.scp,
  net.sourceforge.sqlexplorer.plugin,
  net.sourceforge.sqlexplorer.plugin.actions,
  net.sourceforge.sqlexplorer.plugin.editors,
@@ -48,9 +51,9 @@ Export-Package: META-INF,
  net.sourceforge.sqlexplorer.plugin.views,
  net.sourceforge.sqlexplorer.plugin.wizards,
  net.sourceforge.sqlexplorer.preferences,
+ net.sourceforge.sqlexplorer.preview,
  net.sourceforge.sqlexplorer.rcp,
  net.sourceforge.sqlexplorer.sessiontree.actions,
- net.sourceforge.sqlexplorer.sessiontree.model,
  net.sourceforge.sqlexplorer.sessiontree.model.utility,
  net.sourceforge.sqlexplorer.sqleditor,
  net.sourceforge.sqlexplorer.sqleditor.actions,
@@ -96,4 +99,20 @@ Export-Package: META-INF,
  org.apache.log4j.or.sax,
  org.apache.log4j.spi,
  org.apache.log4j.varia,
- org.apache.log4j.xml
+ org.apache.log4j.xml,
+ org.dom4j,
+ org.dom4j.bean,
+ org.dom4j.datatype,
+ org.dom4j.dom,
+ org.dom4j.dtd,
+ org.dom4j.io,
+ org.dom4j.jaxb,
+ org.dom4j.rule,
+ org.dom4j.rule.pattern,
+ org.dom4j.swing,
+ org.dom4j.tree,
+ org.dom4j.util,
+ org.dom4j.xpath,
+ org.dom4j.xpp,
+ org.eclipse.jface.preference
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

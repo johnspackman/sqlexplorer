@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?NLS TYPE="org.eclipse.help.toc"?>
 
-<toc label="Overview" link_to="toc.xml#overview"> 
+<toc label="Overview" link_to="toc.xml#overview">
 	<topic label="Driver Preferences" href="html/overview/driverpreferences.html" />
 	<topic label="Connections View" href="html/overview/connections.html" />
 	<topic label="SQL Editor" href="html/overview/sqleditor.html" />
-	<topic label="SQL Results" href="html/overview/sqlresults.html" />
 	<topic label="SQL History" href="html/overview/sqlhistory.html" />
 	<topic label="Structure View" href="html/overview/structure.html" />
 	<topic label="Detail View" href="html/overview/detail.html" />

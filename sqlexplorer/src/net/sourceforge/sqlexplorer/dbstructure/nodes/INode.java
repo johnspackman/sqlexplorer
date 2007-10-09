@@ -18,7 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -95,7 +95,7 @@ public interface INode {
     /**
      * @return SessionTreeNode for this node.
      */
-    public SessionTreeNode getSession();
+    public Session getSession();
 
 
     /**
@@ -115,16 +115,6 @@ public interface INode {
      * @return true if the node has children.
      */
     public boolean hasChildNodes();
-
-
-    /**
-     * Initialize this node.
-     * 
-     * @param parent the parent INode of this node.
-     * @param name the name of this node.
-     * @param sessionNode the session this node belongs too.
-     */
-    public void initialize(INode parent, String name, SessionTreeNode sessionNode);
 
 
     /**

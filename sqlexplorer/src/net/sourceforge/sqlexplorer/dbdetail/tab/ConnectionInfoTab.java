@@ -23,6 +23,7 @@ import java.sql.DatabaseMetaData;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDatabaseMetaData;
 
 /**
@@ -36,7 +37,7 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
     }
 
     public String getStatusMessage() {
-        return Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.status") + " " + getNode().getSession().toString();
+        return Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.status") + " " + getNode().getSession().getUser().getDescription();
     }
     
     public DataSet getDataSet() throws Exception {
@@ -56,6 +57,13 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
 
         String[][] data = new String[124][2];
 
+    	SQLConnection connection = node.getSession().grabConnection();
+    	boolean commitOnClose = false;
+        try {
+        	commitOnClose = connection.getCommitOnClose();
+        } finally{
+        	node.getSession().releaseConnection(connection);
+        }
         
             data[0][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.DatabaseProductName");
             try {data[0][1] = sqlMetaData.getDatabaseProductName();} catch (Throwable e) {}                
@@ -74,7 +82,7 @@ public class ConnectionInfoTab extends AbstractDataSetTab {
             data[7][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.AutocommitMode");
             try {data[7][1] = "" + jdbcMetaData.getConnection().getAutoCommit();} catch (Throwable e) {}
             data[8][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.CommitOnClose");            
-            try {data[8][1] = "" + node.getSession().getInteractiveConnection().getCommitOnClose();} catch (Throwable e) {}            
+            data[8][1] = "" + commitOnClose;            
             data[9][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.ProceduresCallable");
             try {data[9][1] = "" + jdbcMetaData.allProceduresAreCallable();} catch (Throwable e) {}
             data[10][0] = Messages.getString("DatabaseDetailView.Tab.ConnectionInfo.TablesSelectable");

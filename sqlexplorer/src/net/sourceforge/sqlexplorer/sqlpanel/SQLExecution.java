@@ -18,7 +18,6 @@
  */
 package net.sourceforge.sqlexplorer.sqlpanel;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -28,13 +27,14 @@ import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dataset.DataSetTable;
+import net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -64,10 +64,9 @@ public class SQLExecution extends AbstractSQLExecution {
      * @param maxRows
      * @param _session
      */
-    public SQLExecution(SQLEditor _editor, QueryParser queryParser, int maxRows, SessionTreeNode _session) {
-		super(_editor, queryParser, _session);
-    	
-        _maxRows = maxRows;
+    public SQLExecution(SQLEditor _editor, QueryParser queryParser, int maxRows) {
+		super(_editor, queryParser);
+    	_maxRows = maxRows;
 	}
 
 
@@ -154,14 +153,13 @@ public class SQLExecution extends AbstractSQLExecution {
         
     }
     
-    protected void doExecution() throws Exception {
-        final long startTime = System.currentTimeMillis();
+    protected void doExecution(IProgressMonitor monitor) throws Exception {
         int numErrors = 0;
         SQLException lastSQLException = null;
 
         try {
         	for (Query query : getQueryParser()) {
-            	if (_isCancelled)
+            	if (monitor.isCanceled())
             		break;
             	
             	// Get the next bit of SQL to run and store it as "current"
@@ -170,96 +168,72 @@ public class SQLExecution extends AbstractSQLExecution {
             	String querySQL = query.getQuerySql().toString();
             	if (querySQL == null)
             		continue;
-
+            	
             	// Initialise
 	            setProgressMessage(Messages.getString("SQLResultsView.Executing"));
-	            _stmt = _connection.createStatement();
-	            _stmt.setMaxRows(_maxRows);
-	
-	            if (_isCancelled)
-	                return;
-	            
+                final long startTime = System.currentTimeMillis();
+                
+                // Run it
+	            DatabaseProduct.ExecutionResults results = null;
 	            try {
-		            boolean hasResults = _stmt.execute(querySQL);
-		
-		            if (_isCancelled) {
-		                closeStatement();
-		                return;
-		            }
-		            
-		            if (hasResults) {
-		                final ResultSet rs = _stmt.getResultSet();
-		                if (rs != null) {
-		                    if (_isCancelled) {
-		                        closeStatement();
-		                        return;
-		                    }
-		                    
-		                    // create new dataset from results
-		                    DataSet dataSet = _session.getDatabaseProduct().createDataSet(_session.getAlias(), rs);
-		                    final long endTime = System.currentTimeMillis();
+	            	DatabaseProduct product = getEditor().getSession().getDatabaseProduct();
+	            	results = product.executeQuery(_connection, query, _maxRows);
+                    final long endTime = System.currentTimeMillis();
+	            	DataSet dataSet;
+	            	while ((dataSet = results.nextDataSet()) != null) {
 
-		                    // update sql result
-		            		SQLResult sqlResult = new SQLResult();
-		            		sqlResult.setQuery(query);
-		                    sqlResult.setDataSet(dataSet);
-		                    sqlResult.setExecutionTimeMillis(endTime - startTime);
-		
-		                    // save successfull query
-		                    SQLExplorerPlugin.getDefault().getSQLHistory().addSQL(querySQL, _session.toString());
-		
-		                    closeStatement();
-		
-		                    if (_isCancelled) {
-		                        return;
-		                    }
-		                    
-		                    // show results..
-		                    displayResults(sqlResult);
-		                }
-
-		            // No results, just an update count
-		            } else {
-		                final long endTime = System.currentTimeMillis();
-		                final int updateCount = _stmt.getUpdateCount();
-		
-                        String message = "" + updateCount + " " + Messages.getString("SQLEditor.Update.Prefix") + " " + 
-                    		(int) (endTime - startTime) + " " + Messages.getString("SQLEditor.Update.Postfix");
-		                setMessage(message);
-                        
-                        Collection<SQLEditor.Message> messages = _session.getDatabaseProduct().getErrorMessages(_connection, query);
-                        if (messages == null)
-                        	messages = new LinkedList<SQLEditor.Message>();
-                        else
-                        	for (SQLEditor.Message msg : messages)
-                        		msg.setLineNo(getQueryParser().adjustLineNo(msg.getLineNo()));
-                        if (messages.size() == 0) {
-	                        int lineNo = query.getLineNo();
-	                        lineNo = getQueryParser().adjustLineNo(lineNo);
-                        	messages.add(new SQLEditor.Message(true, lineNo, 0, query.getQuerySql(), message));
-                        }
-                        addMessages(messages);
-		
-		                closeStatement();
-		
-		                if (_isCancelled)
-		                    return;
-		                
-		                // save successfull query
-		                SQLExplorerPlugin.getDefault().getSQLHistory().addSQL(querySQL, _session.toString());
-		            }
+	                    // update sql result
+	            		SQLResult sqlResult = new SQLResult();
+	            		sqlResult.setQuery(query);
+	                    sqlResult.setDataSet(dataSet);
+	                    sqlResult.setExecutionTimeMillis(endTime - startTime);
 	
-		            _stmt = null;
+	                    // Save successfull query
+	                    SQLExplorerPlugin.getDefault().getSQLHistory().addSQL(querySQL, _session);
+
+	                    if (monitor.isCanceled())
+	                        return;
+	                    
+	                    // show results..
+	                    displayResults(sqlResult);
+	            	}
+	            	
+                    String message = Long.toString(results.getUpdateCount()) + " " + Messages.getString("SQLEditor.Update.Prefix") + " " + 
+            			Long.toString(endTime - startTime) + " " + Messages.getString("SQLEditor.Update.Postfix");
+                    
+                    Collection<SQLEditor.Message> messages = _session.getDatabaseProduct().getErrorMessages(_connection, query);
+                    if (messages == null)
+                    	messages = new LinkedList<SQLEditor.Message>();
+                    else
+                    	for (SQLEditor.Message msg : messages)
+                    		msg.setLineNo(getQueryParser().adjustLineNo(msg.getLineNo()));
+                    
+                    if (messages.size() == 0) {
+                        int lineNo = query.getLineNo();
+                        lineNo = getQueryParser().adjustLineNo(lineNo);
+                    	messages.add(new SQLEditor.Message(true, lineNo, 0, query.getQuerySql(), message));
+                    }
+                    
+                    addMessages(messages);
 		            debugLogQuery(query, null);
-	            }catch(SQLException e) {
+	
+	            } catch(SQLException e) {
 		            debugLogQuery(query, e);
-	                logException(e, querySQL);
+	                logException(e, query);
 	                closeStatement();
 	            	boolean stopOnError = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.STOP_ON_ERROR);
 	            	if (stopOnError)
 	            		throw e;
 	            	numErrors++;
 	            	lastSQLException = e;
+	            	
+	            } finally {
+	            	try {
+	            		if (results != null)
+	            			results.close();
+	            	}catch(SQLException e) {
+	            		// Nothing
+	            	}
 	            }
             }
         } catch (Exception e) {
@@ -284,9 +258,7 @@ public class SQLExecution extends AbstractSQLExecution {
      */
     public void doStop() {
 
-    	_isCancelled = true;
         if (_stmt != null) {
-
             try {
                 _stmt.cancel();
             } catch (Exception e) {

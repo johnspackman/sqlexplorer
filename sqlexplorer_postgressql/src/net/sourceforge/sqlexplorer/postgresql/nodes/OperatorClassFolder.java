@@ -27,15 +27,15 @@ public class OperatorClassFolder extends AbstractSQLFolderNode implements
 	private static final String OID_QUERY = "SELECT DISTINCT cl.oid "
 			+ "FROM pg_opclass cl JOIN pg_namespace ns ON cl.opcnamespace=ns.oid WHERE ns.nspname = ? AND cl.opcname LIKE ?";
 
+	public OperatorClassFolder() {
+		super(Messages.getString("postgresql.node.opclass"));
+	}
+
 	@Override
 	public String getChildType() {
 		return TYPE;
 	}
 
-	@Override
-	public String getName() {
-		return Messages.getString("postgresql.node.opclass");
-	}
 
 	@Override
 	public String getSQL() {

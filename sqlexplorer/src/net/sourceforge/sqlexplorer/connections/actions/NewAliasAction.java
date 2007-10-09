@@ -18,13 +18,9 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
-import net.sourceforge.sqlexplorer.AliasModel;
-import net.sourceforge.sqlexplorer.DriverModel;
-import net.sourceforge.sqlexplorer.IdentifierFactory;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dialogs.CreateAliasDlg;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -60,14 +56,9 @@ public class NewAliasAction extends AbstractConnectionTreeAction {
 
 
     public void run() {
-
-        DriverModel driverModel = SQLExplorerPlugin.getDefault().getDriverModel();
-        AliasModel aliasModel = SQLExplorerPlugin.getDefault().getAliasModel();
-        IdentifierFactory factory = IdentifierFactory.getInstance();
-        SQLAlias alias = aliasModel.createAlias(factory.createIdentifier());
-        CreateAliasDlg dlg = new CreateAliasDlg(Display.getCurrent().getActiveShell(), driverModel, 1, alias, aliasModel);
+        CreateAliasDlg dlg = new CreateAliasDlg(Display.getCurrent().getActiveShell(), CreateAliasDlg.Type.CREATE, new Alias());
         dlg.open();
-        _treeViewer.refresh();
+        getView().refresh();
     }
 
 }

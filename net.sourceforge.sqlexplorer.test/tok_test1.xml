@@ -106,8 +106,10 @@
 		</data>
 		<t line="1" type="word">if</t>
 		<t line="1" type="word">myfunc</t>
-		<t line="1" type="punctuation">()</t>
-		<t line="1" type="punctuation">!=</t>
+		<t line="1" type="punctuation">(</t>
+		<t line="1" type="punctuation">)</t>
+		<t line="1" type="punctuation">!</t>
+		<t line="1" type="punctuation">=</t>
 		<t line="1" type="word">true</t>
 		<t line="1" type="word">then</t>
 		<t line="2" type="word">blah</t>

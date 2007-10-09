@@ -1,13 +1,12 @@
 package net.sourceforge.sqlexplorer.postgresql.actions;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.postgresql.dataset.tree.ITreeDataSet;
 import net.sourceforge.sqlexplorer.postgresql.dataset.tree.SqlTreeDataSet;
 import net.sourceforge.sqlexplorer.postgresql.dialogs.TreeDataDialog;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
-
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 
@@ -29,13 +28,12 @@ public class ConfigContextAction extends AbstractDBTreeContextAction {
 		if (_selectedNodes == null || _selectedNodes.length != 1)
 			return;
 		try {
+			Session session = _selectedNodes[0].getSession();
 			String lVal = Messages.getString("postgresql.hdr.value");
 			String lMin = Messages.getString("postgresql.hdr.min");
 			String lMax = Messages.getString("postgresql.hdr.max");
 			String lDesc = Messages.getString("postgresql.hdr.description");
 			String lSet = Messages.getString("postgresql.hdr.setting");
-			SQLConnection c = _selectedNodes[0].getSession()
-					.getInteractiveConnection();
 			String sql = "SELECT "
 					+ "CASE POSITION('/' IN category)"
 					+ "	WHEN 0 THEN category"
@@ -52,11 +50,11 @@ public class ConfigContextAction extends AbstractDBTreeContextAction {
 					+ "COALESCE(TRIM(BOTH FROM short_desc||' '||extra_desc),'') AS \"" + lDesc + "\""
 					+ "FROM" + "    pg_catalog.pg_settings " + "ORDER BY"
 					+ "    1,2,3";
-			ITreeDataSet set = new SqlTreeDataSet(c, sql,
+			ITreeDataSet set = new SqlTreeDataSet(session, sql,
 					new int[] { 1, 2, 3 }, new int[] { 4, 5, 6, 7 }, lSet);
 			Shell shell = PlatformUI.getWorkbench().getDisplay()
 					.getActiveShell();
-			String t = _selectedNodes[0].getSession().getAlias().getName();
+			String t = session.getUser().getAlias().getName();
 			String title = Messages.getString("postgresql.config.title");
 			String message = Messages.getString("postgresql.config.message", t);
 			TreeDataDialog dlg = new TreeDataDialog(shell, title, message, set);

@@ -30,7 +30,10 @@ public abstract class AbstractDataSetTab extends AbstractTab {
 
             DataSet dataSet = getCachedDataSet();
             if (dataSet == null) {
-                throw new Exception("DataSet is null..");
+                Label label = new Label(composite, SWT.FILL);
+                label.setText(Messages.getString("DatabaseDetailView.NoInformation"));
+                label.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));    
+                return;
             }
             
             // store for later use in dataset table

@@ -19,7 +19,6 @@
 package net.sourceforge.sqlexplorer.dbproduct;
 
 import java.sql.Driver;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -27,9 +26,7 @@ import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor.Message;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 /**
  * A DatabaseProduct is the base class for representing a given database
@@ -56,6 +53,8 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
  * where "[platform]" is the SQuirreL platform identifier (IE "oracle", 
  * "mssql", etc etc).
  * 
+ * Note: it is recommended that you derive your class from AbstractDatabaseProduct
+ * 
  * The first implementation of this class was for Oracle so please look there
  * if you want some good examples.
  * 
@@ -63,6 +62,37 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
  *
  */
 public interface DatabaseProduct {
+	
+	/*
+	 * Returned by executeQuery() to allow for support of multiple result sets
+	 * returned from a single query
+	 */
+	public interface ExecutionResults {
+
+		/**
+		 * Creates instances of DataSet for each ResultSet returned by the Query,
+		 * returning null when there are no more.  Can be called (and return null)
+		 * if there are no results.
+		 * @return
+		 * @throws SQLException
+		 */
+		public DataSet nextDataSet() throws SQLException;
+		
+		/**
+		 * Returns the update count from the query
+		 * @return
+		 * @throws SQLException
+		 */
+		public int getUpdateCount() throws SQLException;
+		
+		/**
+		 * Called to close any resources.  Must be called.
+		 * @throws SQLException
+		 */
+		public void close() throws SQLException;
+	}
+	
+	public ExecutionResults executeQuery(SQLConnection connection, Query query, int maxRows) throws SQLException;
 	
 	/**
 	 * Loads a driver for use with SQLExplorer.  Note that because of Classloader issues
@@ -74,7 +104,7 @@ public interface DatabaseProduct {
 	 * @return
 	 * @throws ClassNotFoundException
 	 */
-	public Driver getDriver(ISQLDriver driver) throws ClassNotFoundException;
+	public Driver getDriver(ManagedDriver driver) throws ClassNotFoundException;
 	
 	/**
 	 * Returns a tokenizer capable of splitting queries up into segments to be executed
@@ -119,16 +149,4 @@ public interface DatabaseProduct {
 	 * @throws SQLException 
 	 */
 	public Collection<Message> getErrorMessages(SQLConnection connection, Query query) throws SQLException;
-	
-	/**
-	 * Creates a new DataSet for a given ResultSet; this step is optional because a
-	 * DataSet can be instantiated directly and will provide default behaviour, but
-	 * using this method will allow the database to implement behaviour for using
-	 * database specific data types (eg XML).
-	 * @param alias
-	 * @param resultSet
-	 * @return
-	 */
-	public DataSet createDataSet(ISQLAlias alias, ResultSet resultSet) throws SQLException;
-	
 }
