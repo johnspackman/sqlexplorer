@@ -22,7 +22,7 @@ public class MonitorTab extends AbstractSQLTab {
             " memusage as [Memory Usage],ltrim(rtrim(hostname)) as [Host]," +
             " ltrim(rtrim(program_name)) as [Application]," +
             " CONVERT(varchar(24),login_time,121) AS [Login Time]," +
-            " CONVERT(varchar(24),last_batch,121) AS [Login Time] " +
+            " CONVERT(varchar(24),last_batch,121) AS [Batch Time] " +
             " FROM master..sysprocesses sp WITH (nolock)" +
             " INNER JOIN master..sysdatabases sd WITH (nolock) ON sp.dbid = sd.dbid" +
             " WHERE ltrim(rtrim(sd.name)) = ? " +
