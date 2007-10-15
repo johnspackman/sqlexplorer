@@ -283,19 +283,6 @@ public class Session {
     }
 
     /**
-     * Returns the current catalog
-     * @return
-     */
-    public String getCatalog() {
-        try {
-            return connection.getCatalog();
-        } catch (SQLException e) {
-    		SQLExplorerPlugin.error("Cannot get meta data", e);
-        	return null;
-        }
-    }
-
-    /**
      * Returns true if the connection support catalogs
      * @return
      * @throws ExplorerException
