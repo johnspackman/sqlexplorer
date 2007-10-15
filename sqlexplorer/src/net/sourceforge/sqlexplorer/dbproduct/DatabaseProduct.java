@@ -109,9 +109,10 @@ public interface DatabaseProduct {
 	/**
 	 * Returns a tokenizer capable of splitting queries up into segments to be executed
 	 * @param sql
+	 * @param initialLineNo
 	 * @return
 	 */
-	public QueryParser getQueryParser(String sql);
+	public QueryParser getQueryParser(String sql, int initialLineNo);
 	
 	/**
 	 * Returns a collection of SQLEditor.Message objects representing messages being

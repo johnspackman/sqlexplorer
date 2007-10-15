@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.parsers.scp;
 
 import net.sourceforge.sqlexplorer.parsers.ParserException;
+import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
 
 
 /**
@@ -30,16 +31,27 @@ public class StructuredCommentException extends ParserException {
 
 	private static final long serialVersionUID = 1L;
 
-	public StructuredCommentException(String message, Throwable cause) {
-		super(message, cause);
+	public StructuredCommentException(String msg, int lineNo, int charNo, Throwable t) {
+		super(msg, lineNo, charNo, t);
 	}
 
-	public StructuredCommentException(String message) {
-		super(message);
+	public StructuredCommentException(String msg, int lineNo, int charNo) {
+		super(msg, lineNo, charNo);
 	}
 
-	public StructuredCommentException(Throwable cause) {
-		super(cause);
+	public StructuredCommentException(Throwable t, int lineNo, int charNo) {
+		super(t, lineNo, charNo);
+	}
+	
+	public StructuredCommentException(String msg, Token token, Throwable t) {
+		this(msg, token.getLineNo(), token.getCharNo(), t);
 	}
 
+	public StructuredCommentException(String msg, Token token) {
+		this(msg, token.getLineNo(), token.getCharNo());
+	}
+
+	public StructuredCommentException(Throwable t, Token token) {
+		this(t, token.getLineNo(), token.getCharNo());
+	}
 }

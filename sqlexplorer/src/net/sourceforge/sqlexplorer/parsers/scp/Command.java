@@ -20,6 +20,7 @@ package net.sourceforge.sqlexplorer.parsers.scp;
 
 import java.util.LinkedList;
 
+import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
 import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandType;
@@ -44,7 +45,7 @@ import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandTy
 	 * 	that the comment start and leading ${ have already been be skipped over 
 	 * @throws StructuredCommentException
 	 */
-	public Command(StructuredCommentParser parser, CommandType commandType, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+	public Command(StructuredCommentParser parser, CommandType commandType, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 		this.parser = parser;
 		this.commandType = commandType;
 		this.comment = comment;

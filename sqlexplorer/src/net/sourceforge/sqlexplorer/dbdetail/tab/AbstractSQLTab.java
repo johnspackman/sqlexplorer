@@ -60,7 +60,7 @@ public abstract class AbstractSQLTab extends AbstractDataSetTab {
                 rs = pStmt.executeQuery();
             }
         
-            dataSet = new DataSet(null, rs, null);
+            dataSet = new DataSet(rs, null);
             
             rs.close();
             rs = null;

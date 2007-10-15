@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.parsers.scp;
 
+import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
 import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandType;
@@ -26,7 +27,7 @@ import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandTy
 	protected PeeredCommand previous;
 	protected PeeredCommand next;
 	
-	public PeeredCommand(StructuredCommentParser parser, CommandType commandType, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+	public PeeredCommand(StructuredCommentParser parser, CommandType commandType, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 		super(parser, commandType, comment, tokenizer, data);
 	}
 

@@ -25,18 +25,39 @@ package net.sourceforge.sqlexplorer.parsers;
  */
 public class ParserException extends Exception {
 
-	private static final long serialVersionUID = 1L;
+	private int lineNo;
+	private int charNo;
 
-	public ParserException(String msg, Throwable t) {
-		super(msg, t);
+	public ParserException(String msg, int lineNo, int charNo, Throwable t) {
+		super(msg + describePosition(lineNo, charNo), t);
+		this.lineNo = lineNo;
+		this.charNo = charNo;
 	}
 
-	public ParserException(String msg) {
-		super(msg);
+	public ParserException(String msg, int lineNo, int charNo) {
+		super(msg + describePosition(lineNo, charNo));
+		this.lineNo = lineNo;
+		this.charNo = charNo;
 	}
 
-	public ParserException(Throwable t) {
-		super(t);
+	public ParserException(Throwable t, int lineNo, int charNo) {
+		super(t.getMessage() + describePosition(lineNo, charNo), t);
+		this.lineNo = lineNo;
+		this.charNo = charNo;
+	}
+
+	public int getCharNo() {
+		return charNo;
+	}
+
+	public int getLineNo() {
+		return lineNo;
+	}
+	
+	private static String describePosition(int lineNo, int charNo) {
+		if (lineNo < 1 && charNo < 1)
+			return "";
+		return " at line " + lineNo + ", position " + charNo;
 	}
 
 }

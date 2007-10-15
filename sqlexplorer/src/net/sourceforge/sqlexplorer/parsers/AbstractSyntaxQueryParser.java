@@ -98,8 +98,9 @@ public abstract class AbstractSyntaxQueryParser extends AbstractQueryParser {
 	// Structured comment parser
 	private boolean enableStructuredComments;
 	
+	// Line number offsets
 	private SortedSet<LineNoOffset> lineNoOffsets = new TreeSet<LineNoOffset>();
-
+	
 	/**
 	 * Constructor, initialises the parser/tokenizer with <code>sql</code>.
 	 * @param sql
@@ -138,6 +139,7 @@ public abstract class AbstractSyntaxQueryParser extends AbstractQueryParser {
 				
 			// Otherwise just use a standard tokenizer
 			Token token;
+			tokenizer.reset();
 			while ((token = tokenizer.nextToken()) != null) {
 				if (token.getTokenType() == Tokenizer.TokenType.EOL_COMMENT ||
 						token.getTokenType() == Tokenizer.TokenType.ML_COMMENT) {
@@ -369,5 +371,14 @@ public abstract class AbstractSyntaxQueryParser extends AbstractQueryParser {
 	 */
 	public Iterator<Query> iterator() {
 		return queries.iterator();
+	}
+
+	/**
+	 * Sets the line number of the first line in the query
+	 * @param initialLineNo
+	 */
+	public void setInitialLineNo(int initialLineNo) {
+		if (tokenizer != null)
+			tokenizer.setInitialLineNo(initialLineNo);
 	}
 }

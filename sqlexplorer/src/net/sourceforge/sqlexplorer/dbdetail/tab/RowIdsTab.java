@@ -49,7 +49,7 @@ public class RowIdsTab extends AbstractDataSetTab {
             TableNode tableNode = (TableNode) node;
             
             ResultSet resultSet = node.getSession().getMetaData().getBestRowIdentifier(tableNode.getTableInfo());   
-            DataSet dataSet = new DataSet(null, resultSet, null);
+            DataSet dataSet = new DataSet(resultSet, null);
             
             resultSet.close();
             return dataSet;

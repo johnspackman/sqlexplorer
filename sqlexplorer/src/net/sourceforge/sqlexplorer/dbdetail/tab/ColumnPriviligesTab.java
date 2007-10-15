@@ -49,7 +49,7 @@ public class ColumnPriviligesTab extends AbstractDataSetTab {
             TableNode tableNode = (TableNode) node;
 
             ResultSet resultSet = node.getSession().getMetaData().getColumnPrivileges(tableNode.getTableInfo());   
-            DataSet dataSet = new DataSet(null, resultSet, new int[] {4,5,6,7,8});
+            DataSet dataSet = new DataSet(resultSet, new int[] {4,5,6,7,8});
             
             resultSet.close();
             return dataSet;

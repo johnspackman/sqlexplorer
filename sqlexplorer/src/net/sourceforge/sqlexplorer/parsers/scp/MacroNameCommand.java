@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.parsers.scp;
 
+import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.TokenType;
@@ -26,13 +27,13 @@ import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandTy
 /*package*/ abstract class MacroNameCommand extends Command {
 	protected String macroName;
 
-	public MacroNameCommand(StructuredCommentParser parser, CommandType commandType, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+	public MacroNameCommand(StructuredCommentParser parser, CommandType commandType, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 		super(parser, commandType, comment, tokenizer, data);
 		if (tokens.size() == 0)
-			throw new StructuredCommentException(commandType + " is missing a macro name");
+			throw new StructuredCommentException(commandType + " is missing a macro name", comment);
 		Token token = tokens.getFirst();
 		if (token.getTokenType() != TokenType.WORD)
-			throw new StructuredCommentException("Macro names must be valid identifiers");
+			throw new StructuredCommentException("Macro names must be valid identifiers", comment);
 		macroName = token.toString();
 	}
 	

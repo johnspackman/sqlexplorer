@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer.parsers.scp;
 import java.util.LinkedList;
 
 import net.sourceforge.sqlexplorer.parsers.NamedParameter;
+import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.TokenType;
@@ -28,7 +29,7 @@ import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandTy
 
 /*package*/ class ParameterCommand extends Command {
 
-	public ParameterCommand(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+	public ParameterCommand(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 		super(parser, CommandType.PARAMETER, comment, tokenizer, data);
 		
 		String name;
@@ -38,7 +39,7 @@ import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandTy
 		// 	${parameter name [("output"|"inout")] [datatype]} [value]
 		
 		if (tokens.size() < 1)
-			throw new StructuredCommentException("parameter has no parameter name");
+			throw new StructuredCommentException("parameter has no parameter name", comment);
 		name = popWord();
 		
 		// Get the direction; if we do not receognise the word, then assume that it is
@@ -61,7 +62,7 @@ import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandTy
 			try {
 				dataType = NamedParameter.DataType.valueOf(str.toUpperCase());
 			} catch(IllegalArgumentException e) {
-				throw new StructuredCommentException("Unrecognised data type " + str);
+				throw new StructuredCommentException("Unrecognised data type " + str, comment);
 			}
 			
 		LinkedList<Token> arguments = new LinkedList<Token>();
@@ -78,7 +79,7 @@ import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandTy
 			return null;
 		Token token = tokens.removeFirst();
 		if (token.getTokenType() != TokenType.WORD)
-			throw new StructuredCommentException("Invalid token, expected a word but got " + token.toString());
+			throw new StructuredCommentException("Invalid token, expected a word but got " + token.toString(), comment);
 		return token.toString();
 	}
 

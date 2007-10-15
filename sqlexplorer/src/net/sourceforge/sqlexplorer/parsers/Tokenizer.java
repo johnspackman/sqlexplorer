@@ -89,6 +89,9 @@ public class Tokenizer {
 	// Where in sql to look for the next token
 	private int nextToken; 
 	
+	// Initial line number
+	private int initialLineNo;
+	
 	// Current line number
 	private int lineNo;
 	
@@ -107,7 +110,7 @@ public class Tokenizer {
 			this.sql = (StringBuffer)sql;
 		else
 			this.sql = new StringBuffer(sql);
-		lineNo = 1;
+		lineNo = initialLineNo = 1;
 		charNo = 0;
 	}
 	
@@ -116,7 +119,7 @@ public class Tokenizer {
 	 */
 	public void reset() {
 		nextToken = 0;
-		lineNo = 1;
+		lineNo = initialLineNo;
 		charNo = 0;
 	}
 	
@@ -128,6 +131,11 @@ public class Tokenizer {
 		return new BackedCharSequence(sql, nextToken, sql.length());
 	}
 
+	/**
+	 * Generates a token which consists of everything from the current
+	 * position up to and including the end of line character
+	 * @return
+	 */
 	public Token skipToEOL() {
 		int start = nextToken;
 		for (; nextToken < sql.length(); nextToken++) {
@@ -148,7 +156,7 @@ public class Tokenizer {
 	 * Whitespace is not a token, but comments are.
 	 * @return
 	 */
-	public Token nextToken() {
+	public Token nextToken() throws ParserException {
 		TokenType tokenType = null;
 		char currentQuote = 0;
 		
@@ -156,6 +164,7 @@ public class Tokenizer {
 		int startLineNo = lineNo;
 		int start = nextToken;
 		char c = 0;
+		char nextC = 0;
 		for (; nextToken < sql.length(); nextToken++) {
 			c = sql.charAt(nextToken);
 			
@@ -207,6 +216,7 @@ public class Tokenizer {
 					// End of quote; move to the character following and stop
 					nextToken++;
 					charNo++;
+					currentQuote = 0;
 					break;
 				}
 			}
@@ -225,7 +235,7 @@ public class Tokenizer {
 			
 			// If there's at least 2 characters left to check
 			if (nextToken < sql.length() - 1) {
-				char nextC = sql.charAt(nextToken + 1);
+				nextC = sql.charAt(nextToken + 1);
 				
 				// If we're in a multi-line comment, check for the end of the comment
 				if (tokenType == TokenType.ML_COMMENT) {
@@ -259,7 +269,8 @@ public class Tokenizer {
 					// Else we're in a token already so exit to mark the end of that token
 					break;
 				}
-			}
+			} else
+				nextC = 0;
 
 			// Continuing a word
 			if (tokenType == TokenType.WORD) {
@@ -316,6 +327,12 @@ public class Tokenizer {
 				tokenType = TokenType.PUNCTUATION;
 		}
 		
+		// Check for unterminated strings
+		if (currentQuote != 0)
+			throw new ParserException("Unterminated string literal", startLineNo, startCharNo);
+		if (tokenType == TokenType.ML_COMMENT && (c != '*' | nextC != '/'))
+			throw new ParserException("Unterminated multi-line comment", startLineNo, startCharNo);
+		
 		// Nothing found?
 		if (tokenType == null) {
 			if (nextToken < sql.length())
@@ -350,6 +367,16 @@ public class Tokenizer {
 	 */
 	private boolean isIdentifier(char c) {
 		return Character.isDigit(c) || isFirstIdentifier(c);
+	}
+
+	/**
+	 * Sets the inital line number - the line number that the first line of
+	 * text is percieved to be on
+	 * @param initialLineNo
+	 */
+	public void setInitialLineNo(int initialLineNo) {
+		this.initialLineNo = initialLineNo;
+		this.lineNo = initialLineNo;
 	}
 	
 }

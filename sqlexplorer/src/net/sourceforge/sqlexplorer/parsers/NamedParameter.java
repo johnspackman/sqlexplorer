@@ -258,4 +258,8 @@ public class NamedParameter {
 	public CharSequence getValue() {
 		return value;
 	}
+	
+	public String toString() {
+		return ":" + name + "[" + direction.toString().toLowerCase() + " " + dataType.toString().toLowerCase() + "] = " + (value == null ? "null" : ("\"" + value.toString() + "\""));
+	}
 }

@@ -88,14 +88,14 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#createDataSet(java.sql.ResultSet)
 	 */
 	public DataSet createDataSet(ResultSet resultSet) throws SQLException {
-		return new OracleDataSet(null, resultSet, null);
+		return new OracleDataSet(resultSet, null);
 	}
 	
 	/* (non-JavaDoc)
 	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#getTokenizer()
 	 */
-	public QueryParser getQueryParser(String sql) {
-		return new OracleQueryParser(sql);
+	public QueryParser getQueryParser(String sql, int initialLineNo) {
+		return new OracleQueryParser(sql, initialLineNo);
 	}
 
 	/* (non-JavaDoc)
@@ -284,7 +284,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 	 * @param lineNoOffset the line number to offset error message line numbers by
 	 */
 	private SQLEditor.Message handleErrorText(String text, int lineNoOffset) {
-		int lineNo = 0;
+		int lineNo = 1;
 		int charNo = 0;
 		
 		// Message with line & column is:

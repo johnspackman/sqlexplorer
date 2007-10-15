@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
@@ -135,55 +136,55 @@ public class StructuredCommentParser {
 	public enum CommandType { 
 		DEFINE {
 			@Override
-			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 				return new DefineCommand(parser, comment, tokenizer, data);
 			}
 		}, 
 		UNDEF {
 			@Override
-			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 				return new UndefCommand(parser, comment, tokenizer, data);
 			}
 		}, 
 		IFDEF {
 			@Override
-			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 				return new IfdefCommand(parser, comment, tokenizer, data);
 			}
 		}, 
 		ELSE {
 			@Override
-			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 				return new ElseCommand(parser, comment, tokenizer, data);
 			}
 		}, 
 		ENDIF {
 			@Override
-			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 				return new EndifCommand(parser, comment, tokenizer, data);
 			}
 		}, 
 		REF {
 			@Override
-			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 				return new RefCommand(parser, comment, tokenizer, data);
 			}
 		}, 
 		ENDREF {
 			@Override
-			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 				return new EndrefCommand(parser, comment, tokenizer, data);
 			}
 		},
 		PARAMETER {
 			@Override
-			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 				new ParameterCommand(parser, comment, tokenizer, data);
 				return null;
 			}
 		};
 		
-		public abstract Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException;
+		public abstract Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException;
 	};
 	
 	// The QueryParser
@@ -214,7 +215,7 @@ public class StructuredCommentParser {
 	 * @param token
 	 * @throws StructuredCommentException - usually if the comment begins ${ but is unparsable
 	 */
-	public void addComment(Token comment) throws StructuredCommentException {
+	public void addComment(Token comment) throws ParserException {
 		Command command = createCommand(comment);
 		if (command == null)
 			return;
@@ -250,10 +251,10 @@ public class StructuredCommentParser {
 				}
 			}
 			if (last == null)
-				throw new StructuredCommentException("Unexpected 'else' command - no previous ifdef");
+				throw new StructuredCommentException("Unexpected 'else' command - no previous ifdef", comment);
 			IfdefCommand ifdef = (IfdefCommand)last;
 			if (ifdef.next != null)
-				throw new StructuredCommentException("Unexpected 'else' command - else already encountered for this ifdef");
+				throw new StructuredCommentException("Unexpected 'else' command - else already encountered for this ifdef", comment);
 			
 			// Link it to us
 			ifdef.next = elseCmd;
@@ -290,10 +291,10 @@ public class StructuredCommentParser {
 				}
 			}
 			if (last == null)
-				throw new StructuredCommentException("Unexpected 'endif' command - no previous ifdef");
+				throw new StructuredCommentException("Unexpected 'endif' command - no previous ifdef", comment);
 			PeeredCommand cond = (PeeredCommand)last;
 			if (cond.next != null)
-				throw new StructuredCommentException("Unexpected 'endif' command - endif already encountered for this ifdef/else");
+				throw new StructuredCommentException("Unexpected 'endif' command - endif already encountered for this ifdef/else", comment);
 			
 			// Store it
 			cond.next = endif;
@@ -304,7 +305,7 @@ public class StructuredCommentParser {
 			EndrefCommand endref = (EndrefCommand)command;
 			Command last = commands.size() == 0 ? null : (Command)commands.getLast();
 			if (last == null || !(last instanceof RefCommand))
-				throw new StructuredCommentException("Unexpected endref - no preceeding ref");
+				throw new StructuredCommentException("Unexpected endref - no preceeding ref", comment);
 			
 			// Store it
 			RefCommand ref = (RefCommand)last;
@@ -416,7 +417,7 @@ public class StructuredCommentParser {
 	 * @return the new AbstractCommand, or null if it is not a structured comment
 	 * @throws StructuredCommentException
 	 */
-	protected Command createCommand(Token comment) throws StructuredCommentException {
+	protected Command createCommand(Token comment) throws ParserException {
 		StringBuffer sb = new StringBuffer(comment);
 		sb.delete(0, 2);
 		if (comment.getTokenType() == TokenType.ML_COMMENT)
@@ -442,7 +443,7 @@ public class StructuredCommentParser {
 		if (token == null)
 			return null;
 		if (token.getTokenType() != TokenType.WORD)
-			throw new StructuredCommentException("Unexpected command in structured comment: " + token.toString());
+			throw new StructuredCommentException("Unexpected command in structured comment: " + token.toString(), comment);
 		
 		// Create a new AbstractCommand
 		CommandType type;
@@ -451,7 +452,7 @@ public class StructuredCommentParser {
 			//	to instantiate different classes for the different commands. 
 			type = CommandType.valueOf(token.toString().toUpperCase());
 		} catch(IllegalArgumentException e) {
-			throw new StructuredCommentException("Unrecognised structured comment command \"" + token.toString() + "\"");
+			throw new StructuredCommentException("Unrecognised structured comment command \"" + token.toString() + "\"", comment);
 		}
 		
 		return type.createInstance(this, comment, tokenizer, data);

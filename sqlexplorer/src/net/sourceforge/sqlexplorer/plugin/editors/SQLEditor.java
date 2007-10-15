@@ -59,6 +59,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -114,7 +115,7 @@ import org.eclipse.ui.part.EditorPart;
 public class SQLEditor extends EditorPart {
 	
 	// Max length of the SQL to display in the results table
-	private static final int MAX_SQL_DISPLAY_LENGTH = 50;
+	private static final int MAX_SQL_DISPLAY_LENGTH = 70;
 	
 	/*
 	 * Encapsulates everything to do with a message in the message results tab
@@ -1026,8 +1027,7 @@ public class SQLEditor extends EditorPart {
 	 */
 	public String getSQLToBeExecuted() {
 
-		String sql = textEditor.sqlTextViewer.getTextWidget()
-				.getSelectionText();
+		String sql = textEditor.sqlTextViewer.getTextWidget().getSelectionText();
 		if (sql == null || sql.trim().length() == 0)
 			sql = textEditor.sqlTextViewer.getTextWidget().getText();
 
@@ -1045,6 +1045,23 @@ public class SQLEditor extends EditorPart {
 		return sql != null ? sql : "";
 	}
 
+	/**
+	 * returns the line number that the SQL starts on
+	 * @return
+	 */
+	public int getSQLLineNumber() {
+		String sql = textEditor.sqlTextViewer.getTextWidget().getSelectionText();
+		if (sql == null || sql.trim().length() == 0)
+			return 1;
+		Point pt = textEditor.sqlTextViewer.getTextWidget().getSelection();
+		if (pt == null)
+			return 1;
+		StyledText text = (StyledText) textEditor.getAdapter(org.eclipse.swt.widgets.Control.class);
+		int offset = pt.x;
+		int lineNo = text.getLineAtOffset(offset);
+		return lineNo + 1;
+	}
+	
 	/**
 	 * Clears the text of the editor
 	 */

@@ -22,6 +22,7 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 			if (map != null && !map.isEmpty()) {
 				StringBuffer sb = new StringBuffer(querySql);
 				params = locateNamedParameters(sb, map);
+				querySql = sb;
 			}
 			
 			// Create the statement
@@ -82,6 +83,8 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 				if (param == null)
 					throw new SQLException("Unknown named parameter called " + name);
 				results.add(param);
+				sb.delete(idStart + 1, i);
+				sb.setCharAt(idStart, '?');
 				
 				// Next!
 				idStart = -1;
@@ -101,8 +104,9 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 			// Already in a comment
 			if (inComment != null) {
 				// If inComment is empty then we're in a single-line comment; check for EOL
-				if (inComment.length() == 0 && c == '\n') {
-					inComment = null;
+				if (inComment.length() == 0) {
+					if (c == '\n')
+						inComment = null;
 					continue;
 				}
 				
@@ -144,6 +148,8 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 			if (param == null)
 				throw new SQLException("Unknown named parameter called " + name);
 			results.add(param);
+			sb.delete(idStart + 1, sb.length());
+			sb.setCharAt(idStart, '?');
 		}
 		if (results.isEmpty())
 			return null;

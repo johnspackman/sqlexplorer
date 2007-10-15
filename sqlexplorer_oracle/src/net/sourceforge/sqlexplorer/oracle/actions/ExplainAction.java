@@ -117,7 +117,7 @@ public class ExplainAction extends AbstractEditorAction {
             }
 
             // execute explain plan for all statements
-            QueryParser qt = session.getDatabaseProduct().getQueryParser(_editor.getSQLToBeExecuted());
+            QueryParser qt = session.getDatabaseProduct().getQueryParser(_editor.getSQLToBeExecuted(), _editor.getSQLLineNumber());
             qt.parse();
             new ExplainExecution(_editor, qt).schedule();
             

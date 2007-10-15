@@ -49,7 +49,7 @@ public class ImportedKeysTab extends AbstractDataSetTab {
             TableNode tableNode = (TableNode) node;
 
             ResultSet resultSet = node.getSession().getMetaData().getImportedKeys(tableNode.getTableInfo());   
-            DataSet dataSet = new DataSet(null, resultSet, new int[] {3,4,8,9,10,11,12,13,14});
+            DataSet dataSet = new DataSet(resultSet, new int[] {3,4,8,9,10,11,12,13,14});
             
             resultSet.close();
             return dataSet;

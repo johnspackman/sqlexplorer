@@ -25,12 +25,14 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
+import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
@@ -193,7 +195,7 @@ public abstract class AbstractSQLExecution extends Job {
 	 * @param e
 	 */
 	protected void logException(SQLException e, String sql) throws SQLException {
-		final Collection<SQLEditor.Message> messages = _session.getDatabaseProduct().getErrorMessages(_connection, e, 0);
+		Collection<SQLEditor.Message> messages = _session.getDatabaseProduct().getErrorMessages(_connection, e, 0);
 		if (messages == null)
 			return;
 		for (SQLEditor.Message message : messages) {
@@ -202,6 +204,19 @@ public abstract class AbstractSQLExecution extends Job {
 			message.setLineNo(lineNo);
 			message.setSql(sql);
 		}
+		addMessages(messages);
+	}
+	
+	/**
+	 * Handles a SQLException by parsing the message and populating the messages tab;
+	 * where error messages from the server are numbered, they start relative to the
+	 * line number of the query that was sent; lineNoOffset is added to each line
+	 * number so that they relate to the line in SQLEditor
+	 * @param e
+	 */
+	protected void logException(ParserException e, Query query) throws SQLException {
+		LinkedList<SQLEditor.Message> messages = new LinkedList<SQLEditor.Message>();
+		messages.add(new SQLEditor.Message(false, e.getLineNo(), e.getCharNo(), query.getQuerySql(), e.getMessage()));
 		addMessages(messages);
 	}
 	

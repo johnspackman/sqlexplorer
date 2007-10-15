@@ -66,8 +66,9 @@ public class OracleQueryParser extends AbstractSyntaxQueryParser {
 	 * Constructor
 	 * @param sql
 	 */
-	public OracleQueryParser(CharSequence sql) {
+	public OracleQueryParser(CharSequence sql, int initialLineNo) {
 		super(sql);
+		setInitialLineNo(initialLineNo);
 	}
 
 	/**

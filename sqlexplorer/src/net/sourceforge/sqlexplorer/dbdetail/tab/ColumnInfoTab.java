@@ -49,7 +49,7 @@ public class ColumnInfoTab extends AbstractDataSetTab {
             TableNode tableNode = (TableNode) node;
             
             ResultSet resultSet = node.getSession().getMetaData().getColumns(tableNode.getTableInfo());
-            DataSet dataSet = new DataSet(null, resultSet, new int[] {4,5,6,7,9,10,11,12,13,14,15,16,17,18});
+            DataSet dataSet = new DataSet(resultSet, new int[] {4,5,6,7,9,10,11,12,13,14,15,16,17,18});
             
             resultSet.close();
             return dataSet;

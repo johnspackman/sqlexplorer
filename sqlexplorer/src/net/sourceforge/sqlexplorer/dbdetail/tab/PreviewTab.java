@@ -69,7 +69,7 @@ public class PreviewTab extends AbstractDataSetTab {
                 statement.execute("select * from " + tableNode.getQualifiedName());
                 resultSet = statement.getResultSet();
                 
-                dataSet = new DataSet(null, resultSet, null);
+                dataSet = new DataSet(resultSet, null);
                 
                 statement.close();            
                 resultSet.close();

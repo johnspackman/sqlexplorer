@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.parsers.scp;
 
+import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
 import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandType;
@@ -25,10 +26,10 @@ import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandTy
 /*package*/ class EndrefCommand extends Command {
 	protected RefCommand ref; 
 
-	public EndrefCommand(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+	public EndrefCommand(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 		super(parser, CommandType.ENDREF, comment, tokenizer, data);
 		if (tokens.size() != 0)
-			throw new StructuredCommentException("endref has extra text");
+			throw new StructuredCommentException("endref has extra text", comment);
 	}
 	
 	public String toString() {

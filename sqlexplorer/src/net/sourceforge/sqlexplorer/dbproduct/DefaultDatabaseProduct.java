@@ -61,7 +61,7 @@ public class DefaultDatabaseProduct extends AbstractDatabaseProduct {
 		return null;
 	}
 
-	public QueryParser getQueryParser(String sql) {
+	public QueryParser getQueryParser(String sql, int initialLineNo) {
 		return new BasicQueryParser(sql);
 	}
 

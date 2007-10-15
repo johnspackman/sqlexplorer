@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.parsers.scp;
 
+import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
 import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandType;
@@ -25,10 +26,10 @@ import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandTy
 /*package*/ class RefCommand extends MacroNameCommand {
 	protected EndrefCommand endref;
 
-	public RefCommand(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+	public RefCommand(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 		super(parser, CommandType.REF, comment, tokenizer, data);
 		if (tokens.size() != 1)
-			throw new StructuredCommentException("ref has extra text after the macro name");
+			throw new StructuredCommentException("ref has extra text after the macro name", comment);
 	}
 	
 	public String toString() {

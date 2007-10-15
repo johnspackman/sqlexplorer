@@ -82,6 +82,9 @@ public class SQLExecution extends AbstractSQLExecution {
             public void run() {
             	
             	ResultsTab resultsTab = allocateResultsTab(sqlResult.getQuery());
+            	String caption = sqlResult.getDataSet().getCaption();
+            	if (caption != null)
+            		resultsTab.getTabItem().setText(caption);
 
                 try {
                     // set initial message
@@ -177,7 +180,11 @@ public class SQLExecution extends AbstractSQLExecution {
 	            DatabaseProduct.ExecutionResults results = null;
 	            try {
 	            	DatabaseProduct product = getEditor().getSession().getDatabaseProduct();
-	            	results = product.executeQuery(_connection, query, _maxRows);
+	            	try {
+		            	results = product.executeQuery(_connection, query, _maxRows);
+	            	}catch(RuntimeException e) {
+	            		throw new SQLException(e);
+	            	}
                     final long endTime = System.currentTimeMillis();
 	            	DataSet dataSet;
 	            	while ((dataSet = results.nextDataSet()) != null) {
@@ -226,6 +233,15 @@ public class SQLExecution extends AbstractSQLExecution {
 	            		throw e;
 	            	numErrors++;
 	            	lastSQLException = e;
+	            	
+	            /*}catch(ParserException e) {
+	                logException(e, query);
+	                closeStatement();
+	            	boolean stopOnError = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.STOP_ON_ERROR);
+	            	if (stopOnError)
+	            		throw e;
+	            	numErrors++;
+	            	lastSQLException = new SQLException(e);*/
 	            	
 	            } finally {
 	            	try {

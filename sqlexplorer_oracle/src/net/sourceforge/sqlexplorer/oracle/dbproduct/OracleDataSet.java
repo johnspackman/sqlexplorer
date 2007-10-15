@@ -33,8 +33,8 @@ import net.sourceforge.sqlexplorer.dataset.DataSet;
  */
 public class OracleDataSet extends DataSet {
 
-	public OracleDataSet(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
-		super(columnLabels, resultSet, relevantIndeces);
+	public OracleDataSet(ResultSet resultSet, int[] relevantIndeces) throws SQLException {
+		super(resultSet, relevantIndeces);
 	}
 
 	/* (non-JavaDoc)

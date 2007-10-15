@@ -49,7 +49,7 @@ public class PrimaryKeysTab extends AbstractDataSetTab {
             TableNode tableNode = (TableNode) node;
 
             ResultSet resultSet = node.getSession().getMetaData().getPrimaryKeys(tableNode.getTableInfo());   
-            DataSet dataSet = new DataSet(null, resultSet, new int[] {4,5,6});
+            DataSet dataSet = new DataSet(resultSet, new int[] {4,5,6});
             
             resultSet.close();
             return dataSet;

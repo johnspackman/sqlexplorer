@@ -20,6 +20,7 @@ package net.sourceforge.sqlexplorer.parsers.scp;
 
 import java.util.Iterator;
 
+import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.TokenType;
@@ -29,23 +30,23 @@ import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandTy
 	protected String macroName;
 	protected boolean negated;
 
-	public IfdefCommand(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws StructuredCommentException {
+	public IfdefCommand(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 		super(parser, CommandType.IFDEF, comment, tokenizer, data);
 		if (tokens.size() == 0)
-			throw new StructuredCommentException(commandType + " is missing a macro name");
+			throw new StructuredCommentException(commandType + " is missing a macro name", comment);
 		Iterator<Token> iter = tokens.iterator();
 		Token token = iter.next();
 		if (token.getTokenType() == TokenType.PUNCTUATION && token.toString().equals("!")) {
 			negated = true;
 			if (!iter.hasNext())
-				throw new StructuredCommentException(commandType + " is missing a macro name");
+				throw new StructuredCommentException(commandType + " is missing a macro name", comment);
 			token = iter.next();
 		}
 		if (token.getTokenType() != TokenType.WORD)
-			throw new StructuredCommentException("Macro names must be valid identifiers");
+			throw new StructuredCommentException("Macro names must be valid identifiers", comment);
 		macroName = token.toString();
 		if (iter.hasNext())
-			throw new StructuredCommentException("ifdef has extra text after the macro name");
+			throw new StructuredCommentException("ifdef has extra text after the macro name", comment);
 	}
 	
 	public boolean evaluate() {

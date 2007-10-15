@@ -125,13 +125,13 @@ public class ExplainAction extends AbstractEditorAction {
         
         
         // execute explain plan for all statements
-        QueryParser qt = session.getDatabaseProduct().getQueryParser(_editor.getSQLToBeExecuted());
+        QueryParser qt = session.getDatabaseProduct().getQueryParser(_editor.getSQLToBeExecuted(), _editor.getSQLLineNumber());
         try {
             qt.parse();
         }catch(final ParserException e) {
             _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
                 public void run() {
-                    MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("SQLResultsView.Error.Title"), e.getClass().getCanonicalName() + ": " + e.getMessage());
+                    MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("SQLResultsView.Error.Title"), e.getMessage());
                 }
             });
         }
