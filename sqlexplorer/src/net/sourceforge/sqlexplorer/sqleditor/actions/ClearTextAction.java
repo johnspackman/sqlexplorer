@@ -20,6 +20,7 @@
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -28,8 +29,11 @@ public class ClearTextAction extends AbstractEditorAction {
 
     private ImageDescriptor img = ImageUtil.getDescriptor("Images.ClearTextIcon");
 
+    public ClearTextAction(SQLEditor _editor) {
+		super(_editor);
+	}
 
-    public String getText() {
+	public String getText() {
         return Messages.getString("Clear_1");
     }
 

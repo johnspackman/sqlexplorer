@@ -20,6 +20,7 @@ package net.sourceforge.sqlexplorer.sqleditor.actions;
  */
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -28,26 +29,25 @@ public class SaveFileAsAction extends AbstractEditorAction {
 
     private ImageDescriptor _image = ImageUtil.getDescriptor("Images.SaveFileAsIcon");
 
+    public SaveFileAsAction(SQLEditor editor) {
+		super(editor);
+	}
 
-    public ImageDescriptor getImageDescriptor() {
+	public ImageDescriptor getImageDescriptor() {
         return _image;
     }
-
 
     public String getText() {
         return Messages.getString("SQLEditor.Actions.SaveAs");
     }
 
-
     public boolean isEnabled() {
         return true;
     }
 
-
     public String getToolTipText() {
         return Messages.getString("SQLEditor.Actions.SaveAsToolTip"); //$NON-NLS-1$
     }
-
 
     public void run() {
         _editor.doSaveAs();

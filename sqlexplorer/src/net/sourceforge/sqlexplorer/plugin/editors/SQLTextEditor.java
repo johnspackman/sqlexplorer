@@ -223,13 +223,12 @@ public class SQLTextEditor extends TextEditor {
 		sqlTextViewer.getTextWidget().addVerifyKeyListener(
 				new VerifyKeyListener() {
 
-					private ExecSQLAction _execSQLAction = new ExecSQLAction();
+					private ExecSQLAction _execSQLAction = new ExecSQLAction(thisEditor);
 
 					public void verifyKey(VerifyEvent event) {
 
 						if (event.stateMask == SWT.CTRL && event.keyCode == 13) {
 							event.doit = false;
-							_execSQLAction.setEditor(thisEditor);
 							_execSQLAction.run();
 						}
 					}

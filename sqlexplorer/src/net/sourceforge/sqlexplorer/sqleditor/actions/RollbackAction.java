@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -32,12 +33,13 @@ public class RollbackAction extends AbstractEditorAction {
 
     private ImageDescriptor _image = ImageUtil.getDescriptor("Images.EditorRollbackIcon");
 
+	public RollbackAction(SQLEditor editor) {
+		super(editor);
+	}
 
-    public ImageDescriptor getImageDescriptor() {
-
+	public ImageDescriptor getImageDescriptor() {
         return _image;
     }
-
 
     public String getText() {
 
@@ -61,7 +63,7 @@ public class RollbackAction extends AbstractEditorAction {
             return true;
         }
 
-        return _editor.getSession().isAutoCommitMode();
+        return _editor.getSession().isAutoCommit();
     }
 
 

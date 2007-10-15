@@ -37,7 +37,16 @@ public abstract class AbstractEditorAction extends Action {
    
     protected SQLEditor _editor;
     
-    public abstract String getText();
+    public AbstractEditorAction(SQLEditor editor) {
+		super();
+		this._editor = editor;
+	}
+
+    public AbstractEditorAction() {
+		super();
+	}
+
+	public abstract String getText();
     
     public String getToolTipText() {
         return getText();

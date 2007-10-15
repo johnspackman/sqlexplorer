@@ -1,6 +1,7 @@
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.dbproduct.Session;
@@ -34,9 +35,9 @@ public class SQLEditorToolBar {
 
     private ToolBarManager _catalogToolBarMgr;
 
-    private AbstractEditorAction _clearTextAction;
+//    private AbstractEditorAction _clearTextAction;
 
-    private AbstractEditorAction _commitAction;
+//    private AbstractEditorAction _commitAction;
 
     private CoolBar _coolBar;
 
@@ -46,15 +47,15 @@ public class SQLEditorToolBar {
 
     private SQLEditor _editor;
 
-    private AbstractEditorAction _execSQLAction;
+//    private AbstractEditorAction _execSQLAction;
 
     private ToolBarManager _extensionToolBarMgr;
 
-    private AbstractEditorAction _openFileAction;
+//    private AbstractEditorAction _openFileAction;
 
-    private AbstractEditorAction _rollbackAction;
+//    private AbstractEditorAction _rollbackAction;
 
-    private AbstractEditorAction _saveAsAction;
+//    private AbstractEditorAction _saveAsAction;
 
     // Drop down to switch sessions
     private SQLEditorSessionSwitcher _sessionSwitcher;
@@ -63,6 +64,8 @@ public class SQLEditorToolBar {
     private SQLLimitRowsControl _limitRows;
     
     private ToolBarManager _sessionToolBarMgr;
+    
+    private LinkedList<AbstractEditorAction> actions = new LinkedList<AbstractEditorAction>();
 
 
     /**
@@ -88,19 +91,14 @@ public class SQLEditorToolBar {
 
         _defaultToolBarMgr = new ToolBarManager(SWT.FLAT);
 
-        _execSQLAction = new ExecSQLAction();
-        _execSQLAction.setEditor(_editor);
-        _commitAction = new CommitAction();
-        _commitAction.setEditor(_editor);
-        _rollbackAction = new RollbackAction();
-        _rollbackAction.setEditor(_editor);
-        _openFileAction = new OpenFileAction();
-        _openFileAction.setEditor(_editor);
-        _saveAsAction = new SaveFileAsAction();
-        _saveAsAction.setEditor(_editor);
-        _clearTextAction = new ClearTextAction();
-        _clearTextAction.setEditor(_editor);
-
+        actions.add(new ExecSQLAction(_editor));
+        actions.add(new CommitAction(_editor));
+        actions.add(new RollbackAction(_editor));
+        actions.add(new OpenFileAction(_editor));
+        actions.add(new SaveFileAsAction(_editor));
+        actions.add(new ClearTextAction(_editor));
+        actions.add(new OptionsDropDownAction(_editor, parent));
+        
         addDefaultActions(_defaultToolBarMgr);
 
         // initialize extension actions
@@ -156,20 +154,12 @@ public class SQLEditorToolBar {
     }
 
     private void addDefaultActions(ToolBarManager mgr) {
-
         mgr.removeAll();
-
-        _execSQLAction.setEnabled(!_execSQLAction.isDisabled());
-        _commitAction.setEnabled(!_commitAction.isDisabled());
-        _rollbackAction.setEnabled(!_rollbackAction.isDisabled());
         
-        mgr.add(_execSQLAction);
-        mgr.add(_commitAction);
-        mgr.add(_rollbackAction);
-        mgr.add(_openFileAction);
-        mgr.add(_saveAsAction);
-        mgr.add(_clearTextAction);
-
+        for (AbstractEditorAction action : actions) {
+        	action.setEnabled(!action.isDisabled());
+        	mgr.add(action);
+        }
     }
     
     

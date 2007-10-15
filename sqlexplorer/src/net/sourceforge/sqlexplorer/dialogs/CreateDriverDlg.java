@@ -536,7 +536,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
                 if (combo.getItemCount() > 0) {
                     combo.setText(combo.getItem(0));
                 }
-
+                validate();
             }
         });
 

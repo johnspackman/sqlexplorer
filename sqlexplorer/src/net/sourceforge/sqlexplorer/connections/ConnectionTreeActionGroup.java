@@ -22,10 +22,12 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 
 import net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction;
+import net.sourceforge.sqlexplorer.connections.actions.AutoCommitAction;
 import net.sourceforge.sqlexplorer.connections.actions.ChangeAliasAction;
 import net.sourceforge.sqlexplorer.connections.actions.CloseAllConnectionsAction;
 import net.sourceforge.sqlexplorer.connections.actions.CloseConnectionAction;
 import net.sourceforge.sqlexplorer.connections.actions.CommitAction;
+import net.sourceforge.sqlexplorer.connections.actions.CommitOnCloseAction;
 import net.sourceforge.sqlexplorer.connections.actions.ConnectAliasAction;
 import net.sourceforge.sqlexplorer.connections.actions.ConnectNewUserAction;
 import net.sourceforge.sqlexplorer.connections.actions.CopyAliasAction;
@@ -34,8 +36,10 @@ import net.sourceforge.sqlexplorer.connections.actions.NewAliasAction;
 import net.sourceforge.sqlexplorer.connections.actions.NewEditorAction;
 import net.sourceforge.sqlexplorer.connections.actions.RollbackAction;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionGroup;
@@ -49,7 +53,7 @@ import org.eclipse.ui.actions.ActionGroup;
 public class ConnectionTreeActionGroup extends ActionGroup {
 	
 	private enum Type {
-		GENERIC, IF_SELECTION, ALIAS, SESSION
+		GENERIC, IF_SELECTION, ALIAS, USER, SESSION
 	}
 	
 	private HashMap<Type, LinkedHashSet<AbstractConnectionTreeAction>> actions = new HashMap<Type, LinkedHashSet<AbstractConnectionTreeAction>>();
@@ -84,6 +88,11 @@ public class ConnectionTreeActionGroup extends ActionGroup {
         set.add(new DeleteAction());
         set.add(new ConnectAliasAction());
         set.add(new ConnectNewUserAction());
+
+    	set = new LinkedHashSet<AbstractConnectionTreeAction>();
+    	actions.put(Type.USER, set);
+        set.add(new AutoCommitAction());
+        set.add(new CommitOnCloseAction());
     }
 
 
@@ -121,6 +130,10 @@ public class ConnectionTreeActionGroup extends ActionGroup {
             if (addActions(menu, Type.SESSION) > 0)
                 menu.add(new Separator());
             if (addActions(menu, Type.ALIAS) > 0)
+                menu.add(new Separator());
+        }
+        if (selection[0] instanceof User) {
+            if (addActions(menu, Type.USER) > 0)
                 menu.add(new Separator());
         }
         

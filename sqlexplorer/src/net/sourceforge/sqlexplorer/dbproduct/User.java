@@ -224,6 +224,11 @@ public class User implements Comparable<User> {
 	 * @throws ExplorerException
 	 */
 	public void releaseConnection(SQLConnection connection) throws SQLException {
+        if (connection.getConnection().isClosed()) {
+        	disposeConnection(connection);
+        	return;
+        }
+        
 		boolean forPool = allocated.remove(connection);
         boolean commitOnClose = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.COMMIT_ON_CLOSE);
         
@@ -240,6 +245,20 @@ public class User implements Comparable<User> {
 	
 		// Close unwanted connections
 		connection.close();
+	}
+	
+	/**
+	 * Disposes of the connection without returning it to the pool; usually called
+	 * when the connection has been closed by the server
+	 * @param connection
+	 */
+	public void disposeConnection(SQLConnection connection) {
+		allocated.remove(connection);
+		try {
+			connection.close();
+		} catch(SQLException e) {
+			// Nothing
+		}
 	}
 	
 	/**

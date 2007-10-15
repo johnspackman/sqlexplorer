@@ -25,6 +25,7 @@ import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 import net.sourceforge.sqlexplorer.sqlpanel.SQLExecution;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
@@ -41,7 +42,11 @@ public class ExecSQLAction extends AbstractEditorAction {
 
     private ImageDescriptor img = ImageUtil.getDescriptor("Images.ExecSQLIcon");
 
-    public ImageDescriptor getImageDescriptor() {
+    public ExecSQLAction(SQLEditor editor) {
+		super(editor);
+	}
+
+	public ImageDescriptor getImageDescriptor() {
         return img;
     }
 

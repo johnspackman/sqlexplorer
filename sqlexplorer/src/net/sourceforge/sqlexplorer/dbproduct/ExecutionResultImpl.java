@@ -6,9 +6,10 @@ package net.sourceforge.sqlexplorer.dbproduct;
 import java.sql.ResultSet;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.TreeMap;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
@@ -24,6 +25,23 @@ public final class ExecutionResultImpl implements ExecutionResults {
 		PARAMETER_RESULTS,		// We're returning resultsets from output parameters
 		OUTPUT_PARAMETERS,		// We're returning a fake result set listing output parameters
 		CLOSED					// All done
+	}
+	
+	/*
+	 * Temporary class used by nextDataSet() to collate parameters
+	 */
+	private class ParamValues {
+		private NamedParameter param;
+		private ArrayList<Integer> columnIndexes = new ArrayList<Integer>();
+		
+		public ParamValues(NamedParameter param, int columnIndex) {
+			super();
+			this.param = param;
+			add(columnIndex);
+		}
+		public void add(int columnIndex) {
+			this.columnIndexes.add(new Integer(columnIndex));
+		}
 	}
 	
 	private State state = State.PRIMARY_RESULTS;
@@ -103,22 +121,37 @@ public final class ExecutionResultImpl implements ExecutionResults {
 		state = State.CLOSED;
 		if (parameters == null)
 			return null;
-		LinkedHashSet<NamedParameter> params = new LinkedHashSet<NamedParameter>();
-		for (NamedParameter param : parameters)
-			if (param.getDataType() != NamedParameter.DataType.CURSOR && param.isOutput()) {
-				if (!params.contains(param))
-					params.add(param);
-			}
-		if (params.isEmpty())
-			return null;
-		Comparable[][] rows = new Comparable[params.size()][2];
+		TreeMap<NamedParameter, ParamValues> params = new TreeMap<NamedParameter, ParamValues>();
 		int columnIndex = 1;
-		int rowIndex = 0;
-		for (NamedParameter param : params) {
-			Comparable[] row = rows[rowIndex++];
-			row[0] = param.getName();
-			row[1] = stmt.getString(columnIndex);
+		int numValues = 0;
+		for (NamedParameter param : parameters) {
+			if (param.getDataType() != NamedParameter.DataType.CURSOR && param.isOutput()) {
+				ParamValues pv = params.get(param);
+				if (pv == null)
+					params.put(param, new ParamValues(param, columnIndex));
+				else
+					pv.add(columnIndex);
+				numValues++;
+			}
 			columnIndex++;
+		}
+		if (numValues == 0)
+			return null;
+		Comparable[][] rows = new Comparable[numValues][2];
+		columnIndex = 1;
+		int rowIndex = 0;
+		for (ParamValues pv : params.values()) {
+			int valueIndex = 1;
+			for (Integer index : pv.columnIndexes) {
+				Comparable[] row = rows[rowIndex++];
+				row[0] = pv.param.getName();
+				if (pv.columnIndexes.size() > 1)
+					row[0] = (pv.param.getName() + '[' + valueIndex + ']');
+				else
+					row[0] = pv.param.getName();
+				row[1] = stmt.getString(index);
+				valueIndex++;
+			}
 		}
 		return new DataSet(Messages.getString("DataSet.Parameters"), new String[] { 
 				Messages.getString("SQLExecution.ParameterName"),

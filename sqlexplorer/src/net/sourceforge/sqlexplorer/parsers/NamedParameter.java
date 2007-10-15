@@ -35,7 +35,7 @@ import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
  * 
  * @author John Spackman
  */
-public class NamedParameter {
+public class NamedParameter implements Comparable<NamedParameter> {
 
 	// Data Type of the parameter
 	public enum DataType { 
@@ -259,6 +259,10 @@ public class NamedParameter {
 		return value;
 	}
 	
+	public int compareTo(NamedParameter that) {
+		return name.compareTo(that.name);
+	}
+
 	public String toString() {
 		return ":" + name + "[" + direction.toString().toLowerCase() + " " + dataType.toString().toLowerCase() + "] = " + (value == null ? "null" : ("\"" + value.toString() + "\""));
 	}

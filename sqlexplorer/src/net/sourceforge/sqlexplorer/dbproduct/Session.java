@@ -55,6 +55,12 @@ public class Session {
     // Whether the connection is currently "grabbed" by calling code
     private boolean connectionInUse;
     
+    // Whether we auto-commit
+    private boolean autoCommit;
+    
+    // Whether we commit on close (only really applies if autoCommit==false)
+    private boolean commitOnClose;
+    
 	// Database Model
     private DatabaseModel dbModel;
 
@@ -77,6 +83,8 @@ public class Session {
      */
     /*package*/ Session(User user) throws SQLException {
         this.user = user;
+        autoCommit = user.isAutoCommit();
+        commitOnClose = user.isCommitOnClose();
         dbModel = new DatabaseModel(this);
         
         _assistanceEnabled = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.SQL_ASSIST);
@@ -108,11 +116,19 @@ public class Session {
     		throw new IllegalStateException("Cannot grab a new connection - already in use");
     	connectionInUse = true;
     	
+		if (connection != null) {
+			if (connection.getConnection().isClosed()) {
+				user.disposeConnection(connection);
+				connection = null;
+			}
+		}
+		
     	// If we don't have one yet, get one from the pool
-    	if (connection == null)
+    	if (connection == null) {
     		connection = user.getConnection();
-    	connection.setAutoCommit(getUser().isAutoCommit());
-    	connection.setCommitOnClose(getUser().isCommitOnClose());
+	    	connection.setAutoCommit(autoCommit);
+	    	connection.setCommitOnClose(commitOnClose);
+    	}
     	return connection;
     }
     
@@ -140,14 +156,25 @@ public class Session {
 
     	connectionInUse = false;
     	
-    	// If it's not auto-commit, then we have to keep the connection
     	try {
-	    	if (!connection.getAutoCommit())
-	    		return;
+    		boolean oldAutoCommit = connection.getAutoCommit();
+    		
+        	// If it's not auto-commit, then we have to keep the connection
+        	if (!oldAutoCommit && !autoCommit)
+        		return;
+        	connection.setAutoCommit(autoCommit);
+        	
+        	// Handle commits
 	    	if (connection.getCommitOnClose())
 	    		connection.commit();
 	    	else
 	    		connection.rollback();
+	    	connection.setCommitOnClose(commitOnClose);
+	    	
+	    	// Turned autocommit off mid-execution; quit now that we've processed the
+	    	//	commit-on-close and updated the connection
+        	if (oldAutoCommit && !autoCommit)
+        		return;
     	}catch(SQLException e) {
     		SQLExplorerPlugin.error("Cannot commit", e);
     	}
@@ -171,6 +198,40 @@ public class Session {
     }
     
     /**
+     * Returns trie if auto-commit is enabled
+     * @return
+     */
+    public boolean isAutoCommit() {
+		return autoCommit;
+	}
+
+	public synchronized void setAutoCommit(boolean autoCommit) throws SQLException {
+		boolean enabling = !this.autoCommit && autoCommit;
+		this.autoCommit = autoCommit;
+		
+		// If we're turning it on, get rid of any existing connection back to the pool
+		if (enabling) {
+			// If there's a connection but its not in use, then release it
+			if (connection != null && !connectionInUse)
+		    	try {
+		    		SQLConnection connection = this.connection;
+		    		this.connection = null;
+			    	user.releaseConnection(connection);
+		    	}catch(SQLException e) {
+		    		SQLExplorerPlugin.error("Cannot release connection", e);
+		    	}
+		}
+	}
+
+	public boolean isCommitOnClose() {
+		return commitOnClose;
+	}
+
+	public void setCommitOnClose(boolean commitOnClose) {
+		this.commitOnClose = commitOnClose;
+	}
+
+	/**
      * Queues a task to be completed at the end of the current
      * @param task
      * @throws SQLException
@@ -230,19 +291,6 @@ public class Session {
         user = null;
     }
 
-    /**
-     * Returns true if the connection is set to auto-commit
-     * @return
-     */
-    public boolean isAutoCommitMode() {
-        boolean result = false;
-        try {
-            result = connection != null && connection.getAutoCommit();
-        } catch (Throwable e) {
-        }
-        return result;
-    }
-    
     /**
      * Commits the connection; this will queue if the connection is
      * currently in use

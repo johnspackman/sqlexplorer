@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -32,38 +33,32 @@ public class CommitAction extends AbstractEditorAction {
 
     private ImageDescriptor _image = ImageUtil.getDescriptor("Images.EditorCommitIcon");
 
+	public CommitAction(SQLEditor editor) {
+		super(editor);
+	}
 
-    public ImageDescriptor getImageDescriptor() {
-
+	public ImageDescriptor getImageDescriptor() {
         return _image;
     }
 
-
     public String getText() {
-
         return Messages.getString("SQLEditor.Actions.Commit");
     }
 
-
     public String getToolTipText() {
-
         return Messages.getString("SQLEditor.Actions.Commit.ToolTip");
     }
-
 
     /**
      * Action is available when session doesn't have autocommit
      * 
      */
     public boolean isDisabled() {
-
-        if (_editor.getSession() == null) {
+        if (_editor.getSession() == null)
             return true;
-        }
 
-        return _editor.getSession().isAutoCommitMode();
+        return _editor.getSession().isAutoCommit();
     }
-
 
     public void run() {
 

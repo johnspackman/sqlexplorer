@@ -18,7 +18,6 @@
  */
 package net.sourceforge.sqlexplorer.preferences;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -209,6 +208,7 @@ public class DriverPreferencePage extends PreferencePage implements IWorkbenchPr
 
             public void widgetSelected(SelectionEvent e) {
                 changeDriver();
+                _tableViewer.refresh();
             }
         });
 
@@ -404,7 +404,7 @@ class DriverLabelProvider extends LabelProvider implements ITableLabelProvider {
         
         try {
         	dv.registerSQLDriver();
-        } catch(SQLException e) {
+        } catch(ClassNotFoundException e) {
         	// Nothing
         }
         if (dv.isDriverClassLoaded() == true) {

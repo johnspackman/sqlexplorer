@@ -84,7 +84,7 @@ public class OpenPasswordConnectDialogAction extends Action {
             	break;
             }catch(SQLException e) {
             	alwaysPrompt = true;
-            	MessageDialog.openError(site.getShell(), Messages.getString("Login.Error"), e.getMessage());
+            	MessageDialog.openError(site.getShell(), Messages.getString("Login.Error.Title"), e.getMessage());
             } finally {
             	if (connection != null)
             		try {

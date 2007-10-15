@@ -25,6 +25,7 @@ import java.io.FileReader;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -35,8 +36,11 @@ public class OpenFileAction extends AbstractEditorAction {
 
     private ImageDescriptor img = ImageUtil.getDescriptor("Images.OpenFileIcon");
 
+    public OpenFileAction(SQLEditor editor) {
+		super(editor);
+	}
 
-    public String getText() {
+	public String getText() {
         return Messages.getString("Open_1"); //$NON-NLS-1$
     }
 

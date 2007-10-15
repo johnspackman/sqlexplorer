@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.dialogs;
 
 import java.util.HashMap;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import net.sourceforge.sqlexplorer.ExplorerException;
@@ -29,9 +30,11 @@ import net.sourceforge.sqlexplorer.dbproduct.DriverManager;
 import net.sourceforge.sqlexplorer.dbproduct.ManagedDriver;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.preferences.DriverPreferencePage;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -48,6 +51,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 
 /**
  * Modified by Davy Vanherbergen to include metadata filter expression.
@@ -190,7 +194,6 @@ public class CreateAliasDlg extends TitleAreaDialog {
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         combo.setLayoutData(data);
 
-        final DriverManager driverModel = SQLExplorerPlugin.getDefault().getDriverModel();
         String defaultDriverName = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DEFAULT_DRIVER);
         ManagedDriver defaultDriver = null;
         int defaultDriverIndex = 0;
@@ -205,17 +208,16 @@ public class CreateAliasDlg extends TitleAreaDialog {
         }
 
         Button button = new Button(nameGroup, SWT.NULL);
-        button.setText(Messages.getString("New_Driver..._9")); //$NON-NLS-1$
+        button.setText(Messages.getString("AliasDialog.EditDrivers")); //$NON-NLS-1$
         data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         button.setLayoutData(data);
         button.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent event) {
 
-            	ManagedDriver newDriver = new ManagedDriver(driverModel.createUniqueId());
-                CreateDriverDlg dlg = new CreateDriverDlg(CreateAliasDlg.this.getShell(), CreateDriverDlg.Type.CREATE, newDriver);
-                dlg.open();
-                populateCombo();
+            	PreferenceDialog dlg = PreferencesUtil.createPreferenceDialogOn(getShell(), null, new String[] { DriverPreferencePage.class.getName() }, null);
+                if (dlg.open() == IDialogConstants.OK_ID)
+                	populateCombo();
             }
         });
 
@@ -319,12 +321,32 @@ public class CreateAliasDlg extends TitleAreaDialog {
     }
 
     private void populateCombo() {
+    	String previous = combo.getText();
+    	if (previous != null) {
+    		previous = previous.trim();
+    		if (previous.length() == 0)
+    			previous = null;
+    	}
+    	if (previous != null)
+    		previous = previous.toLowerCase();
         DriverManager driverModel = SQLExplorerPlugin.getDefault().getDriverModel();
         combo.removeAll();
+        TreeSet<ManagedDriver> drivers = new TreeSet<ManagedDriver>();
+        drivers.addAll(driverModel.getDrivers());
         int index = 0;
-        for (ManagedDriver driver : driverModel.getDrivers()) {
-            combo.add(driver.getName());
-            comboDrivers.put(new Integer(index++), driver);
+        for (ManagedDriver driver : drivers) {
+            try {
+            	driver.registerSQLDriver();
+            } catch(ClassNotFoundException e) {
+            	// Nothing
+            }
+            if (driver.isDriverClassLoaded() == true) {
+	            combo.add(driver.getName());
+	            comboDrivers.put(new Integer(index), driver);
+	            if (previous != null && driver.getName().toLowerCase().startsWith(previous))
+	            	combo.select(index);
+	            index++;
+            }
         }
     }
 

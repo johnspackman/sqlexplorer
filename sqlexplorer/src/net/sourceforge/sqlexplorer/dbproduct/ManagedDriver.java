@@ -18,7 +18,7 @@ import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
  * 
  * @author John Spackman
  */
-public class ManagedDriver {
+public class ManagedDriver implements Comparable<ManagedDriver> {
 
 	private String id;
 	private String name;
@@ -74,15 +74,11 @@ public class ManagedDriver {
 	 * @throws ExplorerException
 	 * @throws SQLException
 	 */
-	public synchronized void registerSQLDriver() throws SQLException {
+	public synchronized void registerSQLDriver() throws ClassNotFoundException {
 		if (driverClassName == null || driverClassName.length() == 0)
 			return;
 		unregisterSQLDriver();
-		try {
-			jdbcDriver = DatabaseProductFactory.loadDriver(this);
-		}catch(ClassNotFoundException e) {
-			throw new SQLException(e);
-		}
+		jdbcDriver = DatabaseProductFactory.loadDriver(this);
 	}
 
 	/**
@@ -108,7 +104,11 @@ public class ManagedDriver {
 			props.put("password", user.getPassword());
 
 		if (!isDriverClassLoaded())
-			registerSQLDriver();
+			try {
+				registerSQLDriver();
+			} catch(ClassNotFoundException e) {
+				throw new SQLException("Cannot load JDBC driver " + driverClassName + " because the class cannot be found; please check the classpath in Preferences -> SQL Explorer -> JDBC Drivers ", e);
+			}
 		if (!isDriverClassLoaded())
 			throw new SQLException("Cannot load JDBC driver " + driverClassName);
 		
@@ -152,6 +152,7 @@ public class ManagedDriver {
 	}
 
 	public void setJars(String[] jars) {
+		this.jars.clear();
 		for (String jar : jars)
 			this.jars.add(jar);
 	}
@@ -174,5 +175,9 @@ public class ManagedDriver {
 
 	public DatabaseProduct getDatabaseProduct() {
 		return DatabaseProductFactory.getInstance(this);
+	}
+
+	public int compareTo(ManagedDriver that) {
+		return name.compareTo(that.name);
 	}
 }

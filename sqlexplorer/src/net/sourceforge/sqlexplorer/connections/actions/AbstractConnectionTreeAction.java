@@ -23,6 +23,7 @@ import net.sourceforge.sqlexplorer.dbproduct.AliasManager;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IViewPart;
 
 /**
@@ -33,7 +34,23 @@ import org.eclipse.ui.IViewPart;
  */
 public abstract class AbstractConnectionTreeAction extends Action {
 
-    /**
+    public AbstractConnectionTreeAction() {
+		super();
+	}
+
+	public AbstractConnectionTreeAction(String text, ImageDescriptor image) {
+		super(text, image);
+	}
+
+	public AbstractConnectionTreeAction(String text, int style) {
+		super(text, style);
+	}
+
+	public AbstractConnectionTreeAction(String text) {
+		super(text);
+	}
+
+	/**
      * Implement this method to return true when your action is available for
      * the selected node(s). When true, the action will be included in the
      * context menu, when false it will be ignored.

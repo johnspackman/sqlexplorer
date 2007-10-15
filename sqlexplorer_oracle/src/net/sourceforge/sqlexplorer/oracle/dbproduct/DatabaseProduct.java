@@ -172,7 +172,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 					} else if (i > 0) {
 						if (start == -1)
 							start = 0;
-						handleErrorText(msg.substring(start, i), lineNoOffset);
+						messages.add(handleErrorText(msg.substring(start, i), lineNoOffset));
 					}
 					start = i;
 				}
@@ -293,10 +293,17 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 		Pattern pattern = Pattern.compile("[A-Z][A-Z][A-Z]\\-\\d\\d\\d\\d\\d\\: line (\\d++)(, column (\\d++))?+");
 		Matcher matcher = pattern.matcher(text);
 		if (matcher.find()) {
-			if (matcher.groupCount() > 0)
+			int end = -1;
+			if (matcher.groupCount() > 0) {
 				lineNo = Integer.parseInt(matcher.group(1));
-			if (matcher.groupCount() > 2)
+				end = matcher.end(1);
+			}
+			if (matcher.groupCount() > 2) {
 				charNo = Integer.parseInt(matcher.group(3));
+				end = matcher.end(3);
+			}
+			if (end > -1)
+				text = text.substring(end + 1).trim();
 		}
 		
 		return new SQLEditor.Message(false, lineNo + lineNoOffset, charNo, text);
