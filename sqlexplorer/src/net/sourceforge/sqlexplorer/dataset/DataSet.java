@@ -90,6 +90,9 @@ public class DataSet {
 		}
 	}
 
+	// Caption for the results tabs
+	private String caption;
+	
     private Column[] columns;
 
     private DataSetRow[] _rows;
@@ -104,15 +107,27 @@ public class DataSet {
 	
     /**
      * Create a new dataSet based on an existing ResultSet.
-     * 
-     * @param columnLabels String[] of column labels [mandatory]
      * @param resultSet ResultSet with values [mandatory]
      * @param relevantIndeces int[] of all columns to add to the dataSet, use
      *            null if all columns should be included.
+     * 
      * @throws Exception if the dataset could not be created
      */
-    public DataSet(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
-        initialize(columnLabels, resultSet, relevantIndeces);
+    public DataSet(ResultSet resultSet, int[] relevantIndeces) throws SQLException {
+        initialize(null, resultSet, relevantIndeces);
+    }
+
+    /**
+     * Create a new dataSet based on an existing ResultSet.
+     * @param resultSet ResultSet with values [mandatory]
+     * @param relevantIndeces int[] of all columns to add to the dataSet, use
+     *            null if all columns should be included.
+     * 
+     * @throws Exception if the dataset could not be created
+     */
+    public DataSet(String caption, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
+    	this.caption = caption;
+        initialize(null, resultSet, relevantIndeces);
     }
 
     /**
@@ -162,6 +177,18 @@ public class DataSet {
      * @throws Exception if dataSet could not be created
      */
     public DataSet(String[] columnLabels, Comparable[][] data) {
+        this(null, columnLabels, data);
+    }
+
+    /**
+     * Create new dataset based on String[][].
+     * @param caption 
+     * @param columnLabels string[] of columnLabels [mandatory]
+     * @param data string[][] with values for dataset [mandatory]
+     * @throws Exception if dataSet could not be created
+     */
+    public DataSet(String caption, String[] columnLabels, Comparable[][] data) {
+    	this.caption = caption;
         columns = convertColumnLabels(columnLabels);
 
         _rows = new DataSetRow[data.length];
@@ -406,5 +433,9 @@ public class DataSet {
 	            SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_FORMAT));
 		
 		return dateFormat;
+	}
+
+	public String getCaption() {
+		return caption;
 	}
 }
