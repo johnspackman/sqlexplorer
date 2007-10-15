@@ -392,7 +392,7 @@ public class DataSet {
 	        case Types.FLOAT:
 	        case Types.REAL:
 	        	int precision = resultSet.getMetaData().getPrecision(columnIndex);
-	        	if (precision > 16)
+	        	if (precision > 16 || precision < 1)
 	        		return resultSet.getBigDecimal(columnIndex);
 	            return new Double(resultSet.getDouble(columnIndex));
 	
