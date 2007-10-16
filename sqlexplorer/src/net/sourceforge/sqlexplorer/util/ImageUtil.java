@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2007 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package net.sourceforge.sqlexplorer.util;
 
 import java.net.URL;
@@ -24,26 +42,22 @@ public class ImageUtil {
     public static void disposeImage(String propertyName) {
 
         try {
-
             Image image = (Image) _images.get(propertyName);
 
             if (image == null) {
                 return;
             }
 
-            image.dispose();
-            _images.remove(propertyName);
-
-            // decrease image handle count by one
-
             Integer handleCount = (Integer) _imageCount.get(propertyName);
 
-            if (handleCount == null) {
-                handleCount = new Integer(0);
+            if (handleCount == null || handleCount == 0) {
+                image.dispose();
+                _images.remove(propertyName);
+            	_imageCount.remove(propertyName);
             } else {
                 handleCount = new Integer(handleCount.intValue() - 1);
+            	_imageCount.put(propertyName, handleCount);
             }
-            _imageCount.put(propertyName, handleCount);
 
         } catch (Throwable e) {
             SQLExplorerPlugin.error("Error disposing images", e);

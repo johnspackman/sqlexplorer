@@ -104,8 +104,9 @@ public class ExportCSVAction extends AbstractDataSetTableContextAction {
                         
                         DataSet.Column[] columns = dataSet.getColumns();
                         for (int i = 0; i < columns.length; i++) {
+                            if (i != 0)
+                            	buffer.append(columnSeparator);
                             buffer.append(columns[i].getCaption());
-                            buffer.append(columnSeparator);
                         }
                         writer.println(buffer.toString());
                     }
