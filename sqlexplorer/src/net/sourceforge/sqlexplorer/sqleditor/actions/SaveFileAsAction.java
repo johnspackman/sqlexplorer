@@ -50,6 +50,6 @@ public class SaveFileAsAction extends AbstractEditorAction {
     }
 
     public void run() {
-        _editor.doSaveAs();
+        _editor.doSave(false, null);
     };
 }

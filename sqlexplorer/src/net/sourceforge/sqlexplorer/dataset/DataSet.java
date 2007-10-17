@@ -113,8 +113,33 @@ public class DataSet {
      * 
      * @throws Exception if the dataset could not be created
      */
+    public DataSet(ResultSet resultSet, int[] relevantIndeces, int maxRows) throws SQLException {
+        initialize(null, resultSet, relevantIndeces, maxRows);
+    }
+
+    /**
+     * Create a new dataSet based on an existing ResultSet.
+     * @param resultSet ResultSet with values [mandatory]
+     * @param relevantIndeces int[] of all columns to add to the dataSet, use
+     *            null if all columns should be included.
+     * 
+     * @throws Exception if the dataset could not be created
+     */
     public DataSet(ResultSet resultSet, int[] relevantIndeces) throws SQLException {
-        initialize(null, resultSet, relevantIndeces);
+        this(resultSet, relevantIndeces, 0);
+    }
+
+    /**
+     * Create a new dataSet based on an existing ResultSet.
+     * @param resultSet ResultSet with values [mandatory]
+     * @param relevantIndeces int[] of all columns to add to the dataSet, use
+     *            null if all columns should be included.
+     * 
+     * @throws Exception if the dataset could not be created
+     */
+    public DataSet(String caption, ResultSet resultSet, int[] relevantIndeces, int maxRows) throws SQLException {
+    	this.caption = caption;
+        initialize(null, resultSet, relevantIndeces, maxRows);
     }
 
     /**
@@ -126,8 +151,7 @@ public class DataSet {
      * @throws Exception if the dataset could not be created
      */
     public DataSet(String caption, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
-    	this.caption = caption;
-        initialize(null, resultSet, relevantIndeces);
+        this(caption, resultSet, relevantIndeces, 0);
     }
 
     /**
@@ -150,7 +174,7 @@ public class DataSet {
     		statement = connection.createStatement();
     		statement.execute(sql);
     		resultSet = statement.getResultSet();
-    		initialize(columnLabels, resultSet, relevantIndeces);
+    		initialize(columnLabels, resultSet, relevantIndeces, 0);
     	}finally {
             if (resultSet != null)
             	try {
@@ -206,7 +230,7 @@ public class DataSet {
      *            null if all columns should be included.
      * @throws Exception if the dataset could not be created
      */
-    private void initialize(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
+    private void initialize(String[] columnLabels, ResultSet resultSet, int[] relevantIndeces, int maxRows) throws SQLException {
 
         ResultSetMetaData metadata = resultSet.getMetaData();
 
@@ -231,7 +255,7 @@ public class DataSet {
             }
         }
 
-        loadRows(resultSet, ri);
+        loadRows(resultSet, ri, maxRows);
     }
     
     /**
@@ -346,13 +370,13 @@ public class DataSet {
      * @param relevantIndeces int[] of all columns to add to the dataSet, use
      *            null if all columns should be included.
      */
-    protected void loadRows(ResultSet resultSet, int[] relevantIndeces) throws SQLException {
+    protected void loadRows(ResultSet resultSet, int[] relevantIndeces, int maxRows) throws SQLException {
         ResultSetMetaData metadata = resultSet.getMetaData();
         
         // create rows
-        ArrayList rows = new ArrayList(100);
-        while (resultSet.next()) {
-
+        ArrayList rows = new ArrayList(maxRows > 0 ? maxRows : 100);
+        int rowCount = 0;
+        while (resultSet.next() && (maxRows == 0 || rowCount < maxRows)) {
             DataSetRow row = new DataSetRow(this);
             for (int i = 0; i < columns.length; i++) {
             	int columnIndex = relevantIndeces != null ? relevantIndeces[i] : i;
@@ -363,6 +387,7 @@ public class DataSet {
                 	row.setValue(i, obj);
             }
             rows.add(row);
+            rowCount++;
         }
         _rows = (DataSetRow[]) rows.toArray(new DataSetRow[] {});
     }

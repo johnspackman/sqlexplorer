@@ -41,3 +41,26 @@ under Windows, modify your shortcut like so:
 NOTE: This is actually how you are recommended to start Eclipse because if your OS path
 is changed you might get unexpected results if you find that your JRE does too!
 
+
+
+Upgrading from Previous Releases (Plugin Only)
+==============================================
+Before upgrading (including from beta versions) you must remove previous installations
+of SQLExplorer; to do this, locate your Eclipse directory and delete:
+
+	Folders to delete
+	-----------------
+	features/net.sourceforge.sqlexplorer_3.5.0.*
+	plugins/net.sourceforge.sqlexplorer.help_3.5.0.*
+	plugins/net.sourceforge.sqlexplorer_3.5.0.*
+	
+	Files to delete
+	---------------
+	plugins/net.sourceforge.sqlexplorer.db2_3.5.0.*.jar
+	plugins/net.sourceforge.sqlexplorer.mysql_3.5.0.*.jar
+	plugins/net.sourceforge.sqlexplorer.oracle_3.5.0.*.jar
+	plugins/net.sourceforge.sqlexplorer.postgresql_3.5.0.*.jar
+
+When you start Eclipse for the first time, it is recommended that you use the -clean command
+line argument.
+

@@ -172,11 +172,11 @@ public class CreateDriverDlg extends TitleAreaDialog {
             return;
         }
 
+        if (driver == null)
+        	driver = new ManagedDriver(SQLExplorerPlugin.getDefault().getDriverModel().createUniqueId());
         driver.setName(name);
         driver.setJars(defaultModel.getFileNames());
-
         driver.setDriverClassName(driverClassName);
-
         driver.setUrl(url);
 
         if (type != Type.MODIFY)
@@ -342,6 +342,9 @@ public class CreateDriverDlg extends TitleAreaDialog {
 
 
     private void loadData() {
+    	if (driver == null)
+    		return;
+    	
         nameField.setText(driver.getName());
         if (driver.getDriverClassName() != null)
             combo.setText(driver.getDriverClassName());
@@ -357,13 +360,11 @@ public class CreateDriverDlg extends TitleAreaDialog {
         }
 
         if (defaultModel.size() > 0) {
-
             Object obj = (defaultModel.toArray())[0];
             StructuredSelection sel = new StructuredSelection(obj);
             extraClassPathList.setSelection(sel);
 
         }
-
     }
 
 
@@ -520,8 +521,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
                 File file = (File) ((IStructuredSelection) extraClassPathList.getSelection()).getFirstElement();
                 if (file != null) {
                     try {
-
-                        MyURLClassLoader cl = new MyURLClassLoader(file.toURL());
+                        MyURLClassLoader cl = new MyURLClassLoader(file.toURI().toURL());
                         Class[] classes = cl.getAssignableClasses(Driver.class);
 
                         for (int i = 0; i < classes.length; ++i) {

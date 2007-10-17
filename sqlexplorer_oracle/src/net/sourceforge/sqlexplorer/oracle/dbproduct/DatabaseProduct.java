@@ -38,8 +38,7 @@ import net.sourceforge.sqlexplorer.dbproduct.ManagedDriver;
 import net.sourceforge.sqlexplorer.parsers.NamedParameter;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor.Message;
+import net.sourceforge.sqlexplorer.plugin.editors.Message;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverClassLoader;
 
@@ -102,7 +101,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#getServerMessages(net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode)
 	 */
 	public Collection<Message> getServerMessages(SQLConnection connection) throws SQLException {
-		LinkedList<SQLEditor.Message> messages = new LinkedList<SQLEditor.Message>();
+		LinkedList<Message> messages = new LinkedList<Message>();
 		CallableStatement stmt = null;
 		
 		try {
@@ -115,7 +114,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 				if (status != 0)
 					break;
 				String msg = stmt.getString(1);
-				messages.add(new SQLEditor.Message(true, msg));
+				messages.add(new Message(Message.Status.SUCCESS, msg));
 			}
 		} finally {
 			if (stmt != null)
@@ -124,7 +123,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 		
 		if (warnings != null) {
 			for (String msg : warnings)
-				messages.add(new SQLEditor.Message(true, msg));
+				messages.add(new Message(Message.Status.SUCCESS, msg));
 			warnings = null;
 		}
 		
@@ -136,7 +135,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#getErrorMessages(net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode)
 	 */
 	public Collection<Message> getErrorMessages(SQLConnection connection, SQLException e, int lineNoOffset) throws SQLException {
-		LinkedList<SQLEditor.Message> messages = new LinkedList<SQLEditor.Message>();
+		LinkedList<Message> messages = new LinkedList<Message>();
 		String msg = e.getMessage();
 		
 		/*
@@ -168,7 +167,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 					// If the first match is AFTER the start of the line then we've got 
 					//	some unexpected prefix.
 					if (start == -1 && i > 0) {
-						messages.add(new SQLEditor.Message(false, msg.substring(0, i)));
+						messages.add(new Message(Message.Status.FAILURE, msg.substring(0, i)));
 					} else if (i > 0) {
 						if (start == -1)
 							start = 0;
@@ -183,7 +182,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 		//	so just add it as text
 		if (start == -1) {
 			if (msg.length() > 0)
-				messages.add(new SQLEditor.Message(false, lineNoOffset, 1, msg));
+				messages.add(new Message(Message.Status.FAILURE, lineNoOffset, 1, msg));
 			start = msg.length();
 		}
 		
@@ -202,7 +201,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 		if (query.getCreateObjectType() == null || query.getCreateObjectName() == null)
 			return null;
 		
-		LinkedList<SQLEditor.Message> messages = new LinkedList<SQLEditor.Message>();
+		LinkedList<Message> messages = new LinkedList<Message>();
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		
@@ -215,7 +214,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 				String msg = rs.getString("TEXT");
 				int lineNo = rs.getInt("LINE") + query.getLineNo() - 1;
 				int charNo = rs.getInt("POSITION");
-				messages.add(new SQLEditor.Message(false, lineNo, charNo, msg));
+				messages.add(new Message(Message.Status.FAILURE, lineNo, charNo, msg));
 			}
 		} finally {
 			if (rs != null)
@@ -226,7 +225,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 		
 		if (warnings != null) {
 			for (String msg : warnings)
-				messages.add(new SQLEditor.Message(true, msg));
+				messages.add(new Message(Message.Status.SUCCESS, msg));
 			warnings = null;
 		}
 		return messages;
@@ -283,7 +282,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 	 * @param text
 	 * @param lineNoOffset the line number to offset error message line numbers by
 	 */
-	private SQLEditor.Message handleErrorText(String text, int lineNoOffset) {
+	private Message handleErrorText(String text, int lineNoOffset) {
 		int lineNo = 1;
 		int charNo = 0;
 		
@@ -306,7 +305,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 				text = text.substring(end + 1).trim();
 		}
 		
-		return new SQLEditor.Message(false, lineNo + lineNoOffset, charNo, text);
+		return new Message(Message.Status.FAILURE, lineNo + lineNoOffset, charNo, text);
 	}
 
 	@Override

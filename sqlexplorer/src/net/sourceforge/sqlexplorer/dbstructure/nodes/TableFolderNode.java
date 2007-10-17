@@ -103,7 +103,7 @@ public class TableFolderNode extends AbstractFolderNode {
                 }
 
                 // get all relevant tables
-                tables = _session.getMetaData().getTables(catalogName, schemaName, "%", new String[] {_origName});
+                tables = _session.getMetaData().getTables(catalogName, schemaName, "%", new String[] {_origName}, null);
 
             }
 

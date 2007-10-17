@@ -27,13 +27,14 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 			
 			// Create the statement
 			stmt = connection.getConnection().prepareCall(querySql.toString());
+//			stmt.setMaxRows(maxRows);
 			if (params != null) {
 				int columnIndex = 1;
 				for (NamedParameter param : params)
 					configureStatement(stmt, param, columnIndex++);
 			}
 			
-			return new ExecutionResultImpl(this, stmt, params);
+			return new ExecutionResultImpl(this, stmt, params, maxRows);
 			
 		} catch(SQLException e) {
 			try {

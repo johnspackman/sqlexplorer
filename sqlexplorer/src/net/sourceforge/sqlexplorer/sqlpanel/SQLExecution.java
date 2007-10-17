@@ -31,6 +31,7 @@ import net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.plugin.editors.Message;
 import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 
@@ -113,7 +114,7 @@ public class SQLExecution extends AbstractSQLExecution {
                     Query sql = sqlResult.getQuery();
                     int lineNo = sql.getLineNo();
                     lineNo = getQueryParser().adjustLineNo(lineNo);
-                    getEditor().addMessage(new SQLEditor.Message(true, lineNo, 0, sql.getQuerySql(), statusMessage));
+                    getEditor().addMessage(new Message(Message.Status.SUCCESS, lineNo, 0, sql.getQuerySql(), statusMessage));
                     new DataSetTable(composite, sqlResult.getDataSet(), statusMessage);
 
                     composite.setData("parenttab", resultsTab.getTabItem());
@@ -161,6 +162,8 @@ public class SQLExecution extends AbstractSQLExecution {
         SQLException lastSQLException = null;
 
         try {
+        	long overallUpdateCount = 0;
+            long overallStartTime = System.currentTimeMillis();
         	for (Query query : getQueryParser()) {
             	if (monitor.isCanceled())
             		break;
@@ -204,22 +207,14 @@ public class SQLExecution extends AbstractSQLExecution {
 	                    // show results..
 	                    displayResults(sqlResult);
 	            	}
+	            	overallUpdateCount += results.getUpdateCount();
 	            	
-                    String message = Long.toString(results.getUpdateCount()) + " " + Messages.getString("SQLEditor.Update.Prefix") + " " + 
-            			Long.toString(endTime - startTime) + " " + Messages.getString("SQLEditor.Update.Postfix");
-                    
-                    Collection<SQLEditor.Message> messages = _session.getDatabaseProduct().getErrorMessages(_connection, query);
+                    Collection<Message> messages = _session.getDatabaseProduct().getErrorMessages(_connection, query);
                     if (messages == null)
-                    	messages = new LinkedList<SQLEditor.Message>();
+                    	messages = new LinkedList<Message>();
                     else
-                    	for (SQLEditor.Message msg : messages)
+                    	for (Message msg : messages)
                     		msg.setLineNo(getQueryParser().adjustLineNo(msg.getLineNo()));
-                    
-                    if (messages.size() == 0) {
-                        int lineNo = query.getLineNo();
-                        lineNo = getQueryParser().adjustLineNo(lineNo);
-                    	messages.add(new SQLEditor.Message(true, lineNo, 0, query.getQuerySql(), message));
-                    }
                     
                     addMessages(messages);
 		            debugLogQuery(query, null);
@@ -251,6 +246,13 @@ public class SQLExecution extends AbstractSQLExecution {
 	            		// Nothing
 	            	}
 	            }
+                long overallTime = System.currentTimeMillis() - overallStartTime;
+                String message = Long.toString(results.getUpdateCount()) + " " + Messages.getString("SQLEditor.Update.Prefix") + " " + 
+    				Long.toString(overallTime) + " " + Messages.getString("SQLEditor.Update.Postfix");
+            
+               	int lineNo = query.getLineNo();
+                lineNo = getQueryParser().adjustLineNo(lineNo);
+            	addMessage(new Message(Message.Status.STATUS, lineNo, 0, query.getQuerySql(), message));
             }
         } catch (Exception e) {
             closeStatement();

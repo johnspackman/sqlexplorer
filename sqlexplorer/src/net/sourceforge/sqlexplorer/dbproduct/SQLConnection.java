@@ -36,7 +36,7 @@ public class SQLConnection extends net.sourceforge.squirrel_sql.fw.sql.SQLConnec
 	private long createdTime;
 
 	public SQLConnection(User user, Connection connection, SQLDriverPropertyCollection properties) {
-		super(connection, properties);
+		super(connection, properties, null);
 		this.user = user;
 		createdTime = System.currentTimeMillis();
 	}

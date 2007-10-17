@@ -35,7 +35,6 @@ import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.sqleditor.actions.SQLEditorToolBar;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 import net.sourceforge.sqlexplorer.util.PartAdapter2;
-import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -114,171 +113,6 @@ import org.eclipse.ui.part.EditorPart;
  */
 public class SQLEditor extends EditorPart {
 	
-	// Max length of the SQL to display in the results table
-	private static final int MAX_SQL_DISPLAY_LENGTH = 70;
-	
-	/*
-	 * Encapsulates everything to do with a message in the message results tab
-	 */
-	public static class Message {
-		
-		// Whether this is a success or failure message
-		private boolean success;
-		
-		// Line number the message relates to
-		private int lineNo;
-		
-		// Column (within the line identified by lineNo) that the message relates to
-		private int charNo;
-		
-		// The SQL
-		private String sql;
-		
-		// The message
-		private String message;
-
-		/**
-		 * Constructor.
-		 * @param success true if the message is about success
-		 * @param lineNo first line number in sql that the message relates to
-		 * @param charNo first character within the line identified by lineNo that the message relates to
-		 * @param sql the SQL or command that was executed
-		 * @param message the message
-		 */
-		public Message(boolean success, int lineNo, int charNo, CharSequence sql, String message) {
-			super();
-			this.success = success;
-			this.lineNo = lineNo;
-			this.charNo = charNo;
-			if (sql != null)
-				setSql(sql);
-			this.message = message;
-		}
-		
-		/**
-		 * Constructor.
-		 * @param success true if the message is about success
-		 * @param lineNo first line number in sql that the message relates to
-		 * @param charNo first character within the line identified by lineNo that the message relates to
-		 * @param sql the SQL or command that was executed
-		 * @param message the message
-		 */
-		public Message(boolean success, int lineNo, int charNo, String message) {
-			this(success, lineNo, charNo, null, message);
-		}
-		
-		/**
-		 * Constructor.
-		 * @param success true if the message is about success
-		 * @param message the message
-		 */
-		public Message(boolean success, String sql, String message) {
-			this(success, 0, 0, sql, message);
-		}
-		
-		/**
-		 * Constructor.
-		 * @param success true if the message is about success
-		 * @param message the message
-		 */
-		public Message(boolean success, String message) {
-			this(success, 0, 0, message);
-		}
-		
-		/**
-		 * Returns an array of strings to be placed in the table's TableItem
-		 * @return
-		 */
-		/*package*/ String[] getTableText() {
-			String successText;
-			if (success)
-				successText = Messages.getString("SQLEditor.Results.Messages.Success");
-			else
-				successText = Messages.getString("SQLEditor.Results.Messages.Failure");
-			
-			String location = "";
-			if (lineNo > 0) {
-				location = "line " + lineNo;
-				if (charNo > 0)
-					location += ", col " + charNo;
-			}
-			
-			String[] result = new String[] {
-				successText,
-				location,
-				(sql == null) ? "" : sql,
-				TextUtil.getWrappedText(message)
-			};
-			return result; 
-		}
-
-		/**
-		 * Whether the message is a success or failure message
-		 * @return the success
-		 */
-		public boolean isSuccess() {
-			return success;
-		}
-
-		/**
-		 * The first line within getSql() to which the message relates; zero
-		 * if not available
-		 * @return the lineNo
-		 */
-		public int getLineNo() {
-			return lineNo;
-		}
-
-		/**
-		 * The first character offset within the line identified by getLineNo()
-		 * to which the message relates.  Zero if not available
-		 * @return the charNo
-		 */
-		public int getCharNo() {
-			return charNo;
-		}
-
-		/**
-		 * Returns the message text
-		 * @return the message
-		 */
-		public String getMessage() {
-			return message;
-		}
-
-		/**
-		 * @return the sql
-		 */
-		public String getSql() {
-			return sql;
-		}
-
-		/**
-		 * @param sql the sql to set
-		 */
-		public void setSql(CharSequence sql) {
-			this.sql = TextUtil.compressWhitespace(sql, MAX_SQL_DISPLAY_LENGTH);;
-		}
-
-		/**
-		 * @param lineNo the lineNo to set
-		 */
-		public void setLineNo(int lineNo) {
-			this.lineNo = lineNo;
-		}
-
-		/**
-		 * @param charNo the charNo to set
-		 */
-		public void setCharNo(int charNo) {
-			this.charNo = charNo;
-		}
-		
-		public String toString() {
-			return "[" + lineNo + "," + charNo + "] " + message;
-		}
-	}
-
 	// The colour of borders and the fade-to-white colour of the selected tabs
 	public static final Color BORDER_COLOR = new Color(null, 153, 186, 243);
 
@@ -617,8 +451,11 @@ public class SQLEditor extends EditorPart {
 	 * @see org.eclipse.ui.part.EditorPart#doSave(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public void doSave(IProgressMonitor monitor) {
+		if (monitor == null)
+			monitor = textEditor.getProgressMonitor();
+		
 		if (isUntitled) {
-			if (!doSaveAsInternal())
+			if (!doSave(false, monitor))
 				monitor.setCanceled(true);
 			return;
 		}
@@ -648,7 +485,7 @@ public class SQLEditor extends EditorPart {
 	 * @see org.eclipse.ui.ISaveablePart#doSaveAs()
 	 */
 	public void doSaveAs() {
-		doSaveAsInternal();
+		doSave(true, null);
 	}
 
 	/**
@@ -656,14 +493,25 @@ public class SQLEditor extends EditorPart {
 	 * the user cancelled the dialog)
 	 * @return true if saved, false if cancelled
 	 */
-	private boolean doSaveAsInternal() {
+	public boolean doSave(boolean saveAs, IProgressMonitor monitor) {
 		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		boolean haveProjects = projects != null && projects.length > 0;
 	    IEditorInput input = getEditorInput();
 	    
-	    // Check before saving outside the project
-	    boolean saveInsideProject = false;
-	    if (input instanceof SQLEditorInput) {
+	    boolean saveInsideProject = true;
+		File file = null;
+		if (input instanceof SQLEditorInput) {
+			SQLEditorInput seInput = (SQLEditorInput)input;
+			file = seInput.getFile();
+		}
+		
+		// If we have a file, then we already have a filename outside of the project;
+		//	but if we're doing a save-as then recheck with the user 
+	    if (file != null && !saveAs)
+	    	saveInsideProject = false;
+	    
+	    // Either we're doing a save on a file outside a project or we're doing a save-as
+	    else if (input instanceof SQLEditorInput) {
 	    	IConstants.Confirm confirm = IConstants.Confirm.ASK;
 	    	try {
 	    		confirm = IConstants.Confirm.valueOf(SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.CONFIRM_SAVING_INSIDE_PROJECT));
@@ -706,7 +554,13 @@ public class SQLEditor extends EditorPart {
 	    	}
 	    	
 	    	// Save it and use their EditorInput
-			textEditor.doSaveAs();
+	    	if (saveAs)
+	    		textEditor.doSaveAs();
+	    	else {
+	    		if (monitor == null)
+	    			monitor = textEditor.getProgressMonitor();
+	    		textEditor.doSave(monitor);
+	    	}
 			if (input.equals(textEditor.getEditorInput()))
 				return false;
 			input = textEditor.getEditorInput();
@@ -717,19 +571,21 @@ public class SQLEditor extends EditorPart {
 			setTitleToolTip(input.getToolTipText());
 			
 	    } else {
-			FileDialog dialog = new FileDialog(getSite().getShell(), SWT.SAVE);
-			dialog.setText(Messages.getString("SQLEditor.SaveAsDialog.Title"));
-			dialog.setFilterExtensions(SUPPORTED_FILETYPES);
-			dialog.setFilterNames(SUPPORTED_FILETYPES);
-			dialog.setFileName("*.sql");
-	
-			String path = dialog.open();
-			if (path == null)
-				return false;
-			
 			try {
+				if (file == null || saveAs) {
+					FileDialog dialog = new FileDialog(getSite().getShell(), SWT.SAVE);
+					dialog.setText(Messages.getString("SQLEditor.SaveAsDialog.Title"));
+					dialog.setFilterExtensions(SUPPORTED_FILETYPES);
+					dialog.setFilterNames(SUPPORTED_FILETYPES);
+					dialog.setFileName("*.sql");
+			
+					String path = dialog.open();
+					if (path == null)
+						return false;
+					file = new File(path);
+				}
+				
 				// Save it
-				File file = new File(path);
 				saveToFile(file);
 				
 				// Update the editor input
@@ -805,7 +661,7 @@ public class SQLEditor extends EditorPart {
 	 */
 	public void addMessage(Message message) {
 		// Don't log success messages unless we're supposed to
-		if (message.isSuccess() &&
+		if (message.getSuccess() == Message.Status.SUCCESS &&
 				!SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.LOG_SUCCESS_MESSAGES))
 			return;
 

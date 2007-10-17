@@ -18,12 +18,11 @@
  */
 package net.sourceforge.sqlexplorer.dbdetail.tab;
 
-import java.sql.ResultSet;
-
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
+import net.sourceforge.squirrel_sql.fw.sql.TableColumnInfo;
 
 /**
  * @author Davy Vanherbergen
@@ -31,7 +30,20 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
  */
 public class ColumnInfoTab extends AbstractDataSetTab {
 
-    
+    private static final String COLUMN_LABELS[] = {
+    	"DatabaseDetailView.Tab.ColumnInfo.Col.ColumnName",
+    	"DatabaseDetailView.Tab.ColumnInfo.Col.DataType",
+    	"DatabaseDetailView.Tab.ColumnInfo.Col.TypeName",
+    	"DatabaseDetailView.Tab.ColumnInfo.Col.ColumnSize",
+    	"DatabaseDetailView.Tab.ColumnInfo.Col.DecimalDigits",
+    	"DatabaseDetailView.Tab.ColumnInfo.Col.Radix",
+    	"DatabaseDetailView.Tab.ColumnInfo.Col.IsNullAllowed",
+    	"DatabaseDetailView.Tab.ColumnInfo.Col.Remarks",
+    	"DatabaseDetailView.Tab.ColumnInfo.Col.DefaultValue",
+    	"DatabaseDetailView.Tab.ColumnInfo.Col.OctetLength",
+    	"DatabaseDetailView.Tab.ColumnInfo.Col.OrdinalPosition",
+    	"DatabaseDetailView.Tab.ColumnInfo.Col.IsNullable"
+    };
     
     public String getLabelText() {
         return Messages.getString("DatabaseDetailView.Tab.ColumnInfo");
@@ -48,10 +60,30 @@ public class ColumnInfoTab extends AbstractDataSetTab {
         if (node instanceof TableNode) {
             TableNode tableNode = (TableNode) node;
             
-            ResultSet resultSet = node.getSession().getMetaData().getColumns(tableNode.getTableInfo());
-            DataSet dataSet = new DataSet(resultSet, new int[] {4,5,6,7,9,10,11,12,13,14,15,16,17,18});
-            
-            resultSet.close();
+            TableColumnInfo[] cols = node.getSession().getMetaData().getColumnInfo(tableNode.getTableInfo());
+            Comparable[][] dataRows = new Comparable[cols.length][];
+            int index = 0;
+            for (TableColumnInfo col : cols) {
+            	Comparable[] row = new Comparable[COLUMN_LABELS.length];
+            	dataRows[index++] = row;
+
+            	int i = 0;
+            	row[i++] = col.getColumnName();
+            	row[i++] = col.getDataType();
+            	row[i++] = col.getTypeName();
+            	row[i++] = col.getColumnSize();
+            	row[i++] = col.getDecimalDigits();
+            	row[i++] = col.getRadix();
+            	row[i++] = col.isNullAllowed();
+            	row[i++] = col.getRemarks();
+            	row[i++] = col.getDefaultValue();
+            	row[i++] = col.getOctetLength();
+            	row[i++] = col.getOrdinalPosition();
+            	row[i++] = col.isNullable();
+            	if (i != COLUMN_LABELS.length)
+            		throw new RuntimeException("Internal error: ColumnInfoTab: wrong number of columns");
+            }
+            DataSet dataSet = new DataSet(COLUMN_LABELS, dataRows);
             return dataSet;
         }
         

@@ -8,7 +8,7 @@
 	<classpathentry path="lib/xsu12.jar" exported="true" kind="lib"/>
 	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
 	<classpathentry path="org.eclipse.pde.core.requiredPlugins" kind="con"/>
-	<classpathentry path="lib/squirrel.jar" kind="lib"/>
 	<classpathentry sourcepath="C:/os/src/dom4j/dom4j-1.6.1/src/java" path="/sqlexplorer/lib/dom4j.jar" kind="lib"/>
+	<classpathentry path="/sqlexplorer/lib/squirrel.jar" kind="lib"/>
 	<classpathentry path="bin" kind="output"/>
 </classpath>

@@ -18,7 +18,6 @@
 
 package net.sourceforge.sqlexplorer.dbstructure.actions;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -29,7 +28,9 @@ import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
+import net.sourceforge.squirrel_sql.fw.sql.PrimaryKeyInfo;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDatabaseMetaData;
+import net.sourceforge.squirrel_sql.fw.sql.TableColumnInfo;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -77,40 +78,35 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
         TableNode tableNode = (TableNode) _selectedNodes[0];
         ITableInfo info = tableNode.getTableInfo();
 
-        ResultSet resultSet;
         StringBuffer buf = new StringBuffer(4 * 1024);
         String sep = System.getProperty("line.separator");
 
         try {
             SQLDatabaseMetaData metaData = tableNode.getSession().getMetaData();
 
-            ArrayList pks = new ArrayList();
-            ResultSet rsPks = metaData.getPrimaryKeys(info);
+            ArrayList<String> pks = new ArrayList<String>();
+            PrimaryKeyInfo[] pksInfo = metaData.getPrimaryKey(info);
+            for (PrimaryKeyInfo pkInfo : pksInfo)
+            	pks.add(pkInfo.getColumnName());
 
-            while (rsPks.next()) {
-                String name = rsPks.getString(4);
-                pks.add(name);
-            }
-            rsPks.close();
-
-            resultSet = metaData.getColumns(info);
+            TableColumnInfo[] columnsInfo = metaData.getColumnInfo(info);
             String tableName = _selectedNodes[0].getQualifiedName();
             buf.append("CREATE TABLE ");
             buf.append(tableName);
             buf.append("(");
 
-            while (resultSet.next()) {
-                String columnName = resultSet.getString(4);
-                String typeName = resultSet.getString(6);
-                String columnSize = resultSet.getString(7);
-                String decimalDigits = resultSet.getString(9);
-                String defaultValue = resultSet.getString(13);
-                boolean notNull = "NO".equalsIgnoreCase(resultSet.getString(18)); 
-                String sLower = typeName.toLowerCase();
+            for (TableColumnInfo col : columnsInfo) {
+//                String columnName = resultSet.getString(4);
+//                String typeName = resultSet.getString(6);
+//                String columnSize = resultSet.getString(7);
+//                String decimalDigits = resultSet.getString(9);
+//                String defaultValue = resultSet.getString(13);
+                boolean notNull = "NO".equalsIgnoreCase(col.isNullable()); 
+                String sLower = col.getColumnName().toLowerCase();
                 buf.append(sep);
-                buf.append(columnName + " ");
+                buf.append(col.getColumnName() + " ");
 
-                buf.append(typeName);
+                buf.append(col.getTypeName());
 
                 boolean bNumeric = false;
                 if (sLower.equals("numeric") || sLower.equals("number") || sLower.equals("decimal"))
@@ -118,23 +114,22 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
 
                 if (sLower.indexOf("char") != -1 || sLower.indexOf("int") != -1) {
                     buf.append("(");
-                    buf.append(columnSize);
+                    buf.append(col.getColumnSize());
                     buf.append(")");
+                    
                 } else if (bNumeric) {
                     buf.append("(");
-                    buf.append(columnSize);
-                    String tmp = decimalDigits;
-                    if (tmp != null && !"".equals(tmp) && !"0".equals(tmp))
-                    {
-                        buf.append(",");
-                        buf.append(tmp);
-                    }
+                    buf.append(col.getColumnSize());
+                    if (col.getDecimalDigits() > 0)
+                        buf.append(col.getDecimalDigits());
                     buf.append(")");
                 }
-                if (pks.size() == 1 && pks.get(0).equals(columnName)) {
+                
+                if (pks.size() == 1 && pks.get(0).equals(col.getColumnName())) {
                     buf.append(" PRIMARY KEY");
                 }
 
+                String defaultValue = col.getDefaultValue();
                 if (defaultValue != null && !defaultValue.equals("")) {
                     buf.append(" default ");
                     boolean isSystemValue = bNumeric; 
@@ -157,7 +152,6 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
                 buf.append(",");
             }
             buf.deleteCharAt(buf.length() - 1);
-            resultSet.close();
             buf.append(")" + sep);
 
             SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo() + ").sql");

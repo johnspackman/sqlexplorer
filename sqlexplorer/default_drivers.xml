@@ -97,7 +97,7 @@
   </driver>
   <driver id="-4">
     <name>Oracle Thin Driver</name>
-    <url>jdbc:oracle:thin:@&lt;server&gt;[:&lt;1521&gt;]:&lt;database_name&gt;</url>
+    <url>jdbc:oracle:thin:@&lt;server&gt;:1521:&lt;database_name&gt;</url>
     <jars/>
   </driver>
   <driver id="-16">

@@ -26,6 +26,7 @@ import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.sqleditor.SQLTextViewer;
 import net.sourceforge.sqlexplorer.sqleditor.actions.ExecSQLAction;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.Document;
@@ -125,6 +126,11 @@ public class SQLTextEditor extends TextEditor {
 		return true;
 	}
 	
+	@Override
+	public IProgressMonitor getProgressMonitor() {
+		return super.getProgressMonitor();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

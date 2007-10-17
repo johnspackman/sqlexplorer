@@ -70,22 +70,19 @@ public class PreviewTab extends AbstractDataSetTab {
                 resultSet = statement.getResultSet();
                 
                 dataSet = new DataSet(resultSet, null);
-                
-                statement.close();            
-                resultSet.close();
             } finally {
-                if (statement != null)
-                    try {
-                        statement.close();
-                    } catch (SQLException e) {
-                        SQLExplorerPlugin.error("Error closing statement", e);
-                    }
                 if (resultSet != null)
                 	try {
                 		resultSet.close();
                 	}catch(SQLException e) {
                 		SQLExplorerPlugin.error("Error closing result set", e);
                 	}
+                if (statement != null)
+                    try {
+                        statement.close();
+                    } catch (SQLException e) {
+                        SQLExplorerPlugin.error("Error closing statement", e);
+                    }
                 if (connection != null)
                 	getNode().getSession().releaseConnection(connection);
             }

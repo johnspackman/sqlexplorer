@@ -311,7 +311,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
             };
         });
         
-        if (!comboDrivers.isEmpty()) {            
+        if (!comboDrivers.isEmpty() && defaultDriver != null) {            
             combo.select(defaultDriverIndex);
             urlField.setText(defaultDriver.getUrl());
         }     

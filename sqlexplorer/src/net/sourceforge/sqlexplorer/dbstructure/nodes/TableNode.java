@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
+import net.sourceforge.squirrel_sql.fw.sql.TableColumnInfo;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -36,7 +38,7 @@ import org.eclipse.core.runtime.Platform;
 
 public class TableNode extends AbstractNode {
 
-    private List _columnNames;
+    private List<String> _columnNames;
 
     private List _foreignKeyNames;
 
@@ -144,14 +146,12 @@ public class TableNode extends AbstractNode {
 
         if (_columnNames == null) {
 
-            _columnNames = new ArrayList();
+            _columnNames = new ArrayList<String>();
             try {
-                ResultSet resultSet = _session.getMetaData().getColumns(_tableInfo);
-                while (resultSet.next()) {
-                    _columnNames.add(resultSet.getString(4));
-                }
-
-            } catch (Exception e) {
+            	TableColumnInfo[] columns = _session.getMetaData().getColumnInfo(_tableInfo);
+            	for (TableColumnInfo col : columns)
+            		_columnNames.add(col.getColumnName());
+            } catch (SQLException e) {
                 SQLExplorerPlugin.error("Could not load column names", e);
             }
 

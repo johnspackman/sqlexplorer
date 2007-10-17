@@ -288,7 +288,7 @@ public class SchemaNode extends AbstractNode {
             String[] tableTypes = _session.getMetaData().getTableTypes();
 
             try {
-                tables = _session.getMetaData().getTables(_name, _name, "%", tableTypes);
+                tables = _session.getMetaData().getTables(_name, _name, "%", tableTypes, null);
             } catch (Throwable e) {
                 _logger.debug("Loading all tables at once is not supported");
             }

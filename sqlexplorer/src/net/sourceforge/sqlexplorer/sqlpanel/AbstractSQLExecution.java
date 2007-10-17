@@ -34,6 +34,7 @@ import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.plugin.editors.Message;
 import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.util.TextUtil;
@@ -195,10 +196,10 @@ public abstract class AbstractSQLExecution extends Job {
 	 * @param e
 	 */
 	protected void logException(SQLException e, String sql) throws SQLException {
-		Collection<SQLEditor.Message> messages = _session.getDatabaseProduct().getErrorMessages(_connection, e, 0);
+		Collection<Message> messages = _session.getDatabaseProduct().getErrorMessages(_connection, e, 0);
 		if (messages == null)
 			return;
-		for (SQLEditor.Message message : messages) {
+		for (Message message : messages) {
 			int lineNo = message.getLineNo();
 			lineNo = queryParser.adjustLineNo(lineNo);
 			message.setLineNo(lineNo);
@@ -215,8 +216,8 @@ public abstract class AbstractSQLExecution extends Job {
 	 * @param e
 	 */
 	protected void logException(ParserException e, Query query) throws SQLException {
-		LinkedList<SQLEditor.Message> messages = new LinkedList<SQLEditor.Message>();
-		messages.add(new SQLEditor.Message(false, e.getLineNo(), e.getCharNo(), query.getQuerySql(), e.getMessage()));
+		LinkedList<Message> messages = new LinkedList<Message>();
+		messages.add(new Message(Message.Status.FAILURE, e.getLineNo(), e.getCharNo(), query.getQuerySql(), e.getMessage()));
 		addMessages(messages);
 	}
 	
@@ -228,10 +229,10 @@ public abstract class AbstractSQLExecution extends Job {
 	 * @param e
 	 */
 	protected void logException(SQLException e, Query query) throws SQLException {
-		final Collection<SQLEditor.Message> messages = _session.getDatabaseProduct().getErrorMessages(_connection, e, query.getLineNo() - 1);
+		final Collection<Message> messages = _session.getDatabaseProduct().getErrorMessages(_connection, e, query.getLineNo() - 1);
 		if (messages == null)
 			return;
-		for (SQLEditor.Message message : messages) {
+		for (Message message : messages) {
 			int lineNo = message.getLineNo();
 			lineNo = queryParser.adjustLineNo(lineNo);
 			message.setLineNo(lineNo);
@@ -244,15 +245,27 @@ public abstract class AbstractSQLExecution extends Job {
 	 * Called to add messages to the message tab
 	 * @param messages a collection of SQLEditor.Message objects
 	 */
-	protected void addMessages(final Collection messages) {
+	protected void addMessages(final Collection<Message> messages) {
 		_editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
             public void run() {
         		Iterator iter = messages.iterator();
         		while (iter.hasNext()) {
-        			SQLEditor.Message message = (SQLEditor.Message)iter.next();
+        			Message message = (Message)iter.next();
         			_editor.addMessage(message);
         		}
+            }
+        });
+	}
+	
+	/**
+	 * Called to add messages to the message tab
+	 * @param messages a collection of SQLEditor.Message objects
+	 */
+	protected void addMessage(final Message message) {
+		_editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+            public void run() {
+       			_editor.addMessage(message);
             }
         });
 	}

@@ -25,7 +25,7 @@ import java.util.Collection;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor.Message;
+import net.sourceforge.sqlexplorer.plugin.editors.Message;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 /**

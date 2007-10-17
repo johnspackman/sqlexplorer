@@ -294,7 +294,7 @@ public class CatalogNode extends AbstractNode {
             String[] tableTypes = _session.getMetaData().getTableTypes();
 
             try {
-                tables = _session.getMetaData().getTables(_name, null, "%", tableTypes);
+                tables = _session.getMetaData().getTables(_name, null, "%", tableTypes, null);
             } catch (Throwable e) {
                 _logger.debug("Loading all tables at once is not supported");
             }

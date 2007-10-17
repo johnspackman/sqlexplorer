@@ -27,8 +27,7 @@ import java.util.LinkedList;
 import net.sourceforge.sqlexplorer.parsers.BasicQueryParser;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor.Message;
+import net.sourceforge.sqlexplorer.plugin.editors.Message;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverClassLoader;
 
@@ -53,7 +52,7 @@ public class DefaultDatabaseProduct extends AbstractDatabaseProduct {
 
 	public Collection<Message> getErrorMessages(SQLConnection connection, SQLException e, int lineNoOffset) throws SQLException {
 		LinkedList list = new LinkedList();
-		list.add(new SQLEditor.Message(false, lineNoOffset + 1, 0, e.getMessage()));
+		list.add(new Message(Message.Status.FAILURE, lineNoOffset + 1, 0, e.getMessage()));
 		return list;
 	}
 

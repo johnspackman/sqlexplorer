@@ -48,16 +48,18 @@ public final class ExecutionResultImpl implements ExecutionResults {
 	private AbstractDatabaseProduct product;
 	private CallableStatement stmt;
 	private LinkedList<NamedParameter> parameters;
+	private int maxRows;
 	private int paramColumnIndex;
 	private Iterator<NamedParameter> paramIter;
 	private int updateCount;
 	private ResultSet currentResultSet;
 
-	public ExecutionResultImpl(AbstractDatabaseProduct product, CallableStatement stmt, LinkedList<NamedParameter> parameters) throws SQLException {
+	public ExecutionResultImpl(AbstractDatabaseProduct product, CallableStatement stmt, LinkedList<NamedParameter> parameters, int maxRows) throws SQLException {
 		super();
 		this.product = product;
 		this.stmt = stmt;
 		this.parameters = parameters;
+		this.maxRows = maxRows;
 		
 		if (!stmt.execute())
 			state = State.SECONDARY_RESULTS;
@@ -79,7 +81,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 			currentResultSet = stmt.getResultSet();
 			state = State.SECONDARY_RESULTS;
 			if (currentResultSet != null)
-				return new DataSet(currentResultSet, null);
+				return new DataSet(currentResultSet, null, maxRows);
 		}
 		
 		// While we have more secondary results (i.e. those that come directly from Statement but after the first getResults())
@@ -98,7 +100,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 		// Got one? Then exit
 		if (currentResultSet != null) {
 			this.updateCount += stmt.getUpdateCount();
-			return new DataSet(currentResultSet, null);
+			return new DataSet(currentResultSet, null, maxRows);
 		}
 		
 		// Look for output parameters which return resultsets
@@ -113,7 +115,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 					currentResultSet = product.getResultSet(stmt, param, paramColumnIndex);
 				paramColumnIndex++;
 				if (currentResultSet != null)
-					return new DataSet(Messages.getString("DataSet.Cursor") + ' ' + param.getName(), currentResultSet, null);
+					return new DataSet(Messages.getString("DataSet.Cursor") + ' ' + param.getName(), currentResultSet, null, maxRows);
 			}
 		}
 

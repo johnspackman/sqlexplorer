@@ -189,9 +189,7 @@ public class DriverPreferencePage extends PreferencePage implements IWorkbenchPr
         add.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent e) {
-                ManagedDriver driver = new ManagedDriver(SQLExplorerPlugin.getDefault().getDriverModel().createUniqueId());
-
-                CreateDriverDlg dlg = new CreateDriverDlg(getShell(), CreateDriverDlg.Type.CREATE, driver);
+                CreateDriverDlg dlg = new CreateDriverDlg(getShell(), CreateDriverDlg.Type.CREATE, null);
                 dlg.open();
 
                 _tableViewer.refresh();

@@ -18,12 +18,11 @@
  */
 package net.sourceforge.sqlexplorer.dbdetail.tab;
 
-import java.sql.ResultSet;
-
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
+import net.sourceforge.squirrel_sql.fw.sql.dbobj.BestRowIdentifier;
 
 /**
  * @author Davy Vanherbergen
@@ -31,7 +30,15 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
  */
 public class RowIdsTab extends AbstractDataSetTab {
 
-    
+    private static final String[] COLUMN_LABELS = {
+    	"DatabaseDetailView.Tab.RowIds.Col.Scope",
+    	"DatabaseDetailView.Tab.RowIds.Col.ColumnName",
+    	"DatabaseDetailView.Tab.RowIds.Col.DataType",
+    	"DatabaseDetailView.Tab.RowIds.Col.TypeName",
+    	"DatabaseDetailView.Tab.RowIds.Col.ColumnSize",
+    	"DatabaseDetailView.Tab.RowIds.Col.DecimalDigits",
+    	"DatabaseDetailView.Tab.RowIds.Col.PseudoColumn"
+    };
     
     public String getLabelText() {
         return Messages.getString("DatabaseDetailView.Tab.RowIds");
@@ -48,10 +55,25 @@ public class RowIdsTab extends AbstractDataSetTab {
         if (node instanceof TableNode) {
             TableNode tableNode = (TableNode) node;
             
-            ResultSet resultSet = node.getSession().getMetaData().getBestRowIdentifier(tableNode.getTableInfo());   
-            DataSet dataSet = new DataSet(resultSet, null);
-            
-            resultSet.close();
+            BestRowIdentifier[] rowIds = node.getSession().getMetaData().getBestRowIdentifier(tableNode.getTableInfo());
+            Comparable[][] data = new Comparable[rowIds.length][];
+            int index = 0;
+            for (BestRowIdentifier rowId : rowIds) {
+            	Comparable[] row = new Comparable[COLUMN_LABELS.length];
+            	data[index++] = row;
+            	
+            	int i = 0;
+            	row[i++] = rowId.getScope();
+            	row[i++] = rowId.getColumnName();
+            	row[i++] = rowId.getSQLDataType();
+            	row[i++] = rowId.getTypeName();
+            	row[i++] = rowId.getPrecision();
+            	row[i++] = rowId.getScale();
+            	row[i++] = rowId.getPseudoColumn();
+            	if (i != COLUMN_LABELS.length)
+            		throw new RuntimeException("Internal Error: RowIdsTab: wrong number of columns");
+            }
+            DataSet dataSet = new DataSet(COLUMN_LABELS, data);
             return dataSet;
         }
         

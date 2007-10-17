@@ -268,6 +268,11 @@ public class User implements Comparable<User> {
 	 * @return true if the connection was in the and has been removed
 	 */
 	public synchronized boolean releaseFromPool(SQLConnection connection) {
+		try {
+			connection.close();
+		}catch(SQLException e) {
+			SQLExplorerPlugin.error(e);
+		}
 		if (unused.remove(connection)) {
 			SQLExplorerPlugin.getDefault().getAliasManager().modelChanged();
 			return true;

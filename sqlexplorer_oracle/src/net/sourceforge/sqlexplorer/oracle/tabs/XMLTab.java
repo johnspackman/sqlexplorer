@@ -62,8 +62,6 @@ public class XMLTab extends AbstractSourceTab {
                 source = clob.getSubString(1, (int) clob.length());
             }
             
-            rs.close();
-
         } catch (SQLException e) {
             SQLExplorerPlugin.error("Error loading XML", e);
         } finally {

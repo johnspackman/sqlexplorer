@@ -56,7 +56,7 @@ public class Dictionary {
 
     }
 
-    private TernarySearchTree tree = new TernarySearchTree();
+    private TernarySearchTree tables = new TernarySearchTree();
 
     private TernarySearchTree catalogSchemaTree = new TernarySearchTree();
 
@@ -75,7 +75,7 @@ public class Dictionary {
 
     public void putTableName(String key, Object value) {
 
-        tree.put(key.toLowerCase(), value);
+        tables.put(key.toLowerCase(), value);
         realTables.put(key.toLowerCase(), key);
     }
 
@@ -96,7 +96,7 @@ public class Dictionary {
 
     public Object getByTableName(String key) {
 
-        return tree.get(key);
+        return tables.get(key);
     }
 
 
@@ -144,13 +144,13 @@ public class Dictionary {
 
     public ArrayList getTableObjectList(String tableName) {
 
-        return (ArrayList) tree.get(tableName.toLowerCase());
+        return (ArrayList) tables.get(tableName.toLowerCase());
     }
 
 
     public String[] matchTablePrefix(String prefix) {
     	String p = prefix.toLowerCase();
-        DoublyLinkedList linkedList = tree.matchPrefix(p);
+        DoublyLinkedList linkedList = tables.matchPrefix(p);
         int size = linkedList.size();
         DoublyLinkedList.DLLIterator iterator = linkedList.iterator();
         String[] result = new String[size];
