@@ -18,21 +18,11 @@
  */
 package net.sourceforge.sqlexplorer.plugin.actions;
 
-import java.sql.SQLException;
-
-import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.connections.OpenConnectionJob;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
-import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.ConnectionJob;
 import net.sourceforge.sqlexplorer.dbproduct.User;
-import net.sourceforge.sqlexplorer.dialogs.PasswordConnDlg;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.window.Window;
-import org.eclipse.ui.IWorkbenchSite;
-import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
 public class OpenPasswordConnectDialogAction extends Action {
 
@@ -59,47 +49,6 @@ public class OpenPasswordConnectDialogAction extends Action {
     }
 
     public void run() {
-    	IWorkbenchSite site = SQLExplorerPlugin.getDefault().getSite();
-
-    	/*
-    	 * Loop until we can connect to the database or the user cancels; this is done in the
-    	 * foreground to simplify error/retry logic (eg invalid password).  Connection should
-    	 * not normally take too long, it's getting the schema data that needs to run in
-    	 * the background
-    	 */
-    	while (true) {
-    		if (alwaysPrompt || !alias.isAutoLogon() || user == null || !user.equals(alias.getDefaultUser())) { 
-	            PasswordConnDlg dlg = new PasswordConnDlg(site.getShell(), alias, user);
-	            if (dlg.open() != Window.OK)
-	            	return;
-	            user = new User(dlg.getUserName(), dlg.getPassword());
-	        	user.setAutoCommit(dlg.getAutoCommit());
-	        	user.setCommitOnClose(dlg.getCommitOnClose());
-	            user = alias.addUser(user);
-	        }
-    		
-            SQLConnection connection = null;
-            try {
-            	connection = user.getConnection();
-            	break;
-            }catch(SQLException e) {
-            	alwaysPrompt = true;
-            	MessageDialog.openError(site.getShell(), Messages.getString("Login.Error.Title"), e.getMessage());
-            } finally {
-            	if (connection != null)
-            		try {
-            			user.releaseConnection(connection);
-            		} catch(SQLException e) {
-            			SQLExplorerPlugin.error(e);
-            		}
-            	
-            }
-    	}
-
-        OpenConnectionJob bgJob = new OpenConnectionJob(user, site.getShell());
-
-        IWorkbenchSiteProgressService siteps = (IWorkbenchSiteProgressService) site.getAdapter(IWorkbenchSiteProgressService.class);
-        siteps.showInDialog(site.getShell(), bgJob);
-        bgJob.schedule();
+    	ConnectionJob.createSession(alias, user, null, alwaysPrompt);
     }
 }

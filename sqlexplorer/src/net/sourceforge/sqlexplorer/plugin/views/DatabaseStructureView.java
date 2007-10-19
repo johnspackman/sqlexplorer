@@ -18,10 +18,13 @@
  */
 package net.sourceforge.sqlexplorer.plugin.views;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.connections.SessionEstablishedAdapter;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dbproduct.AliasManager;
 import net.sourceforge.sqlexplorer.dbproduct.ConnectionAdapter;
@@ -30,7 +33,6 @@ import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeActionGroup;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeContentProvider;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeLabelProvider;
-import net.sourceforge.sqlexplorer.dbstructure.DatabaseModel;
 import net.sourceforge.sqlexplorer.dbstructure.actions.FilterStructureAction;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.ColumnNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
@@ -51,12 +53,17 @@ import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Adapter;
+import org.eclipse.swt.custom.CTabFolderEvent;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -64,8 +71,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
@@ -76,26 +81,60 @@ import org.eclipse.ui.part.ViewPart;
  * @author Davy Vanherbergen
  */
 public class DatabaseStructureView extends ViewPart {
+	
+	/*
+	 * Contains state data for each tab
+	 */
+	private static class TabData {
+		private TreeViewer treeViewer;
+		private Session session;
+	}
 
     private FilterStructureAction _filterAction;
 
     private Composite _parent;
 
     /** We use one tab for every session */
-    private TabFolder _tabFolder;
+    private CTabFolder _tabFolder;
 
     private List<Session> _allSessions = new ArrayList<Session>();
-    
+
+    /**
+     * Adds a new user
+     * @param user
+     */
+    public void addUser(final User user) {
+    	// Make sure we list each user only once
+    	for (Session session : _allSessions)
+    		if (session.getUser() == user)
+    			return;
+    	
+    	user.queueForNewSession(new SessionEstablishedAdapter() {
+			@Override
+			public void sessionEstablished(final Session session) {
+				SQLExplorerPlugin.getDefault().getSite().getShell().getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						addSession(session);
+					}
+				});
+			}
+    	}, false);
+    }
+    	
     /**
      * Add a new session to the database structure view. This will create a new
      * tab for the session.
      * 
      * @param session
      */
-    public void addSession(final Session session) {
-
+    private void addSession(final Session session) {
         if (_allSessions.contains(session)) {
             return;
+        }
+        try {
+        	session.setAutoCommit(true);
+        }catch(SQLException e) {
+        	SQLExplorerPlugin.error(e);
         }
         _allSessions.add(session);
         
@@ -108,7 +147,7 @@ public class DatabaseStructureView extends ViewPart {
             clearParent();
 
             // create tab folder for different sessions
-            _tabFolder = new TabFolder(_parent, SWT.NULL);
+            _tabFolder = new CTabFolder(_parent, SWT.TOP | SWT.CLOSE);
 
             // add listener to keep both views on the same active tab
             _tabFolder.addSelectionListener(new SelectionAdapter() {
@@ -123,13 +162,39 @@ public class DatabaseStructureView extends ViewPart {
 
             });
 
+    		// Set up a gradient background for the selected tab
+    		Display display = getSite().getShell().getDisplay();
+    	    _tabFolder.setSelectionBackground(
+    	    		new Color[] {
+    				        display.getSystemColor(SWT.COLOR_WHITE),
+    		                new Color(null, 211, 225, 250),
+    		                new Color(null, 175, 201, 246),
+    		                IConstants.TAB_BORDER_COLOR
+    	    		},
+    	    		new int[] {25, 50, 75},
+    	    		true
+    	    	);
+    		
+    	    // Add a listener to handle the close button on each tab
+    	    _tabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
+    			public void close(CTabFolderEvent event) {
+    				CTabItem tabItem = (CTabItem)event.item;
+    				TabData tabData = (TabData)tabItem.getData();
+    				_allSessions.remove(tabData.session);
+    				event.doit = true;
+    			}
+    	    });
+    	    
             _parent.layout();
             _parent.redraw();
 
         }
 
         // create tab
-        final TabItem tabItem = new TabItem(_tabFolder, SWT.NULL);
+        final CTabItem tabItem = new CTabItem(_tabFolder, SWT.NULL);
+        TabData tabData = new TabData();
+        tabItem.setData(tabData);
+        tabData.session = session;
 
         // set tab text
         String labelText = session.getUser().getDescription();
@@ -142,6 +207,7 @@ public class DatabaseStructureView extends ViewPart {
 
         // create outline
         final TreeViewer treeViewer = new TreeViewer(composite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI | SWT.BORDER);
+        tabData.treeViewer = treeViewer;
 
         // add drag support
         // TODO improve drag support options
@@ -222,9 +288,6 @@ public class DatabaseStructureView extends ViewPart {
             }
 
         });
-
-        // store tree for later use.
-        tabItem.setData(treeViewer);
 
         // add dispose listener for when session gets closed
         SQLExplorerPlugin.getDefault().getAliasManager().addListener(new ConnectionAdapter() {
@@ -393,36 +456,31 @@ public class DatabaseStructureView extends ViewPart {
         }
     }
 
-
-    public DatabaseModel getActiveDatabase() {
-
-        if (_tabFolder == null) {
+    public Session getSession() {
+        if (_tabFolder == null || _tabFolder.getSelectionIndex() < 0)
             return null;
-        }
-        TabItem item = _tabFolder.getItem(_tabFolder.getSelectionIndex());
-        DatabaseModel model = (DatabaseModel) ((TreeViewer) item.getData()).getInput();
-        return model;
+
+        CTabItem item = _tabFolder.getItem(_tabFolder.getSelectionIndex());
+        TabData tabData = (TabData)item.getData();
+        return tabData.session;
     }
 
-
     /**
-     * Loop through all tabs and refresh trees for sessions with sessionName
+     * Loop through all tabs and refresh trees for sessions with session
      */
-    public void refreshSessionTrees(String sessionName) {
-
-        if (_tabFolder == null) {
+    public void refreshSessionTrees(Session session) {
+        if (_tabFolder == null || _tabFolder.getSelectionIndex() < 0)
             return;
-        }
-        TabItem[] items = _tabFolder.getItems();
+
+        CTabItem[] items = _tabFolder.getItems();
         if (items != null) {
-            for (int i = 0; i < items.length; i++) {
-                TreeViewer viewer = (TreeViewer) items[i].getData();
-                DatabaseModel model = (DatabaseModel) viewer.getInput();
-                if (model.getSession().toString().equals(sessionName)) {
-                    model.getRoot().refresh();
-                    viewer.refresh();
-                }
-            }
+        	for (CTabItem item : items) {
+        		TabData tabData = (TabData)item.getData();
+        		if (tabData.session.getUser() == session.getUser()) {
+        			tabData.session.getRoot().refresh();
+        			tabData.treeViewer.refresh();
+        		}
+        	}
         }
     }
 
@@ -470,17 +528,17 @@ public class DatabaseStructureView extends ViewPart {
                     return;
                 }
 
-                if (_tabFolder == null || _tabFolder.getItemCount() == 0) {
+                if (_tabFolder == null || _tabFolder.getItemCount() == 0 || _tabFolder.getSelectionIndex() < 0) {
                     return;
                 }
 
-                TreeViewer treeViewer = (TreeViewer) _tabFolder.getItem(_tabFolder.getSelectionIndex()).getData();
+                TabData tabData = (TabData)_tabFolder.getItem(_tabFolder.getSelectionIndex()).getData();
                 INode selectedNode = null;
 
-                if (treeViewer != null) {
+                if (tabData.treeViewer != null) {
 
                     // find our target node..
-                    IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
+                    IStructuredSelection selection = (IStructuredSelection) tabData.treeViewer.getSelection();
 
                     // check if we have a valid selection
                     if (selection != null && (selection.getFirstElement() instanceof INode)) {

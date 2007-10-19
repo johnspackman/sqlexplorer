@@ -18,7 +18,6 @@
  */
 package net.sourceforge.sqlexplorer.plugin;
 
-import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 
@@ -74,8 +73,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     // Cached database structure view
     private DatabaseStructureView databaseStructureView;
 
-
-    /**
+	/**
      * The constructor. Moved previous logic to the start method.
      */
     public SQLExplorerPlugin() {
@@ -124,7 +122,8 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
      * Open all connections that have the 'open on startup property'. This
      * method should be called from within the UI thread!
      */
-    public void startDefaultConnections(IWorkbenchSite site) {
+    public void startDefaultConnections(ConnectionsView connectionsView) {
+    	this.connectionsView = connectionsView;
         if (_defaultConnectionsStarted)
             return;
 
@@ -133,27 +132,25 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         // Get the database structure view - NOTE: we don't use SQLExplorerPlugin.getDatabaseView()
         //	because it may not have an active page yet
         DatabaseStructureView dbView = null;
+        IWorkbenchSite site = connectionsView.getSite();
         if (site.getPage() != null)
         	dbView = (DatabaseStructureView)site.getPage().findView(DatabaseStructureView.class.getName());
 
         for (Alias alias : aliasManager.getAliases()) {
-            if (alias.isConnectAtStartup() && alias.isAutoLogon() && alias.getDefaultUser() != null) 
-            	try {
-	                if (dbView != null)
-	                    dbView.addSession(alias.getDefaultUser().createSession());
-	
-	                if (openEditor) {
-	                    SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo() + ").sql");
-	                    input.setSessionNode(alias.getDefaultUser().createSession());
-	                    try {
-	                    	site.getPage().openEditor(input, SQLEditor.class.getName());
-	                    }catch(PartInitException e) {
-	                    	SQLExplorerPlugin.error("Cannot open SQL editor", e);
-	                    }
-	                }
-            	}catch(SQLException e) {
-            		SQLExplorerPlugin.error(e.getMessage(), e);
-            	}
+            if (alias.isConnectAtStartup() && alias.isAutoLogon() && alias.getDefaultUser() != null) {
+                if (dbView != null)
+                    dbView.addUser(alias.getDefaultUser());
+
+                if (openEditor) {
+                    SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo() + ").sql");
+                    input.setUser(alias.getDefaultUser());
+                    try {
+                    	site.getPage().openEditor(input, SQLEditor.class.getName());
+                    }catch(PartInitException e) {
+                    	SQLExplorerPlugin.error("Cannot open SQL editor", e);
+                    }
+                }
+            }
         }
 
         _defaultConnectionsStarted = true;
@@ -264,18 +261,32 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 	public ConnectionsView getConnectionsView() {
 		if (connectionsView == null) {
 			IWorkbenchPage page = getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			if (page != null)
+			if (page != null) {
 		        connectionsView = (ConnectionsView)page.findView(ConnectionsView.class.getName());
+		        if (connectionsView == null)
+		        	try {
+		        		connectionsView = (ConnectionsView)page.showView(ConnectionsView.class.getName());
+		        	} catch(PartInitException e) {
+		        		error(e);
+		        	}
+			}
 		}
 			
 		return connectionsView;
 	}
-
+	
 	public DatabaseStructureView getDatabaseStructureView() {
 		if (databaseStructureView == null) {
 			IWorkbenchPage page = getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			if (page != null)
+			if (page != null) {
 				databaseStructureView = (DatabaseStructureView) page.findView(DatabaseStructureView.class.getName());
+		        if (databaseStructureView == null)
+		        	try {
+		        		databaseStructureView = (DatabaseStructureView)page.showView(DatabaseStructureView.class.getName());
+		        	} catch(PartInitException e) {
+		        		error(e);
+		        	}
+			}
 		}
 		return databaseStructureView;
 	}

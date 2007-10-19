@@ -24,26 +24,38 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction;
+import net.sourceforge.sqlexplorer.connections.actions.CloseAllConnectionsAction;
+import net.sourceforge.sqlexplorer.connections.actions.CloseConnectionAction;
 import net.sourceforge.sqlexplorer.connections.actions.NewAliasAction;
+import net.sourceforge.sqlexplorer.connections.actions.NewDatabaseStructureViewAction;
+import net.sourceforge.sqlexplorer.connections.actions.NewEditorAction;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dbproduct.ConnectionListener;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
+
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
@@ -53,9 +65,15 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
 	private static final HashSet<Alias> EMPTY_ALIASES = new HashSet<Alias>();
 	private static final HashSet<User> EMPTY_USERS = new HashSet<User>();
 
+	// Tree viewer for connections
     private TreeViewer _treeViewer;
+    
+    // Last User that was selected
+    private User defaultUser;
+    
+    private Clipboard clipboard;
 
-    /**
+	/**
      * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
      */
     public void createPartControl(Composite parent) {
@@ -71,8 +89,11 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
         // create action bar
         IToolBarManager toolBarMgr = getViewSite().getActionBars().getToolBarManager();
 
-        AbstractConnectionTreeAction newAliasAction = new NewAliasAction();
-        toolBarMgr.add(newAliasAction);
+        toolBarMgr.add(new NewAliasAction());
+        toolBarMgr.add(new NewEditorAction());
+        toolBarMgr.add(new NewDatabaseStructureViewAction());
+        toolBarMgr.add(new CloseAllConnectionsAction());
+        toolBarMgr.add(new CloseConnectionAction());
 
         // use hash lookup to improve performance
         _treeViewer.setUseHashlookup(true);
@@ -89,14 +110,25 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
             public void doubleClick(DoubleClickEvent event) {
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                 if (selection != null) {
-                    if (selection.getFirstElement() instanceof Alias) {
+                    User user = null;
+                    Object selected = selection.getFirstElement();
+                    if (selected instanceof Alias) {
                         Alias alias = (Alias) selection.getFirstElement();
-                        OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(alias, alias.getDefaultUser(), false);
-                        openDlgAction.run();
-                        _treeViewer.refresh();
-                    }
+                        user = alias.getDefaultUser();
+                    } else if (selected instanceof User)
+                    	user = (User)selected;
+                    else if (selected instanceof SQLConnection)
+                    	user = ((SQLConnection)selected).getUser();
+                    if (user != null)
+                    	openNewEditor(user);
                 }
             }
+        });
+        
+        _treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				refreshToolbar();
+			}
         });
 
         // add context menu
@@ -115,7 +147,18 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
 
         parent.layout();
 
-        SQLExplorerPlugin.getDefault().startDefaultConnections(getSite());
+        SQLExplorerPlugin.getDefault().startDefaultConnections(this);
+    }
+    
+    public void openNewEditor(User user) {
+        try {
+            SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo() + ").sql");
+            input.setUser(user);
+            IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+            page.openEditor(input, SQLEditor.class.getName());
+        } catch (Throwable e) {
+            SQLExplorerPlugin.error("Error creating sql editor", e);
+        }
     }
 
 	public void connectionClosed(Session session) {
@@ -129,13 +172,19 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
     public void modelChanged() {
         getSite().getShell().getDisplay().asyncExec(new Runnable() {
             public void run() {
-            	if (!_treeViewer.getTree().isDisposed())
+            	if (!_treeViewer.getTree().isDisposed()) {
             		_treeViewer.refresh();
+            		refreshToolbar();
+            	}
             }
         });
     }
 
 	public void dispose() {
+		if (clipboard != null) {
+			clipboard.dispose();
+			clipboard = null;
+		}
         SQLExplorerPlugin.getDefault().getAliasManager().removeListener(this);
         super.dispose();
     }
@@ -145,7 +194,23 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
     }
 
 	public void refresh() {
-		_treeViewer.refresh();
+		getSite().getShell().getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				_treeViewer.refresh();
+			}
+		});
+	}
+	
+	private void refreshToolbar() {
+        IToolBarManager toolbar = getViewSite().getActionBars().getToolBarManager();
+        IContributionItem[] items = toolbar.getItems();
+        for (IContributionItem item : items) {
+        	if (item instanceof ActionContributionItem) {
+        		ActionContributionItem contrib = (ActionContributionItem)item;
+        		AbstractConnectionTreeAction action = (AbstractConnectionTreeAction)contrib.getAction();
+        		action.setEnabled(action.isAvailable());
+        	}
+        }
 	}
 	
 	/**
@@ -187,9 +252,9 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
     			if (obj instanceof User) {
     				User user = (User)obj;
     				result.add(user.getAlias());
-    			} else if (obj instanceof Session) {
-    				Session session = (Session)obj;
-    				result.add(session.getUser().getAlias());
+    			} else if (obj instanceof SQLConnection) {
+    				SQLConnection connection = (SQLConnection)obj;
+    				result.add(connection.getUser().getAlias());
     			}
     		}
     	}
@@ -228,9 +293,9 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
     			if (obj instanceof Alias) {
     				Alias alias = (Alias)obj;
     				result.addAll(alias.getUsers());
-    			} else if (obj instanceof Session) {
-    				Session session = (Session)obj;
-    				result.add(session.getUser());
+    			} else if (obj instanceof SQLConnection) {
+    				SQLConnection connection = (SQLConnection)obj;
+    				result.add(connection.getUser());
     			}
     		}
     	}
@@ -265,6 +330,16 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
     		Object obj = iter.next();
     		if (obj instanceof SQLConnection)
     			result.add((SQLConnection)obj);
+    		else if (recurse) {
+    			if (obj instanceof Alias) {
+    				Alias alias = (Alias)obj;
+    				for (User user : alias.getUsers())
+    					result.addAll(user.getConnections());
+    			} else if (obj instanceof User) {
+    				User user = (User)obj;
+					result.addAll(user.getConnections());
+    			}
+    		}
     	}
     	
     	return result;
@@ -278,23 +353,6 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
      */
     public SQLConnection getSelectedConnection(boolean recurse) {
     	return (SQLConnection)getFirstOf(getSelectedConnections(recurse));
-    }
-
-    public Alias getDefaultAlias() {
-    	IStructuredSelection selection = (IStructuredSelection)_treeViewer.getSelection();
-    	if (selection == null)
-    		return null;
-    	
-    	Object element = selection.getFirstElement();
-    	
-    	if (element instanceof Alias)
-    		return (Alias)element;
-    	else if (element instanceof Session) {
-    		ITreeContentProvider provider = (ITreeContentProvider)_treeViewer.getContentProvider();
-    		return (Alias)provider.getParent(element);
-    	}
-    	
-    	return null;
     }
 
     /**
@@ -318,4 +376,56 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
     		return iter.next();
     	return null;
     }
+
+    /**
+	 * @return the defaultUser
+	 */
+	public User getDefaultUser() {
+		if (defaultUser == null) {
+			Alias alias = getDefaultAlias();
+			if (alias != null)
+				return alias.getDefaultUser();
+		}
+		return defaultUser;
+	}
+
+	/**
+	 * @param defaultUser the defaultUser to set
+	 */
+	public void setDefaultUser(User lastSelectedUser) {
+		this.defaultUser = lastSelectedUser;
+	}
+
+    private Alias getDefaultAlias() {
+    	IStructuredSelection selection = (IStructuredSelection)_treeViewer.getSelection();
+    	if (selection == null)
+    		return null;
+    	
+    	Object element = selection.getFirstElement();
+    	
+    	if (element instanceof Alias)
+    		return (Alias)element;
+    	else if (element instanceof Session) {
+    		ITreeContentProvider provider = (ITreeContentProvider)_treeViewer.getContentProvider();
+    		return (Alias)provider.getParent(element);
+    	}
+    	
+    	return null;
+    }
+
+	/**
+	 * @return the clipboard
+	 */
+	public Clipboard getClipboard() {
+		if (clipboard == null)
+			clipboard = new Clipboard(getSite().getShell().getDisplay());
+		return clipboard;
+	}
+
+	/**
+	 * @param clipboard the clipboard to set
+	 */
+	public void setClipboard(Clipboard clipboard) {
+		this.clipboard = clipboard;
+	}
 }

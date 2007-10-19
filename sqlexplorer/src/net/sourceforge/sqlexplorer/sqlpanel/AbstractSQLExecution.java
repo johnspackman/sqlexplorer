@@ -97,18 +97,13 @@ public abstract class AbstractSQLExecution extends Job {
 	
 	public IStatus run(IProgressMonitor monitor) {
 		monitor.setTaskName(Messages.getString("SQLExecution.Progress"));
-		final Shell shell = getEditor().getSite().getShell();
 		
 		try {
 			// Wait until we can get a free connection from the queue
 			_connection = _session.grabConnection();
 			
 			// Update status
-			shell.getDisplay().asyncExec(new Runnable() {
-				public void run() {
-					_editor.getEditorToolBar().refresh(true);
-				}
-			});
+			_editor.getEditorToolBar().refresh();
 
 			// Make sure the user hasn't tried to terminate us and then run the SQL
 			if (!monitor.isCanceled() && _connection != null) {
@@ -129,12 +124,7 @@ public abstract class AbstractSQLExecution extends Job {
 			if (_connection != null)
 				_session.releaseConnection(_connection);
 			_connection = null;
-			
-			shell.getDisplay().asyncExec(new Runnable() {
-				public void run() {
-					_editor.getEditorToolBar().refresh(true);
-				}
-			});
+			_editor.getEditorToolBar().refresh();
 		}
 		
 		return new Status(IStatus.OK, getClass().getName(), IStatus.OK, "OK", null);
@@ -226,9 +216,11 @@ public abstract class AbstractSQLExecution extends Job {
 	 * where error messages from the server are numbered, they start relative to the
 	 * line number of the query that was sent; lineNoOffset is added to each line
 	 * number so that they relate to the line in SQLEditor
-	 * @param e
+	 * @param e The exception
+	 * @param query The Query that triggered the exception
+	 * @param positionEditor Whether to reposition the text caret of the editor to the first message
 	 */
-	protected void logException(SQLException e, Query query) throws SQLException {
+	protected void logException(SQLException e, Query query, boolean positionEditor) throws SQLException {
 		final Collection<Message> messages = _session.getDatabaseProduct().getErrorMessages(_connection, e, query.getLineNo() - 1);
 		if (messages == null)
 			return;
@@ -239,6 +231,18 @@ public abstract class AbstractSQLExecution extends Job {
 			message.setSql(query.getQuerySql());
 		}
 		addMessages(messages);
+		
+		if (positionEditor) {
+			final Shell shell = getEditor().getSite().getShell();
+			shell.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if (messages.size() > 0) {
+						Message msg = messages.iterator().next();
+						getEditor().setCursorPosition(msg.getLineNo(), msg.getCharNo());
+					}
+				}
+			});
+		}		
 	}
 	
 	/**

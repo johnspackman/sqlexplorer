@@ -33,6 +33,7 @@ import net.sourceforge.sqlexplorer.connections.actions.ConnectNewUserAction;
 import net.sourceforge.sqlexplorer.connections.actions.CopyAliasAction;
 import net.sourceforge.sqlexplorer.connections.actions.DeleteAction;
 import net.sourceforge.sqlexplorer.connections.actions.NewAliasAction;
+import net.sourceforge.sqlexplorer.connections.actions.NewDatabaseStructureViewAction;
 import net.sourceforge.sqlexplorer.connections.actions.NewEditorAction;
 import net.sourceforge.sqlexplorer.connections.actions.RollbackAction;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
@@ -68,17 +69,20 @@ public class ConnectionTreeActionGroup extends ActionGroup {
     	set = new LinkedHashSet<AbstractConnectionTreeAction>();
     	actions.put(Type.GENERIC, set);
     	set.add(new NewAliasAction());
+        set.add(new CloseConnectionAction());
+        set.add(new CloseAllConnectionsAction());       
 
     	set = new LinkedHashSet<AbstractConnectionTreeAction>();
     	actions.put(Type.IF_SELECTION, set);
         set.add(new NewEditorAction());
+        set.add(new NewDatabaseStructureViewAction());
 
     	set = new LinkedHashSet<AbstractConnectionTreeAction>();
     	actions.put(Type.SESSION, set);
-        set.add(new CloseConnectionAction());
-        set.add(new CloseAllConnectionsAction());       
         set.add(new CommitAction());
         set.add(new RollbackAction());
+        set.add(new AutoCommitAction());
+        set.add(new CommitOnCloseAction());
 
     	set = new LinkedHashSet<AbstractConnectionTreeAction>();
     	actions.put(Type.ALIAS, set);
@@ -152,6 +156,7 @@ public class ConnectionTreeActionGroup extends ActionGroup {
     	for (AbstractConnectionTreeAction action : set) 
     		if (action.isAvailable()){
 				menu.add(action);
+				action.setEnabled(true);
 				numAdded++;
 			}
     	return numAdded;

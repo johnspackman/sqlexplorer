@@ -34,8 +34,9 @@ public class OracleQuery extends AnnotatedQuery {
 	private String createObjectName;
 	private String createObjectType;
 
-	public OracleQuery(BackedCharSequence buffer, int lineNo) {
+	public OracleQuery(BackedCharSequence buffer, int lineNo, QueryType queryType) {
 		super(buffer, lineNo);
+		setQueryType(queryType);
 	}
 
 	/**
@@ -50,6 +51,7 @@ public class OracleQuery extends AnnotatedQuery {
 	 */
 	public void setCreateObjectName(String createObjectName) {
 		this.createObjectName = createObjectName;
+		setQueryType(QueryType.DDL);
 	}
 
 	/**
@@ -64,6 +66,7 @@ public class OracleQuery extends AnnotatedQuery {
 	 */
 	public void setCreateObjectType(String createObjectType) {
 		this.createObjectType = createObjectType;
+		setQueryType(QueryType.DDL);
 	}
 
 }

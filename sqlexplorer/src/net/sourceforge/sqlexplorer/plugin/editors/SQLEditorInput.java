@@ -18,13 +18,13 @@
  */
 package net.sourceforge.sqlexplorer.plugin.editors;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 
 import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.runtime.CoreException;
@@ -39,7 +39,7 @@ public class SQLEditorInput implements IStorageEditorInput, IPersistableElement
 	private IStorage fStorage;
 	private File fFile;
 	private String fName;
-	private Session sessionNode;
+	private User user;
 
 	public SQLEditorInput(String name)
 	{
@@ -166,18 +166,13 @@ public class SQLEditorInput implements IStorageEditorInput, IPersistableElement
 				fFile == input.fFile ||
 				fFile != null && fFile.equals(input.fFile);
 	}
-	/**
-	 * @return
-	 */
-	public Session getSessionNode() {
-		return sessionNode;
+
+	public User getUser() {
+		return user;
 	}
 
-	/**
-	 * @param node
-	 */
-	public void setSessionNode(Session node) {
-		sessionNode = node;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 }

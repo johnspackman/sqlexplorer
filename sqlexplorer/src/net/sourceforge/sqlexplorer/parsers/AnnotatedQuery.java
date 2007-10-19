@@ -31,6 +31,7 @@ import net.sourceforge.sqlexplorer.util.BackedCharSequence;
  */
 public class AnnotatedQuery extends AbstractQuery {
 	
+	private QueryType queryType;
 	private BackedCharSequence buffer;
 	private int lineNo;
 
@@ -40,10 +41,23 @@ public class AnnotatedQuery extends AbstractQuery {
 		this.lineNo = lineNo;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.sourceforge.sqlexplorer.parsers.Query#getQueryType()
+	 */
+	public QueryType getQueryType() {
+		return queryType;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sourceforge.sqlexplorer.parsers.Query#getQuerySql()
+	 */
 	public BackedCharSequence getQuerySql() {
 		return buffer;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.sourceforge.sqlexplorer.parsers.Query#getLineNo()
+	 */
 	public int getLineNo() {
 		return lineNo;
 	}
@@ -54,6 +68,13 @@ public class AnnotatedQuery extends AbstractQuery {
 	@Override
 	public String toString() {
 		return Integer.toString(lineNo) + ": " + buffer.toString();
+	}
+
+	/**
+	 * @param queryType the queryType to set
+	 */
+	protected void setQueryType(QueryType queryType) {
+		this.queryType = queryType;
 	}
 
 }

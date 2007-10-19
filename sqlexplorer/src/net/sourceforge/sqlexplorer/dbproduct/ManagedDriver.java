@@ -116,7 +116,7 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 		if (jdbcConn == null)
 			throw new SQLException("Unable to create connection. Check your URL.");
 
-		return new SQLConnection(user, jdbcConn, null);
+		return new SQLConnection(user, jdbcConn, getDatabaseProduct().describeConnection(jdbcConn));
 	}
 
 	public boolean isDriverClassLoaded() {

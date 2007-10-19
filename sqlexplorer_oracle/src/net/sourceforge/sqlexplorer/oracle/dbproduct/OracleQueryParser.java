@@ -18,9 +18,10 @@
  */
 package net.sourceforge.sqlexplorer.oracle.dbproduct;
 
-import net.sourceforge.sqlexplorer.parsers.AnnotatedQuery;
 import net.sourceforge.sqlexplorer.parsers.ParserException;
+import net.sourceforge.sqlexplorer.parsers.AnnotatedQuery;
 import net.sourceforge.sqlexplorer.parsers.AbstractSyntaxQueryParser;
+import net.sourceforge.sqlexplorer.parsers.Query.QueryType;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.TokenType;
 import net.sourceforge.sqlexplorer.util.BackedCharSequence;
@@ -47,10 +48,13 @@ public class OracleQueryParser extends AbstractSyntaxQueryParser {
 	// How deep in begin...end we are currently 
 	private int beginEndDepth;
 	
-	// The type of object being created if this is a "CREATE ... "DDL statement
+	// The type of the query
+	private QueryType queryType;
+	
+	// The type of object being created if this is a "CREATE ... " DDL statement
 	private String createType;
 	
-	// The name of the object being created if this is a "CREATE ... "DDL statement
+	// The name of the object being created if this is a "CREATE ... " DDL statement
 	private String createName;
 
 	/**
@@ -124,6 +128,7 @@ public class OracleQueryParser extends AbstractSyntaxQueryParser {
 				//	it's creating a PL/SQL statement which will have code and theerfore semi-colons and
 				//	other SQL in it
 				if (word.equalsIgnoreCase("CREATE")) {
+					queryType = QueryType.DDL;
 					nextToken();
 					
 					// Skip optional OR REPLACE
@@ -170,13 +175,27 @@ public class OracleQueryParser extends AbstractSyntaxQueryParser {
 				
 				// DECLARE also puts us in PL/SQL mode
 				} else if (word.equalsIgnoreCase("DECLARE")) {
+					queryType = QueryType.CODE;
 					inPlSql = true;
 				
 				// BEGIN puts us in PL/SQL mode
 				} else if (word.equalsIgnoreCase("BEGIN")) {
+					queryType = QueryType.CODE;
 					inPlSql = true;
 					seenBegin = true;
 					beginEndDepth++;
+					
+				} else if (word.equalsIgnoreCase("SELECT")) {
+					queryType = QueryType.SELECT;
+				
+				} else if (word.equalsIgnoreCase("UPDATE")) {
+					queryType = QueryType.DML;
+				
+				} else if (word.equalsIgnoreCase("DELETE")) {
+					queryType = QueryType.DML;
+				
+				} else if (word.equalsIgnoreCase("INSERT")) {
+					queryType = QueryType.DML;
 				
 				// If we're already in PL/SQL, then we have to count BEGIN/END pairs to know when the code
 				//	runs out.
@@ -253,11 +272,9 @@ public class OracleQueryParser extends AbstractSyntaxQueryParser {
 	 */
 	@Override
 	protected AnnotatedQuery newQueryInstance(BackedCharSequence buffer, int lineNo) {
-		OracleQuery query = new OracleQuery(buffer, lineNo);
+		OracleQuery query = new OracleQuery(buffer, lineNo, queryType);
 		query.setCreateObjectName(createName);
 		query.setCreateObjectType(createType);
-		createName = null;
-		createType = null;
 		return query;
 	}
 
@@ -278,6 +295,9 @@ public class OracleQueryParser extends AbstractSyntaxQueryParser {
 		seenBegin = false;
 		beginEndDepth = 0;
 		start = null;
+		queryType = QueryType.UNKNOWN;
+		createName = null;
+		createType = null;
 	}
 
 }

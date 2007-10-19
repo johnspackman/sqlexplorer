@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.dbproduct;
 
+import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -92,7 +93,24 @@ public interface DatabaseProduct {
 		public void close() throws SQLException;
 	}
 	
+	/**
+	 * Executes a Query
+	 * @param connection Connection to use
+	 * @param query Query to execute
+	 * @param maxRows Maximum number of rows
+	 * @return
+	 * @throws SQLException
+	 */
 	public ExecutionResults executeQuery(SQLConnection connection, Query query, int maxRows) throws SQLException;
+	
+	/**
+	 * Called to describe a connection for the ConnectionsView; this is optional but should
+	 * return a short string containing, for example, the server process or connection IDs
+	 * @param connection
+	 * @return
+	 * @throws SQLException
+	 */
+	public String describeConnection(Connection connection) throws SQLException; 
 	
 	/**
 	 * Loads a driver for use with SQLExplorer.  Note that because of Classloader issues

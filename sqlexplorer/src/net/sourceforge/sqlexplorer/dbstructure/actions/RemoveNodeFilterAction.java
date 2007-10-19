@@ -68,7 +68,7 @@ public class RemoveNodeFilterAction extends AbstractDBTreeContextAction {
         alias.setFolderFilterExpression("");
         alias.setSchemaFilterExpression("");
         
-        getView().refreshSessionTrees(_selectedNodes[0].getSession().toString());
+        getView().refreshSessionTrees(_selectedNodes[0].getSession());
     }
 
 

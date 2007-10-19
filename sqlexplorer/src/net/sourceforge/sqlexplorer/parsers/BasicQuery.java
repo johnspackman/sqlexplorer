@@ -18,8 +18,6 @@
  */
 package net.sourceforge.sqlexplorer.parsers;
 
-
-
 /**
  * Query encapsulates a command to be executed
  * 
@@ -35,6 +33,13 @@ public class BasicQuery extends AbstractQuery {
 		super();
 		this.querySql = querySql;
 		this.lineNo = lineNo;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sourceforge.sqlexplorer.parsers.Query#getQueryType()
+	 */
+	public QueryType getQueryType() {
+		return QueryType.UNKNOWN;
 	}
 
 	/* (non-JavaDoc)

@@ -20,6 +20,9 @@ package net.sourceforge.sqlexplorer.dataset;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableCursor;
 import org.eclipse.swt.dnd.Clipboard;
@@ -36,7 +39,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -56,6 +58,8 @@ import org.eclipse.swt.widgets.Text;
  */
 public class DataSetTableKeyListener implements KeyListener {
 
+    protected static final Log _logger = LogFactory.getLog(DataSetTableKeyListener.class);
+    
 //    private IDetailTab _tab = null;
 
     private Composite _parent = null;
@@ -90,11 +94,6 @@ public class DataSetTableKeyListener implements KeyListener {
         _table = table;
         _parent = parent;
         _cursor = cursor;
-        
-        /*Object o = _parent.getData("IDetailTab");
-        if (o != null) {
-            _tab = (IDetailTab) o;
-        } */       
     }
 
 
@@ -105,14 +104,14 @@ public class DataSetTableKeyListener implements KeyListener {
      */
     public void keyPressed(KeyEvent e) {
 
+    	//_logger.fatal(Integer.toString((int)e.character));
         switch (e.character) {
 
             case CTRL_C:
                 // copy cell content to clipboard
 
                 try {
-
-                    Clipboard clipBoard = new Clipboard(Display.getCurrent());
+					Clipboard clipBoard = SQLExplorerPlugin.getDefault().getConnectionsView().getClipboard();
                     TextTransfer textTransfer = TextTransfer.getInstance();
 
                     TableItem[] items = _table.getSelection();

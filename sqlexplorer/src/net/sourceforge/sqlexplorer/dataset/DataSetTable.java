@@ -56,15 +56,6 @@ import org.eclipse.ui.IWorkbenchPage;
 public class DataSetTable {
 
     /**
-     * Hidden default constructor.
-     */
-    @SuppressWarnings("unused")
-    private DataSetTable() {
-
-    }
-
-
-    /**
      * Create a new table element for a resultset in a given composite.
      * 
      * @param composite canvas to draw table on
@@ -73,7 +64,7 @@ public class DataSetTable {
      */
     public DataSetTable(Composite parent, final DataSet dataSet, String info) throws Exception {
 
-        Composite composite = new Composite(parent, SWT.FILL);
+        final Composite composite = new Composite(parent, SWT.FILL);
         
         GridLayout layout = new GridLayout();
         layout.numColumns = 2;                
@@ -129,7 +120,6 @@ public class DataSetTable {
     			table.clearAll();
     		}
     	};
-        
         
         GridData tGridData = new GridData();
         tGridData.horizontalSpan = 2;

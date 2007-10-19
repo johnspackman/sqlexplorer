@@ -80,7 +80,7 @@ public class OpenInEditorAction extends AbstractHistoryContextAction {
             }
 
             SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo() + ").sql");
-            input.setSessionNode(sqlHistoryElement.getUser().createSession());
+            input.setUser(sqlHistoryElement.getUser());
             IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
             if (page == null)
                 return;

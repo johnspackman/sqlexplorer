@@ -405,6 +405,9 @@ public class StructuredCommentParser {
 					replace(iter, ref, seq);
 				}
 				
+			} else if (command.commandType == CommandType.ENDIF) {
+				delete(iter, command, command, true);
+				
 			} else if (command.commandType == CommandType.PARAMETER) {
 				
 			}

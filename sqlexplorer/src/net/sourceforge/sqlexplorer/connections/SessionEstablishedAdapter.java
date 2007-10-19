@@ -16,22 +16,26 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package net.sourceforge.sqlexplorer.parsers;
+package net.sourceforge.sqlexplorer.connections;
 
-import java.util.HashMap;
-import java.util.Map;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 
-public abstract class AbstractQuery implements Query {
+/**
+ * Stubbed out implementation of SessionEstablishedListener
+ * @author John Spackman
+ */
+public class SessionEstablishedAdapter implements SessionEstablishedListener {
 
-	// Named parameters in scope
-	private HashMap<String, NamedParameter> parameters;
-	
-	/*package*/ void setParameters(HashMap<String, NamedParameter> parameters) {
-		this.parameters = parameters;
+	/* (non-Javadoc)
+	 * @see net.sourceforge.sqlexplorer.connections.SessionEstablishedListener#cannotEstablishSession(net.sourceforge.sqlexplorer.dbproduct.User)
+	 */
+	public void cannotEstablishSession(User user) {
 	}
 
-	public Map<String, NamedParameter> getNamedParameters() {
-		return parameters;
+	/* (non-Javadoc)
+	 * @see net.sourceforge.sqlexplorer.connections.SessionEstablishedListener#sessionEstablished(net.sourceforge.sqlexplorer.dbproduct.Session)
+	 */
+	public void sessionEstablished(Session session) {
 	}
-	
 }

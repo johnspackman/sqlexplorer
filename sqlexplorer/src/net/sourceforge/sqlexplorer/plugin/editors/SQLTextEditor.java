@@ -19,7 +19,6 @@
 package net.sourceforge.sqlexplorer.plugin.editors;
 
 import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.dbproduct.ConnectionAdapter;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
@@ -65,30 +64,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
  */
 public class SQLTextEditor extends TextEditor {
 
-	private class SQLEditorSessionListener extends ConnectionAdapter {
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeModelChangedListener#modelChanged()
-		 */
-		public void modelChanged(Session nd) {
-
-			// do full refresh of toolbar
-			if (editor.getSession() != null && !editor.getSession().isValidSession()) {
-				editor.setSession(null);
-				editor.getEditorToolBar().refresh(true);
-
-			// only update the combo selection
-			} else {
-				editor.getEditorToolBar().refresh(false);
-			}
-		}
-	}
-
 	private SQLEditor editor;
-
-	private SQLEditorSessionListener listener;
 
 	private MouseClickListener mcl;
 
@@ -184,9 +160,6 @@ public class SQLTextEditor extends TextEditor {
 		layout.marginHeight = layout.marginWidth = layout.horizontalSpacing = layout.verticalSpacing = 0;
 		myParent.setLayout(layout);
 
-		listener = new SQLEditorSessionListener();
-		SQLExplorerPlugin.getDefault().getAliasManager().addListener(listener);
-
 		// create divider line
 
 		Composite div1 = new Composite(myParent, SWT.NONE);
@@ -266,23 +239,21 @@ public class SQLTextEditor extends TextEditor {
 	
 					if (sqlTextViewer != null) {
 						sqlTextViewer.setNewDictionary(dictionary);
-						if (editor.getSession() != null) {
-							sqlTextViewer.refresh();
-						}
+//						if (editor.getSession() != null) {
+//							sqlTextViewer.refresh();
+//						}
 					}
 	
 				}
 			});
 	}
 
-	public void onChangeSession() {
-
-		if (editor.getSession() != null && _enableContentAssist) {
+	public void onEditorSessionChanged(Session session) {
+		if (session != null && _enableContentAssist) {
 			setNewDictionary(editor.getSession().getDictionary());
 		} else {
 			setNewDictionary(null);
 		}
-
 	}
 
 	/*
@@ -293,7 +264,6 @@ public class SQLTextEditor extends TextEditor {
 	public void dispose() {
 		if (partListener != null)
 			editor.getEditorSite().getPage().removePartListener(partListener);
-		SQLExplorerPlugin.getDefault().getAliasManager().removeListener(listener);
 		mcl.uninstall();
 		super.dispose();
 	}

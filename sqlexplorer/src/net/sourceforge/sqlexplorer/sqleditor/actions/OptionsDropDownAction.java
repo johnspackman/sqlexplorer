@@ -46,7 +46,7 @@ public class OptionsDropDownAction extends AbstractEditorAction implements IMenu
 			public void run(){
 				try {
 					_editor.getSession().setAutoCommit(isChecked());
-					_editor.getEditorToolBar().refresh(true);
+					_editor.getEditorToolBar().refresh();
 				}catch(SQLException e) {
 					SQLExplorerPlugin.error(e);
 				}
@@ -57,7 +57,7 @@ public class OptionsDropDownAction extends AbstractEditorAction implements IMenu
 		action = new Action(Messages.getString("SQLEditor.Options.CommitOnClose"), IAction.AS_CHECK_BOX) {
 			public void run(){
 				_editor.getSession().setCommitOnClose(isChecked());
-				_editor.getEditorToolBar().refresh(false);
+				_editor.getEditorToolBar().refresh();
 			}
 
 			@Override

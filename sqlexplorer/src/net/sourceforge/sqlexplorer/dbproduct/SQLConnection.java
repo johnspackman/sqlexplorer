@@ -20,8 +20,6 @@ package net.sourceforge.sqlexplorer.dbproduct;
 
 import java.sql.Connection;
 
-import net.sourceforge.squirrel_sql.fw.sql.SQLDriverPropertyCollection;
-
 /**
  * Our SQLConnection, which adds the connection to our User object
  * @author John Spackman
@@ -32,13 +30,26 @@ public class SQLConnection extends net.sourceforge.squirrel_sql.fw.sql.SQLConnec
 	// The User that established this connection
 	private User user;
 	
+	// The session that is using this connection
+	private Session session;
+	
 	// When the connection was established
 	private long createdTime;
+	
+	// Optional additional description
+	private String description;
 
-	public SQLConnection(User user, Connection connection, SQLDriverPropertyCollection properties) {
-		super(connection, properties, null);
+	/**
+	 * Constructor
+	 * @param user the User that the connection is for
+	 * @param connection JDBC Connection
+	 * @param description Optional additional description to appear in the connections view (EG process ID or server connection ID)
+	 */
+	public SQLConnection(User user, Connection connection, String description) {
+		super(connection, null, null);
 		this.user = user;
 		createdTime = System.currentTimeMillis();
+		this.description = description;
 	}
 
 	public User getUser() {
@@ -59,5 +70,26 @@ public class SQLConnection extends net.sourceforge.squirrel_sql.fw.sql.SQLConnec
 
 	public long getCreatedTime() {
 		return createdTime;
+	}
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * @return the session
+	 */
+	public Session getSession() {
+		return session;
+	}
+
+	/**
+	 * @param session the session to set
+	 */
+	public void setSession(Session session) {
+		this.session = session;
 	}
 }

@@ -18,16 +18,15 @@
  */
 package net.sourceforge.sqlexplorer.plugin.editors;
 
-import java.io.File;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.SQLException;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.connections.ConnectionsView;
-import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.connections.SessionEstablishedAdapter;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -113,11 +112,8 @@ import org.eclipse.ui.part.EditorPart;
  */
 public class SQLEditor extends EditorPart {
 	
-	// The colour of borders and the fade-to-white colour of the selected tabs
-	public static final Color BORDER_COLOR = new Color(null, 153, 186, 243);
-
 	// The color of the sash
-	private static final Color SASH_COLOR = BORDER_COLOR;
+	private static final Color SASH_COLOR = IConstants.TAB_BORDER_COLOR;
 
 	// Typical file extensions
 	public static final String[] SUPPORTED_FILETYPES = new String[] { "*.sql", "*.txt", "*.*" };
@@ -181,17 +177,16 @@ public class SQLEditor extends EditorPart {
 		// If we havn't got a view, then try for the current session in the ConnectionsView
 		if (getSession() == null) {
 	        ConnectionsView view = SQLExplorerPlugin.getDefault().getConnectionsView();
-	        if (view != null)
-	        	try {
-	        		Alias alias = view.getDefaultAlias();
-	        		if (alias != null) {
-	        			User user = alias.getDefaultUser();
-	        			if (user != null)
-	    	        		setSession(user.createSession());
-	        		}
-	        	}catch(SQLException e) {
-	        		SQLExplorerPlugin.error(e.getMessage(), e);
-	        	}
+	        if (view != null) {
+        		User user = view.getDefaultUser();
+    			if (user != null)
+    				user.queueForNewSession(new SessionEstablishedAdapter() {
+						@Override
+						public void sessionEstablished(Session session) {
+							setSession(session);
+						}
+	        		});
+	        }
 		}
 	}
     
@@ -258,6 +253,9 @@ public class SQLEditor extends EditorPart {
 			data.bottom = new FormAttachment(100, 0);
 			tabFolder.setLayoutData(data);
 
+			if (session != null)
+				toolBar.onEditorSessionChanged(session);
+			
 		} catch (Exception e) {
 			SQLExplorerPlugin.error("Couldn't create text editor", e);
 			MessageDialog.openError(getSite().getShell(), Messages
@@ -363,7 +361,7 @@ public class SQLEditor extends EditorPart {
 				        display.getSystemColor(SWT.COLOR_WHITE),
 		                new Color(null, 211, 225, 250),
 		                new Color(null, 175, 201, 246),
-		                BORDER_COLOR
+		                IConstants.TAB_BORDER_COLOR
 	    		},
 	    		new int[] {25, 50, 75},
 	    		true
@@ -436,7 +434,12 @@ public class SQLEditor extends EditorPart {
 		if (input instanceof SQLEditorInput) {
 			SQLEditorInput sqlInput = (SQLEditorInput) input;
 			if (input != null) {
-				setSession(sqlInput.getSessionNode());
+				User user = sqlInput.getUser();
+				user.queueForNewSession(new SessionEstablishedAdapter() {
+					public void sessionEstablished(Session session) {
+						setSession(session);
+					}
+				});
 				isDirty = true;
 				isUntitled = true;
 			}
@@ -661,7 +664,7 @@ public class SQLEditor extends EditorPart {
 	 */
 	public void addMessage(Message message) {
 		// Don't log success messages unless we're supposed to
-		if (message.getSuccess() == Message.Status.SUCCESS &&
+		if (message.getStatus() == Message.Status.SUCCESS &&
 				!SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.LOG_SUCCESS_MESSAGES))
 			return;
 
@@ -840,15 +843,20 @@ public class SQLEditor extends EditorPart {
 	/**
 	 * Sets the session to use for executing queries
 	 * 
-	 * @param pSessionTreeNode
+	 * @param session The new Session
 	 */
 	public void setSession(Session session) {
+		if (session == this.session)
+			return;
+		
 		// If we already have a session and we're changing to a different one, close the current one
 		if (getSession() != null && session != this.session)
 			this.session.close();
 		this.session = session;
 		if (textEditor != null)
-			textEditor.onChangeSession();
+			textEditor.onEditorSessionChanged(session);
+		if (toolBar != null)
+			toolBar.onEditorSessionChanged(session);
 	}
 
 	/**

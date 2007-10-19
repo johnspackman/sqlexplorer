@@ -22,15 +22,11 @@ import java.util.Set;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.User;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
-import org.eclipse.ui.IWorkbenchPage;
 
 /**
  * @author Davy Vanherbergen
@@ -73,15 +69,7 @@ public class NewEditorAction extends AbstractConnectionTreeAction implements IVi
     public void run() {
     	Set<User> users = getView().getSelectedUsers(true);
     	for (User user : users)
-            try {
-                SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo() + ").sql");
-                input.setSessionNode(user.createSession());
-                IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-                page.openEditor(input, SQLEditor.class.getName());
-            } catch (Throwable e) {
-                SQLExplorerPlugin.error("Error creating sql editor", e);
-            }
-    
+    		getView().openNewEditor(user);
         getView().refresh();
     }
 

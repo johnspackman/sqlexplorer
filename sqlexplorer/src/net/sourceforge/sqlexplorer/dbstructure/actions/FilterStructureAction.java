@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.dbstructure.actions;
 
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dialogs.FilterStructureDialog;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
@@ -41,7 +42,10 @@ public class FilterStructureAction extends Action {
 			DatabaseStructureView view = SQLExplorerPlugin.getDefault().getDatabaseStructureView();
 			FilterStructureDialog dialog = new FilterStructureDialog();
 
-			Alias alias = (Alias) view.getActiveDatabase().getSession().getUser().getAlias();
+			Session session = view.getSession();
+			if (session == null)
+				return;
+			Alias alias = session.getUser().getAlias();
 
 			if (alias.getSchemaFilterExpression() != null
 					&& alias.getSchemaFilterExpression().length() != 0) {
@@ -86,8 +90,7 @@ public class FilterStructureAction extends Action {
 
 			alias.setNameFilterExpression(dialog.getNameFilter());
 
-			view.refreshSessionTrees(view.getActiveDatabase().getSession()
-					.toString());
+			view.refreshSessionTrees(view.getSession());
 
 		} catch (Exception e) {
 			SQLExplorerPlugin.error("Error creating dialog", e);

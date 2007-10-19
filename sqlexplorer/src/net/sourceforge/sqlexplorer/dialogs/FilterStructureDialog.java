@@ -102,8 +102,7 @@ public class FilterStructureDialog extends Dialog {
 
     public FilterStructureDialog() {
         super(SQLExplorerPlugin.getDefault().getDatabaseStructureView().getSite().getShell());
-        _db = SQLExplorerPlugin.getDefault().getDatabaseStructureView().getActiveDatabase().getRoot();
-
+        _db = SQLExplorerPlugin.getDefault().getDatabaseStructureView().getSession().getRoot();
     }
 
 

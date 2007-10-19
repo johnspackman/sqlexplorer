@@ -24,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.net.MalformedURLException;
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -65,6 +66,32 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 		return s_instance;
 	}
 	
+	/* (non-Javadoc)
+	 * @see net.sourceforge.sqlexplorer.dbproduct.AbstractDatabaseProduct#describeConnection(java.sql.Connection)
+	 */
+	@Override
+	public String describeConnection(Connection connection) throws SQLException {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			stmt = connection.prepareStatement("SELECT SID, SERIAL#, AUDSID FROM V$SESSION WHERE AUDSID = TO_NUMBER(USERENV('SESSIONID'))");
+			rs = stmt.executeQuery();
+			rs.next();
+			return rs.getString("SID") + "," + rs.getString("SERIAL#");
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch(SQLException e) {
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch(SQLException e) {
+				}
+		}
+	}
+
 	/* (non-JavaDoc)
 	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#getDriver(net.sourceforge.squirrel_sql.fw.sql.ManagedDriver)
 	 */
@@ -114,7 +141,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 				if (status != 0)
 					break;
 				String msg = stmt.getString(1);
-				messages.add(new Message(Message.Status.SUCCESS, msg));
+				messages.add(new Message(Message.Status.STATUS, msg));
 			}
 		} finally {
 			if (stmt != null)
@@ -123,7 +150,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 		
 		if (warnings != null) {
 			for (String msg : warnings)
-				messages.add(new Message(Message.Status.SUCCESS, msg));
+				messages.add(new Message(Message.Status.STATUS, msg));
 			warnings = null;
 		}
 		

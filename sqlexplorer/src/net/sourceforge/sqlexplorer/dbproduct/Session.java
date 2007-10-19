@@ -118,6 +118,7 @@ public class Session {
     	
 		if (connection != null) {
 			if (connection.getConnection().isClosed()) {
+				connection.setSession(null);
 				user.disposeConnection(connection);
 				connection = null;
 			}
@@ -126,9 +127,12 @@ public class Session {
     	// If we don't have one yet, get one from the pool
     	if (connection == null) {
     		connection = user.getConnection();
+			connection.setSession(this);
 	    	connection.setAutoCommit(autoCommit);
 	    	connection.setCommitOnClose(commitOnClose);
     	}
+    	
+		SQLExplorerPlugin.getDefault().getConnectionsView().refresh();
     	return connection;
     }
     
@@ -183,10 +187,12 @@ public class Session {
     	try {
     		SQLConnection connection = this.connection;
     		this.connection = null;
+			connection.setSession(null);
 	    	user.releaseConnection(connection);
     	}catch(SQLException e) {
     		SQLExplorerPlugin.error("Cannot release connection", e);
     	}
+		SQLExplorerPlugin.getDefault().getConnectionsView().refresh();
     }
     
     /**
@@ -216,7 +222,9 @@ public class Session {
 		    	try {
 		    		SQLConnection connection = this.connection;
 		    		this.connection = null;
+		        	connection.setSession(null);
 			    	user.releaseConnection(connection);
+					SQLExplorerPlugin.getDefault().getConnectionsView().refresh();
 		    	}catch(SQLException e) {
 		    		SQLExplorerPlugin.error("Cannot release connection", e);
 		    	}
@@ -285,10 +293,31 @@ public class Session {
         	}catch(SQLException e) {
         		SQLExplorerPlugin.error(e);
         	}
+        	connection.setSession(null);
         	connection = null;
         }
         user.releaseSession(this);
         user = null;
+    }
+
+    /**
+     * Forces the connection (if there is one) to be closed, rolling back any open transactions
+     *
+     */
+    public synchronized void disposeConnection() {
+    	if (connectionInUse)
+    		throw new IllegalAccessError("Cannot close session while connection is still in use!");
+        if (connection != null) {
+        	SQLConnection connection = this.connection;
+        	try {
+            	connection.rollback();
+        	}catch(SQLException e) {
+        		SQLExplorerPlugin.error(e);
+        	}
+        	connection.setSession(null);
+    		user.disposeConnection(connection);
+        	connection = null;
+        }
     }
 
     /**

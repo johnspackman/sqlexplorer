@@ -50,6 +50,9 @@ import org.eclipse.swt.widgets.Label;
  *
  */
 public class SQLExecution extends AbstractSQLExecution {
+	
+	// Whether the editor has any messages
+	private boolean hasMessages;
 
 	// Maximum number of rows to return
     protected int _maxRows;
@@ -204,39 +207,39 @@ public class SQLExecution extends AbstractSQLExecution {
 	                    if (monitor.isCanceled())
 	                        return;
 	                    
+                    	LinkedList<Message> messages = new LinkedList<Message>();
+	                    Collection<Message> messagesTmp = _session.getDatabaseProduct().getErrorMessages(_connection, query);
+	                    if (messagesTmp != null)
+	                    	messages.addAll(messagesTmp);
+	                    messagesTmp = _session.getDatabaseProduct().getServerMessages(_connection);
+	                    if (messagesTmp != null)
+	                    	messages.addAll(messagesTmp);
+                    	for (Message msg : messages) {
+                    		msg.setLineNo(getQueryParser().adjustLineNo(msg.getLineNo()));
+                    		if (msg.getStatus() != Message.Status.SUCCESS)
+                    			hasMessages = true;
+                    	}
+	                    
+	                    addMessages(messages);
+	                    
 	                    // show results..
 	                    displayResults(sqlResult);
 	            	}
 	            	overallUpdateCount += results.getUpdateCount();
 	            	
-                    Collection<Message> messages = _session.getDatabaseProduct().getErrorMessages(_connection, query);
-                    if (messages == null)
-                    	messages = new LinkedList<Message>();
-                    else
-                    	for (Message msg : messages)
-                    		msg.setLineNo(getQueryParser().adjustLineNo(msg.getLineNo()));
-                    
-                    addMessages(messages);
 		            debugLogQuery(query, null);
 	
-	            } catch(SQLException e) {
+	            } catch(final SQLException e) {
 		            debugLogQuery(query, e);
-	                logException(e, query);
-	                closeStatement();
 	            	boolean stopOnError = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.STOP_ON_ERROR);
-	            	if (stopOnError)
-	            		throw e;
+	                logException(e, query, stopOnError);
+	                closeStatement();
+	            	if (stopOnError) {
+	        			errorDialog(Messages.getString("SQLResultsView.Error.Title"), e.getMessage());
+	        			return;
+	            	}
 	            	numErrors++;
 	            	lastSQLException = e;
-	            	
-	            /*}catch(ParserException e) {
-	                logException(e, query);
-	                closeStatement();
-	            	boolean stopOnError = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.STOP_ON_ERROR);
-	            	if (stopOnError)
-	            		throw e;
-	            	numErrors++;
-	            	lastSQLException = new SQLException(e);*/
 	            	
 	            } finally {
 	            	try {
@@ -246,13 +249,15 @@ public class SQLExecution extends AbstractSQLExecution {
 	            		// Nothing
 	            	}
 	            }
-                long overallTime = System.currentTimeMillis() - overallStartTime;
-                String message = Long.toString(results.getUpdateCount()) + " " + Messages.getString("SQLEditor.Update.Prefix") + " " + 
-    				Long.toString(overallTime) + " " + Messages.getString("SQLEditor.Update.Postfix");
-            
-               	int lineNo = query.getLineNo();
-                lineNo = getQueryParser().adjustLineNo(lineNo);
-            	addMessage(new Message(Message.Status.STATUS, lineNo, 0, query.getQuerySql(), message));
+	            if (!hasMessages || SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.LOG_SUCCESS_MESSAGES)) {
+	                long overallTime = System.currentTimeMillis() - overallStartTime;
+	                String message = Long.toString(results.getUpdateCount()) + " " + Messages.getString("SQLEditor.Update.Prefix") + " " + 
+	    				Long.toString(overallTime) + " " + Messages.getString("SQLEditor.Update.Postfix");
+	            
+	               	int lineNo = query.getLineNo();
+	                lineNo = getQueryParser().adjustLineNo(lineNo);
+	            	addMessage(new Message(Message.Status.STATUS, lineNo, 0, query.getQuerySql(), message));
+	            }
             }
         } catch (Exception e) {
             closeStatement();
@@ -269,7 +274,6 @@ public class SQLExecution extends AbstractSQLExecution {
                 }
             });
     }
-
 
     /**
      * Cancel sql execution and close execution tab.

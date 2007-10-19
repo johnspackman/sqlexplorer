@@ -132,7 +132,7 @@ public class Message {
 	 * returns the status of the message
 	 * @return
 	 */
-	public Status getSuccess() {
+	public Status getStatus() {
 		return status;
 	}
 
@@ -173,7 +173,7 @@ public class Message {
 	 * @param sql the sql to set
 	 */
 	public void setSql(CharSequence sql) {
-		this.sql = TextUtil.compressWhitespace(sql, MAX_SQL_DISPLAY_LENGTH);;
+		this.sql = TextUtil.compressWhitespace(sql, MAX_SQL_DISPLAY_LENGTH);
 	}
 
 	/**

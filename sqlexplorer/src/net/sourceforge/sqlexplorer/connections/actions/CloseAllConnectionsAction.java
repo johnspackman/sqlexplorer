@@ -20,11 +20,18 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.util.Set;
 
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.User;
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
@@ -72,10 +79,33 @@ public class CloseAllConnectionsAction extends AbstractConnectionTreeAction impl
      * @see org.eclipse.jface.action.IAction#run()
      */
     public void run() {
+    	boolean confirm = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.CONFIRM_CLOSE_ALL_CONNECTIONS);
+    	if (confirm) {
+	    	MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoQuestion(getView().getSite().getShell(), 
+	    			Messages.getString("ConnectionsView.Actions.CloseAll.Confirm.Title"), 
+	    			Messages.getString("ConnectionsView.Actions.CloseAll.Confirm.Message"), 
+	    			Messages.getString("ConnectionsView.Actions.CloseAll.Confirm.Toggle"), 
+	    			false, null, null);
+	    	
+	    	if (dialog.getToggleState() && dialog.getReturnCode() == IDialogConstants.YES_ID)
+	    		SQLExplorerPlugin.getDefault().getPluginPreferences().setValue(IConstants.CONFIRM_CLOSE_ALL_CONNECTIONS, false);
+	    	if (dialog.getReturnCode() != IDialogConstants.YES_ID)
+	    		return;
+    	}
+    	
     	Set<SQLConnection> connections = getView().getSelectedConnections(true);
-    	for (SQLConnection connection : connections)
-    		if (connection.isPooled())
-    			connection.getUser().releaseFromPool(connection);
+    	for (SQLConnection connection : connections) {
+    		synchronized(connection) {
+	    		Session session = connection.getSession();
+	    		if (session != null) {
+	    			synchronized(session) {
+	    				if (!session.isConnectionInUse())
+	    					session.disposeConnection();
+	    			}
+	    		} else
+	    			connection.getUser().releaseFromPool(connection);
+    		}
+    	}
 
         setEnabled(false);
         getView().refresh();
@@ -94,9 +124,20 @@ public class CloseAllConnectionsAction extends AbstractConnectionTreeAction impl
      */
     public boolean isAvailable() {
     	Set<SQLConnection> connections = getView().getSelectedConnections(true);
-    	for (SQLConnection connection : connections)
-    		if (connection.isPooled())
-    			return true;
+    	if (connections.isEmpty()) {
+    		for (Alias alias : SQLExplorerPlugin.getDefault().getAliasManager().getAliases())
+    			for (User user : alias.getUsers())
+    				for (SQLConnection connection : user.getConnections()) {
+    		    		Session session = connection.getSession();
+    		    		if (session == null || !session.isConnectionInUse())
+    		    			return true;
+    		    	}
+    	} else
+	    	for (SQLConnection connection : connections) {
+	    		Session session = connection.getSession();
+	    		if (session == null || !session.isConnectionInUse())
+	    			return true;
+	    	}
     	return false;
     }
 }

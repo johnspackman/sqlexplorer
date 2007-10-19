@@ -95,10 +95,17 @@ public class ConnectionTreeLabelProvider extends LabelProvider {
         	
         } else if (element instanceof SQLConnection) {
         	SQLConnection connection = (SQLConnection)element;
-            String label = Messages.getString("ConnectionsView.ConnectedAlias.activeSession");            
+            String label;
             
-            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm:ss");
-            return label + " " + fmt.format(new Date(connection.getCreatedTime()));
+            if (connection.getDescription() == null) {
+	            SimpleDateFormat fmt = new SimpleDateFormat("HH:mm:ss");
+            	label = Messages.getString("ConnectionsView.ConnectedAlias.ConnectedSince") + ' ' + fmt.format(new Date(connection.getCreatedTime()));
+            } else
+            	label = Messages.getString("ConnectionsView.ConnectedAlias.Connection") + ' ' + connection.getDescription();
+
+            if (connection.isPooled())
+            	label += ' ' + Messages.getString("ConnectionsView.ConnectedAlias.Pooled");
+            return label;
         }
         
         return null;

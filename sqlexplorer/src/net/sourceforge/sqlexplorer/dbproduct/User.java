@@ -28,6 +28,7 @@ import org.dom4j.tree.DefaultElement;
 import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.connections.SessionEstablishedListener;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 /**
@@ -36,7 +37,7 @@ import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
  *  
  * @author John Spackman
  */
-public class User implements Comparable<User> {
+public class User implements Comparable<User>, SessionEstablishedListener {
 	
 	/*package*/ static final String USER = "user";
 	/*package*/ static final String USER_NAME = "user-name";
@@ -62,6 +63,9 @@ public class User implements Comparable<User> {
 	
 	// List of Sessions
 	private LinkedList<Session> sessions = new LinkedList<Session>();
+	
+	// List of requests for a new session
+	private LinkedList<SessionEstablishedListener> newSessionsQueue = new LinkedList<SessionEstablishedListener>();
 	
 	// Auto commit behaviour
 	private boolean autoCommit;
@@ -156,10 +160,53 @@ public class User implements Comparable<User> {
 	}
 	
 	/**
+	 * Queues the listener to receive a session as soon as possible (FIFO queue); only one 
+	 * attempt to establish a session at a time is made, and if one fails then the rest fail.
+	 * This is typically important for startup when restoring lots of connections and we want
+	 * to avoid the user getting presented with more than one error dialog for the same 
+	 * alias/user.
+	 * @param listener
+	 * @param requirePassword
+	 */
+	public synchronized void queueForNewSession(SessionEstablishedListener listener, boolean requirePassword) {
+		newSessionsQueue.add(listener);
+		if (newSessionsQueue.size() == 1)
+			ConnectionJob.createSession(alias, this, this, requirePassword);
+	}
+	
+	/**
+	 * @see queueForNewSession(SessionEstablishedListener, boolean)
+	 */
+	public synchronized void queueForNewSession(SessionEstablishedListener listener) {
+		queueForNewSession(listener, !alias.isAutoLogon());
+	}
+	
+	/**
+	 * Callback when a session cannot be established; notifies all listeners and then
+	 * clears down the list on the basis that it was a terminal login error
+	 */
+	public synchronized void cannotEstablishSession(User user) {
+		for (SessionEstablishedListener listener : newSessionsQueue)
+			listener.cannotEstablishSession(this);
+		newSessionsQueue.clear();
+	}
+
+	/**
+	 * Callback when a session has been established; notifies the next listener in the queue and
+	 * then starts to establish a new session 
+	 */
+	public synchronized void sessionEstablished(Session session) {
+		SessionEstablishedListener listener = newSessionsQueue.removeFirst();
+		listener.sessionEstablished(session);
+		if (!newSessionsQueue.isEmpty())
+			ConnectionJob.createSession(alias, this, this, false);
+	}
+
+	/**
 	 * Creates a new session
 	 * @return
 	 */
-	public Session createSession() throws SQLException {
+	/*package*/ Session createSession() throws SQLException {
 		Session session = new Session(this);
 		sessions.add(session);
 		SQLExplorerPlugin.getDefault().getAliasManager().modelChanged();
@@ -224,7 +271,7 @@ public class User implements Comparable<User> {
 	 * @throws ExplorerException
 	 */
 	public void releaseConnection(SQLConnection connection) throws SQLException {
-        if (connection.getConnection().isClosed()) {
+        if (connection.getConnection() == null || connection.getConnection().isClosed()) {
         	disposeConnection(connection);
         	return;
         }

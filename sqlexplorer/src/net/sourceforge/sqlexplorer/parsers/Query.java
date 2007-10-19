@@ -30,6 +30,14 @@ import java.util.Map;
  * @author John Spackman
  */
 public interface Query {
+	
+	// The possible types of query
+	public enum QueryType {
+		UNKNOWN, SELECT, DDL, DML, CODE
+	}
+	
+	// Returns the type of the query
+	public QueryType getQueryType();
 
 	/**
 	 * @return Returns the SQL to be executed

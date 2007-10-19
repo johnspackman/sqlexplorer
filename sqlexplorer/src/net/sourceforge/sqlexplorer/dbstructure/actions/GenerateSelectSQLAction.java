@@ -182,7 +182,7 @@ public class GenerateSelectSQLAction extends AbstractDBTreeContextAction {
 
             SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo()
                     + ").sql");
-            input.setSessionNode(_selectedNodes[0].getSession());
+            input.setUser(_selectedNodes[0].getSession().getUser());
             IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
             SQLEditor editorPart = (SQLEditor) page.openEditor((IEditorInput) input, SQLEditor.class.getName());

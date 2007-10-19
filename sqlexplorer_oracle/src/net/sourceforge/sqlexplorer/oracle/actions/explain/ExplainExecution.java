@@ -366,9 +366,9 @@ public class ExplainExecution extends AbstractSQLExecution {
             	query = null;
         	} catch(SQLException e) {
             	debugLogQuery(query, e);
-                logException(e, query);
-                closeStatements();
             	boolean stopOnError = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.STOP_ON_ERROR);
+                logException(e, query, stopOnError);
+                closeStatements();
             	if (stopOnError)
             		throw e;
             	numErrors++;

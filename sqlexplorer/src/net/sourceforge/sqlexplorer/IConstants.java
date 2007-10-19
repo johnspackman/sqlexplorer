@@ -1,5 +1,7 @@
 package net.sourceforge.sqlexplorer;
 
+import org.eclipse.swt.graphics.Color;
+
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 
 /*
@@ -22,6 +24,9 @@ import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
  */
 
 public interface IConstants {
+
+	// The colour of borders and the fade-to-white colour of the selected tabs
+	public static final Color TAB_BORDER_COLOR = new Color(null, 153, 186, 243);
 	
 	// Used for confirmations where the user can choose to always have the
 	//	question answered in the same way in the future
@@ -128,4 +133,6 @@ public interface IConstants {
     String QUERY_DEBUG_ALL = "all";
     
     String CONFIRM_SAVING_INSIDE_PROJECT = "Confirm.SavingOutsideProject";
+    String CONFIRM_CLOSE_ALL_CONNECTIONS = "Confirm.CloseAllConnections";
+    String CONFIRM_CLOSE_CONNECTION = "Confirm.CloseConnection";
 }

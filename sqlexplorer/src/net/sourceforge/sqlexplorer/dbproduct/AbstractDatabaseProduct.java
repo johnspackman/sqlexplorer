@@ -1,6 +1,7 @@
 package net.sourceforge.sqlexplorer.dbproduct;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -18,16 +19,24 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 			LinkedList<NamedParameter> params = null;
 			
 			// Apply any named parameters
-			Map<String, NamedParameter> map = query.getNamedParameters();
-			if (map != null && !map.isEmpty()) {
-				StringBuffer sb = new StringBuffer(querySql);
-				params = locateNamedParameters(sb, map);
-				querySql = sb;
+			if (query.getQueryType() != Query.QueryType.DDL) {
+				Map<String, NamedParameter> map = query.getNamedParameters();
+				if (map != null && !map.isEmpty()) {
+					StringBuffer sb = new StringBuffer(querySql);
+					params = locateNamedParameters(sb, map);
+					querySql = sb;
+				}
 			}
 			
 			// Create the statement
 			stmt = connection.getConnection().prepareCall(querySql.toString());
-//			stmt.setMaxRows(maxRows);
+			
+			// Note we only set maxrows if we know what the query type is (and that it's a SELECT)
+			//	This is important for MSSQL DDL statements which fail if maxrows is set, and makes
+			//	no sense for non-select anyway.
+			if (query.getQueryType() == Query.QueryType.SELECT)
+				stmt.setMaxRows(maxRows);
+			
 			if (params != null) {
 				int columnIndex = 1;
 				for (NamedParameter param : params)
@@ -45,6 +54,13 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 			}
 			throw e;
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#describeConnection(java.sql.Connection)
+	 */
+	public String describeConnection(Connection connection) throws SQLException {
+		return null;
 	}
 
 	/**
@@ -81,11 +97,13 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 				// Find the parameter
 				String name = sb.substring(idStart + 1, i);
 				NamedParameter param = map.get(name);
-				if (param == null)
-					throw new SQLException("Unknown named parameter called " + name);
-				results.add(param);
-				sb.delete(idStart + 1, i);
-				sb.setCharAt(idStart, '?');
+				
+				// Ignore null parameters because they may be a valid syntax on the server 
+				if (param != null) {
+					results.add(param);
+					sb.delete(idStart + 1, i);
+					sb.setCharAt(idStart, '?');
+				}
 				
 				// Next!
 				idStart = -1;

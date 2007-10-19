@@ -1,8 +1,6 @@
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -16,7 +14,6 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.CoolBarManager;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
@@ -35,10 +32,6 @@ public class SQLEditorToolBar {
 
     private ToolBarManager _catalogToolBarMgr;
 
-//    private AbstractEditorAction _clearTextAction;
-
-//    private AbstractEditorAction _commitAction;
-
     private CoolBar _coolBar;
 
     private CoolBarManager _coolBarMgr;
@@ -47,15 +40,7 @@ public class SQLEditorToolBar {
 
     private SQLEditor _editor;
 
-//    private AbstractEditorAction _execSQLAction;
-
     private ToolBarManager _extensionToolBarMgr;
-
-//    private AbstractEditorAction _openFileAction;
-
-//    private AbstractEditorAction _rollbackAction;
-
-//    private AbstractEditorAction _saveAsAction;
 
     // Drop down to switch sessions
     private SQLEditorSessionSwitcher _sessionSwitcher;
@@ -88,7 +73,6 @@ public class SQLEditorToolBar {
         _coolBar.setLayoutData(gid);
 
         // initialize default actions
-
         _defaultToolBarMgr = new ToolBarManager(SWT.FLAT);
 
         actions.add(new ExecSQLAction(_editor));
@@ -99,15 +83,15 @@ public class SQLEditorToolBar {
         actions.add(new ClearTextAction(_editor));
         actions.add(new OptionsDropDownAction(_editor, parent));
         
-        addDefaultActions(_defaultToolBarMgr);
+        for (AbstractEditorAction action : actions) {
+        	action.setEnabled(!action.isDisabled());
+        	_defaultToolBarMgr.add(action);
+        }
 
         // initialize extension actions
-
         _extensionToolBarMgr = new ToolBarManager(SWT.FLAT);
-        createExtensionActions(_extensionToolBarMgr);
 
         // initialize session actions
-
         _sessionToolBarMgr = new ToolBarManager(SWT.FLAT);
 
         _sessionSwitcher = new SQLEditorSessionSwitcher(editor);
@@ -117,15 +101,9 @@ public class SQLEditorToolBar {
         _sessionToolBarMgr.add(_limitRows);
 
         // initialize catalog actions
-
         _catalogToolBarMgr = new ToolBarManager(SWT.FLAT);
-        if (_editor.getSession() != null && _editor.getSession().supportsCatalogs()) {
-            _catalogSwitcher = new SQLEditorCatalogSwitcher(editor);
-            _catalogToolBarMgr.add(_catalogSwitcher);
-        }
 
         // add all toolbars to parent coolbar
-
         _coolBarMgr.add(new ToolBarContributionItem(_defaultToolBarMgr));
         _coolBarMgr.add(new ToolBarContributionItem(_extensionToolBarMgr));
         _coolBarMgr.add(new ToolBarContributionItem(_sessionToolBarMgr));
@@ -139,47 +117,51 @@ public class SQLEditorToolBar {
         _coolBar.addControlListener(listener);
     }
 
-
-    private void createExtensionActions(ToolBarManager mgr) {
-
-        mgr.removeAll();
-
-        IAction[] toolActions = getEditorActions();
-        if (toolActions != null) {
-            for (int i = 0; i < toolActions.length; i++) {
-                mgr.add(toolActions[i]);
-            }
-        }
-
-    }
-
-    private void addDefaultActions(ToolBarManager mgr) {
-        mgr.removeAll();
-        
-        for (AbstractEditorAction action : actions) {
+    /**
+     * Updates the default actions to reflect their enabled-ness
+     *
+     */
+    private void updateDefaultActions() {
+        for (AbstractEditorAction action : actions)
         	action.setEnabled(!action.isDisabled());
-        	mgr.add(action);
-        }
+        _defaultToolBarMgr.update(true);
     }
-    
+
+    /**
+     * Called to notify that the editor's session has changed
+     * @param session The new session (can be null)
+     */
+    public void onEditorSessionChanged(final Session session) {
+    	if (_editor.getSite() != null && _editor.getSite().getShell() != null && _editor.getSite().getShell().getDisplay() != null)
+	        _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+	
+	            public void run() {
+			    	if (_coolBar.isDisposed())
+			    		return;
+			    	
+			    	_extensionToolBarMgr.removeAll();
+			        _catalogToolBarMgr.removeAll();
+			    	_catalogSwitcher = null;
+			    	
+			        if (session != null)
+			        	doOnEditorSessionChanged(session);
+			
+			        updateDefaultActions();
+			        
+			        _extensionToolBarMgr.update(true);
+			        _coolBarMgr.update(true);
+			        _coolBar.update();
+	            }
+	        });
+    }
     
     /**
-     * Loop through all extensions and add the appropriate actions.
-     * 
-     * Actions are selected by database product name
-     * 
-     * @param nodes currently selected nodes
-     * @return array of actions
+     * Implementation for onEditorSessionChanged; only called if the new session
+     * is non-null
+     * @param session The new session (cannot be null)
      */
-    private IAction[] getEditorActions() {
-
-        Session tree = _editor.getSession();
-        if (tree == null) {
-            return null;
-        }
-        String databaseProductName = tree.getRoot().getDatabaseProductName().toLowerCase().trim();
-        List actions = new ArrayList();
-
+    private void doOnEditorSessionChanged(Session session) {
+        String databaseProductName = session.getRoot().getDatabaseProductName().toLowerCase().trim();
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "editorAction");
         IExtension[] extensions = point.getExtensions();
@@ -233,58 +215,41 @@ public class SQLEditorToolBar {
                         action.setImageDescriptor(ImageUtil.getFragmentDescriptor(fragmentId, imagePath));
                     }
                     
-                    actions.add(action);
+                    _extensionToolBarMgr.add(action);
 
                 } catch (Throwable ex) {
                     SQLExplorerPlugin.error("Could not create editor action", ex);
                 }
             }
         }
-
-        return (IAction[]) actions.toArray(new IAction[] {});
+        _catalogToolBarMgr.removeAll();
+        if (session.supportsCatalogs()) {
+            _catalogSwitcher = new SQLEditorCatalogSwitcher(_editor);
+            _catalogToolBarMgr.add(_catalogSwitcher);
+        }
     }
-
 
     /**
      * Refresh actions availability on the toolbar.
      */
-    public void refresh(final boolean sessionChanged) {
+    public void refresh() {
 
     	if (_editor.getSite() != null && _editor.getSite().getShell() != null && _editor.getSite().getShell().getDisplay() != null)
 	        _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
 	
 	            public void run() {
-	
 	            	if (_coolBar.isDisposed())
 	            		return;
 	            	
-	                if (sessionChanged) {
-	
-	                    // reset actions
-	                    addDefaultActions(_defaultToolBarMgr);
-	                    _defaultToolBarMgr.update(true);
-	                    
-	                    // rebuild extension toolbar
-	                    createExtensionActions(_extensionToolBarMgr);
-	                    _extensionToolBarMgr.update(true);
-	                }
-	
+			        updateDefaultActions();
+			        
 	                // update session toolbar
 	                _sessionToolBarMgr.update(true);
-	
-	                // update catalog toolbar
-	                _catalogToolBarMgr.removeAll();
-	                if (_editor.getSession() != null && _editor.getSession().supportsCatalogs()) {
-	                    _catalogSwitcher = new SQLEditorCatalogSwitcher(_editor);
-	                    _catalogToolBarMgr.add(_catalogSwitcher);
-	                }
-	
 	                _coolBarMgr.update(true);
 	                _coolBar.update();
 	            }
 	        });
     }
-
 
 	/**
 	 * Returns the control
