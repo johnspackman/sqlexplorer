@@ -527,10 +527,8 @@ public class CreateDriverDlg extends TitleAreaDialog {
                         for (int i = 0; i < classes.length; ++i) {
                             combo.add(classes[i].getName());
                         }
-                    } catch (MalformedURLException ex) {
-
-                    } catch (IOException ex) {
-
+                    } catch (Exception ex) {
+                    	SQLExplorerPlugin.error(ex);
                     }
                 }
                 if (combo.getItemCount() > 0) {

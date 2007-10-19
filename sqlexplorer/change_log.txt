@@ -1,3 +1,65 @@
+3.5.0.RC2 - John Spackman
+=========================
++. Fixed bug where connections were not closed even when removed from the connections view
++. Upgraded to current SquirrelSQL library to fix cursor leaks; this affected
+	ColumnInfoTab, CreateTableScriptAction, TableNode
++. Fixed bug where creating a new alias would cause an exception if starting for the
+	first time
++. Fixed bug where you couldn't add a new JDBC driver
++. Fixed bug where a) max-rows was ignored, and b) changed it to handle the count manually
+	instead of via Statement.setMaxRows() because of problems with some RDBMSs (eg MSSQL
+	when creating triggers)
++. Fixed bug where editor toolbar save button always did a save-as outside the project, even
+	if it had already been saved and given a name
++. Always add an overall update count/rows returned status message after all queries are 
+	complete (to make it more obvious that the query has done its work)
++. All connections processes take place in the background
++. Fixed bug where cannot create Oracle triggers because ":old" and ":new" are seen as named 
+	parameters
++. Fixed bug where if connection cannot be established while switching sessions, the session 
+	drop down shows the not-connected session but stills sits on the old
++. Added RDBMS-specific connection descriptions to ConnectionsView, and whether a it is a 
+	pooled connection or not
++. Fixed bug where changing the selected alias/session should not scroll the editor to top of 
+	the file
++. Whenever a new editor opens from a project its connection now defaults the most recently 
+	selected alias/user from an editor toolbar.
++. Double-click on a user in the connections view opens a new editor
++. Close All Connections and Close Connection in the ConnectionsView will now close connections
+	which are in use by non-auto-commit editors; the user is warned, and can choose to set a 
+	default answer
++. Fixed bug where server messages were not being collected
++. When a query fails and the problem is described in a popup, move the text caret of the editor 
+	to the line/char where the error occured
++. Show slightly more of the SQL in the messages tab
++. Fixed bug where opening a file (from a project) without the ConnectionsView open caused an 
+	exception
++. When opening from a project and there are no connections defined, show the connections view 
+	and prompt the user to add some.
++. Added various buttons to ConnectionsView toolbar
++. Added "Open Database Structure View" right click option to connections view & toolbar and 
+	changed the tabs to be able to individually closed.
++. Fixed bug where filtering did not work in the database structure view
+
+
+3.5.0.RC1 - John Spackman
+=========================
++. Fixed StringIndexOutOfBoundsException when processing some named parameters
++. Fixed bugs with named parameters where a) support of JDBCv3 was accidentally excluded, b) multiple cursors in a single query were not supported, c) if parameters were used more than once in a single query they were reported back more than once
++. Changed result tab titles for output parameters
++. Fixed bug in Oracle where compound error messages have the first details excluded from the Messages tab
++. Fixed bug in Oracle where line numbers in anonymous pl/sql blocks are not processed properly
++. Fixed bug where named parameters might not show the output value if referenced more than once; also supported the case where output parameters are referenced more than once and therefore have multiple output values.
++. Drivers:
+	+. Fixed bug where "Extra Class Path" jars were doubled up each time the preferences was saved.
+	+. Validate the ok button after list drivers
+	+. If there is an error while connecting, the message is now [more] descriptive
+	+. Sort the drivers drop down in connections editor
+	+. Create connection only shows valid drivers
+	+. Can add/edit drivers from "Edit Connection Profile" page
++. Connections which are closed by the server are detected and re-established next time the connection is used (you should receive one error message about closed connection etc, but the next time you execute all is well)
++. Added auto-commit and commit-on-close to SQL Editor toolbar
++. Fixed caching bug in ImageUtil (se bug report 1627113)
 
 
 3.5.0.beta2 - John Spackman

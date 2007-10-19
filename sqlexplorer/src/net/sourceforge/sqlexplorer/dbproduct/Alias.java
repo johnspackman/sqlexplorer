@@ -121,8 +121,11 @@ public class Alias {
 		if (usersElem != null) {
 			List<Element> list = usersElem.elements(User.USER);
 			if (list != null)
-				for (Element userElem : list)
-					addUser(new User(userElem));
+				for (Element userElem : list) {
+					User user = new User(userElem);
+					if (user.getUserName() != null && user.getUserName().trim().length() > 0)
+						addUser(user);
+				}
 			String defaultUserName = root.elementText(DEFAULT_USER);
 			if (defaultUserName != null) {
 				User user = users.get(defaultUserName);
