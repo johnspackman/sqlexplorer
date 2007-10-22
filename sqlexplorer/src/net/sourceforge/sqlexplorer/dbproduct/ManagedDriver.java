@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.dbproduct;
 
+import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
@@ -12,6 +13,10 @@ import org.dom4j.tree.DefaultElement;
 
 import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
+import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
+import net.sourceforge.squirrel_sql.fw.persist.ValidationException;
+import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
+import net.sourceforge.squirrel_sql.fw.util.beanwrapper.StringWrapper;
 
 /**
  * Manages a JDBC Driver
@@ -19,6 +24,90 @@ import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
  * @author John Spackman
  */
 public class ManagedDriver implements Comparable<ManagedDriver> {
+	
+	public class SQLDriver implements ISQLDriver {
+
+		public void addPropertyChangeListener(PropertyChangeListener listener) {
+		}
+
+		public void assignFrom(ISQLDriver rhs) throws ValidationException {
+			throw new ValidationException("Not supported");
+		}
+
+		public int compareTo(Object rhs) {
+			return ManagedDriver.this.compareTo((ManagedDriver)rhs);
+		}
+
+		public String getDriverClassName() {
+			return ManagedDriver.this.getDriverClassName();
+		}
+
+		public IIdentifier getIdentifier() {
+			return null;
+		}
+
+		public String getJarFileName() {
+			return null;
+		}
+
+		public String[] getJarFileNames() {
+			return (String[])ManagedDriver.this.getJars().toArray();
+		}
+
+		public StringWrapper getJarFileNameWrapper(int idx) throws ArrayIndexOutOfBoundsException {
+			return null;
+		}
+
+		public StringWrapper[] getJarFileNameWrappers() {
+			return null;
+		}
+
+		public String getName() {
+			return ManagedDriver.this.getDriverClassName();
+		}
+
+		public String getUrl() {
+			return ManagedDriver.this.getUrl();
+		}
+
+		public String getWebSiteUrl() {
+			return null;
+		}
+
+		public boolean isJDBCDriverClassLoaded() {
+			return ManagedDriver.this.isDriverClassLoaded();
+		}
+
+		public void removePropertyChangeListener(PropertyChangeListener listener) {
+		}
+
+		public void setDriverClassName(String driverClassName) throws ValidationException {
+		}
+
+		public void setJarFileName(String value) throws ValidationException {
+		}
+
+		public void setJarFileNames(String[] values) {
+		}
+
+		public void setJarFileNameWrapper(int idx, StringWrapper value) throws ArrayIndexOutOfBoundsException {
+		}
+
+		public void setJarFileNameWrappers(StringWrapper[] value) {
+		}
+
+		public void setJDBCDriverClassLoaded(boolean cl) {
+		}
+
+		public void setName(String name) throws ValidationException {
+		}
+
+		public void setUrl(String url) throws ValidationException {
+		}
+
+		public void setWebSiteUrl(String url) throws ValidationException {
+		}
+	}
 
 	private String id;
 	private String name;
@@ -116,7 +205,7 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 		if (jdbcConn == null)
 			throw new SQLException("Unable to create connection. Check your URL.");
 
-		return new SQLConnection(user, jdbcConn, getDatabaseProduct().describeConnection(jdbcConn));
+		return new SQLConnection(user, jdbcConn, this, getDatabaseProduct().describeConnection(jdbcConn));
 	}
 
 	public boolean isDriverClassLoaded() {

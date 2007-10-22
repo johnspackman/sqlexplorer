@@ -45,8 +45,8 @@ public class SQLConnection extends net.sourceforge.squirrel_sql.fw.sql.SQLConnec
 	 * @param connection JDBC Connection
 	 * @param description Optional additional description to appear in the connections view (EG process ID or server connection ID)
 	 */
-	public SQLConnection(User user, Connection connection, String description) {
-		super(connection, null, null);
+	public SQLConnection(User user, Connection connection, ManagedDriver driver, String description) {
+		super(connection, null, driver.new SQLDriver());
 		this.user = user;
 		createdTime = System.currentTimeMillis();
 		this.description = description;

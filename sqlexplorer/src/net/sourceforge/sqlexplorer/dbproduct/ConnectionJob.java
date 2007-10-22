@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
@@ -97,7 +98,7 @@ public class ConnectionJob extends Job {
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		boolean firstPass = true;
-		
+
 		while (!monitor.isCanceled() && user != null && !cancelled) {
 			Session session = null;
 			Exception exception = null;
@@ -158,6 +159,7 @@ public class ConnectionJob extends Job {
             		}
             	}
             	
+            	Shell shell = Display.getCurrent().getActiveShell();
 	            PasswordConnDlg dlg = new PasswordConnDlg(shell, user.getAlias(), user);
 	            if (dlg.open() != Window.OK) {
 	            	cancelled = true;

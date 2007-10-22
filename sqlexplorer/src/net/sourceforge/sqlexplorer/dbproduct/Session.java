@@ -52,6 +52,9 @@ public class Session {
     // Connection to the database
     private SQLConnection connection;
     
+    // Last selected catalog
+    private String lastCatalog;
+    
     // Whether the connection is currently "grabbed" by calling code
     private boolean connectionInUse;
     
@@ -117,7 +120,9 @@ public class Session {
     	connectionInUse = true;
     	
 		if (connection != null) {
-			if (connection.getConnection().isClosed()) {
+			if (connection.getConnection() == null)
+				connection = null;
+			else if (connection.getConnection().isClosed()) {
 				connection.setSession(null);
 				user.disposeConnection(connection);
 				connection = null;
@@ -128,6 +133,8 @@ public class Session {
     	if (connection == null) {
     		connection = user.getConnection();
 			connection.setSession(this);
+			if (lastCatalog != null)
+				connection.setCatalog(lastCatalog);
 	    	connection.setAutoCommit(autoCommit);
 	    	connection.setCommitOnClose(commitOnClose);
     	}
@@ -169,10 +176,12 @@ public class Session {
         	connection.setAutoCommit(autoCommit);
         	
         	// Handle commits
-	    	if (connection.getCommitOnClose())
-	    		connection.commit();
-	    	else
-	    		connection.rollback();
+        	if (!autoCommit) {
+		    	if (connection.getCommitOnClose())
+		    		connection.commit();
+		    	else
+		    		connection.rollback();
+        	}
 	    	connection.setCommitOnClose(commitOnClose);
 	    	
 	    	// Turned autocommit off mid-execution; quit now that we've processed the
@@ -352,11 +361,13 @@ public class Session {
      *
      */
     public synchronized void setCatalog(final String catalog) throws ExplorerException {
-    	queueTask(new QueuedTask() {
-			public void run() throws SQLException {
-				connection.setCatalog(catalog);
-			}
-    	});
+    	lastCatalog = catalog;
+    	if (catalog != null && connection != null)
+	    	queueTask(new QueuedTask() {
+				public void run() throws SQLException {
+					connection.setCatalog(catalog);
+				}
+	    	});
     }
 
     /**

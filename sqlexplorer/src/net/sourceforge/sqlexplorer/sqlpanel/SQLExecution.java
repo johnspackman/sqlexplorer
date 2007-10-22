@@ -234,6 +234,7 @@ public class SQLExecution extends AbstractSQLExecution {
 	            	boolean stopOnError = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.STOP_ON_ERROR);
 	                logException(e, query, stopOnError);
 	                closeStatement();
+	                hasMessages = true;
 	            	if (stopOnError) {
 	        			errorDialog(Messages.getString("SQLResultsView.Error.Title"), e.getMessage());
 	        			return;
@@ -243,21 +244,21 @@ public class SQLExecution extends AbstractSQLExecution {
 	            	
 	            } finally {
 	            	try {
-	            		if (results != null)
+	            		if (results != null) {
 	            			results.close();
+	            			results = null;
+	            		}
 	            	}catch(SQLException e) {
 	            		// Nothing
 	            	}
 	            }
-	            if (!hasMessages || SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.LOG_SUCCESS_MESSAGES)) {
-	                long overallTime = System.currentTimeMillis() - overallStartTime;
-	                String message = Long.toString(results.getUpdateCount()) + " " + Messages.getString("SQLEditor.Update.Prefix") + " " + 
-	    				Long.toString(overallTime) + " " + Messages.getString("SQLEditor.Update.Postfix");
-	            
-	               	int lineNo = query.getLineNo();
-	                lineNo = getQueryParser().adjustLineNo(lineNo);
-	            	addMessage(new Message(Message.Status.STATUS, lineNo, 0, query.getQuerySql(), message));
-	            }
+            }
+            if (!hasMessages || SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.LOG_SUCCESS_MESSAGES)) {
+                long overallTime = System.currentTimeMillis() - overallStartTime;
+                String message = Long.toString(overallUpdateCount) + " " + Messages.getString("SQLEditor.Update.Prefix") + " " + 
+    				Long.toString(overallTime) + " " + Messages.getString("SQLEditor.Update.Postfix");
+            
+            	addMessage(new Message(Message.Status.STATUS, getQueryParser().adjustLineNo(1), 0, "", message));
             }
         } catch (Exception e) {
             closeStatement();

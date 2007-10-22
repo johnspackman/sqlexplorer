@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2007 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
 import java.util.HashMap;
@@ -10,7 +28,7 @@ import net.sourceforge.sqlexplorer.dbproduct.ConnectionListener;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
+import net.sourceforge.sqlexplorer.plugin.editors.SwitchableSessionEditor;
 
 import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -21,17 +39,16 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-
 public class SQLEditorSessionSwitcher extends ControlContribution implements ConnectionListener, SessionEstablishedListener {
 
-	private SQLEditor _editor;
+	private SwitchableSessionEditor _editor;
     private Combo _sessionCombo;
     private HashMap<Integer, User> sessionIndexes = new HashMap<Integer, User>();
     
     /**
      * @param editor SQLEditor to which this session switcher belongs
      */
-    public SQLEditorSessionSwitcher(SQLEditor editor) {
+    public SQLEditorSessionSwitcher(SwitchableSessionEditor editor) {
         super("net.sourceforge.sqlexplorer.sessionswitcher");
         _editor = editor;
     }
@@ -59,7 +76,7 @@ public class SQLEditorSessionSwitcher extends ControlContribution implements Con
                 // Disconnect from the current session while we try to connect
             	_editor.setSession(null);
     			_sessionCombo.deselectAll();
-                _editor.getEditorToolBar().refresh();
+                _editor.refreshToolbars();
     			
     			if (user == null)
     				return;
@@ -101,11 +118,12 @@ public class SQLEditorSessionSwitcher extends ControlContribution implements Con
     }
     
 	public void modelChanged() {
-        _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
-            public void run() {
-            	setSessionOptions();
-            }
-        });
+		if (!_sessionCombo.isDisposed())
+	        _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
+	            public void run() {
+	            	setSessionOptions();
+	            }
+	        });
 	}
 
 	public void cannotEstablishSession(User user) {
@@ -114,7 +132,7 @@ public class SQLEditorSessionSwitcher extends ControlContribution implements Con
         _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
             public void run() {
 				_sessionCombo.deselectAll();
-		        _editor.getEditorToolBar().refresh();
+		        _editor.refreshToolbars();
             }
         });
 	}
@@ -126,7 +144,8 @@ public class SQLEditorSessionSwitcher extends ControlContribution implements Con
             public void run() {
 				_editor.setSession(session);
 				setSessionOptions();
-		        _editor.getEditorToolBar().refresh();
+				SQLExplorerPlugin.getDefault().getConnectionsView().setDefaultUser(session.getUser());
+		        _editor.refreshToolbars();
             }
         });
 	}

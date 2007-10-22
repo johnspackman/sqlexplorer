@@ -39,6 +39,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -230,5 +231,45 @@ public class PasswordConnDlg extends TitleAreaDialog {
     public boolean getCommitOnClose() {
         return commitOnClose;
     }
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.window.Window#open()
+	 */
+	@Override
+	public int open() {
+		setBlockOnOpen(false);
+		super.open();
+		getShell().forceActive();
+		runEventLoop(getShell());
+		return getReturnCode();
+	}
+
+	/**
+	 * Runs the event loop for the given shell.
+	 * 
+	 * @param loopShell
+	 *            the shell
+	 */
+	private void runEventLoop(Shell loopShell) {
+
+		//Use the display provided by the shell if possible
+		Display display;
+		if (getShell() == null) {
+			display = Display.getCurrent();
+		} else {
+			display = loopShell.getDisplay();
+		}
+
+		while (loopShell != null && !loopShell.isDisposed()) {
+			try {
+				if (!display.readAndDispatch()) {
+					display.sleep();
+				}
+			} catch (Exception e) {
+				SQLExplorerPlugin.error(e);
+			}
+		}
+		display.update();
+	}
 
 }

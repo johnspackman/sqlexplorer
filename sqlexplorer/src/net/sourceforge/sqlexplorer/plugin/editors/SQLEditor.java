@@ -110,7 +110,7 @@ import org.eclipse.ui.part.EditorPart;
  * @modified John Spackman
  * 
  */
-public class SQLEditor extends EditorPart {
+public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 	
 	// The color of the sash
 	private static final Color SASH_COLOR = IConstants.TAB_BORDER_COLOR;
@@ -555,6 +555,8 @@ public class SQLEditor extends EditorPart {
 	    		MessageDialog.openError(getSite().getShell(), Messages.getString("Confirm.SaveInsideProject.Title"), Messages.getString("Confirm.SaveInsideProject.CreateAProject"));
 	    		return false;
 	    	}
+	    	if (input instanceof SQLEditorInput)
+	    		saveAs = true;
 	    	
 	    	// Save it and use their EditorInput
 	    	if (saveAs)
@@ -995,5 +997,12 @@ public class SQLEditor extends EditorPart {
 			text.setFocus();
 			text.showSelection();
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sourceforge.sqlexplorer.plugin.editors.SwitchableSessionEditor#refreshToolbars()
+	 */
+	public void refreshToolbars() {
+		getEditorToolBar().refresh();
 	}
 }

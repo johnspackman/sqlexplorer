@@ -37,6 +37,7 @@ import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
+import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
 
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
@@ -152,6 +153,11 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
     
     public void openNewEditor(User user) {
         try {
+        	// First time we connect, get the database structure view up too
+        	if (!user.hasAuthenticated()) {
+        		DatabaseStructureView dsView = SQLExplorerPlugin.getDefault().getDatabaseStructureView();
+        		dsView.addUser(user);
+        	}
             SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo() + ").sql");
             input.setUser(user);
             IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();

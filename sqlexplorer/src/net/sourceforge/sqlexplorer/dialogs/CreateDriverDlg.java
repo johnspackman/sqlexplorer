@@ -521,7 +521,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
                 File file = (File) ((IStructuredSelection) extraClassPathList.getSelection()).getFirstElement();
                 if (file != null) {
                     try {
-                        MyURLClassLoader cl = new MyURLClassLoader(file.toURI().toURL());
+                        MyURLClassLoader cl = new MyURLClassLoader(file.toURL());
                         Class[] classes = cl.getAssignableClasses(Driver.class);
 
                         for (int i = 0; i < classes.length; ++i) {

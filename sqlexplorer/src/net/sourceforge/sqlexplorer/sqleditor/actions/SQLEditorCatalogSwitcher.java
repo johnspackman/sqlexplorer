@@ -7,6 +7,7 @@ import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
+import net.sourceforge.sqlexplorer.plugin.editors.SwitchableSessionEditor;
 
 import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.swt.SWT;
@@ -20,7 +21,7 @@ import org.eclipse.swt.widgets.Control;
 public class SQLEditorCatalogSwitcher extends ControlContribution {
 
     
-    private SQLEditor _editor;
+    private SwitchableSessionEditor _editor;
     
     private Combo _catalogCombo;
 
@@ -28,7 +29,7 @@ public class SQLEditorCatalogSwitcher extends ControlContribution {
     /**
      * @param editor SQLEditor to which this catalog switcher belongs
      */
-    public SQLEditorCatalogSwitcher(SQLEditor editor) {
+    public SQLEditorCatalogSwitcher(SwitchableSessionEditor editor) {
         
         super("net.sourceforge.sqlexplorer.catalogswitcher");
         

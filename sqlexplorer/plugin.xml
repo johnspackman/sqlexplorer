@@ -91,6 +91,13 @@
             id="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor"
             name="Sql Editor">
       </editor>
+      <editor
+            class="net.sourceforge.sqlexplorer.filelist.FileListEditor"
+            default="true"
+            extensions="fls"
+            icon="icons/filelist.gif"
+            id="net.sourceforge.sqlexplorer.filelist.FileListEditor"
+            name="File List Editor"/>
    </extension>
    <extension point="org.eclipse.ui.viewActions">
       <viewContribution

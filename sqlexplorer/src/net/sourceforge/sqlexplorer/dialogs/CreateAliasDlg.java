@@ -383,7 +383,8 @@ public class CreateAliasDlg extends TitleAreaDialog {
             ManagedDriver driver = comboDrivers.get(selIndex);
             alias.setDriver(driver);
             alias.setUrl(urlField.getText().trim());
-            alias.setDefaultUser(new User(userField.getText().trim(), passwordField.getText().trim()));
+            if (userField.getText().trim().length() > 0)
+            	alias.setDefaultUser(new User(userField.getText().trim(), passwordField.getText().trim()));
             alias.setName(this.nameField.getText().trim());
             alias.setSchemaFilterExpression("");
             alias.setNameFilterExpression("");

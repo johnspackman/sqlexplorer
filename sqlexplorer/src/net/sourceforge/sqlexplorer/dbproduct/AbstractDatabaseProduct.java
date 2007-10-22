@@ -2,6 +2,7 @@ package net.sourceforge.sqlexplorer.dbproduct;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -13,7 +14,7 @@ import net.sourceforge.sqlexplorer.parsers.Query;
 public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 	
 	public ExecutionResults executeQuery(SQLConnection connection, Query query, int maxRows) throws SQLException {
-		CallableStatement stmt = null;
+		PreparedStatement stmt = null;
 		try {
 			CharSequence querySql = query.getQuerySql();
 			LinkedList<NamedParameter> params = null;
@@ -28,8 +29,18 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 				}
 			}
 			
-			// Create the statement
-			stmt = connection.getConnection().prepareCall(querySql.toString());
+			/*
+			 * Create the statement.  Note that we only create a CallableStatement if
+			 * we have parameters; this is because some databases (MySQL) require that
+			 * prepareCall is only used for stored code.  CallableStatements are only
+			 * needed for output parameters so because we cannot reliably detect what 
+			 * the query is (DDL/DML/SELECT/CODE/etc) unless there is a specialised
+			 * parser, we rely on whether the user has given any named parameters.
+			 */
+			if (params != null && query.getQueryType() != Query.QueryType.DDL)
+				stmt = connection.getConnection().prepareCall(querySql.toString());
+			else
+				stmt = connection.getConnection().prepareStatement(querySql.toString());
 			
 			// Note we only set maxrows if we know what the query type is (and that it's a SELECT)
 			//	This is important for MSSQL DDL statements which fail if maxrows is set, and makes
@@ -40,7 +51,7 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 			if (params != null) {
 				int columnIndex = 1;
 				for (NamedParameter param : params)
-					configureStatement(stmt, param, columnIndex++);
+					configureStatement((CallableStatement)stmt, param, columnIndex++);
 			}
 			
 			return new ExecutionResultImpl(this, stmt, params, maxRows);

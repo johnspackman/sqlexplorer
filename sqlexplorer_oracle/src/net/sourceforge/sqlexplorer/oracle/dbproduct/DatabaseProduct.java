@@ -39,6 +39,7 @@ import net.sourceforge.sqlexplorer.dbproduct.ManagedDriver;
 import net.sourceforge.sqlexplorer.parsers.NamedParameter;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverClassLoader;
@@ -78,6 +79,9 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 			rs = stmt.executeQuery();
 			rs.next();
 			return rs.getString("SID") + "," + rs.getString("SERIAL#");
+		}catch (SQLException e) {
+			SQLExplorerPlugin.error(e);
+			return super.describeConnection(connection);
 		} finally {
 			if (rs != null)
 				try {

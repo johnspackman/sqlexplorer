@@ -279,10 +279,12 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 		boolean forPool = allocated.remove(connection);
         boolean commitOnClose = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.COMMIT_ON_CLOSE);
         
-        if (commitOnClose)
-        	connection.commit();
-        else
-        	connection.rollback();
+        if (!connection.getAutoCommit()) {
+	        if (commitOnClose)
+	        	connection.commit();
+	        else
+	        	connection.rollback();
+        }
 	
 		// Keep the pool small
 		if (forPool && unused.size() < MAX_POOL_SIZE) { 

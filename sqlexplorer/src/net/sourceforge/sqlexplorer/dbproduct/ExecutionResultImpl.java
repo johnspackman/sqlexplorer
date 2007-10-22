@@ -3,6 +3,7 @@
  */
 package net.sourceforge.sqlexplorer.dbproduct;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
@@ -46,7 +47,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 	
 	private State state = State.PRIMARY_RESULTS;
 	private AbstractDatabaseProduct product;
-	private CallableStatement stmt;
+	private PreparedStatement stmt;
 	private LinkedList<NamedParameter> parameters;
 	private int maxRows;
 	private int paramColumnIndex;
@@ -54,7 +55,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 	private int updateCount;
 	private ResultSet currentResultSet;
 
-	public ExecutionResultImpl(AbstractDatabaseProduct product, CallableStatement stmt, LinkedList<NamedParameter> parameters, int maxRows) throws SQLException {
+	public ExecutionResultImpl(AbstractDatabaseProduct product, PreparedStatement stmt, LinkedList<NamedParameter> parameters, int maxRows) throws SQLException {
 		super();
 		this.product = product;
 		this.stmt = stmt;
@@ -105,6 +106,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 		
 		// Look for output parameters which return resultsets
 		if (state == State.PARAMETER_RESULTS && parameters != null) {
+			CallableStatement stmt = (CallableStatement)this.stmt;
 			if (paramIter == null) {
 				paramIter = parameters.iterator();
 				paramColumnIndex = 1;
@@ -123,6 +125,9 @@ public final class ExecutionResultImpl implements ExecutionResults {
 		state = State.CLOSED;
 		if (parameters == null)
 			return null;
+		if (!(stmt instanceof CallableStatement))
+			return null;
+		CallableStatement stmt = (CallableStatement)this.stmt;
 		TreeMap<NamedParameter, ParamValues> params = new TreeMap<NamedParameter, ParamValues>();
 		int columnIndex = 1;
 		int numValues = 0;
