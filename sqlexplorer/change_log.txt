@@ -1,5 +1,21 @@
-3.5.0.RC2 - John Spackman
-=========================
+3.5.0.RC3 - John Spackman, Zenesis Ltd
+======================================
++. Getting the extra, RDBMS-specific description info for connections could cause
+	a permissions exception; exceptions are handled and quietly suppressed.
++. Fixed issue where CallableStatement can only be used for stored code in some
+	JDBC drivers (eg MySQL).  This caused error messages regarding "cannot get
+	code for FUNCTION *".  Also fixed problem where calls to commit or rollback
+	are not allowed when in auto-commit mode.
++. Fixed bug where catalog was not restored to pooled connections
++. Last used editor session did not work
++. Summary status message should only appear at the end of all queries
++. Changes to force password dialog on top of "login in progress" dialog
++. DSView is automatically opened when the first connection is established
++. Fixed (hopefully - can't reproduce) NPE while loading meta data on DB2
+
+
+3.5.0.RC2 - John Spackman, Zenesis Ltd
+======================================
 +. Fixed bug where connections were not closed even when removed from the connections view
 +. Upgraded to current SquirrelSQL library to fix cursor leaks; this affected
 	ColumnInfoTab, CreateTableScriptAction, TableNode
@@ -42,8 +58,8 @@
 +. Fixed bug where filtering did not work in the database structure view
 
 
-3.5.0.RC1 - John Spackman
-=========================
+3.5.0.RC1 - John Spackman, Zenesis Ltd
+======================================
 +. Fixed StringIndexOutOfBoundsException when processing some named parameters
 +. Fixed bugs with named parameters where a) support of JDBCv3 was accidentally excluded, b) multiple cursors in a single query were not supported, c) if parameters were used more than once in a single query they were reported back more than once
 +. Changed result tab titles for output parameters
@@ -62,8 +78,8 @@
 +. Fixed caching bug in ImageUtil (se bug report 1627113)
 
 
-3.5.0.beta2 - John Spackman
-===========================
+3.5.0.beta2 - John Spackman, Zenesis Ltd
+========================================
 * Fixed StringIndexOutOfBounds bug in parser
 * Fixed Oracle query parser bug where "declare" was not handled properly, plus a few other 
 	associated bugs, eg NullPointerException in comments, etc etc
@@ -98,8 +114,8 @@
 	with Eclipse thread management
 
 
-3.5.0.beta1 - John Spackman
-===========================
+3.5.0.beta1 - John Spackman, Zenesis Ltd
+========================================
 SQL Editor
 * The separate SqlResultsView has been removed and the query results are now part of 
 	the editor that executed them (they appear as tabs in the bottom part of the editor 
