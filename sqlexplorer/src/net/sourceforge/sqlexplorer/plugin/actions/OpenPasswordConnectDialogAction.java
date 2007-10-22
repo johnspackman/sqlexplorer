@@ -18,9 +18,14 @@
  */
 package net.sourceforge.sqlexplorer.plugin.actions;
 
+import net.sourceforge.sqlexplorer.connections.SessionEstablishedAdapter;
+import net.sourceforge.sqlexplorer.connections.SessionEstablishedListener;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dbproduct.ConnectionJob;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbproduct.User;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
 
 import org.eclipse.jface.action.Action;
 
@@ -49,6 +54,15 @@ public class OpenPasswordConnectDialogAction extends Action {
     }
 
     public void run() {
-    	ConnectionJob.createSession(alias, user, null, alwaysPrompt);
+    	SessionEstablishedListener listener = null;
+    	if (!user.hasAuthenticated())
+    		listener = new SessionEstablishedAdapter() {
+				@Override
+				public void sessionEstablished(Session session) {
+	        		DatabaseStructureView dsView = SQLExplorerPlugin.getDefault().getDatabaseStructureView();
+	        		dsView.addUser(user);
+				}
+    		};
+    	ConnectionJob.createSession(alias, user, listener, alwaysPrompt);
     }
 }

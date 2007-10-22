@@ -182,7 +182,7 @@ public class ConnectionJob extends Job {
 	 * @param listener Callback listener
 	 */
 	public static void createSession(Alias alias, User user, SessionEstablishedListener listener) {
-		createSession(alias, user, listener, !alias.isAutoLogon());
+		createSession(alias, user, listener, false);
 	}
 	
 	/**
@@ -192,7 +192,7 @@ public class ConnectionJob extends Job {
 	 * @param listener Callback listener
 	 */
 	public static void createSession(Alias alias, SessionEstablishedListener listener) {
-		createSession(alias, null, listener, true);
+		createSession(alias, null, listener, false);
 	}
 	
 	/**

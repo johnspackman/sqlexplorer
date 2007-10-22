@@ -178,7 +178,7 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 	 * @see queueForNewSession(SessionEstablishedListener, boolean)
 	 */
 	public synchronized void queueForNewSession(SessionEstablishedListener listener) {
-		queueForNewSession(listener, !alias.isAutoLogon());
+		queueForNewSession(listener, false);
 	}
 	
 	/**
