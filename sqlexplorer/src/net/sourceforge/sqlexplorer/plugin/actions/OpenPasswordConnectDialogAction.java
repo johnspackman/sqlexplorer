@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.plugin.actions;
 
+import net.sourceforge.sqlexplorer.SQLCannotConnectException;
 import net.sourceforge.sqlexplorer.connections.SessionEstablishedAdapter;
 import net.sourceforge.sqlexplorer.connections.SessionEstablishedListener;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
@@ -28,6 +29,8 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 
 public class OpenPasswordConnectDialogAction extends Action {
 
@@ -59,8 +62,17 @@ public class OpenPasswordConnectDialogAction extends Action {
     		listener = new SessionEstablishedAdapter() {
 				@Override
 				public void sessionEstablished(Session session) {
-	        		DatabaseStructureView dsView = SQLExplorerPlugin.getDefault().getDatabaseStructureView();
-	        		dsView.addUser(user);
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+			        		DatabaseStructureView dsView = SQLExplorerPlugin.getDefault().getDatabaseStructureView();
+			        		if (dsView != null)
+			        			try {
+			        				dsView.addUser(user);
+			        			}catch(SQLCannotConnectException e) {
+			        	        	MessageDialog.openError(Display.getDefault().getActiveShell(), "Cannot connect", e.getMessage());
+			        			}
+						}
+					});
 				}
     		};
     	ConnectionJob.createSession(alias, user, listener, alwaysPrompt);

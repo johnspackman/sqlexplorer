@@ -18,12 +18,13 @@
  */
 package net.sourceforge.sqlexplorer.dbdetail.tab;
 
-import java.sql.ResultSet;
+import java.util.List;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
+import net.sourceforge.squirrel_sql.fw.sql.IndexInfo;
 
 /**
  * @author Davy Vanherbergen
@@ -31,7 +32,18 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
  */
 public class IndexesTab extends AbstractDataSetTab {
 
-    
+    private static final String COLUMN_LABELS[] = {
+    	Messages.getString("DatabaseDetailView.Tab.Indexes.Col.IsNonUnique"),
+    	Messages.getString("DatabaseDetailView.Tab.Indexes.Col.IndexQualifier"),
+    	Messages.getString("DatabaseDetailView.Tab.Indexes.Col.SimpleName"),
+    	Messages.getString("DatabaseDetailView.Tab.Indexes.Col.IndexType"),
+    	Messages.getString("DatabaseDetailView.Tab.Indexes.Col.OrdinalPosition"),
+    	Messages.getString("DatabaseDetailView.Tab.Indexes.Col.ColumnName"),
+    	Messages.getString("DatabaseDetailView.Tab.Indexes.Col.SortOrder"),
+    	Messages.getString("DatabaseDetailView.Tab.Indexes.Col.Cardinality"),
+    	Messages.getString("DatabaseDetailView.Tab.Indexes.Col.Pages"),
+    	Messages.getString("DatabaseDetailView.Tab.Indexes.Col.FilterCondition")
+    };
     
     public String getLabelText() {
         return Messages.getString("DatabaseDetailView.Tab.Indexes");
@@ -48,10 +60,29 @@ public class IndexesTab extends AbstractDataSetTab {
         if (node instanceof TableNode) {
             TableNode tableNode = (TableNode) node;
 
-            ResultSet resultSet = node.getSession().getMetaData().getIndexInfo(tableNode.getTableInfo());   
-            DataSet dataSet = new DataSet(resultSet, new int[] {4,5,6,7,8,9,10,11,12,13});
+            List<IndexInfo> indexes = node.getSession().getMetaData().getIndexInfo(tableNode.getTableInfo());
+            Comparable[][] dataRows = new Comparable[indexes.size()][];
+            int index = 0;
+            for (IndexInfo col : indexes) {
+            	Comparable[] row = new Comparable[COLUMN_LABELS.length];
+            	dataRows[index++] = row;
+
+            	int i = 0;
+            	row[i++] = col.isNonUnique();
+            	row[i++] = col.getIndexQualifier();
+            	row[i++] = col.getSimpleName();
+            	row[i++] = col.getIndexType();
+            	row[i++] = col.getOrdinalPosition();
+            	row[i++] = col.getColumnName();
+            	row[i++] = col.getSortOrder();
+            	row[i++] = col.getCardinality();
+            	row[i++] = col.getPages();
+            	row[i++] = col.getFilterCondition();
+            	if (i != COLUMN_LABELS.length)
+            		throw new RuntimeException("Internal error: ColumnInfoTab: wrong number of columns");
+            }
+            DataSet dataSet = new DataSet(COLUMN_LABELS, dataRows);
             
-            resultSet.close();
             return dataSet;
         }
         

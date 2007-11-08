@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.TextUtil;
@@ -55,7 +55,7 @@ public class TableNode extends AbstractNode {
      * @param name of this node
      * @param sessionNode session for this node
      */
-    public TableNode(INode parent, String name, Session sessionNode, ITableInfo tableInfo) {
+    public TableNode(INode parent, String name, MetaDataSession sessionNode, ITableInfo tableInfo) {
     	super(parent, name, sessionNode, tableInfo.getType());
         _tableInfo = tableInfo;
         setImageKey("Images.TableNodeIcon");

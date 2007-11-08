@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.dom4j.Element;
 import org.dom4j.tree.DefaultElement;
-
 import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -61,7 +60,10 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 	// List of connections in use
 	private LinkedList<SQLConnection> allocated = new LinkedList<SQLConnection>();
 	
-	// List of Sessions
+	// Special session for MetaData
+	private MetaDataSession metaDataSession;
+	
+	// List of Sessions (exluding meta data session)
 	private LinkedList<Session> sessions = new LinkedList<Session>();
 	
 	// List of requests for a new session
@@ -149,11 +151,13 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 			session.setUser(this);
 			sessions.add(session);
 		}
+		metaDataSession = that.metaDataSession;
 		
 		// Make "that" unusable
 		that.unused = null;
 		that.allocated = null;
 		that.sessions = null;
+		that.metaDataSession = null;
 		that.password = null;
 		
 		SQLExplorerPlugin.getDefault().getAliasManager().modelChanged();
@@ -203,14 +207,30 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 	}
 
 	/**
-	 * Creates a new session
+	 * Creates a new session; NOTE, this is a blocking call, use ConnectionJob for
+	 * asychronous connections
 	 * @return
 	 */
-	/*package*/ Session createSession() throws SQLException {
+	public Session createSession() throws SQLException {
 		Session session = new Session(this);
 		sessions.add(session);
 		SQLExplorerPlugin.getDefault().getAliasManager().modelChanged();
 		return session;
+	}
+	
+	/**
+	 * Returns the special session for accessing meta data
+	 * @return
+	 * @throws SQLException
+	 */
+	public MetaDataSession getMetaDataSession() {
+		if (metaDataSession == null)
+			try {
+				metaDataSession = new MetaDataSession(this);
+			}catch(SQLException e) {
+				SQLExplorerPlugin.error(e);
+			}
+		return metaDataSession;
 	}
 	
 	/**
@@ -245,6 +265,10 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 	/*package*/ void closeAllSessions() {
 		for (Session session : sessions)
 			session.close();
+		if (metaDataSession != null) {
+			metaDataSession.close();
+			metaDataSession = null;
+		}
 	}
 	
 	/**
@@ -266,7 +290,9 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 	
 	/**
 	 * Releases a connection; the connection will be returned to the pool, unless
-	 * the pool has grown too large (in which case the connection is closed).
+	 * the pool has grown too large (in which case the connection is closed).  Note
+	 * that the connection may not be in the "allocated" list if it is a hidden
+	 * connection (see hideConnection())
 	 * @param connection
 	 * @throws ExplorerException
 	 */

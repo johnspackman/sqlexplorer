@@ -160,7 +160,7 @@ public class DriverManager {
 		//	just ignore it
 		try {
 			int id = Integer.parseInt(driver.getId());
-			if (id < highestId)
+			if (id > 0 && id > highestId)
 				highestId = id;
 		} catch(NumberFormatException e) {
 			// Nothing

@@ -22,7 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Comparator;
 
-import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.ColumnNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
@@ -39,7 +39,7 @@ public class TableIndexNode extends AbstractNode {
     private TableNode _parentTable;
 
 
-    public TableIndexNode(INode parent, String name, Session session, TableNode parentTable) {
+    public TableIndexNode(INode parent, String name, MetaDataSession session, TableNode parentTable) {
     	super(parent, name, session, "index");
         _parentTable = parentTable;
         setImageKey("Images.IndexIcon");

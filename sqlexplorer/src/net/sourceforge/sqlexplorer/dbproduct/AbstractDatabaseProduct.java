@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ import net.sourceforge.sqlexplorer.parsers.Query;
 public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 	
 	public ExecutionResults executeQuery(SQLConnection connection, Query query, int maxRows) throws SQLException {
-		PreparedStatement stmt = null;
+		Statement stmt = null;
 		try {
 			CharSequence querySql = query.getQuerySql();
 			LinkedList<NamedParameter> params = null;
@@ -36,25 +37,42 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 			 * needed for output parameters so because we cannot reliably detect what 
 			 * the query is (DDL/DML/SELECT/CODE/etc) unless there is a specialised
 			 * parser, we rely on whether the user has given any named parameters.
+			 * 
+			 * Similarly, use Statement when we're just doing DDL - eg Oracle will
+			 * not create triggers when using PreparedStatement when it contains
+			 * references to :new or :old.
 			 */
-			if (params != null && query.getQueryType() != Query.QueryType.DDL)
-				stmt = connection.getConnection().prepareCall(querySql.toString());
-			else
-				stmt = connection.getConnection().prepareStatement(querySql.toString());
-			
-			// Note we only set maxrows if we know what the query type is (and that it's a SELECT)
-			//	This is important for MSSQL DDL statements which fail if maxrows is set, and makes
-			//	no sense for non-select anyway.
-			if (query.getQueryType() == Query.QueryType.SELECT)
-				stmt.setMaxRows(maxRows);
-			
-			if (params != null) {
+			boolean hasResults = false;
+			if (query.getQueryType() == Query.QueryType.DDL) {
+				stmt = connection.getConnection().createStatement();
+				hasResults = stmt.execute(querySql.toString());
+				
+			} else if (params != null) {
+				CallableStatement cstmt = connection.getConnection().prepareCall(querySql.toString());
+				stmt = cstmt;
 				int columnIndex = 1;
 				for (NamedParameter param : params)
 					configureStatement((CallableStatement)stmt, param, columnIndex++);
+				hasResults = cstmt.execute();
+				
+			} else {
+				PreparedStatement pstmt = connection.getConnection().prepareStatement(querySql.toString());
+				stmt = pstmt;
+				
+				// Note we only set maxrows if we know what the query type is (and that it's a SELECT)
+				//	This is important for MSSQL DDL statements which fail if maxrows is set, and makes
+				//	no sense for non-select anyway.
+				if (query.getQueryType() == Query.QueryType.SELECT)
+					try {
+						stmt.setMaxRows(maxRows);
+					}catch(SQLException e) {
+						// Nothing
+					}
+				
+				hasResults = pstmt.execute();
 			}
 			
-			return new ExecutionResultImpl(this, stmt, params, maxRows);
+			return new ExecutionResultImpl(this, stmt, hasResults, params, maxRows);
 			
 		} catch(SQLException e) {
 			try {

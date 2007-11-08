@@ -79,4 +79,62 @@
 			insert into x values (12345.6432)
 		</q>
 	</test>
+	<test enable-structured-comments="true">
+		<data>
+			-- Upgraded to SQLExplorer
+			/* VW_SparStores */
+			CREATE OR REPLACE VIEW VW_SparStores
+			AS
+				SELECT --+first_rows
+					D.DIV_SHORT_NAME,
+					O.ORG_NAME,
+					S.*
+				FROM
+					STORE				S,
+					DIVISION			D,
+					ORGANISATION		O,
+					VW_CurrentOrgLink	OL_G,
+					GUILD				G
+				WHERE
+					OL_G.ORG_ID = S.ORG_ID							AND
+					G.ORG_ID = OL_G.ORG_ORG_ID						AND
+					OL_G.ORGANISATION_LINK_TYPE_ID = SparConst.orgltMember	AND
+					D.ORG_ID = S.ORG_ID								AND
+					O.ORG_ID = S.ORG_ID;
+			
+			show errors;
+			
+			/*
+			truncate table plan_table;
+			explain plan for
+			 select --+first_rows
+				  * from vw_sparstores;
+			commit;
+			select * from plan_tree;
+			*/
+		</data>
+		<q line="3">
+			CREATE OR REPLACE VIEW VW_SparStores
+			AS
+				SELECT --+first_rows
+					D.DIV_SHORT_NAME,
+					O.ORG_NAME,
+					S.*
+				FROM
+					STORE				S,
+					DIVISION			D,
+					ORGANISATION		O,
+					VW_CurrentOrgLink	OL_G,
+					GUILD				G
+				WHERE
+					OL_G.ORG_ID = S.ORG_ID							AND
+					G.ORG_ID = OL_G.ORG_ORG_ID						AND
+					OL_G.ORGANISATION_LINK_TYPE_ID = SparConst.orgltMember	AND
+					D.ORG_ID = S.ORG_ID								AND
+					O.ORG_ID = S.ORG_ID
+		</q>
+		<q line="22">
+			show errors
+		</q>
+	</test>
 </tests>

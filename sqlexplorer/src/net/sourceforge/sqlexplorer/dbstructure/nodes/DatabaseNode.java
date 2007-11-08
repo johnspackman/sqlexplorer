@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDatabaseMetaData;
@@ -62,7 +62,7 @@ public class DatabaseNode extends AbstractNode {
      * @param name
      * @param alias
      */
-    public DatabaseNode(String name, Session session) throws SQLException {
+    public DatabaseNode(String name, MetaDataSession session) throws SQLException {
     	super(name, session);
     	setImageKey("Images.DatabaseIcon");
         

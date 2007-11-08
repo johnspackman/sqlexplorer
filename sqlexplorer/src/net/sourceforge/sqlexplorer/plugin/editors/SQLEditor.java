@@ -435,11 +435,12 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 			SQLEditorInput sqlInput = (SQLEditorInput) input;
 			if (input != null) {
 				User user = sqlInput.getUser();
-				user.queueForNewSession(new SessionEstablishedAdapter() {
-					public void sessionEstablished(Session session) {
-						setSession(session);
-					}
-				});
+				if (user != null)
+					user.queueForNewSession(new SessionEstablishedAdapter() {
+						public void sessionEstablished(Session session) {
+							setSession(session);
+						}
+					});
 				isDirty = true;
 				isUntitled = true;
 			}
@@ -665,6 +666,9 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 	 * @param message
 	 */
 	public void addMessage(Message message) {
+		if (isClosed())
+			return;
+		
 		// Don't log success messages unless we're supposed to
 		if (message.getStatus() == Message.Status.SUCCESS &&
 				!SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.LOG_SUCCESS_MESSAGES))
@@ -686,6 +690,8 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 	 * @return
 	 */
 	public ResultsTab createResultsTab(AbstractSQLExecution job) {
+		if (tabFolder.isDisposed())
+			return null;
 
 		// Create the new tab, make it second to last (IE keep the messages tab
 		//	always at the end) and set the new tab's title to the 1-based index
@@ -704,6 +710,10 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
         getSite().getPage().bringToTop(this);
         
 		return new ResultsTab(this, tabItem, composite);
+	}
+	
+	public boolean isClosed() {
+		return tabFolder.isDisposed();
 	}
 	
 	/**
@@ -747,6 +757,8 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 	 * to stop (if they're still running)
 	 */
 	public void clearResults() {
+		if (tabFolder.isDisposed())
+			return;
 		synchronized(this) {
 			CTabItem[] tabItems = tabFolder.getItems();
 			for (int i = 0; i < tabItems.length; i++)

@@ -22,6 +22,7 @@ import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.SQLCannotConnectException;
 import net.sourceforge.sqlexplorer.connections.ConnectionsView;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dbproduct.AliasManager;
@@ -32,10 +33,11 @@ import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
 import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.core.internal.runtime.RuntimeLog;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.PartInitException;
@@ -88,7 +90,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         super.start(context);
         
         try {
-        	RuntimeLog.addLogListener(new ILogListener() {
+        	getLog().addLogListener(new ILogListener() {
 				public void logging(IStatus status, String plugin) {
 					System.err.println(status.getMessage());
 					Throwable t = status.getException();
@@ -98,6 +100,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 					}
 				}
         	});
+
 	        driverManager = new DriverManager();
 	        driverManager.loadDrivers();
 	        
@@ -109,7 +112,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 	        } catch (MissingResourceException x) {
 	            resourceBundle = null;
 	        }
-	
+	        
 	        // load SQL History from previous sessions
 	        _history = new SQLHistory();
         }catch(Exception e) {
@@ -127,6 +130,19 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         if (_defaultConnectionsStarted)
             return;
 
+        String fontDesc = getPluginPreferences().getString(IConstants.FONT);
+        FontData fontData = null;
+        try {
+	        try {
+	        	fontData = new FontData(fontDesc);
+	        }catch(IllegalArgumentException e) {
+	        	fontData = new FontData("1|Courier New|10|0|WINDOWS|1|-13|0|0|0|400|0|0|0|0|3|2|1|49|Courier New");
+	        }
+	        PreferenceConverter.setValue(getPreferenceStore(), IConstants.FONT, fontData);
+        }catch(IllegalArgumentException e) {
+        	error("Error setting font", e);
+        }
+
         boolean openEditor = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.AUTO_OPEN_EDITOR);
         
         // Get the database structure view - NOTE: we don't use SQLExplorerPlugin.getDatabaseView()
@@ -139,7 +155,12 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         for (Alias alias : aliasManager.getAliases()) {
             if (alias.isConnectAtStartup() && alias.isAutoLogon() && alias.getDefaultUser() != null) {
                 if (dbView != null)
-                    dbView.addUser(alias.getDefaultUser());
+        			try {
+                        dbView.addUser(alias.getDefaultUser());
+        			}catch(SQLCannotConnectException e) {
+        	        	// Ignore it; the problem is already in the log, we do not want to delay startup, and the problem will
+        				//	be apparent as soon as the user tries to use the connection
+        			}
 
                 if (openEditor) {
                     SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo() + ").sql");
@@ -232,8 +253,22 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
      * @param t
      */
     public static void error(String message, Throwable t) {
-        getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, String.valueOf(message), t));
-        _logger.error(message, t);
+        if (t instanceof SQLCannotConnectException)
+            getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, String.valueOf(message), null));
+        else {
+        	getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, String.valueOf(message), t));
+        	_logger.error(message, t);
+        }
+    }
+
+    /**
+     * Global log method.
+     * 
+     * @param message
+     */
+    public static void error(String message) {
+        getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, String.valueOf(message), null));
+       	_logger.error(message);
     }
 
     /**
@@ -241,8 +276,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
      * @param t
      */
     public static void error(Exception e) {
-        getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, String.valueOf(e.getMessage()), e));
-        _logger.error(e.getMessage(), e);
+    	error(e.getMessage(), e);
     }
 
     /**
@@ -257,10 +291,16 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
             return key;
         }
     }
+    
+    private IWorkbenchPage getActivePage() {
+		if (getWorkbench() != null && getWorkbench().getActiveWorkbenchWindow() != null)
+			return getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		return null;
+    }
 
 	public ConnectionsView getConnectionsView() {
 		if (connectionsView == null) {
-			IWorkbenchPage page = getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			IWorkbenchPage page = getActivePage();
 			if (page != null) {
 		        connectionsView = (ConnectionsView)page.findView(ConnectionsView.class.getName());
 		        if (connectionsView == null)
@@ -275,9 +315,13 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 		return connectionsView;
 	}
 	
+	public void setConnectionsView(ConnectionsView connectionsView) {
+		this.connectionsView = connectionsView;
+	}
+	
 	public DatabaseStructureView getDatabaseStructureView() {
 		if (databaseStructureView == null) {
-			IWorkbenchPage page = getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			IWorkbenchPage page = getActivePage();
 			if (page != null) {
 				databaseStructureView = (DatabaseStructureView) page.findView(DatabaseStructureView.class.getName());
 		        if (databaseStructureView == null)
@@ -289,6 +333,10 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 			}
 		}
 		return databaseStructureView;
+	}
+	
+	public void setDatabaseStructureView(DatabaseStructureView databaseStructureView) {
+		this.databaseStructureView = databaseStructureView;
 	}
 	
 	public IWorkbenchSite getSite() {

@@ -26,7 +26,7 @@
 package net.sourceforge.sqlexplorer.oracle.nodes;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
@@ -48,7 +48,7 @@ public class ProcedureNode extends AbstractNode {
 		super(null, null, null, "PROCEDURE");
 	}
 
-	public ProcedureNode(INode parent, String name, Session session) {
+	public ProcedureNode(INode parent, String name, MetaDataSession session) {
 		super(parent, name, session, "PROCEDURE");
 	}
 

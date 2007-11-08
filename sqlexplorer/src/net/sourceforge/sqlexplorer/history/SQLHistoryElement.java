@@ -31,7 +31,10 @@ public class SQLHistoryElement {
 
     private String _searchableString;
 
-    private User user;
+    // User for the connection, plus the username and alias name; the user is not stored because
+    //	the user can be deleted without deleting associated history
+    private String userName;
+    private String aliasName;
 
     private String _singleLineText;
 
@@ -43,14 +46,14 @@ public class SQLHistoryElement {
 
     public SQLHistoryElement(String rawSQLString, User user) {
         _rawSQLString = rawSQLString;
-        this.user = user;
+        setUser(user);
         _time = System.currentTimeMillis();
         initialize();
     }
 
     public SQLHistoryElement(String rawSQLString, User user, String time, String executions) {
         _rawSQLString = rawSQLString;
-        this.user = user;
+        setUser(user);
 
         if (time != null && time.length() != 0) {
             _time = Long.parseLong(time);
@@ -75,16 +78,29 @@ public class SQLHistoryElement {
     public SQLHistoryElement(Element root) {
     	_executionCount = Integer.parseInt(root.attributeValue(EXECUTION_COUNT));
     	_time = Long.parseLong(root.attributeValue(LAST_EXECUTION_TIME));
-    	String aliasName = root.attributeValue(ALIAS);
-    	Alias alias = SQLExplorerPlugin.getDefault().getAliasManager().getAlias(aliasName);
-    	String userName = root.attributeValue(USER_NAME);
-    	user = alias.getUser(userName);
-    	if (user == null) {
-    		user = new User(userName, "");
-    		alias.addUser(user);
-    	}
+    	aliasName = root.attributeValue(ALIAS);
+    	userName = root.attributeValue(USER_NAME);
     	_rawSQLString = root.getTextTrim();
     	initialize();
+    }
+    
+    /**
+     * Returns the User for this entry; can return null if the user is no longer configured
+     * @return
+     */
+    public User getUser() {
+    	Alias alias = getAlias();
+    	if (alias != null)
+    		return alias.getUser(userName);
+    	return null;
+    }
+    
+    /**
+     * Returns the Alias for this history element; can return null if the alias no longer exists
+     * @return
+     */
+    public Alias getAlias() {
+    	return SQLExplorerPlugin.getDefault().getAliasManager().getAlias(aliasName);
     }
 
     /**
@@ -95,8 +111,8 @@ public class SQLHistoryElement {
     	Element root = new DefaultElement(ELEMENT);
     	root.addAttribute(EXECUTION_COUNT, Integer.toString(_executionCount));
     	root.addAttribute(LAST_EXECUTION_TIME, Long.toString(_time));
-    	root.addAttribute(ALIAS, user.getAlias().getName());
-    	root.addAttribute(USER_NAME, user.getUserName());
+    	root.addAttribute(ALIAS, aliasName);
+    	root.addAttribute(USER_NAME, userName);
     	root.setText(_rawSQLString);
     	return root;
     }
@@ -143,13 +159,9 @@ public class SQLHistoryElement {
         return _searchableString;
     }
 
-
-    public User getUser() {
-		return user;
-	}
     
     public String getSessionDescription() {
-    	return user.getAlias().getName() + '/' + user.getUserName();
+    	return aliasName + '/' + userName;
     }
 
 
@@ -187,13 +199,14 @@ public class SQLHistoryElement {
     private void initialize() {
 
         _formattedTime = _dateFormatter.format(new Date(_time));
-        _searchableString = (_rawSQLString + " " + user.getUserName() + " " + _formattedTime).toLowerCase();
+        _searchableString = (_rawSQLString + " " + aliasName + "/" + userName + " " + _formattedTime).toLowerCase();
         _singleLineText = TextUtil.removeLineBreaks(_rawSQLString);
     }
 
 
     public void setUser(User user) {
-		this.user = user;
+        this.userName = user.getUserName();
+        this.aliasName = user.getAlias().getName();
         initialize();
 	}
 }

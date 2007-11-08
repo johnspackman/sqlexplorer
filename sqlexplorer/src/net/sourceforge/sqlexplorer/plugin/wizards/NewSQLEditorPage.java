@@ -26,10 +26,12 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -38,7 +40,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.internal.dialogs.DialogUtil;
 import org.eclipse.ui.part.ISetSelectionTarget;
 
 public class NewSQLEditorPage extends WizardNewFileCreationPage {
@@ -73,11 +74,7 @@ public class NewSQLEditorPage extends WizardNewFileCreationPage {
 					IDE.openEditor(page,file,true);
 			}
 		} catch (PartInitException e) {
-			DialogUtil.openError(
-				dw.getShell(),
-				"File Resource Error", //$NON-NLS-1$
-				e.getMessage(),
-				e);
+			MessageDialog.openError(Display.getDefault().getActiveShell(), "File Resource Error", e.getMessage());
 		}
 				
 		return true;

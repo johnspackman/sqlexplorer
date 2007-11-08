@@ -128,7 +128,8 @@ public class OracleQueryParser extends AbstractSyntaxQueryParser {
 				//	it's creating a PL/SQL statement which will have code and theerfore semi-colons and
 				//	other SQL in it
 				if (word.equalsIgnoreCase("CREATE")) {
-					queryType = QueryType.DDL;
+					if (queryType == null)
+						queryType = QueryType.DDL;
 					nextToken();
 					
 					// Skip optional OR REPLACE
@@ -173,29 +174,40 @@ public class OracleQueryParser extends AbstractSyntaxQueryParser {
 							inPlSql = true;
 					}
 				
+				// Other DDL keywords
+				} else if (word.equalsIgnoreCase("GRANT")) {
+					if (queryType == null)
+						queryType = QueryType.DDL;
+				
 				// DECLARE also puts us in PL/SQL mode
 				} else if (word.equalsIgnoreCase("DECLARE")) {
-					queryType = QueryType.CODE;
+					if (queryType == null)
+						queryType = QueryType.CODE;
 					inPlSql = true;
 				
 				// BEGIN puts us in PL/SQL mode
 				} else if (word.equalsIgnoreCase("BEGIN")) {
-					queryType = QueryType.CODE;
+					if (queryType == null)
+						queryType = QueryType.CODE;
 					inPlSql = true;
 					seenBegin = true;
 					beginEndDepth++;
 					
 				} else if (word.equalsIgnoreCase("SELECT")) {
-					queryType = QueryType.SELECT;
+					if (queryType == null)
+						queryType = QueryType.SELECT;
 				
 				} else if (word.equalsIgnoreCase("UPDATE")) {
-					queryType = QueryType.DML;
+					if (queryType == null)
+						queryType = QueryType.DML;
 				
 				} else if (word.equalsIgnoreCase("DELETE")) {
-					queryType = QueryType.DML;
+					if (queryType == null)
+						queryType = QueryType.DML;
 				
 				} else if (word.equalsIgnoreCase("INSERT")) {
-					queryType = QueryType.DML;
+					if (queryType == null)
+						queryType = QueryType.DML;
 				
 				// If we're already in PL/SQL, then we have to count BEGIN/END pairs to know when the code
 				//	runs out.
@@ -272,7 +284,7 @@ public class OracleQueryParser extends AbstractSyntaxQueryParser {
 	 */
 	@Override
 	protected AnnotatedQuery newQueryInstance(BackedCharSequence buffer, int lineNo) {
-		OracleQuery query = new OracleQuery(buffer, lineNo, queryType);
+		OracleQuery query = new OracleQuery(buffer, lineNo, queryType == null ? QueryType.UNKNOWN : queryType);
 		query.setCreateObjectName(createName);
 		query.setCreateObjectType(createType);
 		return query;
@@ -295,7 +307,7 @@ public class OracleQueryParser extends AbstractSyntaxQueryParser {
 		seenBegin = false;
 		beginEndDepth = 0;
 		start = null;
-		queryType = QueryType.UNKNOWN;
+		queryType = null;
 		createName = null;
 		createType = null;
 	}

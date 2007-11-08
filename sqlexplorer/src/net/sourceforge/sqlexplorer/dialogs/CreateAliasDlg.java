@@ -59,31 +59,24 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
  */
 public class CreateAliasDlg extends TitleAreaDialog {
 	
+    private static final int SIZING_TEXT_FIELD_WIDTH = 250;
+
 	public enum Type {
 		CREATE, CHANGE, COPY
 	}
 
-    private Button _btnAutoLogon;
-
+    private Type type;
     private Alias alias;
-
-    private Button btnActivate;
-
-    private Combo combo;
-    private HashMap<Integer, ManagedDriver> comboDrivers = new HashMap<Integer, ManagedDriver>();
+    private HashMap<Integer, ManagedDriver> comboDriverIndexes = new HashMap<Integer, ManagedDriver>();
 
     private Text nameField;
-
-    private Text passwordField;
-
-    private Type type;
-
+    private Combo cboDriver;
     private Text urlField;
-
+    private Button btnNoUsername;
     private Text userField;
-
-    private static final int SIZING_TEXT_FIELD_WIDTH = 250;
-
+    private Text passwordField;
+    private Button btnAutoLogon;
+    private Button btnActivate;
 
     public CreateAliasDlg(Shell parentShell, Type type, Alias alias) {
         super(parentShell);
@@ -163,7 +156,8 @@ public class CreateAliasDlg extends TitleAreaDialog {
         layout.numColumns = 3;
         layout.marginWidth = 10;
         nameGroup.setLayout(layout);
-        GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
+        GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        data.heightHint = 203;
         nameGroup.setLayoutData(data);
 
         Label label = new Label(nameGroup, SWT.WRAP);
@@ -189,16 +183,16 @@ public class CreateAliasDlg extends TitleAreaDialog {
 
         Label label2 = new Label(nameGroup, SWT.WRAP);
         label2.setText("Driver"); //$NON-NLS-1$
-        combo = new Combo(nameGroup, SWT.BORDER | SWT.DROP_DOWN | SWT.READ_ONLY);
-        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-        data.widthHint = SIZING_TEXT_FIELD_WIDTH;
-        combo.setLayoutData(data);
+        cboDriver = new Combo(nameGroup, SWT.BORDER | SWT.DROP_DOWN | SWT.READ_ONLY);
+        final GridData gd_driver = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
+        gd_driver.widthHint = SIZING_TEXT_FIELD_WIDTH;
+        cboDriver.setLayoutData(gd_driver);
 
         String defaultDriverName = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DEFAULT_DRIVER);
         ManagedDriver defaultDriver = null;
         int defaultDriverIndex = 0;
         populateCombo();
-        for (Entry<Integer, ManagedDriver> entry : comboDrivers.entrySet()) {
+        for (Entry<Integer, ManagedDriver> entry : comboDriverIndexes.entrySet()) {
         	ManagedDriver driver = entry.getValue();
         	if (driver.getName().startsWith(defaultDriverName)) {
         		defaultDriver = driver;
@@ -207,11 +201,11 @@ public class CreateAliasDlg extends TitleAreaDialog {
         	}
         }
 
-        Button button = new Button(nameGroup, SWT.NULL);
-        button.setText(Messages.getString("AliasDialog.EditDrivers")); //$NON-NLS-1$
-        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-        button.setLayoutData(data);
-        button.addSelectionListener(new SelectionAdapter() {
+        Button btnListDrivers = new Button(nameGroup, SWT.NULL);
+        btnListDrivers.setText(Messages.getString("AliasDialog.EditDrivers")); //$NON-NLS-1$
+        final GridData gd_btnListDrivers = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
+        btnListDrivers.setLayoutData(gd_btnListDrivers);
+        btnListDrivers.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent event) {
 
@@ -241,6 +235,17 @@ public class CreateAliasDlg extends TitleAreaDialog {
                 CreateAliasDlg.this.validate();
             };
         });
+        new Label(nameGroup, SWT.NONE);
+
+        btnNoUsername = new Button(nameGroup, SWT.CHECK);
+        btnNoUsername.addSelectionListener(new SelectionAdapter() {
+        	public void widgetSelected(final SelectionEvent e) {
+        		userField.setEnabled(!btnNoUsername.getSelection());
+        		passwordField.setEnabled(!btnNoUsername.getSelection());
+        	}
+        });
+        btnNoUsername.setText("Username is not required for this database");
+        new Label(nameGroup, SWT.NONE);
 
         Label label4 = new Label(nameGroup, SWT.WRAP);
         label4.setText("User Name"); //$NON-NLS-1$
@@ -278,11 +283,11 @@ public class CreateAliasDlg extends TitleAreaDialog {
         label8.setText(Messages.getString("AliasDialog.AutoLogon"));
         label8.setToolTipText(Messages.getString("AliasDialog.AutoLogonToolTip"));
 
-        _btnAutoLogon = new Button(nameGroup, SWT.CHECK);
-        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-        data.horizontalSpan = 2;
-        data.widthHint = SIZING_TEXT_FIELD_WIDTH;
-        _btnAutoLogon.setLayoutData(data);
+        btnAutoLogon = new Button(nameGroup, SWT.CHECK);
+        final GridData gd_btnAutoLogon = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
+        gd_btnAutoLogon.horizontalSpan = 2;
+        gd_btnAutoLogon.widthHint = SIZING_TEXT_FIELD_WIDTH;
+        btnAutoLogon.setLayoutData(gd_btnAutoLogon);
         
         Label label7 = new Label(nameGroup, SWT.WRAP);
         label7.setText("Open on Startup"); //$NON-NLS-1$
@@ -292,7 +297,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         btnActivate.setLayoutData(data);
 
-        _btnAutoLogon.addSelectionListener(new SelectionAdapter() {
+        btnAutoLogon.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				boolean active = ((Button) event.widget).getSelection();
 				btnActivate.setEnabled(active);
@@ -302,17 +307,17 @@ public class CreateAliasDlg extends TitleAreaDialog {
 			}
 		});
 
-        combo.addSelectionListener(new SelectionAdapter() {
+        cboDriver.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-                int selIndex = combo.getSelectionIndex();
-                ManagedDriver driver = comboDrivers.get(selIndex);
+                int selIndex = cboDriver.getSelectionIndex();
+                ManagedDriver driver = comboDriverIndexes.get(selIndex);
                 urlField.setText(driver.getUrl());
                 CreateAliasDlg.this.validate();
             };
         });
         
-        if (!comboDrivers.isEmpty() && defaultDriver != null) {            
-            combo.select(defaultDriverIndex);
+        if (!comboDriverIndexes.isEmpty() && defaultDriver != null) {            
+            cboDriver.select(defaultDriverIndex);
             urlField.setText(defaultDriver.getUrl());
         }     
         
@@ -321,7 +326,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
     }
 
     private void populateCombo() {
-    	String previous = combo.getText();
+    	String previous = cboDriver.getText();
     	if (previous != null) {
     		previous = previous.trim();
     		if (previous.length() == 0)
@@ -330,7 +335,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
     	if (previous != null)
     		previous = previous.toLowerCase();
         DriverManager driverModel = SQLExplorerPlugin.getDefault().getDriverModel();
-        combo.removeAll();
+        cboDriver.removeAll();
         TreeSet<ManagedDriver> drivers = new TreeSet<ManagedDriver>();
         drivers.addAll(driverModel.getDrivers());
         int index = 0;
@@ -341,10 +346,10 @@ public class CreateAliasDlg extends TitleAreaDialog {
             	// Nothing
             }
             if (driver.isDriverClassLoaded() == true) {
-	            combo.add(driver.getName());
-	            comboDrivers.put(new Integer(index), driver);
+	            cboDriver.add(driver.getName());
+	            comboDriverIndexes.put(new Integer(index), driver);
 	            if (previous != null && driver.getName().toLowerCase().startsWith(previous))
-	            	combo.select(index);
+	            	cboDriver.select(index);
 	            index++;
             }
         }
@@ -354,11 +359,20 @@ public class CreateAliasDlg extends TitleAreaDialog {
 
     	if (type != Type.CREATE)
     		nameField.setText(alias.getName());
-        if (alias.getDefaultUser() != null) {
-	        userField.setText(alias.getDefaultUser().getUserName());
-	        passwordField.setText(alias.getDefaultUser().getPassword());
-        }
-        _btnAutoLogon.setSelection(alias.isAutoLogon());
+    	if (alias.hasNoUserName()) {
+    		btnNoUsername.setSelection(true);
+    		userField.setEnabled(false);
+    		passwordField.setEnabled(false);
+    	} else {
+    		btnNoUsername.setSelection(false);
+    		userField.setEnabled(true);
+    		passwordField.setEnabled(true);
+	        if (alias.getDefaultUser() != null) {
+		        userField.setText(alias.getDefaultUser().getUserName());
+		        passwordField.setText(alias.getDefaultUser().getPassword());
+	        }
+    	}
+        btnAutoLogon.setSelection(alias.isAutoLogon());
         if(!alias.isAutoLogon()) {
             btnActivate.setEnabled(false);
             btnActivate.setSelection(false);
@@ -367,7 +381,8 @@ public class CreateAliasDlg extends TitleAreaDialog {
         }
         
         if (type != Type.CREATE) {
-            combo.setText(alias.getDriver().getName());
+        	if (alias.getDriver() != null)
+        		cboDriver.setText(alias.getDriver().getName());
             urlField.setText(alias.getUrl());
         }
     }
@@ -379,18 +394,23 @@ public class CreateAliasDlg extends TitleAreaDialog {
         	User previousUser = alias.getDefaultUser();
         	
             alias.setName(nameField.getText().trim());
-            int selIndex = combo.getSelectionIndex();
-            ManagedDriver driver = comboDrivers.get(selIndex);
+            int selIndex = cboDriver.getSelectionIndex();
+            ManagedDriver driver = comboDriverIndexes.get(selIndex);
             alias.setDriver(driver);
             alias.setUrl(urlField.getText().trim());
-            if (userField.getText().trim().length() > 0)
-            	alias.setDefaultUser(new User(userField.getText().trim(), passwordField.getText().trim()));
+            if (btnNoUsername.getSelection())
+            	alias.setHasNoUserName(true);
+            else {
+            	alias.setHasNoUserName(false);
+	            if (userField.getText().trim().length() > 0)
+	            	alias.setDefaultUser(new User(userField.getText().trim(), passwordField.getText().trim()));
+            }
             alias.setName(this.nameField.getText().trim());
             alias.setSchemaFilterExpression("");
             alias.setNameFilterExpression("");
             alias.setFolderFilterExpression("");
             alias.setConnectAtStartup(btnActivate.getSelection());
-            alias.setAutoLogon(_btnAutoLogon.getSelection());
+            alias.setAutoLogon(btnAutoLogon.getSelection());
             
             if (type != Type.CHANGE)
                 SQLExplorerPlugin.getDefault().getAliasManager().addAlias(alias);

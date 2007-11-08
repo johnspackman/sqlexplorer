@@ -25,13 +25,13 @@
 
 package net.sourceforge.sqlexplorer.oracle.nodes;
 
-import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 
 public class PackageNode extends AbstractNode {
 	
-	public PackageNode(INode parent, String name, Session sessionNode, String owner) {
+	public PackageNode(INode parent, String name, MetaDataSession sessionNode, String owner) {
 		super(parent, name, sessionNode, "package");
 	}
 

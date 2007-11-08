@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer.dbstructure;
 import java.sql.SQLException;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
@@ -38,18 +39,17 @@ public class DatabaseModel implements INode {
 
     private DatabaseNode _root;
 
-    private Session _sessionNode;
+    private MetaDataSession session;
 
 
     /**
      * Create new DatabaseModel for a database session
      * 
-     * @param sessionNode
+     * @param session
      * @param pm
      */
-    public DatabaseModel(Session sessionNode) throws SQLException {
-
-        _root = new DatabaseNode(Messages.getString("Database_1"), sessionNode);
+    public DatabaseModel(MetaDataSession session) throws SQLException {
+        _root = new DatabaseNode(Messages.getString("Database_1"), session);
 
     }
 
@@ -102,8 +102,6 @@ public class DatabaseModel implements INode {
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getLabelDecoration()
      */
     public String getLabelDecoration() {
-
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -167,8 +165,6 @@ public class DatabaseModel implements INode {
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.INode#getSchemaOrCatalogName()
      */
     public String getSchemaOrCatalogName() {
-
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -176,12 +172,12 @@ public class DatabaseModel implements INode {
     /**
      * @return SessionTreeNode for this node.
      */
-    public final Session getSession() {
+    public final MetaDataSession getSession() {
 
-        if (_sessionNode == null) {
-            _sessionNode = getRoot().getSession();
+        if (session == null) {
+            session = getRoot().getSession();
         }
-        return _sessionNode;
+        return session;
     }
 
 

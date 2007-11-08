@@ -29,6 +29,7 @@ import java.util.LinkedList;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
@@ -108,7 +109,7 @@ public abstract class AbstractSQLExecution extends Job {
 			// Make sure the user hasn't tried to terminate us and then run the SQL
 			if (!monitor.isCanceled() && _connection != null) {
 				doExecution(monitor);
-				checkForMessages();
+				checkForMessages(null);
 			}
 
 		} catch (final RuntimeException e) {
@@ -166,16 +167,26 @@ public abstract class AbstractSQLExecution extends Job {
 	/**
 	 * Checks the database server for messages
 	 */
-	protected void checkForMessages() throws SQLException {
-		try {
-			final Collection messages = _session.getDatabaseProduct().getServerMessages(_connection);
-			if (messages == null)
-				return;
-			addMessages(messages);
-		}catch(SQLException e) {
-			logException(e, "Checking for messages");
-			throw e;
-		}
+	protected boolean checkForMessages(Query query) throws SQLException {
+    	LinkedList<Message> messages = new LinkedList<Message>();
+        Collection<Message> messagesTmp;
+        if (query != null) {
+        	messagesTmp = _session.getDatabaseProduct().getErrorMessages(_connection, query);
+	        if (messagesTmp != null)
+	        	messages.addAll(messagesTmp);
+        }
+        messagesTmp = _session.getDatabaseProduct().getServerMessages(_connection);
+        if (messagesTmp != null)
+        	messages.addAll(messagesTmp);
+        boolean hasMessages = false;
+    	for (Message msg : messages) {
+    		msg.setLineNo(getQueryParser().adjustLineNo(msg.getLineNo()));
+    		if (msg.getStatus() != Message.Status.SUCCESS)
+    			hasMessages = true;
+    	}
+        
+        addMessages(messages);
+        return hasMessages;
 	}
 	
 	/**
@@ -221,7 +232,10 @@ public abstract class AbstractSQLExecution extends Job {
 	 * @param positionEditor Whether to reposition the text caret of the editor to the first message
 	 */
 	protected void logException(SQLException e, Query query, boolean positionEditor) throws SQLException {
-		final Collection<Message> messages = _session.getDatabaseProduct().getErrorMessages(_connection, e, query.getLineNo() - 1);
+		DatabaseProduct product = _session.getDatabaseProduct();
+		if (product == null)
+			return;
+		final Collection<Message> messages = product.getErrorMessages(_connection, e, query.getLineNo() - 1);
 		if (messages == null)
 			return;
 		for (Message message : messages) {

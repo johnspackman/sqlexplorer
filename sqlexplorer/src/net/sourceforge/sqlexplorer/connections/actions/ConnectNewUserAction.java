@@ -68,6 +68,12 @@ public class ConnectNewUserAction extends AbstractConnectionTreeAction {
     public boolean isAvailable() {
     	if (getView() == null)
     		return false;
-    	return getView().getSelectedAliases(false) != null;
+    	Set<Alias> aliases = getView().getSelectedAliases(true);
+    	if (aliases == null || aliases.size() == 0)
+    		return false;
+    	for (Alias alias : aliases)
+    		if (alias.hasNoUserName())
+    			return false;
+    	return true;
     }
 }

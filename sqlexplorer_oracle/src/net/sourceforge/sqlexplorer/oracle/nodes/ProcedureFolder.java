@@ -30,7 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -43,7 +43,7 @@ public class ProcedureFolder extends AbstractFolderNode {
 		super(Messages.getString("oracle.dbstructure.procedures"));
 	}
 
-	public ProcedureFolder(INode parent, Session session) {
+	public ProcedureFolder(INode parent, MetaDataSession session) {
 		super(parent, Messages.getString("oracle.dbstructure.procedures"), session, "FOLDER");
 	}
 

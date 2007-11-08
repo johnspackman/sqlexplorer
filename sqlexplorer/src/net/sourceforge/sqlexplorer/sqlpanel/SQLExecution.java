@@ -20,9 +20,6 @@ package net.sourceforge.sqlexplorer.sqlpanel;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.LinkedList;
-
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
@@ -86,6 +83,8 @@ public class SQLExecution extends AbstractSQLExecution {
             public void run() {
             	
             	ResultsTab resultsTab = allocateResultsTab(sqlResult.getQuery());
+            	if (resultsTab == null)
+            		return;
             	String caption = sqlResult.getDataSet().getCaption();
             	if (caption != null)
             		resultsTab.getTabItem().setText(caption);
@@ -170,6 +169,8 @@ public class SQLExecution extends AbstractSQLExecution {
         	for (Query query : getQueryParser()) {
             	if (monitor.isCanceled())
             		break;
+            	if (getEditor().isClosed())
+            		break;
             	
             	// Get the next bit of SQL to run and store it as "current"
             	if (query == null)
@@ -189,10 +190,11 @@ public class SQLExecution extends AbstractSQLExecution {
 	            	try {
 		            	results = product.executeQuery(_connection, query, _maxRows);
 	            	}catch(RuntimeException e) {
-	            		throw new SQLException(e);
+	            		throw new SQLException(e.getMessage());
 	            	}
                     final long endTime = System.currentTimeMillis();
 	            	DataSet dataSet;
+	            	boolean checkedForMessages = false;
 	            	while ((dataSet = results.nextDataSet()) != null) {
 
 	                    // update sql result
@@ -206,27 +208,17 @@ public class SQLExecution extends AbstractSQLExecution {
 
 	                    if (monitor.isCanceled())
 	                        return;
-	                    
-                    	LinkedList<Message> messages = new LinkedList<Message>();
-	                    Collection<Message> messagesTmp = _session.getDatabaseProduct().getErrorMessages(_connection, query);
-	                    if (messagesTmp != null)
-	                    	messages.addAll(messagesTmp);
-	                    messagesTmp = _session.getDatabaseProduct().getServerMessages(_connection);
-	                    if (messagesTmp != null)
-	                    	messages.addAll(messagesTmp);
-                    	for (Message msg : messages) {
-                    		msg.setLineNo(getQueryParser().adjustLineNo(msg.getLineNo()));
-                    		if (msg.getStatus() != Message.Status.SUCCESS)
-                    			hasMessages = true;
-                    	}
-	                    
-	                    addMessages(messages);
+
+	                    checkForMessages(query);
+	                    checkedForMessages = true;
 	                    
 	                    // show results..
 	                    displayResults(sqlResult);
 	            	}
 	            	overallUpdateCount += results.getUpdateCount();
 	            	
+	            	if (!checkedForMessages)
+	            		checkForMessages(query);
 		            debugLogQuery(query, null);
 	
 	            } catch(final SQLException e) {
@@ -275,7 +267,7 @@ public class SQLExecution extends AbstractSQLExecution {
                 }
             });
     }
-
+    
     /**
      * Cancel sql execution and close execution tab.
      */

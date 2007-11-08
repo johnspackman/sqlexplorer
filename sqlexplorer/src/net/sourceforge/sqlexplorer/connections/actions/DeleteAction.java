@@ -18,14 +18,17 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
-import net.sourceforge.sqlexplorer.Messages;
+import java.util.Set;
+
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
+
 
 /**
  * Deletes a selected item; as of 3.5.0.beta2, this is a generic "delete", not just specific to
@@ -77,6 +80,13 @@ public class DeleteAction extends AbstractConnectionTreeAction {
     public boolean isAvailable() {
     	if (getView() == null)
     		return false;
-    	return !getView().getSelectedAliases(false).isEmpty() || !getView().getSelectedUsers(false).isEmpty();
+    	Set<Alias> aliases = getView().getSelectedAliases(false);
+    	Set<User> users = getView().getSelectedUsers(false);
+    	if (aliases.isEmpty() && users.isEmpty())
+    		return false;
+    	for (User user : users)
+    		if (user.getAlias().hasNoUserName())
+    			return false;
+    	return true;
     }
 }

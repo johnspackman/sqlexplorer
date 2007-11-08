@@ -18,19 +18,12 @@
  */
 package net.sourceforge.sqlexplorer.dbproduct;
 
-import java.sql.SQLException;
 import java.util.LinkedList;
+import java.sql.SQLException;
 
 import net.sourceforge.sqlexplorer.ExplorerException;
-import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.dbdetail.DetailTabManager;
-import net.sourceforge.sqlexplorer.dbstructure.DatabaseModel;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
-import net.sourceforge.sqlexplorer.sessiontree.model.utility.DictionaryLoader;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
-import net.sourceforge.squirrel_sql.fw.sql.SQLDatabaseMetaData;
 
 /**
  * The SessionTreeNode represents one active database session.
@@ -46,7 +39,7 @@ public class Session {
 		public void run() throws SQLException;
 	}
 
-    // User definition we connect as
+    // User definition we connect as (will be null after we've been closed)
     private User user;
 
     // Connection to the database
@@ -58,29 +51,20 @@ public class Session {
     // Whether the connection is currently "grabbed" by calling code
     private boolean connectionInUse;
     
+    // Whether to keep the connection and NOT release it back to the pool
+    private boolean keepConnection;
+    
     // Whether we auto-commit
     private boolean autoCommit;
     
     // Whether we commit on close (only really applies if autoCommit==false)
     private boolean commitOnClose;
-    
-	// Database Model
-    private DatabaseModel dbModel;
 
-    // Meta data
-    private SQLDatabaseMetaData _metaData = null;
-
-    // Whether content assist is enabled
-    boolean _assistanceEnabled;
-
-    // The dictionary used for content assist
-    private Dictionary _dictionary = new Dictionary();
-    
     // List of tasks to execute when the current connection is freed up
     private LinkedList<QueuedTask> queuedTasks = new LinkedList<QueuedTask>();
 
     /**
-     * Constructor; ties this SessionTreeNode to a User configuration but
+     * Constructor; ties this Session to a User configuration but
      * does not allocate a SQL connection until required.
      * @param user
      */
@@ -88,14 +72,6 @@ public class Session {
         this.user = user;
         autoCommit = user.isAutoCommit();
         commitOnClose = user.isCommitOnClose();
-        dbModel = new DatabaseModel(this);
-        
-        _assistanceEnabled = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.SQL_ASSIST);
-        if (_assistanceEnabled) {
-            // schedule job to load dictionary for this session
-            DictionaryLoader dictionaryLoader = new DictionaryLoader(this);
-            dictionaryLoader.schedule(500);
-        }
     }
     
     /**
@@ -104,6 +80,34 @@ public class Session {
      */
     public synchronized boolean isValidSession() {
     	return user != null;
+    }
+
+    /**
+     * Called internally to set the connection (including setting it to null)
+     * @param newConnection
+     */
+    protected void internalSetConnection(SQLConnection newConnection) throws SQLException {
+    	if (newConnection != null && connection != newConnection && connection != null)
+    		throw new IllegalStateException("Cannot change connection on the fly!");
+    	if (connection != null)
+    		connection.setSession(null);
+    	connection = newConnection;
+		if (connection != null) {
+			connection.setSession(this);
+			if (lastCatalog != null)
+				connection.setCatalog(lastCatalog);
+	    	connection.setAutoCommit(autoCommit);
+	    	connection.setCommitOnClose(commitOnClose);
+		}
+    }
+    
+    /**
+     * Returns the current connection, if there is one.  Intended only for use by
+     * derived classes.
+     * @return
+     */
+    protected SQLConnection getConnection() {
+    	return connection;
     }
     
     /**
@@ -117,29 +121,20 @@ public class Session {
     		throw new IllegalStateException("Session invalid (closed)");
     	if (connectionInUse)
     		throw new IllegalStateException("Cannot grab a new connection - already in use");
-    	connectionInUse = true;
     	
 		if (connection != null) {
-			if (connection.getConnection() == null)
-				connection = null;
-			else if (connection.getConnection().isClosed()) {
-				connection.setSession(null);
-				user.disposeConnection(connection);
-				connection = null;
-			}
+			if (connection.getConnection() == null || connection.getConnection().isClosed())
+				internalSetConnection(null);
 		}
 		
     	// If we don't have one yet, get one from the pool
-    	if (connection == null) {
-    		connection = user.getConnection();
-			connection.setSession(this);
-			if (lastCatalog != null)
-				connection.setCatalog(lastCatalog);
-	    	connection.setAutoCommit(autoCommit);
-	    	connection.setCommitOnClose(commitOnClose);
-    	}
+    	if (connection == null)
+    		internalSetConnection(user.getConnection());
+    	if (connection != null)
+    		connectionInUse = true;
     	
-		SQLExplorerPlugin.getDefault().getConnectionsView().refresh();
+    	if (SQLExplorerPlugin.getDefault().getConnectionsView() != null)
+    		SQLExplorerPlugin.getDefault().getConnectionsView().refresh();
     	return connection;
     }
     
@@ -147,13 +142,16 @@ public class Session {
      * Releases the connection; if the connection does NOT have auto-commit, this session
      * will hang on to it for next time, otherwise it is returned to the pool
      * @param toRelease
-     * @throws ExplorerException
      */
     public synchronized void releaseConnection(SQLConnection toRelease) {
     	if (!connectionInUse)
     		throw new IllegalStateException("Cannot release connection - not inuse");
-    	if (connection != toRelease)
+    	if (connection != toRelease) {
+    		// User will be null if we've closed
+    		if (user == null)
+    			return;
     		throw new IllegalArgumentException("Attempt to release the wrong connection");
+    	}
     	
     	// Run any queued tasks
     	try {
@@ -168,25 +166,12 @@ public class Session {
     	connectionInUse = false;
     	
     	try {
-    		boolean oldAutoCommit = connection.getAutoCommit();
-    		
-        	// If it's not auto-commit, then we have to keep the connection
-        	if (!oldAutoCommit && !autoCommit)
-        		return;
+    		// Update the connection to the auto-commit and commit-on-close status
         	connection.setAutoCommit(autoCommit);
-        	
-        	// Handle commits
-        	if (!autoCommit) {
-		    	if (connection.getCommitOnClose())
-		    		connection.commit();
-		    	else
-		    		connection.rollback();
-        	}
 	    	connection.setCommitOnClose(commitOnClose);
 	    	
-	    	// Turned autocommit off mid-execution; quit now that we've processed the
-	    	//	commit-on-close and updated the connection
-        	if (oldAutoCommit && !autoCommit)
+        	// If it's not auto-commit, then we have to keep the connection
+        	if (!autoCommit || keepConnection)
         		return;
     	}catch(SQLException e) {
     		SQLExplorerPlugin.error("Cannot commit", e);
@@ -194,10 +179,8 @@ public class Session {
     	
     	// Give it back into the pool
     	try {
-    		SQLConnection connection = this.connection;
-    		this.connection = null;
-			connection.setSession(null);
 	    	user.releaseConnection(connection);
+    		internalSetConnection(null);
     	}catch(SQLException e) {
     		SQLExplorerPlugin.error("Cannot release connection", e);
     	}
@@ -229,10 +212,8 @@ public class Session {
 			// If there's a connection but its not in use, then release it
 			if (connection != null && !connectionInUse)
 		    	try {
-		    		SQLConnection connection = this.connection;
-		    		this.connection = null;
-		        	connection.setSession(null);
 			    	user.releaseConnection(connection);
+		    		internalSetConnection(null);
 					SQLExplorerPlugin.getDefault().getConnectionsView().refresh();
 		    	}catch(SQLException e) {
 		    		SQLExplorerPlugin.error("Cannot release connection", e);
@@ -286,15 +267,15 @@ public class Session {
      * @throws ExplorerException
      */
     public synchronized void close() {
-    	if (connectionInUse)
-    		throw new IllegalAccessError("Cannot close session while connection is still in use!");
+    	if (connectionInUse) {
+    		user.disposeConnection(connection);
+        	try {
+        		internalSetConnection(null);
+        	}catch(SQLException e) {
+        		SQLExplorerPlugin.error(e);
+        	}
+    	}
     	
-        // store dictionary
-        _dictionary.store();
-        
-        // clear detail tab cache
-        DetailTabManager.clearCacheForSession(this);
-
         // Disconnection from the user
         if (connection != null) {
         	try {
@@ -302,8 +283,11 @@ public class Session {
         	}catch(SQLException e) {
         		SQLExplorerPlugin.error(e);
         	}
-        	connection.setSession(null);
-        	connection = null;
+        	try {
+        		internalSetConnection(null);
+        	}catch(SQLException e) {
+        		SQLExplorerPlugin.error(e);
+        	}
         }
         user.releaseSession(this);
         user = null;
@@ -319,13 +303,17 @@ public class Session {
         if (connection != null) {
         	SQLConnection connection = this.connection;
         	try {
-            	connection.rollback();
+            	if (!connection.getAutoCommit())
+            		connection.rollback();
         	}catch(SQLException e) {
         		SQLExplorerPlugin.error(e);
         	}
-        	connection.setSession(null);
-    		user.disposeConnection(connection);
-        	connection = null;
+        	try {
+        		user.disposeConnection(connection);
+        		internalSetConnection(null);
+        	}catch(SQLException e) {
+        		SQLExplorerPlugin.error(e);
+        	}
         }
     }
 
@@ -370,54 +358,6 @@ public class Session {
 	    	});
     }
 
-    /**
-     * Returns true if the connection support catalogs
-     * @return
-     * @throws ExplorerException
-     */
-    public boolean supportsCatalogs() {
-    	try {
-    		return getMetaData().supportsCatalogs();
-    	}catch(SQLException e) {
-    		SQLExplorerPlugin.error("Cannot get meta data", e);
-    		return false;
-    	}
-    }
-
-    /**
-     * Gets (and caches) the meta data for this connection
-     * @return
-     * @throws ExplorerException
-     */
-    public synchronized SQLDatabaseMetaData getMetaData() throws SQLException {
-        if (_metaData == null) {
-        	if (connection != null)
-        		_metaData = connection.getSQLMetaData();
-        	else {
-        		grabConnection();
-        		try {
-            		_metaData = connection.getSQLMetaData();
-        		} finally {
-        			releaseConnection(connection);
-        		}
-        	}
-        }
-        
-        return _metaData;
-    }
-
-    /**
-     * Returns the root database node 
-     * @return
-     */
-    public DatabaseNode getRoot() {
-    	return dbModel.getRoot();
-    }
-
-    public Dictionary getDictionary() {
-        return _dictionary;
-    }
-
 	public User getUser() {
 		return user;
 	}
@@ -431,10 +371,26 @@ public class Session {
 	}
     
     public String toString() {
-    	return user.toString();
+    	return user != null ? user.toString() : "(disconnected)";
     }
     
     public DatabaseProduct getDatabaseProduct() {
+    	if (getUser() == null)
+    		return null;
     	return getUser().getAlias().getDriver().getDatabaseProduct();
     }
+
+	/**
+	 * @return the keepConnection
+	 */
+	public boolean isKeepConnection() {
+		return keepConnection;
+	}
+
+	/**
+	 * @param keepConnection the keepConnection to set
+	 */
+	public void setKeepConnection(boolean keepConnection) {
+		this.keepConnection = keepConnection;
+	}
 }

@@ -1,8 +1,6 @@
-package net.sourceforge.sqlexplorer.sqleditor;
-
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2007 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,6 +16,7 @@ package net.sourceforge.sqlexplorer.sqleditor;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package net.sourceforge.sqlexplorer.sqleditor;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
@@ -54,6 +53,16 @@ import org.eclipse.swt.widgets.Shell;
 
 public class SQLTextViewer extends SourceViewer {
 
+    private class PreferenceListener implements IPropertyChangeListener {
+
+        public void propertyChange(PropertyChangeEvent event) {
+            adaptToPreferenceChange(event);
+        }
+    };
+
+
+    PreferenceListener fPreferenceListener = new PreferenceListener();
+
     IPresentationReconciler fPresentationReconciler;
 
     private IDocumentPartitioner partitioner;
@@ -70,32 +79,14 @@ public class SQLTextViewer extends SourceViewer {
 
     TextViewerUndoManager undoManager = new TextViewerUndoManager(50);
 
-
-    public void setDocument(IDocument dc) {
-
-        IDocument previous = this.getDocument();
-        if (previous != null) {
-
-            partitioner.disconnect();
-        }
-        super.setDocument(dc);
-        if (dc != null) {
-
-            partitioner.connect(dc);
-            dc.setDocumentPartitioner(partitioner);
-            undoManager.connect(this);
-            this.setUndoManager(undoManager);
-        }
-
+    public SQLTextViewer(Composite parent, int style, IPreferenceStore store, final Dictionary dictionary) {
+    	this(parent, style, store, dictionary, new VerticalRuler(0));
     }
 
-
     public SQLTextViewer(Composite parent, int style, IPreferenceStore store, final Dictionary dictionary, IVerticalRuler ruler) {
-       
         super(parent, ruler, style);
         this.store = store;
         this.dictionary = dictionary;
-        this.
 
         sqlTextTools = new SQLTextTools(store, dictionary);
         this.getControl().addDisposeListener(new DisposeListener() {
@@ -106,12 +97,6 @@ public class SQLTextViewer extends SourceViewer {
             }
         });
         store.addPropertyChangeListener(fPreferenceListener);
-        FontData[] fData = PreferenceConverter.getFontDataArray(store, IConstants.FONT);
-
-        if (fData.length > 0) {
-            JFaceResources.getFontRegistry().put(fData[0].toString(), fData);
-            this.getControl().setFont(JFaceResources.getFontRegistry().get(fData[0].toString()));
-        }
 
         configuration = new SQLSourceViewerConfiguration(sqlTextTools);
 
@@ -186,6 +171,40 @@ public class SQLTextViewer extends SourceViewer {
     }
 
 
+    @Override
+	public void setDocument(IDocument dc) {
+
+        IDocument previous = this.getDocument();
+        if (previous != null) {
+
+            partitioner.disconnect();
+        }
+        super.setDocument(dc);
+        if (dc != null) {
+
+            partitioner.connect(dc);
+            dc.setDocumentPartitioner(partitioner);
+            undoManager.connect(this);
+            this.setUndoManager(undoManager);
+        }
+
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jface.text.source.ISourceViewer#setDocument(org.eclipse.jface.text.IDocument,
+     *      org.eclipse.jface.text.source.IAnnotationModel)
+     */
+    @Override
+    public void setDocument(IDocument document, IAnnotationModel annotationModel) {
+        setDocument(document);
+        if (annotationModel != null && document != null)
+            annotationModel.connect(document);
+    }
+
+
     public void setNewDictionary(Dictionary newDictionary) {
         
         dictionary = newDictionary;
@@ -213,20 +232,6 @@ public class SQLTextViewer extends SourceViewer {
     }
 
 
-    public SQLTextViewer(Composite parent, int style, IPreferenceStore store, final Dictionary dictionary) {
-
-        this(parent, style, store, dictionary, new VerticalRuler(0));
-
-    }
-
-    private class PreferenceListener implements IPropertyChangeListener {
-
-        public void propertyChange(PropertyChangeEvent event) {
-            adaptToPreferenceChange(event);
-        }
-    };
-
-
     void adaptToPreferenceChange(PropertyChangeEvent event) {
         if (event.getProperty().equals(IConstants.FONT)) {
             FontData[] fData = PreferenceConverter.getFontDataArray(store, IConstants.FONT);
@@ -234,32 +239,16 @@ public class SQLTextViewer extends SourceViewer {
             JFaceResources.getFontRegistry().put(des, fData);
             Control ctrl = this.getControl();
             if (ctrl != null) {
-                ctrl.setFont(JFaceResources.getFontRegistry().get(des));
+            	getTextWidget().setFont(JFaceResources.getFontRegistry().get(des));
             }
 
         }
     }
 
-    PreferenceListener fPreferenceListener = new PreferenceListener();
-
-
     public void showAssistance() {
 
         if (dictionary != null)
             contentAssistant.showPossibleCompletions();
-    }
-
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.jface.text.source.ISourceViewer#setDocument(org.eclipse.jface.text.IDocument,
-     *      org.eclipse.jface.text.source.IAnnotationModel)
-     */
-    public void setDocument(IDocument document, IAnnotationModel annotationModel) {
-        setDocument(document);
-        if (annotationModel != null && document != null)
-            annotationModel.connect(document);
     }
 
 

@@ -74,6 +74,8 @@ public class ConnectionJob extends Job {
 			throw new RuntimeException("Invalid User - users alias must match the alias provided");
 		this.listener = listener;
 		this.requirePassword = user == null || requirePassword;
+    	if (alias.hasNoUserName())
+    		requirePassword = false;
 	}
 
 	/**
@@ -108,6 +110,19 @@ public class ConnectionJob extends Job {
 				if (!firstPass || !requirePassword)
 					session = user.createSession();
 				if (session != null) {
+					if (!user.hasAuthenticated()) {
+						SQLConnection connection = null;
+						try {
+							connection = session.grabConnection();
+						}catch(SQLException e) {
+							user.releaseSession(session);
+							session = null;
+							throw e;
+						} finally {
+							if (connection != null)
+								session.releaseConnection(connection);
+						}
+					}
 					if (listener != null)
 						listener.sessionEstablished(session);
 			        return new Status(IStatus.OK, getClass().getName(), IStatus.OK, Messages.getString("Progress.Connection.Success"), null);
@@ -145,17 +160,27 @@ public class ConnectionJob extends Job {
             public void run() {
             	if (message != null) {
             		String title = Messages.getString("Progress.Connection.Title") + ' ' + alias.getName();
-            		if (user != null)
+            		if (user != null && !alias.hasNoUserName())
             			title += '/' + user.getUserName();
-            		MessageDialog dlg = new MessageDialog(shell, title, null, 
-            				Messages.getString("Progress.Connection.ErrorMessage_Part1") + "\n\n" +
-            				message + "\n\n" + 
-            				Messages.getString("Progress.Connection.ErrorMessage_Part2"), 
-            				MessageDialog.ERROR, new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL }, 0);
-            		boolean retry = dlg.open() == 0;
-            		if (!retry) {
-    	            	cancelled = true;
-    	            	return;
+            		if (alias.hasNoUserName()) {
+	            		MessageDialog dlg = new MessageDialog(shell, title, null, 
+	            				Messages.getString("Progress.Connection.ErrorMessage_Part1") + "\n\n" +
+	            				message, 
+	            				MessageDialog.ERROR, new String[] { IDialogConstants.OK_LABEL }, 0);
+	            		dlg.open();
+            			cancelled = true;
+            			return;
+            		} else {
+	            		MessageDialog dlg = new MessageDialog(shell, title, null, 
+	            				Messages.getString("Progress.Connection.ErrorMessage_Part1") + "\n\n" +
+	            				message + "\n\n" + 
+	            				Messages.getString("Progress.Connection.ErrorMessage_Part2"), 
+	            				MessageDialog.ERROR, new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL }, 0);
+	            		boolean retry = dlg.open() == 0;
+	            		if (!retry) {
+	    	            	cancelled = true;
+	    	            	return;
+	            		}
             		}
             	}
             	

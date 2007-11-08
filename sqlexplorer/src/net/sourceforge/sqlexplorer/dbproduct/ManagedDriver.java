@@ -12,6 +12,7 @@ import org.dom4j.Element;
 import org.dom4j.tree.DefaultElement;
 
 import net.sourceforge.sqlexplorer.ExplorerException;
+import net.sourceforge.sqlexplorer.SQLCannotConnectException;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
 import net.sourceforge.squirrel_sql.fw.persist.ValidationException;
@@ -34,8 +35,8 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 			throw new ValidationException("Not supported");
 		}
 
-		public int compareTo(Object rhs) {
-			return ManagedDriver.this.compareTo((ManagedDriver)rhs);
+		public int compareTo(ISQLDriver rhs) {
+			return ManagedDriver.this.getDriverClassName().compareTo(rhs.getDriverClassName());
 		}
 
 		public String getDriverClassName() {
@@ -196,14 +197,19 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 			try {
 				registerSQLDriver();
 			} catch(ClassNotFoundException e) {
-				throw new SQLException("Cannot load JDBC driver " + driverClassName + " because the class cannot be found; please check the classpath in Preferences -> SQL Explorer -> JDBC Drivers ", e);
+				throw new SQLException("Cannot load JDBC driver " + driverClassName + " because the class cannot be found; please check the classpath in Preferences -> SQL Explorer -> JDBC Drivers ");
 			}
 		if (!isDriverClassLoaded())
 			throw new SQLException("Cannot load JDBC driver " + driverClassName);
 		
-		Connection jdbcConn = jdbcDriver.connect(user.getAlias().getUrl(), props);
+		Connection jdbcConn = null;
+		try {
+			jdbcConn = jdbcDriver.connect(user.getAlias().getUrl(), props);
+		} catch(SQLException e) {
+			throw new SQLCannotConnectException(user, e);
+		}
 		if (jdbcConn == null)
-			throw new SQLException("Unable to create connection. Check your URL.");
+			throw new SQLCannotConnectException(user);
 
 		return new SQLConnection(user, jdbcConn, this, getDatabaseProduct().describeConnection(jdbcConn));
 	}

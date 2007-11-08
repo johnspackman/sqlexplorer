@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 
 import net.sourceforge.sqlexplorer.dbproduct.Session;
@@ -16,6 +17,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.CoolBarManager;
 import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.layout.GridData;
@@ -161,7 +163,14 @@ public class SQLEditorToolBar {
      * @param session The new session (cannot be null)
      */
     private void doOnEditorSessionChanged(Session session) {
-        String databaseProductName = session.getRoot().getDatabaseProductName().toLowerCase().trim();
+        String databaseProductName = null;
+        try {
+        	databaseProductName = session.getUser().getMetaDataSession().getDatabaseProductName().toLowerCase().trim();
+        }catch(SQLException e) {
+        	SQLExplorerPlugin.error(e);
+        	MessageDialog.openError(_editor.getSite().getShell(), "Cannot connect", e.getMessage());
+        	return;
+        }
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "editorAction");
         IExtension[] extensions = point.getExtensions();
@@ -223,7 +232,7 @@ public class SQLEditorToolBar {
             }
         }
         _catalogToolBarMgr.removeAll();
-        if (session.supportsCatalogs()) {
+        if (session.getUser().getMetaDataSession().getCatalogs() != null) {
             _catalogSwitcher = new SQLEditorCatalogSwitcher(_editor);
             _catalogToolBarMgr.add(_catalogSwitcher);
         }

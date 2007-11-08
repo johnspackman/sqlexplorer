@@ -7,8 +7,8 @@
     <jars/>
   </driver>
   <driver id="-24">
-    <name>IBM DB2 App Driver</name>
-    <url>jdbc:db2//&lt;host_name&gt;:6789/&lt;dbname&gt;</url>
+    <name>IBM DB2 Universal JDBC Driver</name>
+    <url>jdbc:db2//&lt;server&gt;[:port]/&lt;dbname&gt;</url>
     <jars/>
   </driver>
   <driver id="-21">

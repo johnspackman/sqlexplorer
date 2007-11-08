@@ -20,7 +20,11 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.util.Collection;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
+
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.SQLCannotConnectException;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
@@ -49,7 +53,11 @@ public class NewDatabaseStructureViewAction extends AbstractConnectionTreeAction
 		
 		Collection<User> users = getView().getSelectedUsers(true);
 		for (User user : users)
-			view.addUser(user);
+			try {
+				view.addUser(user);
+			}catch(SQLCannotConnectException e) {
+	        	MessageDialog.openError(Display.getDefault().getActiveShell(), "Cannot connect", e.getMessage());
+			}
 	}
 
 	/* (non-Javadoc)

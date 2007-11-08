@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
@@ -58,7 +58,7 @@ public abstract class AbstractNode implements INode {
 
     protected INode _parent;
 
-    protected Session _session;
+    protected MetaDataSession _session;
 
     protected String _type;
 
@@ -66,12 +66,12 @@ public abstract class AbstractNode implements INode {
     	this._name = name;
     }
 
-    public AbstractNode(String name, Session session) {
+    public AbstractNode(String name, MetaDataSession session) {
     	this._name = name;
     	this._session = session;
     }
 
-    public AbstractNode(INode parent, String name, Session session, String type) {
+    public AbstractNode(INode parent, String name, MetaDataSession session, String type) {
     	this._parent = parent;
     	this._name = name;
     	this._session = session;
@@ -262,8 +262,7 @@ public abstract class AbstractNode implements INode {
     /**
      * @return SessionTreeNode for this node.
      */
-    public final Session getSession() {
-
+    public final MetaDataSession getSession() {
         return _session;
     }
 
@@ -416,7 +415,7 @@ public abstract class AbstractNode implements INode {
      * 
      * @param session
      */
-    public final void setSession(Session session) {
+    public final void setSession(MetaDataSession session) {
 
         this._session = session;
     }

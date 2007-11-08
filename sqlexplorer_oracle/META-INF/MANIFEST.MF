@@ -13,3 +13,4 @@ Bundle-ClassPath: lib/xdb.jar,
  lib/xsu12.jar,
  lib/squirrel.jar,
  lib/ojdbc14.jar
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -31,18 +31,18 @@ import net.sourceforge.squirrel_sql.fw.sql.TableColumnInfo;
 public class ColumnInfoTab extends AbstractDataSetTab {
 
     private static final String COLUMN_LABELS[] = {
-    	"DatabaseDetailView.Tab.ColumnInfo.Col.ColumnName",
-    	"DatabaseDetailView.Tab.ColumnInfo.Col.DataType",
-    	"DatabaseDetailView.Tab.ColumnInfo.Col.TypeName",
-    	"DatabaseDetailView.Tab.ColumnInfo.Col.ColumnSize",
-    	"DatabaseDetailView.Tab.ColumnInfo.Col.DecimalDigits",
-    	"DatabaseDetailView.Tab.ColumnInfo.Col.Radix",
-    	"DatabaseDetailView.Tab.ColumnInfo.Col.IsNullAllowed",
-    	"DatabaseDetailView.Tab.ColumnInfo.Col.Remarks",
-    	"DatabaseDetailView.Tab.ColumnInfo.Col.DefaultValue",
-    	"DatabaseDetailView.Tab.ColumnInfo.Col.OctetLength",
-    	"DatabaseDetailView.Tab.ColumnInfo.Col.OrdinalPosition",
-    	"DatabaseDetailView.Tab.ColumnInfo.Col.IsNullable"
+    	Messages.getString("DatabaseDetailView.Tab.ColumnInfo.Col.ColumnName"),
+    	Messages.getString("DatabaseDetailView.Tab.ColumnInfo.Col.DataType"),
+    	Messages.getString("DatabaseDetailView.Tab.ColumnInfo.Col.TypeName"),
+    	Messages.getString("DatabaseDetailView.Tab.ColumnInfo.Col.ColumnSize"),
+    	Messages.getString("DatabaseDetailView.Tab.ColumnInfo.Col.DecimalDigits"),
+    	Messages.getString("DatabaseDetailView.Tab.ColumnInfo.Col.Radix"),
+    	Messages.getString("DatabaseDetailView.Tab.ColumnInfo.Col.IsNullAllowed"),
+    	Messages.getString("DatabaseDetailView.Tab.ColumnInfo.Col.Remarks"),
+    	Messages.getString("DatabaseDetailView.Tab.ColumnInfo.Col.DefaultValue"),
+    	Messages.getString("DatabaseDetailView.Tab.ColumnInfo.Col.OctetLength"),
+    	Messages.getString("DatabaseDetailView.Tab.ColumnInfo.Col.OrdinalPosition"),
+    	Messages.getString("DatabaseDetailView.Tab.ColumnInfo.Col.IsNullable")
     };
     
     public String getLabelText() {

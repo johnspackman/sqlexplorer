@@ -51,7 +51,6 @@ public class OracleQuery extends AnnotatedQuery {
 	 */
 	public void setCreateObjectName(String createObjectName) {
 		this.createObjectName = createObjectName;
-		setQueryType(QueryType.DDL);
 	}
 
 	/**
@@ -66,7 +65,6 @@ public class OracleQuery extends AnnotatedQuery {
 	 */
 	public void setCreateObjectType(String createObjectType) {
 		this.createObjectType = createObjectType;
-		setQueryType(QueryType.DDL);
 	}
 
 }

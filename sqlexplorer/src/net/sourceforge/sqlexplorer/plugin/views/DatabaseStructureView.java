@@ -18,16 +18,14 @@
  */
 package net.sourceforge.sqlexplorer.plugin.views;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.connections.SessionEstablishedAdapter;
-import net.sourceforge.sqlexplorer.dbproduct.Alias;
-import net.sourceforge.sqlexplorer.dbproduct.AliasManager;
-import net.sourceforge.sqlexplorer.dbproduct.ConnectionAdapter;
+import net.sourceforge.sqlexplorer.SQLCannotConnectException;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeActionGroup;
@@ -35,6 +33,7 @@ import net.sourceforge.sqlexplorer.dbstructure.DBTreeContentProvider;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeLabelProvider;
 import net.sourceforge.sqlexplorer.dbstructure.actions.FilterStructureAction;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.ColumnNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -43,6 +42,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -87,7 +87,7 @@ public class DatabaseStructureView extends ViewPart {
 	 */
 	private static class TabData {
 		private TreeViewer treeViewer;
-		private Session session;
+		private MetaDataSession session;
 	}
 
     private FilterStructureAction _filterAction;
@@ -97,28 +97,26 @@ public class DatabaseStructureView extends ViewPart {
     /** We use one tab for every session */
     private CTabFolder _tabFolder;
 
-    private List<Session> _allSessions = new ArrayList<Session>();
+    private List<MetaDataSession> _allSessions = new ArrayList<MetaDataSession>();
 
-    /**
+    public DatabaseStructureView() {
+		super();
+		SQLExplorerPlugin.getDefault().setDatabaseStructureView(this);
+	}
+
+	/**
      * Adds a new user
      * @param user
      */
-    public void addUser(final User user) {
+    public void addUser(final User user) throws SQLCannotConnectException {
     	// Make sure we list each user only once
     	for (Session session : _allSessions)
     		if (session.getUser() == user)
     			return;
     	
-    	user.queueForNewSession(new SessionEstablishedAdapter() {
-			@Override
-			public void sessionEstablished(final Session session) {
-				SQLExplorerPlugin.getDefault().getSite().getShell().getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						addSession(session);
-					}
-				});
-			}
-    	}, false);
+		MetaDataSession session = user.getMetaDataSession();
+		if (session != null)
+			addSession(user.getMetaDataSession());
     }
     	
     /**
@@ -127,15 +125,22 @@ public class DatabaseStructureView extends ViewPart {
      * 
      * @param session
      */
-    private void addSession(final Session session) {
-        if (_allSessions.contains(session)) {
+    private void addSession(final MetaDataSession session) throws SQLCannotConnectException {
+        if (_allSessions.contains(session))
             return;
-        }
         try {
+        	session.getMetaData();
         	session.setAutoCommit(true);
+        } catch(SQLCannotConnectException e) {
+        	SQLExplorerPlugin.error(e);
+        	throw e;
         }catch(SQLException e) {
         	SQLExplorerPlugin.error(e);
+        	MessageDialog.openError(getSite().getShell(), "Cannot connect", e.getMessage());
         }
+        DatabaseNode rootNode = session.getRoot();
+        if (rootNode == null)
+        	return;
         _allSessions.add(session);
         
         if (_filterAction != null) {
@@ -253,7 +258,7 @@ public class DatabaseStructureView extends ViewPart {
         treeViewer.setLabelProvider(new DBTreeLabelProvider());
 
         // set input session
-        treeViewer.setInput(session.getRoot());
+        treeViewer.setInput(rootNode);
 
         // add selection change listener, so we can update detail view as
         // required.
@@ -287,47 +292,6 @@ public class DatabaseStructureView extends ViewPart {
                 }
             }
 
-        });
-
-        // add dispose listener for when session gets closed
-        SQLExplorerPlugin.getDefault().getAliasManager().addListener(new ConnectionAdapter() {
-        	
-			@Override
-			public void modelChanged() {
-            	if (tabItem.isDisposed())
-            		return;
-            	
-            	boolean affectsMe = false;
-            	AliasManager manager = SQLExplorerPlugin.getDefault().getAliasManager();
-    			User user = session.getUser();
-        		if (user == null || user.getAlias() == null)
-        			affectsMe = true;
-        		else {
-        			Alias alias = user.getAlias();
-        			if (!user.contains(session) || !alias.contains(user) || !manager.contains(alias))
-        				affectsMe = true;
-        		}
-            	if (!affectsMe)
-            		return;
-
-                // if it is the last session, clear detail tab
-                if (tabItem.getParent().getItemCount() == 1) {
-
-                    DatabaseDetailView detailView = (DatabaseDetailView) getSite().getPage().findView(SqlexplorerViewConstants.SQLEXPLORER_DBDETAIL);
-                    if (detailView != null)
-                        detailView.setSelectedNode(null);
-
-                    setDefaultMessage();
-                    _filterAction.setEnabled(false);
-
-                } else {
-                    // remove tab
-                    tabItem.setData(null);
-                    tabItem.dispose();
-                }
-                
-                _allSessions.remove(session);
-            }
         });
 
         // add expand/collapse listener
@@ -423,10 +387,14 @@ public class DatabaseStructureView extends ViewPart {
         _parent = parent;
 
         // load all open sessions
+        /*
         for (Alias alias : SQLExplorerPlugin.getDefault().getAliasManager().getAliases())
-        	for (User user: alias.getUsers())
-        		for (Session session : user.getSessions())
+        	for (User user: alias.getUsers()) {
+        		MetaDataSession session = user.getMetaDataSession();
+        		if (session != null)
         			addSession(session);
+        	}
+        	*/
 
         // set default message
         if (_allSessions.isEmpty()) {
@@ -456,7 +424,7 @@ public class DatabaseStructureView extends ViewPart {
         }
     }
 
-    public Session getSession() {
+    public MetaDataSession getSession() {
         if (_tabFolder == null || _tabFolder.getSelectionIndex() < 0)
             return null;
 

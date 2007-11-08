@@ -149,7 +149,10 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 			}
 		} finally {
 			if (stmt != null)
-				stmt.close();
+				try {
+					stmt.close();
+				} catch(SQLException e) {
+				}
 		}
 		
 		if (warnings != null) {
@@ -249,9 +252,15 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 			}
 		} finally {
 			if (rs != null)
-				rs.close();
+				try {
+					rs.close();
+				} catch(SQLException e) {
+				}
 			if (stmt != null)
-				stmt.close();
+				try {
+					stmt.close();
+				} catch(SQLException e) {
+				}
 		}
 		
 		if (warnings != null) {

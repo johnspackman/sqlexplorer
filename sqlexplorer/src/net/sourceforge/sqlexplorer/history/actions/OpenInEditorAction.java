@@ -2,6 +2,9 @@ package net.sourceforge.sqlexplorer.history.actions;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.connections.ConnectionsView;
+import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.history.SQLHistoryElement;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
@@ -65,22 +68,36 @@ public class OpenInEditorAction extends AbstractHistoryContextAction {
             }
 
             SQLHistoryElement sqlHistoryElement = (SQLHistoryElement) ti[0].getData();
+            User user = sqlHistoryElement.getUser();
+            Alias alias;
+            if (user != null)
+            	alias = user.getAlias();
+            else {
+            	alias = sqlHistoryElement.getAlias();
+            	if (alias != null)
+            		user = alias.getDefaultUser();
+            	if (user == null) {
+        	        ConnectionsView view = SQLExplorerPlugin.getDefault().getConnectionsView();
+        	        if (view != null)
+                		user = view.getDefaultUser();
+            	}
+            }
 
-            if (!sqlHistoryElement.getUser().hasAuthenticated()) {
+            if (user != null && !user.hasAuthenticated()) {
                 boolean okToOpen = MessageDialog.openConfirm(_table.getShell(),
                         Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Title"),
                         Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Message.Prefix") + " "
-                                + sqlHistoryElement.getSessionDescription()
+                                + user.getDescription()
                                 + Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Message.Postfix"));
 
                 if (okToOpen) {
-                	OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(sqlHistoryElement.getUser().getAlias(), sqlHistoryElement.getUser(), false);
+                	OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(alias, user, false);
                 	openDlgAction.run();
                 }
             }
 
             SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo() + ").sql");
-            input.setUser(sqlHistoryElement.getUser());
+            input.setUser(user);
             IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
             if (page == null)
                 return;

@@ -19,8 +19,7 @@
 package net.sourceforge.sqlexplorer.sessiontree.model.utility;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dbproduct.Session;
-
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -29,7 +28,7 @@ import org.eclipse.core.runtime.jobs.Job;
 
 public class DictionaryLoader extends Job {
 
-    private Session _sessionNode;
+    private MetaDataSession session;
     
     private static final String ID = "net.sourceforge.sqlexplorer";
     
@@ -44,9 +43,9 @@ public class DictionaryLoader extends Job {
     /**
      * Default constructor,
      */
-    public DictionaryLoader(Session sessionNode) {
+    public DictionaryLoader(MetaDataSession session) {
         super(Messages.getString("Progress.Dictionary.Title"));
-        _sessionNode = sessionNode;
+        this.session = session;
     }
     
     /**
@@ -55,7 +54,7 @@ public class DictionaryLoader extends Job {
      */
     protected IStatus run(IProgressMonitor monitor) {
         
-        Dictionary dictionary = _sessionNode.getDictionary();
+        Dictionary dictionary = session.getDictionary();
         
         
         // check if we can persisted dictionary 
@@ -64,12 +63,12 @@ public class DictionaryLoader extends Job {
         
         try {
         
-            boolean isLoaded = dictionary.restore(_sessionNode.getRoot(), monitor);
+            boolean isLoaded = dictionary.restore(session.getRoot(), monitor);
     
             if (!isLoaded) {           
 
                 // load full dictionary
-                dictionary.load(_sessionNode.getRoot(), monitor);
+                dictionary.load(session.getRoot(), monitor);
                 monitor.done();
             }
             

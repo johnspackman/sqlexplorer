@@ -3,10 +3,10 @@ package net.sourceforge.sqlexplorer.sqleditor.actions;
 import java.sql.SQLException;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SwitchableSessionEditor;
 
 import org.eclipse.jface.action.ControlContribution;
@@ -61,12 +61,13 @@ public class SQLEditorCatalogSwitcher extends ControlContribution {
         
         _catalogCombo.add("");
         
-        if (_editor.getSession() != null && _editor.getSession().supportsCatalogs()) {
+        if (_editor.getSession() != null) {
                        
-            String catalogs[] = _editor.getSession().getRoot().getChildNames();
             try {
+                String[] catalogs = getMetaDataSession().getCatalogs();
             	User user = _editor.getSession().getUser();
-            	// Get the connection directly from the user because the session may be using the shared one
+            	
+            	// Get the connection directly from the user because the session may be busy with its one one
 	            SQLConnection connection = user.getConnection();
 	            try {
 		            String currentCatalog = connection.getCatalog();
@@ -89,5 +90,8 @@ public class SQLEditorCatalogSwitcher extends ControlContribution {
         return _catalogCombo;
     }
 
+    private MetaDataSession getMetaDataSession() {
+    	return _editor.getSession().getUser().getMetaDataSession();
+    }
     
 }

@@ -52,7 +52,7 @@ public interface IConstants {
 
     String DEFAULT_DRIVER = "Drivers.DefaultDriverName";
 
-    String FONT = "SQLEditor.Font";
+    String FONT = "SQLEditor.Font.V2";
 
     String HISTORY_AUTOSAVE_AFTER = "SQLHistory.AutoSaveAfterXXStatements";
 

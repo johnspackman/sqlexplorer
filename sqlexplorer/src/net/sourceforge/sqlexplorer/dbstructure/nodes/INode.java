@@ -18,7 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
-import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -95,7 +95,7 @@ public interface INode {
     /**
      * @return SessionTreeNode for this node.
      */
-    public Session getSession();
+    public MetaDataSession getSession();
 
 
     /**

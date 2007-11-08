@@ -62,7 +62,8 @@ public class Messages {
 		for (int i = 0; i < resources.length; i++) {
 
 			try {
-				return resources[i].getString(key);
+				if (resources[i] != null)
+					return resources[i].getString(key);
 			} catch (MissingResourceException e) {
 				// noop
 			}

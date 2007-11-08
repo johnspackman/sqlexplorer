@@ -28,6 +28,8 @@ import net.sourceforge.sqlexplorer.sqleditor.actions.ExecSQLAction;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -38,6 +40,7 @@ import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -145,8 +148,13 @@ public class SQLTextEditor extends TextEditor {
 		Object adapter = getAdapter(org.eclipse.swt.widgets.Control.class);
 		if (adapter instanceof StyledText) {
 			StyledText text = (StyledText) adapter;
-			text.setWordWrap(SQLExplorerPlugin.getDefault()
-					.getPluginPreferences().getBoolean(IConstants.WORD_WRAP));
+			text.setWordWrap(SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.WORD_WRAP));
+			
+	        FontData[] fData = PreferenceConverter.getFontDataArray(store, IConstants.FONT);
+	        if (fData.length > 0) {
+	            JFaceResources.getFontRegistry().put(fData[0].toString(), fData);
+	            text.setFont(JFaceResources.getFontRegistry().get(fData[0].toString()));
+	        }
 		}
 	}
 
@@ -180,7 +188,7 @@ public class SQLTextEditor extends TextEditor {
 
 		Dictionary dictionary = null;
 		if (editor.getSession() != null && _enableContentAssist) {
-			dictionary = editor.getSession().getDictionary();
+			dictionary = editor.getSession().getUser().getMetaDataSession().getDictionary();
 		}
 		sqlTextViewer = new SQLTextViewer(myParent, style, store, dictionary,
 				ruler);
@@ -250,7 +258,7 @@ public class SQLTextEditor extends TextEditor {
 
 	public void onEditorSessionChanged(Session session) {
 		if (session != null && _enableContentAssist) {
-			setNewDictionary(editor.getSession().getDictionary());
+			setNewDictionary(editor.getSession().getUser().getMetaDataSession().getDictionary());
 		} else {
 			setNewDictionary(null);
 		}

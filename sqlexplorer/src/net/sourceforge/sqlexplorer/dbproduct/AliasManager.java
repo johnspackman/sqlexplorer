@@ -22,9 +22,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeMap;
 
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -45,7 +45,7 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 public class AliasManager implements ConnectionListener {
 	
 	// List of aliases, indexed by alias name
-	private HashMap<String, Alias> aliases = new HashMap<String, Alias>();
+	private TreeMap<String, Alias> aliases = new TreeMap<String, Alias>();
 	
 	// Connection Listeners
 	private LinkedList<ConnectionListener> connectionListeners = new LinkedList<ConnectionListener>();

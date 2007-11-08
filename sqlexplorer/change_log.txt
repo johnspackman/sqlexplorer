@@ -1,3 +1,25 @@
+3.5.0.RC5 - John Spackman, Zenesis Ltd
+======================================
++. Fixed problem with creating Oracle triggers
++. Fixed problem with closing running queries
++. Fixed problem with detecting query types with GRANT statement (Oracle only)
++. ConnectionsView is now sorted alphabetically, both for aliases and users within aliases
++. Fixed bug where DSView could crash after connection was closed
++. Meta data now is now loaded only once per alias/user, shares connection with DSView
++. Fixed bug where font preference was ignored 
++. Fixed bug where JDBC drivers which do not require a username/password could not be
+	configured.
++. Fixed bug where NullPointerException could occur if SQLHistory references alias/user 
+	which no longer exists
+
+
+3.5.0.RC4 - John Spackman, Zenesis Ltd
+======================================
++. Fixed missing column headings in column detail tab view
++. Upgraded to Squirrel CVS head
++. Worked around problem with recycle bin tables in Oracle causing cursor leaks
+
+
 3.5.0.RC3 - John Spackman, Zenesis Ltd
 ======================================
 +. Getting the extra, RDBMS-specific description info for connections could cause

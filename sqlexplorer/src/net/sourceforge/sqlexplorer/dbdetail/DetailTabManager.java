@@ -19,6 +19,7 @@ import net.sourceforge.sqlexplorer.dbdetail.tab.RowCountTab;
 import net.sourceforge.sqlexplorer.dbdetail.tab.RowIdsTab;
 import net.sourceforge.sqlexplorer.dbdetail.tab.TableInfoTab;
 import net.sourceforge.sqlexplorer.dbdetail.tab.VersionsTab;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
@@ -54,7 +55,7 @@ public class DetailTabManager {
 
     private static final Log _logger = LogFactory.getLog(DetailTabManager.class);
 
-    private static final HashMap _sessionTabCache = new HashMap();
+    private static final HashMap<Session, HashMap<String, List<IDetailTab>>> _sessionTabCache = new HashMap();
 
 
     /**
@@ -68,7 +69,7 @@ public class DetailTabManager {
             _logger.debug("Clearing tab cache for: " + node.getUniqueIdentifier());
         }
 
-        HashMap tabCache = (HashMap) _sessionTabCache.get(node.getSession());
+        HashMap<String, List<IDetailTab>> tabCache = _sessionTabCache.get(node.getSession());
         tabCache.remove(node.getUniqueIdentifier());
 
     }
@@ -80,7 +81,7 @@ public class DetailTabManager {
      * 
      * @param session SessionTreeNode
      */
-    public static void clearCacheForSession(Session session) {
+    public static void clearCacheForSession(MetaDataSession session) {
 
         if (_logger.isDebugEnabled()) {
             _logger.debug("Clearing tab cache for: " + session.toString());
@@ -198,13 +199,13 @@ public class DetailTabManager {
      * @param node for which to find tabs.
      * @return List of tabs
      */
-    private static List createTabs(INode node) {
+    private static List<IDetailTab> createTabs(INode node) {
 
         if (_logger.isDebugEnabled()) {
             _logger.debug("Creating tabs for: " + node.getUniqueIdentifier());
         }
 
-        ArrayList tabList = new ArrayList();
+        ArrayList<IDetailTab> tabList = new ArrayList<IDetailTab>();
 
         // create connection info tab if needed
         if (node instanceof DatabaseNode) {
@@ -364,15 +365,15 @@ public class DetailTabManager {
             _logger.debug("Loading tabs for: " + node.getUniqueIdentifier());
         }
 
-        HashMap tabCache = (HashMap) _sessionTabCache.get(node.getSession());
+        HashMap<String, List<IDetailTab>> tabCache = _sessionTabCache.get(node.getSession());
 
         if (tabCache == null) {
             // create cache
-            tabCache = new HashMap();
+            tabCache = new HashMap<String, List<IDetailTab>>();
             _sessionTabCache.put(node.getSession(), tabCache);
         }
 
-        List tabs = (List) tabCache.get(node.getUniqueIdentifier());
+        List<IDetailTab> tabs = tabCache.get(node.getUniqueIdentifier());
 
         if (tabs == null) {
             // create tabs & store for later

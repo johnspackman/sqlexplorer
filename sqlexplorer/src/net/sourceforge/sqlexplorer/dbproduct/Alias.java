@@ -19,8 +19,8 @@
 package net.sourceforge.sqlexplorer.dbproduct;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import org.dom4j.Element;
 import org.dom4j.tree.DefaultElement;
@@ -52,6 +52,7 @@ public class Alias {
 	/*package*/ static final String DEFAULT_USER = "default-user";
 	/*package*/ static final String DRIVER_ID = "driver-id";
 	/*package*/ static final String FOLDER_FILTER_EXPRESSION = "folder-filter-expression";
+	/*package*/ static final String HAS_NO_USER_NAME = "has-no-user-name";
 	/*package*/ static final String NAME = "name";
 	/*package*/ static final String NAME_FILTER_EXPRESSION = "name-filter-expression";
 	/*package*/ static final String SCHEMA_FILTER_EXPRESSION = "schema-filter-expression";
@@ -80,12 +81,15 @@ public class Alias {
     private String folderFilterExpression = "";
     private String nameFilterExpression = "";
     private String schemaFilterExpression = "";
+    
+    // Whether username/password are required
+    private boolean hasNoUserName;
 
 	// Default user
 	private User defaultUser;
 	
 	// List of all users (including the default user), indexed by user name
-	private HashMap<String, User> users = new HashMap<String, User>();
+	private TreeMap<String, User> users = new TreeMap<String, User>();
 
 	/**
 	 * Constructs a new Alias with a given name
@@ -111,26 +115,35 @@ public class Alias {
 		autoLogon = Boolean.parseBoolean(root.attributeValue(AUTO_LOGON));
 		connectAtStartup = Boolean.parseBoolean(root.attributeValue(CONNECT_AT_STARTUP));
 		driverId = root.attributeValue(DRIVER_ID);
+		String str = root.attributeValue(HAS_NO_USER_NAME);
+		if (str != null)
+			hasNoUserName = Boolean.parseBoolean(str);
 		name = root.elementText(NAME);
 		url = root.elementText(URL);
 		folderFilterExpression = root.elementText(FOLDER_FILTER_EXPRESSION);
 		nameFilterExpression = root.elementText(NAME_FILTER_EXPRESSION);
 		schemaFilterExpression = root.elementText(SCHEMA_FILTER_EXPRESSION);
 
-		Element usersElem = root.element(USERS);
-		if (usersElem != null) {
-			List<Element> list = usersElem.elements(User.USER);
-			if (list != null)
-				for (Element userElem : list) {
-					User user = new User(userElem);
-					if (user.getUserName() != null && user.getUserName().trim().length() > 0)
-						addUser(user);
+		if (hasNoUserName) {
+			User user = new User("anonymous", "");
+			addUser(user);
+			setDefaultUser(user);
+		} else {
+			Element usersElem = root.element(USERS);
+			if (usersElem != null) {
+				List<Element> list = usersElem.elements(User.USER);
+				if (list != null)
+					for (Element userElem : list) {
+						User user = new User(userElem);
+						if (user.getUserName() != null && user.getUserName().trim().length() > 0)
+							addUser(user);
+					}
+				String defaultUserName = root.elementText(DEFAULT_USER);
+				if (defaultUserName != null) {
+					User user = users.get(defaultUserName);
+					if (user != null)
+						defaultUser = user;
 				}
-			String defaultUserName = root.elementText(DEFAULT_USER);
-			if (defaultUserName != null) {
-				User user = users.get(defaultUserName);
-				if (user != null)
-					defaultUser = user;
 			}
 		}
 	}
@@ -145,6 +158,7 @@ public class Alias {
 		root.addAttribute(AUTO_LOGON, Boolean.toString(autoLogon));
 		root.addAttribute(CONNECT_AT_STARTUP, Boolean.toString(connectAtStartup));
 		root.addAttribute(DRIVER_ID, driverId);
+		root.addAttribute(HAS_NO_USER_NAME, Boolean.toString(hasNoUserName));
 		root.addElement(NAME).setText(name);
 		root.addElement(URL).setText(url);
 		root.addElement(FOLDER_FILTER_EXPRESSION).setText(folderFilterExpression);
@@ -213,7 +227,9 @@ public class Alias {
 		}
 		if (user.getUserName() == null || user.getUserName().length() == 0)
 			throw new IllegalArgumentException("Illegal user name");
-		
+		if (!users.isEmpty() && hasNoUserName)
+			throw new IllegalArgumentException("Cannot add users when usernames are not required by the alias");
+			
 		User existingUser = users.get(user.getUserName());
 		if (existingUser != null) {
 			existingUser.mergeWith(user);
@@ -370,5 +386,33 @@ public class Alias {
 
 	public String getDriverId() {
 		return driverId;
+	}
+
+	/**
+	 * @return the hasNoUserName
+	 */
+	public boolean hasNoUserName() {
+		return hasNoUserName;
+	}
+
+	/**
+	 * @param hasNoUserName the hasNoUserName to set
+	 */
+	public void setHasNoUserName(boolean hasNoUserName) {
+		if (this.hasNoUserName == hasNoUserName)
+			return;
+		this.hasNoUserName = hasNoUserName;
+		if (hasNoUserName) {
+			for (User user : users.values())
+				user.setAlias(null);
+			users.clear();
+			User user = new User("anonymous", "");
+			addUser(user);
+			setDefaultUser(user);
+		} else {
+			for (User user : users.values())
+				user.setAlias(null);
+			users.clear();
+		}
 	}
 }

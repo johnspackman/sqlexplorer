@@ -3,10 +3,10 @@
  */
 package net.sourceforge.sqlexplorer.dbproduct;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -47,7 +47,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 	
 	private State state = State.PRIMARY_RESULTS;
 	private AbstractDatabaseProduct product;
-	private PreparedStatement stmt;
+	private Statement stmt;
 	private LinkedList<NamedParameter> parameters;
 	private int maxRows;
 	private int paramColumnIndex;
@@ -55,14 +55,14 @@ public final class ExecutionResultImpl implements ExecutionResults {
 	private int updateCount;
 	private ResultSet currentResultSet;
 
-	public ExecutionResultImpl(AbstractDatabaseProduct product, PreparedStatement stmt, LinkedList<NamedParameter> parameters, int maxRows) throws SQLException {
+	public ExecutionResultImpl(AbstractDatabaseProduct product, Statement stmt, boolean hasResults, LinkedList<NamedParameter> parameters, int maxRows) throws SQLException {
 		super();
 		this.product = product;
 		this.stmt = stmt;
 		this.parameters = parameters;
 		this.maxRows = maxRows;
 		
-		if (!stmt.execute())
+		if (!hasResults)
 			state = State.SECONDARY_RESULTS;
 	}
 

@@ -2,3 +2,6 @@ bin
 johns-todo.txt
 temp-emails.txt
 driver.xml
+javaCompiler.sqlexplorer.jar.args
+build.xml
+temp.folder

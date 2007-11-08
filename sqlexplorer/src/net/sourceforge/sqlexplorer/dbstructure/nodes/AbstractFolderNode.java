@@ -1,6 +1,6 @@
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
-import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
@@ -14,11 +14,11 @@ public abstract class AbstractFolderNode extends AbstractNode {
 		super(name);
 	}
 
-	public AbstractFolderNode(String name, Session session) {
+	public AbstractFolderNode(String name, MetaDataSession session) {
 		super(name, session);
 	}
 
-	public AbstractFolderNode(INode parent, String name, Session session, String type) {
+	public AbstractFolderNode(INode parent, String name, MetaDataSession session, String type) {
 		super(parent, name, session, type);
         setImageKey("Images.closedFolder");
         setExpandedImageKey("Images.OpenFolder");

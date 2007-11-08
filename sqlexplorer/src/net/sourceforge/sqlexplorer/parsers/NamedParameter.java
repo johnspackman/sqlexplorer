@@ -104,7 +104,7 @@ public class NamedParameter implements Comparable<NamedParameter> {
 						java.util.Date newDt = df.parse(value);
 						date = new Date(newDt.getTime());
 					} catch(ParseException e) {
-						throw new SQLException(e);
+						throw new SQLException(e.getMessage());
 					}
 				stmt.setDate(columnIndex, date);
 			}
@@ -134,7 +134,7 @@ public class NamedParameter implements Comparable<NamedParameter> {
 							df = new SimpleDateFormat(formatName);
 						date = new Date(df.parse(param.value.toString()).getTime());
 					} catch(ParseException e) {
-						throw new SQLException(e);
+						throw new SQLException(e.getMessage());
 					}
 				stmt.setDate(columnIndex, date);
 			}
@@ -164,7 +164,7 @@ public class NamedParameter implements Comparable<NamedParameter> {
 							df = new SimpleDateFormat(formatName);
 						date = new Date(df.parse(param.value.toString()).getTime());
 					} catch(ParseException e) {
-						throw new SQLException(e);
+						throw new SQLException(e.getMessage());
 					}
 				stmt.setDate(columnIndex, date);
 			}

@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
-import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.TextUtil;
@@ -53,7 +53,7 @@ public class SchemaNode extends AbstractNode {
      * @param name of this node
      * @param sessionNode session for this node
      */
-    public SchemaNode(INode parent, String name, Session sessionNode) {
+    public SchemaNode(INode parent, String name, MetaDataSession sessionNode) {
     	super(parent, name, sessionNode, "schema");
         setImageKey("Images.SchemaNodeIcon");
     }

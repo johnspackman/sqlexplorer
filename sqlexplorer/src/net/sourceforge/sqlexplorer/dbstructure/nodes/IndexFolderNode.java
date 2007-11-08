@@ -18,7 +18,6 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +25,7 @@ import java.util.List;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
+import net.sourceforge.squirrel_sql.fw.sql.IndexInfo;
 
 public class IndexFolderNode extends AbstractFolderNode {
 
@@ -53,9 +53,9 @@ public class IndexFolderNode extends AbstractFolderNode {
         List indexNames = new ArrayList();
 
         try {
-            ResultSet resultSet = _session.getMetaData().getIndexInfo(_tableInfo);
-            while (resultSet.next()) {
-                String name = resultSet.getString(6);
+            List<IndexInfo> infos = _session.getMetaData().getIndexInfo(_tableInfo);
+            for (IndexInfo info : infos) {
+                String name = info.getSimpleName();
                 if (!(name == null || indexNames.contains(name))) {
                     indexNames.add(name);
                 }

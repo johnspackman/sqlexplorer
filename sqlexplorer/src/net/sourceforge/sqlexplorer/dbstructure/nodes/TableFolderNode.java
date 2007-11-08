@@ -19,8 +19,10 @@
 
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
+import java.util.LinkedList;
+
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
 
@@ -46,10 +48,16 @@ public class TableFolderNode extends AbstractFolderNode {
      * @param name of this node
      * @param sessionNode session for this node
      */
-    public TableFolderNode(INode parent, String name, Session sessionNode, ITableInfo[] tables) {
+    public TableFolderNode(INode parent, String name, MetaDataSession sessionNode, ITableInfo[] tables) {
     	super(parent, tidiedName(name), sessionNode, name + "_FOLDER");
 
-        _allTables = tables;
+    	// Nasty temporary hack for Oracle - BIN$ tables are recycle bin tables, and not only does the JDBC driver
+    	//	cause a SQLException when getting meta data on them, it leaks cursors when it does it!
+    	LinkedList<ITableInfo> list = new LinkedList<ITableInfo>();
+    	for (ITableInfo info : tables)
+    		if (!info.getSimpleName().startsWith("BIN$"))
+    			list.add(info);
+        _allTables = list.toArray(new ITableInfo[0]);
         _origName = name;
     }
 

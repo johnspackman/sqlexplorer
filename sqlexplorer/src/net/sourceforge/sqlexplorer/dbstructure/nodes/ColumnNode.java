@@ -18,7 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
-import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 
 /**
  * @author Davy Vanherbergen
@@ -35,7 +35,7 @@ public class ColumnNode extends AbstractNode {
     private TableNode _parentTable;
 
    
-    public ColumnNode(INode parent, String name, Session session, TableNode parentTable, boolean showKeyLabels) {
+    public ColumnNode(INode parent, String name, MetaDataSession session, TableNode parentTable, boolean showKeyLabels) {
     	super(parent, name, session, "column");
         _parentTable = parentTable;
         setImageKey("Images.ColumnNodeIcon");

@@ -55,6 +55,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
@@ -73,6 +74,11 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
     private User defaultUser;
     
     private Clipboard clipboard;
+
+	public ConnectionsView() {
+		super();
+		SQLExplorerPlugin.getDefault().setConnectionsView(this);
+	}
 
 	/**
      * @see org.eclipse.ui.IWorkbenchPart#createPartControl(org.eclipse.swt.widgets.Composite)
@@ -200,7 +206,7 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
     }
 
 	public void refresh() {
-		getSite().getShell().getDisplay().asyncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				_treeViewer.refresh();
 			}

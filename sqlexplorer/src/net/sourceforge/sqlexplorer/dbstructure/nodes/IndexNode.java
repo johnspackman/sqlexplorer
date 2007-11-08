@@ -18,11 +18,13 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
-import java.sql.ResultSet;
 import java.util.Comparator;
+import java.util.List;
 
-import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.squirrel_sql.fw.sql.IndexInfo;
+import net.sourceforge.squirrel_sql.fw.sql.IndexInfo.SortOrder;
 
 /**
  * @author Davy Vanherbergen
@@ -33,7 +35,7 @@ public class IndexNode extends AbstractNode {
     private TableNode _parentTable;
 
 
-    public IndexNode(INode parent, String name, Session session, TableNode parentTable) {
+    public IndexNode(INode parent, String name, MetaDataSession session, TableNode parentTable) {
     	super(parent, name, session, "index");
         _parentTable = parentTable;
         setImageKey("Images.IndexIcon");
@@ -76,16 +78,15 @@ public class IndexNode extends AbstractNode {
     public void loadChildren() {
 
         try {
-            ResultSet resultSet = _session.getMetaData().getIndexInfo(_parentTable.getTableInfo());
-            while (resultSet.next()) {
+            List<IndexInfo> infos = _session.getMetaData().getIndexInfo(_parentTable.getTableInfo());
+            for (IndexInfo info : infos) {
 
-                String indexName = resultSet.getString(6);
-                String columnName = resultSet.getString(9);
-                String sort = resultSet.getString(10);
+                String indexName = info.getSimpleName();
+                SortOrder sort = info.getSortOrder();
                                 
                 if (indexName != null && indexName.equalsIgnoreCase(_name)) {
-                    ColumnNode col = new ColumnNode(this, columnName, _session, _parentTable, true);
-                    if (sort == null || sort.equalsIgnoreCase("A")) {
+                    ColumnNode col = new ColumnNode(this, info.getColumnName(), _session, _parentTable, true);
+                    if (sort == null || sort == SortOrder.ASC) {
                         col.setLabelDecoration("ASC");
                     } else {
                         col.setLabelDecoration("DESC");
