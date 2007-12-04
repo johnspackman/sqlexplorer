@@ -4,22 +4,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.sybase.nodes.ProcedureNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 public class SysObjectFolder extends AbstractFolderNode {
 
 	public SysObjectFolder() {
-	
+		super(null, null, null, "FOLDER");
 	}
 	
-	public SysObjectFolder(INode parent, SessionTreeNode sessionNode) {
-		_type = "FOLDER";
-		initialize(parent, null, sessionNode);
+	//public SysObjectFolder(INode parent, SessionTreeNode sessionNode) {
+	public SysObjectFolder(INode parent, String name, MetaDataSession session) {
+		super(parent, name, session, "FOLDER");
+		//_type = "FOLDER";
+		//initialize(parent, null, sessionNode);
 	}
 
 	public String getChildType() {
@@ -45,11 +47,12 @@ public class SysObjectFolder extends AbstractFolderNode {
 	public void loadChildren() {
 		if (getSQL().equals("")) return;
 		
-        SQLConnection connection = getSession().getInteractiveConnection();
+        SQLConnection connection = null;
         ResultSet rs = null;
         PreparedStatement pStmt = null;
         
         try {
+        	connection = getSession().grabConnection();
     		pStmt = connection.prepareStatement(getSQL());
             rs = pStmt.executeQuery();
 
@@ -58,9 +61,20 @@ public class SysObjectFolder extends AbstractFolderNode {
             		continue;
             	}
             	
+            	Class[] param = new Class[3];
+            	Object[] params = new Object[3];
+            	
             	try {
-	            	SysObjectNode newNode = (SysObjectNode) getChildClass().newInstance();
-	            	newNode.initialize(this, rs.getString(1), _sessionNode);
+            		param[0] = this.getClass();
+            		param[1] = Class.forName("String");
+            		param[2] = _session.getClass();
+            		params[0] = this;
+            		params[1] = rs.getString(1);
+            		params[2] = _session;
+
+            		
+	            	SysObjectNode newNode = (SysObjectNode) getChildClass().getConstructor(param).newInstance(params);;
+	            	//newNode.initialize(this, rs.getString(1), _sessionNode);
 	            	newNode.setUID(rs.getInt(2));
 	            	newNode.setUName(rs.getString(3));
 	            	newNode.setID(rs.getInt(4));
