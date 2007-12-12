@@ -133,10 +133,6 @@ public abstract class AbstractNode implements INode {
             }
         }
 
-        if (_children.size() == 0) {
-            return null;
-        }
-
         return (INode[]) _children.toArray(new INode[] {});
     }
 

@@ -29,11 +29,8 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 
 /**
@@ -42,36 +39,10 @@ import org.eclipse.ui.IViewActionDelegate;
  */
 public class CloseAllConnectionsAction extends AbstractConnectionTreeAction implements IViewActionDelegate {
 
-    private ImageDescriptor _image = ImageUtil.getDescriptor("Images.CloseAllConnsIcon");
-
-    private ImageDescriptor _disabledImage = ImageUtil.getDescriptor("Images.DisabledCloseAllConnsIcon");
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-     */
-    public void run(IAction action) {
-        run();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
-     *      org.eclipse.jface.viewers.ISelection)
-     */
-    public void selectionChanged(IAction action, ISelection selection) {
-        action.setEnabled(isAvailable());
-    }
-
-    public String getText() {
-        return Messages.getString("ConnectionsView.Actions.CloseAllConnections");
-    }
-
-    public String getToolTipText() {
-        return Messages.getString("ConnectionsView.Actions.CloseAllConnectionsToolTip");
-    }
+    public CloseAllConnectionsAction() {
+		super("ConnectionsView.Actions.CloseAllConnections", "ConnectionsView.Actions.CloseAllConnectionsToolTip", "Images.CloseAllConnsIcon");
+		setDisabledImageDescriptor(ImageUtil.getDescriptor("Images.DisabledCloseAllConnsIcon"));
+	}
 
     /*
      * (non-Javadoc)
@@ -79,7 +50,7 @@ public class CloseAllConnectionsAction extends AbstractConnectionTreeAction impl
      * @see org.eclipse.jface.action.IAction#run()
      */
     public void run() {
-    	boolean confirm = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.CONFIRM_CLOSE_ALL_CONNECTIONS);
+    	boolean confirm = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.CONFIRM_BOOL_CLOSE_ALL_CONNECTIONS);
     	if (confirm) {
 	    	MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoQuestion(getView().getSite().getShell(), 
 	    			Messages.getString("ConnectionsView.Actions.CloseAll.Confirm.Title"), 
@@ -88,7 +59,7 @@ public class CloseAllConnectionsAction extends AbstractConnectionTreeAction impl
 	    			false, null, null);
 	    	
 	    	if (dialog.getToggleState() && dialog.getReturnCode() == IDialogConstants.YES_ID)
-	    		SQLExplorerPlugin.getDefault().getPluginPreferences().setValue(IConstants.CONFIRM_CLOSE_ALL_CONNECTIONS, false);
+	    		SQLExplorerPlugin.getDefault().getPluginPreferences().setValue(IConstants.CONFIRM_BOOL_CLOSE_ALL_CONNECTIONS, false);
 	    	if (dialog.getReturnCode() != IDialogConstants.YES_ID)
 	    		return;
     	}
@@ -109,14 +80,6 @@ public class CloseAllConnectionsAction extends AbstractConnectionTreeAction impl
 
         setEnabled(false);
         getView().refresh();
-    }
-
-    public ImageDescriptor getImageDescriptor() {
-        return _image;
-    }
-
-    public ImageDescriptor getDisabledImageDescriptor() {
-        return _disabledImage;
     }
 
     /**

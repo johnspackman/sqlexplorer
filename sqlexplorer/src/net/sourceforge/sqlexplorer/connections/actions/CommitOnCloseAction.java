@@ -2,21 +2,14 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.util.Collection;
 
-import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbproduct.User;
-import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 public class CommitOnCloseAction extends AbstractConnectionTreeAction {
 
     public CommitOnCloseAction() {
-		super(Messages.getString("SQLEditor.Options.CommitOnClose"), AS_CHECK_BOX);
-		setImageDescriptor(ImageUtil.getDescriptor("Images.CommitIcon"));
+		super("SQLEditor.Options.CommitOnClose", "SQLEditor.Options.CommitOnClose.Tooltip", "Images.CommitIcon", AS_CHECK_BOX);
 	}
-
-    public String getToolTipText() {
-        return Messages.getString("SQLEditor.Options.CommitOnClose.Tooltip");
-    }
 
     public void run() {
     	boolean enabled = isChecked();

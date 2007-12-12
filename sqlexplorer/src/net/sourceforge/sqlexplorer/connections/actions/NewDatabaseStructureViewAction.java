@@ -23,12 +23,10 @@ import java.util.Collection;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
-import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.SQLCannotConnectException;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
-import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 /**
  * Implements "Examine Database Structure"
@@ -38,8 +36,7 @@ import net.sourceforge.sqlexplorer.util.ImageUtil;
 public class NewDatabaseStructureViewAction extends AbstractConnectionTreeAction {
 
 	public NewDatabaseStructureViewAction() {
-		super(Messages.getString("ConnectionsView.Actions.NewDatabaseStructure"), ImageUtil.getDescriptor("Images.NewDatabaseStructure"));
-		setToolTipText(Messages.getString("ConnectionsView.Actions.NewDatabaseStructure.Tooltip"));
+		super("ConnectionsView.Actions.NewDatabaseStructure", "ConnectionsView.Actions.NewDatabaseStructure.Tooltip", "Images.NewDatabaseStructure");
 	}
 
 	/* (non-Javadoc)

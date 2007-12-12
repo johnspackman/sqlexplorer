@@ -18,17 +18,14 @@
  */
 package net.sourceforge.sqlexplorer.preferences;
 
-import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.IConstants;
 
-import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 
 /**
@@ -70,7 +67,13 @@ public class GeneralPreferencePage extends AbstractPreferencePage {
 		iEdit.setErrorMessage(Messages.getString("Accepted_Range_is__100_-_5000_3"));
 		addField(iEdit);
 
-		
+		BooleanFieldEditor bfe;
+		addField(bfe = new BooleanFieldEditor(IConstants.AUTO_COMMIT, Messages.getString("GeneralPreferencePage.AutoCommit_1"), getFieldEditorParent()));
+		final Button autoCommitBox = bfe.getCheckbox();
+		addField(bfe = new BooleanFieldEditor(IConstants.COMMIT_ON_CLOSE, Messages.getString("GeneralPreferencePage.Commit_On_Close_2"), getFieldEditorParent()));
+		final Button commitOnCloseBox = bfe.getCheckbox();
+
+		/*
 		final Button autoCommitBox = new Button(getFieldEditorParent(), SWT.CHECK);
 		autoCommitBox.setText(Messages.getString("GeneralPreferencePage.AutoCommit_1")); //$NON-NLS-1$
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
@@ -87,6 +90,7 @@ public class GeneralPreferencePage extends AbstractPreferencePage {
 		gd.horizontalSpan = 2;
 		commitOnCloseBox.setLayoutData(gd);
 		addAccessor(new CheckBoxAccessor(IConstants.COMMIT_ON_CLOSE, commitOnCloseBox));
+		*/
 
 		autoCommitBox.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {

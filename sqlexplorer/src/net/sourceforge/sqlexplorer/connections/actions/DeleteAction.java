@@ -23,10 +23,7 @@ import java.util.Set;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.User;
-import net.sourceforge.sqlexplorer.util.ImageUtil;
-
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 
 
@@ -37,23 +34,9 @@ import org.eclipse.swt.widgets.Display;
  */
 public class DeleteAction extends AbstractConnectionTreeAction {
 
-    ImageDescriptor _image = ImageUtil.getDescriptor("Images.Delete");
-
-    public String getToolTipText() {
-        return Messages.getString("ConnectionsView.Actions.DeleteToolTip");
+    public DeleteAction() {
+    	super("ConnectionsView.Actions.Delete", "ConnectionsView.Actions.DeleteToolTip", "Images.Delete");
     }
-
-    public String getText() {
-        return Messages.getString("ConnectionsView.Actions.Delete");
-    }
-    
-    public ImageDescriptor getHoverImageDescriptor() {
-        return _image;
-    }
-
-    public ImageDescriptor getImageDescriptor() {
-        return _image;
-    };
 
     public void run() {
 

@@ -165,6 +165,8 @@ public class SQLEditorToolBar {
     private void doOnEditorSessionChanged(Session session) {
         String databaseProductName = null;
         try {
+        	if (session.getUser() == null)
+        		return;
         	databaseProductName = session.getUser().getMetaDataSession().getDatabaseProductName().toLowerCase().trim();
         }catch(SQLException e) {
         	SQLExplorerPlugin.error(e);

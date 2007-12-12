@@ -18,12 +18,8 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
-import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dialogs.CreateAliasDlg;
-import net.sourceforge.sqlexplorer.util.ImageUtil;
-
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -32,33 +28,13 @@ import org.eclipse.swt.widgets.Display;
  */
 public class NewAliasAction extends AbstractConnectionTreeAction {
 
-    private ImageDescriptor _image = ImageUtil.getDescriptor("Images.AliasWizard");
-
-
-    public String getToolTipText() {
-        return Messages.getString("ConnectionsView.Actions.CreateAliasToolTip");
+    public NewAliasAction() {
+    	super("ConnectionsView.Actions.CreateAlias", "ConnectionsView.Actions.CreateAliasToolTip", "Images.AliasWizard");
     }
-
-
-    public String getText() {
-        return Messages.getString("ConnectionsView.Actions.CreateAlias");
-    }
-
-
-    public ImageDescriptor getHoverImageDescriptor() {
-        return _image;
-    }
-
-
-    public ImageDescriptor getImageDescriptor() {
-        return _image;
-    };
-
 
     public void run() {
         CreateAliasDlg dlg = new CreateAliasDlg(Display.getCurrent().getActiveShell(), CreateAliasDlg.Type.CREATE, new Alias());
         dlg.open();
         getView().refresh();
     }
-
 }

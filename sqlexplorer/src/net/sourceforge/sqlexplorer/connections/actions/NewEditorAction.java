@@ -20,12 +20,8 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.util.Set;
 
-import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 
 /**
@@ -34,45 +30,17 @@ import org.eclipse.ui.IViewActionDelegate;
  */
 public class NewEditorAction extends AbstractConnectionTreeAction implements IViewActionDelegate {
 
-    ImageDescriptor _image = ImageUtil.getDescriptor("Images.OpenSQLIcon");
-
-    ImageDescriptor _disabledImage = ImageUtil.getDescriptor("Images.AliasIcon");
-
-    public ImageDescriptor getHoverImageDescriptor() {
-        return _image;
+    public NewEditorAction() {
+    	super("ConnectionsView.Actions.NewEditor", "ConnectionsView.Actions.NewEditorToolTip", "Images.OpenSQLIcon");
+    	setDisabledImageDescriptor(ImageUtil.getDescriptor("Images.AliasIcon"));
     }
-
-    public ImageDescriptor getImageDescriptor() {
-        return _image;
-    };
-
-    public ImageDescriptor getDisabledImageDescriptor() {
-        return _disabledImage;
-    }
-
-    public void run(IAction action) {
-        run();
-    }
-
-    public void selectionChanged(IAction action, ISelection selection) {
-        action.setEnabled(isAvailable());
-    }
-
-    public String getText() {
-        return Messages.getString("ConnectionsView.Actions.NewEditor");
-    }
-
-    public String getToolTipText() {
-        return Messages.getString("ConnectionsView.Actions.NewEditorToolTip");
-    }
-
+    
     public void run() {
     	Set<User> users = getView().getSelectedUsers(true);
     	for (User user : users)
     		getView().openNewEditor(user);
         getView().refresh();
     }
-
 
     /**
      * Only show action when there is at least 1 item selected

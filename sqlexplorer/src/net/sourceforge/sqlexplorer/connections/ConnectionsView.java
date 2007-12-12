@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import net.sourceforge.sqlexplorer.SQLCannotConnectException;
 import net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction;
 import net.sourceforge.sqlexplorer.connections.actions.CloseAllConnectionsAction;
 import net.sourceforge.sqlexplorer.connections.actions.CloseConnectionAction;
@@ -45,6 +46,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -168,6 +170,8 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
             input.setUser(user);
             IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
             page.openEditor(input, SQLEditor.class.getName());
+        }catch(SQLCannotConnectException e) {
+        	MessageDialog.openError(Display.getDefault().getActiveShell(), "Cannot connect", e.getMessage());
         } catch (Throwable e) {
             SQLExplorerPlugin.error("Error creating sql editor", e);
         }

@@ -273,8 +273,8 @@ public class DataSet {
     	if (type == Types.DECIMAL || type == Types.NUMERIC || type == Types.DOUBLE || type == Types.FLOAT || type == Types.REAL) {
         	int precision = metadata.getPrecision(columnIndex);
         	int scale = metadata.getScale(columnIndex);
-        	if (precision < 1)
-            	return new FormattedColumn(metadata.getColumnName(columnIndex), true, new DecimalFormat("#.#"));
+        	if (precision < 1 || scale > precision )
+            	return new FormattedColumn(metadata.getColumnName(columnIndex), true, null);//new DecimalFormat("#.#"));
         	
     		/*
     		 * NOTE: Scale can be negative (although possibly limited to Oracle), but we cope with 

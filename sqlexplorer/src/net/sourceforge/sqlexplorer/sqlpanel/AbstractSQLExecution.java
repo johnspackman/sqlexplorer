@@ -36,8 +36,8 @@ import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
-import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
+import net.sourceforge.sqlexplorer.sqleditor.results.ResultsTab;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 

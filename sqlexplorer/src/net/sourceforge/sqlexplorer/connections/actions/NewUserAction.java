@@ -20,43 +20,28 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.util.Set;
 
-import net.sourceforge.sqlexplorer.Messages;
+import org.eclipse.swt.widgets.Display;
+
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.User;
+import net.sourceforge.sqlexplorer.dialogs.EditUserDlg;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
-import net.sourceforge.sqlexplorer.util.ImageUtil;
-import org.eclipse.jface.resource.ImageDescriptor;
 
 
 /**
  * @author Davy Vanherbergen
  *
  */
-public class ConnectNewUserAction extends AbstractConnectionTreeAction {
+public class NewUserAction extends AbstractConnectionTreeAction {
 
-    private ImageDescriptor _image = ImageUtil.getDescriptor("Images.ConnectSessionIcon");
-
-    public ImageDescriptor getHoverImageDescriptor() {
-        return _image;
-    }
-
-    public ImageDescriptor getImageDescriptor() {
-        return _image;
-    };
-    
-    public String getText() {
-        return Messages.getString("ConnectionsView.Actions.ConnectNewUser");
-    }
-    
-    public String getToolTipText() {
-        return Messages.getString("ConnectionsView.Actions.ConnectNewUserToolTip");
+    public NewUserAction() {
+    	super("ConnectionsView.Actions.NewUser", "ConnectionsView.Actions.NewUser.ToolTip", "Images.ConnectionsView.NewUser");
     }
 
     public void run() {
-    	Set<Alias> aliases = getView().getSelectedAliases(true);
-    	for (Alias alias : aliases) {
-            OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(alias, alias.getDefaultUser(), true);
-            openDlgAction.run();
-        }
+    	Alias alias = getView().getSelectedAlias(true);
+		EditUserDlg dlg = new EditUserDlg(Display.getCurrent().getActiveShell(), EditUserDlg.Type.CREATE, alias, null);
+        dlg.open();
         getView().refresh();
     }
     
@@ -68,12 +53,7 @@ public class ConnectNewUserAction extends AbstractConnectionTreeAction {
     public boolean isAvailable() {
     	if (getView() == null)
     		return false;
-    	Set<Alias> aliases = getView().getSelectedAliases(true);
-    	if (aliases == null || aliases.size() == 0)
-    		return false;
-    	for (Alias alias : aliases)
-    		if (alias.hasNoUserName())
-    			return false;
-    	return true;
+    	Alias alias = getView().getSelectedAlias(true);
+    	return alias != null && !alias.hasNoUserName();
     }
 }

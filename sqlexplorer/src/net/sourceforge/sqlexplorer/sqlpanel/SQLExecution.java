@@ -29,11 +29,12 @@ import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
-import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
+import net.sourceforge.sqlexplorer.sqleditor.results.ResultsTab;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -258,12 +259,17 @@ public class SQLExecution extends AbstractSQLExecution {
         }
         if (numErrors == 1)
         	throw lastSQLException;
-        else if (numErrors > 1)
+        else if (numErrors > 1 && SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.CONFIRM_BOOL_SHOW_DIALOG_ON_QUERY_ERROR))
             getEditor().getSite().getShell().getDisplay().asyncExec(new Runnable() {
                 public void run() {
-                	MessageDialog.openError(getEditor().getSite().getShell(), 
-                			Messages.getString("SQLExecution.Error.Title"), 
-                			Messages.getString("SQLExecution.Error.Message"));
+        	    	MessageDialogWithToggle dialog = MessageDialogWithToggle.openInformation(getEditor().getSite().getShell(), 
+        	    			Messages.getString("SQLExecution.Error.Title"), 
+        	    			Messages.getString("SQLExecution.Error.Message"), 
+        	    			Messages.getString("SQLExecution.Error.Toggle"), 
+        	    			false, null, null);
+        	    	
+        	    	if (dialog.getToggleState() && dialog.getReturnCode() == IDialogConstants.OK_ID)
+        	    		SQLExplorerPlugin.getDefault().getPluginPreferences().setValue(IConstants.CONFIRM_BOOL_SHOW_DIALOG_ON_QUERY_ERROR, false);
                 }
             });
     }

@@ -30,7 +30,9 @@ import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 import net.sourceforge.sqlexplorer.sqlpanel.SQLExecution;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
@@ -68,28 +70,31 @@ public class ExecSQLAction extends AbstractEditorAction {
     	                MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("SQLEditor.Error.InvalidRowLimit.Title"), Messages.getString("SQLEditor.Error.InvalidRowLimit"));
     	            }
     	        });
-            int maxresults = (iMax == null) ? 0 : iMax.intValue();
+            final int maxresults = (iMax == null) ? 0 : iMax.intValue();
             if (maxresults < 0)
                 throw new Exception(Messages.getString("SQLEditor.LimitRows.Error"));
 
             final ExecSQLAction action = this;
 
-            boolean warnNoLimit = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.WARN_IF_LARGE_LIMIT);
+            boolean confirmWarnLargeMaxrows = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.CONFIRM_BOOL_WARN_LARGE_MAXROWS);
             int warnLimit = SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(IConstants.WARN_LIMIT);
 
             // Confirm with the user if they've left it too large
-            if (warnNoLimit && (maxresults == 0 || maxresults > warnLimit)) {
-                final int largeResults = maxresults;
+            if (confirmWarnLargeMaxrows && (maxresults == 0 || maxresults > warnLimit)) {
                 _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
                     public void run() {
 
-                        boolean okToExecute = MessageDialog.openConfirm(_editor.getSite().getShell(),
+                        MessageDialogWithToggle dlg = MessageDialogWithToggle.openOkCancelConfirm(_editor.getSite().getShell(),
                                 Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Title"),
-                                Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Message"));
-
-                        if (okToExecute)
-                            action.run(largeResults);
+                                Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Message"),
+                                Messages.getString("SQLEditor.LimitRows.ConfirmNoLimit.Toggle"),
+                                false, null, null);
+                        if (dlg.getReturnCode() == IDialogConstants.OK_ID) {
+                        	if (dlg.getToggleState())
+                        		SQLExplorerPlugin.getDefault().getPluginPreferences().setValue(IConstants.CONFIRM_BOOL_WARN_LARGE_MAXROWS, false);
+                            action.run(maxresults);
+                        }
                     }
                 });
                 

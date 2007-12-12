@@ -20,11 +20,8 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.util.Set;
 
-import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
-import net.sourceforge.sqlexplorer.util.ImageUtil;
-import org.eclipse.jface.resource.ImageDescriptor;
 
 
 /**
@@ -33,22 +30,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
  */
 public class ConnectAliasAction extends AbstractConnectionTreeAction {
 
-    ImageDescriptor _image = ImageUtil.getDescriptor("Images.ConnectSessionIcon");
-
-    public ImageDescriptor getHoverImageDescriptor() {
-        return _image;
-    }
-
-    public ImageDescriptor getImageDescriptor() {
-        return _image;
-    };
-    
-    public String getText() {
-        return Messages.getString("ConnectionsView.Actions.ConnectAlias");
-    }
-    
-    public String getToolTipText() {
-        return Messages.getString("ConnectionsView.Actions.ConnectAliasToolTip");
+    public ConnectAliasAction() {
+    	super("ConnectionsView.Actions.ConnectAlias", "ConnectionsView.Actions.ConnectAliasToolTip", "Images.ConnectSessionIcon");
     }
 
     public void run() {

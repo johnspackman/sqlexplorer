@@ -19,14 +19,8 @@
 package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.sql.SQLException;
-import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.util.ImageUtil;
-
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 
 /**
@@ -35,22 +29,8 @@ import org.eclipse.ui.IViewActionDelegate;
  */
 public class CommitAction extends AbstractConnectionTreeAction implements IViewActionDelegate {
 
-    private ImageDescriptor _image = ImageUtil.getDescriptor("Images.CommitIcon");
-
-    public void run(IAction action) {
-        run();
-    }
-
-    public void selectionChanged(IAction action, ISelection selection) {
-        action.setEnabled(isAvailable());
-    }
-
-    public String getText() {
-        return Messages.getString("ConnectionsView.Actions.Commit");
-    }
-
-    public ImageDescriptor getImageDescriptor() {
-        return _image;
+    public CommitAction() {
+    	super("ConnectionsView.Actions.Commit", null, "Images.CommitIcon");
     }
 
     public void run() {

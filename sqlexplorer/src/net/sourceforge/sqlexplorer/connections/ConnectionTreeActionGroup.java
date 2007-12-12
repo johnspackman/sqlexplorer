@@ -29,14 +29,17 @@ import net.sourceforge.sqlexplorer.connections.actions.CloseConnectionAction;
 import net.sourceforge.sqlexplorer.connections.actions.CommitAction;
 import net.sourceforge.sqlexplorer.connections.actions.CommitOnCloseAction;
 import net.sourceforge.sqlexplorer.connections.actions.ConnectAliasAction;
-import net.sourceforge.sqlexplorer.connections.actions.ConnectNewUserAction;
+import net.sourceforge.sqlexplorer.connections.actions.NewUserAction;
 import net.sourceforge.sqlexplorer.connections.actions.CopyAliasAction;
+import net.sourceforge.sqlexplorer.connections.actions.CopyUserAction;
 import net.sourceforge.sqlexplorer.connections.actions.DeleteAction;
+import net.sourceforge.sqlexplorer.connections.actions.EditUserAction;
 import net.sourceforge.sqlexplorer.connections.actions.NewAliasAction;
 import net.sourceforge.sqlexplorer.connections.actions.NewDatabaseStructureViewAction;
 import net.sourceforge.sqlexplorer.connections.actions.NewEditorAction;
 import net.sourceforge.sqlexplorer.connections.actions.RollbackAction;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
@@ -52,53 +55,6 @@ import org.eclipse.ui.actions.ActionGroup;
  */
 public class ConnectionTreeActionGroup extends ActionGroup {
 	
-	private enum Type {
-		GENERIC, IF_SELECTION, ALIAS, USER, SESSION
-	}
-	
-	private HashMap<Type, LinkedHashSet<AbstractConnectionTreeAction>> actions = new HashMap<Type, LinkedHashSet<AbstractConnectionTreeAction>>();
-
-    /**
-     * Construct a new action group for a given database structure outline.
-     * 
-     * @param treeViewer TreeViewer used for this outline.
-     */
-    public ConnectionTreeActionGroup() {
-    	LinkedHashSet<AbstractConnectionTreeAction> set;
-    	
-    	set = new LinkedHashSet<AbstractConnectionTreeAction>();
-    	actions.put(Type.GENERIC, set);
-    	set.add(new NewAliasAction());
-        set.add(new CloseConnectionAction());
-        set.add(new CloseAllConnectionsAction());       
-
-    	set = new LinkedHashSet<AbstractConnectionTreeAction>();
-    	actions.put(Type.IF_SELECTION, set);
-        set.add(new NewEditorAction());
-        set.add(new NewDatabaseStructureViewAction());
-
-    	set = new LinkedHashSet<AbstractConnectionTreeAction>();
-    	actions.put(Type.SESSION, set);
-        set.add(new CommitAction());
-        set.add(new RollbackAction());
-        set.add(new AutoCommitAction());
-        set.add(new CommitOnCloseAction());
-
-    	set = new LinkedHashSet<AbstractConnectionTreeAction>();
-    	actions.put(Type.ALIAS, set);
-        set.add(new ChangeAliasAction());
-        set.add(new CopyAliasAction());
-        set.add(new DeleteAction());
-        set.add(new ConnectAliasAction());
-        set.add(new ConnectNewUserAction());
-
-    	set = new LinkedHashSet<AbstractConnectionTreeAction>();
-    	actions.put(Type.USER, set);
-        set.add(new AutoCommitAction());
-        set.add(new CommitOnCloseAction());
-    }
-
-
     /**
      * Fill the node context menu with all the correct actions.
      * 
@@ -107,58 +63,77 @@ public class ConnectionTreeActionGroup extends ActionGroup {
     public void fillContextMenu(IMenuManager menu) {
 
     	ConnectionsView view = SQLExplorerPlugin.getDefault().getConnectionsView();
-    	if (view == null) {
-            addActions(menu, Type.GENERIC);
-            return;
-        }
-    	
-    	// find our target node..
-    	Object[] selection = view.getSelected();
+    	Object[] selection = (view == null) ? null : view.getSelected();
 
-        // check if we have a valid selection
+        // If nothing is selected, then show the default ones
         if (selection == null || selection.length != 1) {
-            addActions(menu, Type.GENERIC);
+        	addAction(menu, new NewAliasAction());
+            addAction(menu, new CloseConnectionAction());
+            addAction(menu, new CloseAllConnectionsAction());
             return;
         }
 
-        if (addActions(menu, Type.IF_SELECTION) > 0)
-            menu.add(new Separator());
-        
         if (selection[0] instanceof Alias) {
-            if (addActions(menu, Type.ALIAS) > 0)
+        	Alias alias = (Alias)selection[0];
+        	
+            addAction(menu, new NewEditorAction());
+            addAction(menu, new NewDatabaseStructureViewAction());
+            addAction(menu, new ConnectAliasAction());
+            menu.add(new Separator());
+            for (User user : alias.getUsers())
+            	if (!user.isAutoCommit()) {
+                    addAction(menu, new CommitAction());
+                    addAction(menu, new RollbackAction());
+                    menu.add(new Separator());
+            		break;
+            	}
+            
+            addAction(menu, new NewUserAction());
+            addAction(menu, new ChangeAliasAction());
+            addAction(menu, new CopyAliasAction());
+            addAction(menu, new DeleteAction());
+            
+        } else if (selection[0] instanceof User) {
+        	User user = (User) selection[0];
+        	
+            addAction(menu, new NewEditorAction());
+            addAction(menu, new NewDatabaseStructureViewAction());
+            addAction(menu, new ConnectAliasAction());
+            menu.add(new Separator());
+        	if (!user.isAutoCommit()) {
+                addAction(menu, new CommitAction());
+                addAction(menu, new RollbackAction());
                 menu.add(new Separator());
-            if (addActions(menu, Type.SESSION) > 0)
+        	}
+        	
+            addAction(menu, new NewUserAction());
+            addAction(menu, new EditUserAction());
+            addAction(menu, new CopyUserAction());
+            addAction(menu, new DeleteAction());
+            
+        } else if (selection[0] instanceof SQLConnection) {
+        	SQLConnection connection = (SQLConnection)selection[0];
+        	
+            addAction(menu, new NewEditorAction());
+            addAction(menu, new NewDatabaseStructureViewAction());
+            menu.add(new Separator());
+            
+        	if (!connection.getUser().isAutoCommit()) {
+                addAction(menu, new CommitAction());
+                addAction(menu, new RollbackAction());
                 menu.add(new Separator());
-        } else {
-            if (addActions(menu, Type.SESSION) > 0)
-                menu.add(new Separator());
-            if (addActions(menu, Type.ALIAS) > 0)
-                menu.add(new Separator());
+        	}
+        	
+            addAction(menu, new CloseConnectionAction());
         }
-        if (selection[0] instanceof User) {
-            if (addActions(menu, Type.USER) > 0)
-                menu.add(new Separator());
-        }
-        
-        addActions(menu, Type.GENERIC);
     }
     
-    /**
-     * Adds all actions of a given type to the menu, and returns a count of the
-     * number of items added to the menu
-     * @param menu
-     * @param type
-     * @return
-     */
-    private int addActions(IMenuManager menu, Type type) {
-    	LinkedHashSet<AbstractConnectionTreeAction> set = actions.get(type);
-    	int numAdded = 0;
-    	for (AbstractConnectionTreeAction action : set) 
-    		if (action.isAvailable()){
-				menu.add(action);
-				action.setEnabled(true);
-				numAdded++;
-			}
-    	return numAdded;
+    private boolean addAction(IMenuManager menu, AbstractConnectionTreeAction action) {
+		if (action.isAvailable()){
+			menu.add(action);
+			action.setEnabled(true);
+			return true;
+		}
+		return false;
     }
 }

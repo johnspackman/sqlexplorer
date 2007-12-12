@@ -32,6 +32,7 @@ import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.sqleditor.actions.SQLEditorToolBar;
+import net.sourceforge.sqlexplorer.sqleditor.results.ResultsTab;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 import net.sourceforge.sqlexplorer.util.PartAdapter2;
 
@@ -516,12 +517,7 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 	    
 	    // Either we're doing a save on a file outside a project or we're doing a save-as
 	    else if (input instanceof SQLEditorInput) {
-	    	IConstants.Confirm confirm = IConstants.Confirm.ASK;
-	    	try {
-	    		confirm = IConstants.Confirm.valueOf(SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.CONFIRM_SAVING_INSIDE_PROJECT));
-	    	} catch(IllegalArgumentException e) {
-	    		// Nothing
-	    	}
+	    	IConstants.Confirm confirm = SQLExplorerPlugin.getConfirm(IConstants.CONFIRM_YNA_SAVING_INSIDE_PROJECT);
 	    	
 	    	// If we're supposed to ask the user...
 	    	if (confirm == IConstants.Confirm.ASK) {
@@ -541,7 +537,7 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 		    	// If they turned on the toggle ("Use this answer in the future"), update the preferences
 		    	if (dialog.getToggleState()) {
 		    		confirm = dialog.getReturnCode() == IDialogConstants.YES_ID ? IConstants.Confirm.YES : IConstants.Confirm.NO;
-		    		SQLExplorerPlugin.getDefault().getPreferenceStore().setValue(IConstants.CONFIRM_SAVING_INSIDE_PROJECT, confirm.toString());
+		    		SQLExplorerPlugin.getDefault().getPreferenceStore().setValue(IConstants.CONFIRM_YNA_SAVING_INSIDE_PROJECT, confirm.toString());
 		    	}
 		    	
 		    	// Whether to save inside or outside

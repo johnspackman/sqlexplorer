@@ -18,11 +18,8 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
-import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dialogs.CreateAliasDlg;
-import net.sourceforge.sqlexplorer.util.ImageUtil;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -31,23 +28,9 @@ import org.eclipse.swt.widgets.Display;
  */
 public class CopyAliasAction extends AbstractConnectionTreeAction {
 
-    ImageDescriptor _image = ImageUtil.getDescriptor("Images.CopyAlias");
-
-    public String getToolTipText() {
-        return Messages.getString("ConnectionsView.Actions.CopyAliasToolTip");
+    public CopyAliasAction() {
+    	super("ConnectionsView.Actions.CopyAlias", "ConnectionsView.Actions.CopyAliasToolTip", "Images.CopyAlias");
     }
-
-    public String getText() {
-        return Messages.getString("ConnectionsView.Actions.CopyAlias");
-    }
-
-    public ImageDescriptor getHoverImageDescriptor() {
-        return _image;
-    }
-
-    public ImageDescriptor getImageDescriptor() {
-        return _image;
-    };
 
     public void run() {
     	Alias alias = getView().getSelectedAlias(false);

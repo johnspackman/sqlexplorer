@@ -228,14 +228,21 @@ public class DatabaseNode extends AbstractNode {
             if (_supportsCatalogs) {
 
                 final String[] catalogs = metadata.getCatalogs();
-                for (int i = 0; i < catalogs.length; ++i) {
-                    _childNames.add(catalogs[i]);
-                    if (!isExcludedByFilter(catalogs[i])) {
-                        addChildNode(new CatalogNode(this, catalogs[i], _session));
-                    }
+                if (catalogs == null || catalogs.length == 0) {
+                	if (_supportsSchemas)
+                		_supportsCatalogs = false;
+                } else {
+                	_supportsSchemas = false;
+	                for (int i = 0; i < catalogs.length; ++i) {
+	                    _childNames.add(catalogs[i]);
+	                    if (!isExcludedByFilter(catalogs[i])) {
+	                        addChildNode(new CatalogNode(this, catalogs[i], _session));
+	                    }
+	                }
                 }
 
-            } else if (_supportsSchemas) {
+            }
+            if (!_supportsCatalogs && _supportsSchemas) {
 
                 final String[] schemas = metadata.getSchemas();
                 for (int i = 0; i < schemas.length; ++i) {
@@ -245,7 +252,8 @@ public class DatabaseNode extends AbstractNode {
                     }
                 }
 
-            } else {
+            } 
+            if (!_supportsCatalogs && !_supportsSchemas) {
 
                 addChildNode(new CatalogNode(this, Messages.getString("NoCatalog_2"), _session));
             }

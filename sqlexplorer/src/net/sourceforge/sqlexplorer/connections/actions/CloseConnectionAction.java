@@ -27,11 +27,8 @@ import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 
 /**
@@ -40,20 +37,13 @@ import org.eclipse.ui.IViewActionDelegate;
  */
 public class CloseConnectionAction extends AbstractConnectionTreeAction implements IViewActionDelegate {
 
-    private ImageDescriptor _image = ImageUtil.getDescriptor("Images.CloseConnIcon");
-
-    private ImageDescriptor _disabledImage = ImageUtil.getDescriptor("Images.DisabledCloseConnIcon");
-
-    public void run(IAction action) {
-        run();
-    }
-
-    public void selectionChanged(IAction action, ISelection selection) {
-        action.setEnabled(isAvailable());
+    public CloseConnectionAction() {
+    	super("ConnectionsView.Actions.CloseConnection", "ConnectionsView.Actions.CloseConnectionToolTip", "Images.CloseConnIcon");
+    	setDisabledImageDescriptor(ImageUtil.getDescriptor("Images.DisabledCloseConnIcon"));
     }
 
     public void run() {
-    	boolean confirm = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.CONFIRM_CLOSE_CONNECTION);
+    	boolean confirm = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.CONFIRM_BOOL_CLOSE_CONNECTION);
 		for (SQLConnection connection : getView().getSelectedConnections(false)) {
 			Session session = connection.getSession();
 			if (session != null && !session.isConnectionInUse()) {
@@ -65,7 +55,7 @@ public class CloseConnectionAction extends AbstractConnectionTreeAction implemen
 			    			false, null, null);
 
 			    	if (dialog.getToggleState() && dialog.getReturnCode() == IDialogConstants.YES_ID)
-			    		SQLExplorerPlugin.getDefault().getPluginPreferences().setValue(IConstants.CONFIRM_CLOSE_CONNECTION, false);
+			    		SQLExplorerPlugin.getDefault().getPluginPreferences().setValue(IConstants.CONFIRM_BOOL_CLOSE_CONNECTION, false);
 			    	if (dialog.getReturnCode() != IDialogConstants.YES_ID)
 			    		return;
 		    	}
@@ -91,22 +81,6 @@ public class CloseConnectionAction extends AbstractConnectionTreeAction implemen
     			return true;
     	}
     	return false;
-    }
-
-    public String getText() {
-        return Messages.getString("ConnectionsView.Actions.CloseConnection");
-    }
-
-    public String getToolTipText() {
-        return Messages.getString("ConnectionsView.Actions.CloseConnectionToolTip");
-    }
-
-    public ImageDescriptor getImageDescriptor() {
-        return _image;
-    }
-
-    public ImageDescriptor getDisabledImageDescriptor() {
-        return _disabledImage;
     }
 
 }

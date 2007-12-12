@@ -28,18 +28,27 @@ public class BasicQuery extends AbstractQuery {
 
 	private String querySql;
 	private int lineNo;
+	private QueryType queryType;
 	
 	public BasicQuery(String querySql, int lineNo) {
 		super();
 		this.querySql = querySql;
 		this.lineNo = lineNo;
+		queryType = QueryType.UNKNOWN;
+		String lower = querySql.toLowerCase();
+		int selectPos = lower.indexOf("select");
+		if (selectPos > -1) {
+			int createPos = lower.indexOf("create");
+			if (createPos < 0 || createPos > selectPos)
+				queryType = QueryType.SELECT;
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see net.sourceforge.sqlexplorer.parsers.Query#getQueryType()
 	 */
 	public QueryType getQueryType() {
-		return QueryType.UNKNOWN;
+		return queryType;
 	}
 
 	/* (non-JavaDoc)

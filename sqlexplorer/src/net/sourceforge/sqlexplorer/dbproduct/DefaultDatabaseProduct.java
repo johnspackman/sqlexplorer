@@ -41,6 +41,8 @@ public class DefaultDatabaseProduct extends AbstractDatabaseProduct {
 	        ClassLoader loader = new SQLDriverClassLoader(getClass().getClassLoader(), driver);
 	        Class driverCls = loader.loadClass(driver.getDriverClassName());
 	        return (Driver)driverCls.newInstance();
+		} catch(UnsupportedClassVersionError e) {
+			throw new ClassNotFoundException(e.getMessage(), e);
 		} catch(MalformedURLException e) {
 			throw new ClassNotFoundException(e.getMessage(), e);
 		} catch(InstantiationException e) {

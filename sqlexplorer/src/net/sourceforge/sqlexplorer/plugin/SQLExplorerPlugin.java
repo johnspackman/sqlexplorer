@@ -23,6 +23,7 @@ import java.util.MissingResourceException;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.SQLCannotConnectException;
+import net.sourceforge.sqlexplorer.IConstants.Confirm;
 import net.sourceforge.sqlexplorer.connections.ConnectionsView;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dbproduct.AliasManager;
@@ -246,6 +247,20 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         return plugin;
     }
 
+    /**
+     * Returns the confirmation state of the given preference id
+     * @param preferenceId
+     * @return
+     */
+	public static Confirm getConfirm(String preferenceId) {
+    	try {
+    		return IConstants.Confirm.valueOf(getDefault().getPluginPreferences().getString(preferenceId));
+    	} catch(IllegalArgumentException e) {
+    		// Nothing
+    	}
+    	return IConstants.Confirm.ASK;
+	}
+	
     /**
      * Global log method.
      * 

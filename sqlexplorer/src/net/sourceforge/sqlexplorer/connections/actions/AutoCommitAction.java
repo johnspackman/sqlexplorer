@@ -3,22 +3,15 @@ package net.sourceforge.sqlexplorer.connections.actions;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 public class AutoCommitAction extends AbstractConnectionTreeAction {
 
     public AutoCommitAction() {
-		super(Messages.getString("SQLEditor.Options.AutoCommit"), AS_CHECK_BOX);
-		setImageDescriptor(ImageUtil.getDescriptor("Images.CommitIcon"));
+		super("SQLEditor.Options.AutoCommit", "SQLEditor.Options.AutoCommit.Tooltip", "Images.CommitIcon", AS_CHECK_BOX);
 	}
-
-    public String getToolTipText() {
-        return Messages.getString("SQLEditor.Options.AutoCommit.Tooltip");
-    }
 
     public void run() {
 		try {

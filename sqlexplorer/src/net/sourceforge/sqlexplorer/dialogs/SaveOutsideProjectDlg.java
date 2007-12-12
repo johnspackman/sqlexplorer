@@ -50,9 +50,11 @@ public class SaveOutsideProjectDlg extends TitleAreaDialog {
 
     @Override
 	public int open() {
-    	boolean confirm = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.CONFIRM_SAVING_INSIDE_PROJECT);
-    	if (!confirm)
+    	IConstants.Confirm confirm = SQLExplorerPlugin.getConfirm(IConstants.CONFIRM_YNA_SAVING_INSIDE_PROJECT);
+    	if (confirm == IConstants.Confirm.YES)
     		return SWT.YES;
+    	else if (confirm == IConstants.Confirm.NO)
+    		return SWT.NO;
 		return super.open();
 	}
 

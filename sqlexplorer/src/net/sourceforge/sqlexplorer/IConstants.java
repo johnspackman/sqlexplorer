@@ -96,8 +96,6 @@ public interface IConstants {
     /** The color key for database tables names */
     String SQL_TABLE = "SQLEditor.TableColor";
 
-    String WARN_IF_LARGE_LIMIT = "SQLEditor.WarnIfLargeLimit";
-
     String WARN_LIMIT = "SQLEditor.WarnLimit";
     
     String WORD_WRAP = "SQLEditor.AutoWrap";
@@ -132,7 +130,12 @@ public interface IConstants {
     String QUERY_DEBUG_FAILED = "failed";
     String QUERY_DEBUG_ALL = "all";
     
-    String CONFIRM_SAVING_INSIDE_PROJECT = "Confirm.SavingOutsideProject";
-    String CONFIRM_CLOSE_ALL_CONNECTIONS = "Confirm.CloseAllConnections";
-    String CONFIRM_CLOSE_CONNECTION = "Confirm.CloseConnection";
+    // Yes/No/Ask confirmations
+    String CONFIRM_YNA_SAVING_INSIDE_PROJECT = "Confirm.SavingOutsideProject";
+    
+    // Boolean confirmations
+    String CONFIRM_BOOL_CLOSE_ALL_CONNECTIONS = "Confirm.CloseAllConnections";
+    String CONFIRM_BOOL_CLOSE_CONNECTION = "Confirm.CloseConnection";
+    String CONFIRM_BOOL_SHOW_DIALOG_ON_QUERY_ERROR = "Confirm.ShowDialogOnQueryError";
+    String CONFIRM_BOOL_WARN_LARGE_MAXROWS = "Confirm.WarnIfLargeLimit";
 }

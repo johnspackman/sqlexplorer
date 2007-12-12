@@ -78,8 +78,10 @@ public final class DatabaseProductFactory {
 	private static DatabaseProduct getProductInternal(ManagedDriver driver) {
 		// This gets us, eg, "oracle" or "mssql"
         //String productName = node.getRoot().getDatabaseProductName().toLowerCase().trim();
-		String productName = driver.getUrl().split(":")[1];
-        DatabaseProduct result = instances.get(productName);
+		String str = driver.getUrl();
+		String[] strs = (str != null) ? str.split(":") : null;
+		String productName = (strs != null && strs.length > 1) ? strs[1] : null;
+        DatabaseProduct result = productName != null ? instances.get(productName) : null;
         if (result != null)
         	return result;
         

@@ -18,11 +18,8 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
-import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dialogs.CreateAliasDlg;
-import net.sourceforge.sqlexplorer.util.ImageUtil;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -31,28 +28,9 @@ import org.eclipse.swt.widgets.Display;
  */
 public class ChangeAliasAction extends AbstractConnectionTreeAction {
 
-    ImageDescriptor _image = ImageUtil.getDescriptor("Images.EditAlias");
-
-
-    public String getText() {
-        return Messages.getString("ConnectionsView.Actions.ChangeAlias");
-    }
-
-
-    public String getToolTipText() {
-        return Messages.getString("ConnectionsView.Actions.ChangeAliasToolTip");
-    }
-
-
-    public ImageDescriptor getHoverImageDescriptor() {
-        return _image;
-    }
-
-
-    public ImageDescriptor getImageDescriptor() {
-        return _image;
-    };
-
+    public ChangeAliasAction() {
+		super("ConnectionsView.Actions.ChangeAlias", "ConnectionsView.Actions.ChangeAliasToolTip", "Images.EditAlias");
+	}
 
     public void run() {
     	Alias alias = getView().getSelectedAlias(false);
@@ -62,7 +40,6 @@ public class ChangeAliasAction extends AbstractConnectionTreeAction {
             getView().refresh();
         }
     }
-
 
     /**
      * Only show action when there is 1 alias selected

@@ -20,14 +20,8 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.sql.SQLException;
 
-import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.util.ImageUtil;
-
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 
 /**
@@ -35,16 +29,10 @@ import org.eclipse.ui.IViewActionDelegate;
  * 
  */
 public class RollbackAction extends AbstractConnectionTreeAction implements IViewActionDelegate {
-
-    private ImageDescriptor _image = ImageUtil.getDescriptor("Images.RollbackIcon");
-
-    public String getText() {
-        return Messages.getString("ConnectionsView.Actions.Rollback");
-    }
-
-    public void run(IAction action) {
-        run();
-    }
+	
+	public RollbackAction() {
+		super("ConnectionsView.Actions.Rollback", null, "Images.RollbackIcon");
+	}
 
     public void run() {
     	for (SQLConnection connection: getView().getSelectedConnections(true))
@@ -54,18 +42,6 @@ public class RollbackAction extends AbstractConnectionTreeAction implements IVie
 			}catch(SQLException e) {
 				SQLExplorerPlugin.error("Cannot rollback session", e);
 			}
-    }
-
-    public void selectionChanged(IAction action, ISelection selection) {
-        action.setEnabled(isAvailable());
-    }
-
-    public ImageDescriptor getImageDescriptor() {
-        return _image;
-    }
-
-    public ImageDescriptor getHoverImageDescriptor() {
-        return _image;
     }
 
     /**

@@ -1,4 +1,6 @@
-package net.sourceforge.sqlexplorer.plugin.editors;
+package net.sourceforge.sqlexplorer.sqleditor.results;
+
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Composite;
@@ -39,7 +41,7 @@ public class ResultsTab {
 	 * @param parent
 	 * @see SQLEditor.createResults()
 	 */
-	ResultsTab(SQLEditor editor, CTabItem tabItem, Composite parent) {
+	public ResultsTab(SQLEditor editor, CTabItem tabItem, Composite parent) {
 		super();
 		this.editor = editor;
 		this.tabItem = tabItem;

@@ -18,12 +18,18 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.connections.ConnectionsView;
 import net.sourceforge.sqlexplorer.dbproduct.AliasManager;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.SWT;
+import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 
 /**
@@ -32,22 +38,40 @@ import org.eclipse.ui.IViewPart;
  * 
  * @author Davy Vanherbergen
  */
-public abstract class AbstractConnectionTreeAction extends Action {
-
-    public AbstractConnectionTreeAction() {
-		super();
+public abstract class AbstractConnectionTreeAction extends Action implements IViewActionDelegate {
+	
+	public AbstractConnectionTreeAction(String textId, String toolTipId, String imageId) {
+		this(textId, toolTipId, imageId, SWT.NONE);
+	}
+	
+	public AbstractConnectionTreeAction(String textId, String toolTipId, String imageId, int style) {
+		super(Messages.getString(textId));
+		setToolTipText(Messages.getString((toolTipId != null) ? toolTipId : textId));
+		if (imageId != null) {
+			ImageDescriptor image = ImageUtil.getDescriptor(imageId);
+			setImageDescriptor(image);
+			setHoverImageDescriptor(image);
+		}
 	}
 
-	public AbstractConnectionTreeAction(String text, ImageDescriptor image) {
-		super(text, image);
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
+	 */
+	public void init(IViewPart view) {
 	}
 
-	public AbstractConnectionTreeAction(String text, int style) {
-		super(text, style);
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
+	 */
+	public void run(IAction action) {
+		run();
 	}
 
-	public AbstractConnectionTreeAction(String text) {
-		super(text);
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
+	 */
+	public void selectionChanged(IAction action, ISelection selection) {
+        action.setEnabled(isAvailable());
 	}
 
 	/**
@@ -62,13 +86,18 @@ public abstract class AbstractConnectionTreeAction extends Action {
         return true;
     }
     
-    public void init(IViewPart view) {
-    }
-    
+    /**
+     * Shorthand helper method to return all aliases
+     * @return
+     */
     public AliasManager getAliases() {
     	return SQLExplorerPlugin.getDefault().getAliasManager();
     }
 
+    /**
+     * Shorthand helper method to return the view
+     * @return
+     */
 	protected ConnectionsView getView() {
 		return SQLExplorerPlugin.getDefault().getConnectionsView();
 	}

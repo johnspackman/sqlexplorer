@@ -31,8 +31,8 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
+import net.sourceforge.sqlexplorer.sqleditor.results.ResultsTab;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 
 import org.eclipse.core.runtime.IProgressMonitor;
