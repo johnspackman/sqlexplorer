@@ -50,7 +50,8 @@ public class ShowProcedureSource extends AbstractDBTreeContextAction {
             	 queryDelimiter = altQueryDelimiter;
              }
 
-        	 SQLConnection con = _selectedNodes[0].getSession().getInteractiveConnection();
+             SQLConnection con = _selectedNodes[0].getSession().grabConnection();
+
              Statement stmt = con.createStatement();
              
              try {
@@ -75,9 +76,10 @@ public class ShowProcedureSource extends AbstractDBTreeContextAction {
                  return;
              }
              
-             String inputTitle = "SQL Editor (" + SQLExplorerPlugin.getDefault().getNextElement() + ").sql";
+             String inputTitle = "SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo() + ").sql";
              SQLEditorInput input = new SQLEditorInput(inputTitle);
-             input.setSessionNode(_selectedNodes[0].getSession());
+             //input.setSessionNode(_selectedNodes[0].getSession());
+             
              IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
              SQLEditor editorPart = (SQLEditor) page.openEditor((IEditorInput) input,

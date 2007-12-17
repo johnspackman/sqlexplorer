@@ -39,8 +39,10 @@ public class SysObjectNode extends AbstractNode {
 	}
 
 	public SysObjectNode() {
+		super("sysobject");
 		_type = "none";
 		_uid = -1;
+		
 	}
 	
 	public Image getImage() {
