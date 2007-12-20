@@ -58,11 +58,15 @@ public class ShowProcedureSource extends AbstractDBTreeContextAction {
                  for (int i = 0; i < _selectedNodes.length; i++) {
 
                      if (_selectedNodes[i].getType().equalsIgnoreCase("procedure")) {
-                    	 
                     	 procNode = (ProcedureNode) _selectedNodes[i];
                     	 generateProcedureDDL(con, script, stmt, procNode, queryDelimiter);
                     	 
                      }
+                     
+                     //if (_selectedNodes[i].getType().equalsIgnoreCase("view")) {
+                    //	 procNode = (View) _selectedNodes[i];
+                    //	 generateProcedureDDL(con, script, stmt, procNode, queryDelimiter);
+                    // }
                  }
              } finally {
                  try {
