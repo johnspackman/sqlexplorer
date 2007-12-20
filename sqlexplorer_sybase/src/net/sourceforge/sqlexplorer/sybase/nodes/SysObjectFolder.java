@@ -2,6 +2,7 @@ package net.sourceforge.sqlexplorer.sybase.nodes;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
@@ -65,8 +66,9 @@ public class SysObjectFolder extends AbstractFolderNode {
             	Object[] params = new Object[3];
             	
             	try {
-            		param[0] = this.getClass();
-            		param[1] = Class.forName("String");
+            		//param[0] = this.getClass();
+            		param[0] = INode.class;
+            		param[1] = "".getClass();
             		param[2] = _session.getClass();
             		params[0] = this;
             		params[1] = rs.getString(1);
@@ -74,10 +76,14 @@ public class SysObjectFolder extends AbstractFolderNode {
 
             		
 	            	SysObjectNode newNode = (SysObjectNode) getChildClass().getConstructor(param).newInstance(params);;
+            		
+            		//SysObjectNode newNode = (SysObjectNode) getChildClass().getConstructor(new Class[0]).newInstance(new Object[0]);;
+            		
 	            	//newNode.initialize(this, rs.getString(1), _sessionNode);
 	            	newNode.setUID(rs.getInt(2));
 	            	newNode.setUName(rs.getString(3));
 	            	newNode.setID(rs.getInt(4));
+	            	
 	
 	            	addChildNode(newNode);
             	} catch (InstantiationException ie) {
@@ -88,11 +94,8 @@ public class SysObjectFolder extends AbstractFolderNode {
             rs.close();
 
         } catch (Exception e) {
-
             SQLExplorerPlugin.error("Couldn't load children for: " + getName(), e);
-
         } finally {
-
             if (pStmt != null) {
                 try {
                     pStmt.close();
@@ -100,6 +103,9 @@ public class SysObjectFolder extends AbstractFolderNode {
                     SQLExplorerPlugin.error("Error closing statement", e);
                 }
             }
-        }
+            
+            if (connection != null)
+          		getSession().releaseConnection((net.sourceforge.sqlexplorer.dbproduct.SQLConnection) connection);        	
+        }            
 	}
 }

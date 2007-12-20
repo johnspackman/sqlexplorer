@@ -1,6 +1,8 @@
 package net.sourceforge.sqlexplorer.sybase.nodes;
 
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
@@ -38,12 +40,20 @@ public class SysObjectNode extends AbstractNode {
 		_id = id;
 	}
 
-	public SysObjectNode() {
-		super("sysobject");
+	public SysObjectNode()  {
+		super(null, null, null, "sysobject");
 		_type = "none";
 		_uid = -1;
-		
 	}
+    
+	public SysObjectNode(INode parent, String name, MetaDataSession session) {
+    	super(parent,name,session, "sysobject");
+    }
+
+	public SysObjectNode(INode parent, String name, MetaDataSession session, String type) {
+    	super(parent,name,session, type);
+    }
+
 	
 	public Image getImage() {
 		//return ImageUtil.getFragmentImage("net.sourceforge.sqlexplorer.oracle", Messages.getString("oracle.images.procedure"));
@@ -66,6 +76,8 @@ public class SysObjectNode extends AbstractNode {
 		return true;
 	}
 	
+
 	public void loadChildren() {
+		
 	}
 }

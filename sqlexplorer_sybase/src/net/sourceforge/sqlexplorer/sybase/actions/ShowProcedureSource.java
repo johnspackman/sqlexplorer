@@ -70,6 +70,10 @@ public class ShowProcedureSource extends AbstractDBTreeContextAction {
                  } catch (Exception e) {
                      SQLExplorerPlugin.error("Error closing statement.", e);
                  }
+                 
+                 if (con != null)
+                	 _selectedNodes[0].getSession().releaseConnection((net.sourceforge.sqlexplorer.dbproduct.SQLConnection) con);        	
+                 
              }
 
              if (script.length() == 0) {
@@ -88,8 +92,8 @@ public class ShowProcedureSource extends AbstractDBTreeContextAction {
              
          } catch (Throwable e) {
              SQLExplorerPlugin.error("Error creating export script", e);
-         }	
-	}
+         } 
+    }
 
 	private void generateProcedureDDL(SQLConnection con, StringBuffer script, Statement stmt, ProcedureNode procNode, String queryDelimeter) throws SQLException {
 

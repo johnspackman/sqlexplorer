@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.sybase.nodes.ProcedureNode;
@@ -14,6 +15,10 @@ public class ProcedureFolder extends SysObjectFolder {
 
 	public ProcedureFolder() {
 	
+	}
+	
+	public ProcedureFolder(INode parent, String name, MetaDataSession session) {
+		super(parent, name,session);
 	}
 	
 	public String getChildType() {
