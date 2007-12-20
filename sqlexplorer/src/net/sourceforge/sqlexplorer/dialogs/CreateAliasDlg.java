@@ -300,21 +300,21 @@ public class CreateAliasDlg extends TitleAreaDialog {
         new Label(nameGroup, SWT.NONE);
         new Label(nameGroup, SWT.NONE);
 
-        final Button autoLogonButton = new Button(connectionPropertiesComposite, SWT.CHECK);
+        /* final Button */ autoLogonButton = new Button(connectionPropertiesComposite, SWT.CHECK);
         autoLogonButton.setToolTipText("If set, SQLExplorer will try to logon without prompting");
         final GridData gd_autoLogonButton = new GridData(158, SWT.DEFAULT);
         autoLogonButton.setLayoutData(gd_autoLogonButton);
         autoLogonButton.setText("Auto logon");
         
-        final Button autoCommitButton = new Button(connectionPropertiesComposite, SWT.CHECK);
+        /* final Button */ autoCommitButton = new Button(connectionPropertiesComposite, SWT.CHECK);
         autoCommitButton.setToolTipText("Sets the default for new SQL Editors");
         autoCommitButton.setText("Auto Commit");
 
-        final Button logonAtStartupButton = new Button(connectionPropertiesComposite, SWT.CHECK);
+        /* final Button */ logonAtStartupButton = new Button(connectionPropertiesComposite, SWT.CHECK);
         logonAtStartupButton.setToolTipText("If set, SQLExplorer will establish a connection during startup");
         logonAtStartupButton.setText("Logon during startup");
 
-        final Button commitOnCloseButton = new Button(connectionPropertiesComposite, SWT.CHECK);
+        /* final Button */ commitOnCloseButton = new Button(connectionPropertiesComposite, SWT.CHECK);
         commitOnCloseButton.setToolTipText("Sets the default for new SQL editors");
         commitOnCloseButton.setText("Commit on close");
         new Label(nameGroup, SWT.NONE);
