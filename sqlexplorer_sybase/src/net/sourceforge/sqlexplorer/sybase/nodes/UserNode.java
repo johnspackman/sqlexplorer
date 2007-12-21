@@ -19,7 +19,7 @@ public class UserNode extends SysObjectNode {
 	
 
 	public Image getImage() {
-		return ImageUtil.getFragmentImage("net.sourceforge.sqlexplorer.sybase", Messages.getString("sybase.images.procedure"));
+		return ImageUtil.getFragmentImage("net.sourceforge.sqlexplorer.sybase", Messages.getString("sybase.images.user"));
 	}
 	
 //	public String getName() {

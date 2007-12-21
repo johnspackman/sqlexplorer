@@ -20,7 +20,7 @@ public class UDDataTypeNode extends SysObjectNode {
 
 	public Image getImage() {
 		//TODO: change image
-		return ImageUtil.getFragmentImage("net.sourceforge.sqlexplorer.sybase", Messages.getString("sybase.images.procedure"));
+		return ImageUtil.getFragmentImage("net.sourceforge.sqlexplorer.sybase", Messages.getString("sybase.images.udd"));
 	}
 	
 	public String getUniqueIdentifier() {
