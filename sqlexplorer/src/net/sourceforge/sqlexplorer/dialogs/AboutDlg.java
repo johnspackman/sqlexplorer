@@ -1,8 +1,6 @@
-package net.sourceforge.sqlexplorer.dialogs;
-
 /*
- * Copyright (C) 2002-2004 Andrea Mazzolini
- * andreamazzolini@users.sourceforge.net
+ * Copyright (C) 2007 SQL Explorer Development Team
+ * http://sourceforge.net/projects/eclipsesql
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,6 +16,7 @@ package net.sourceforge.sqlexplorer.dialogs;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package net.sourceforge.sqlexplorer.dialogs;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -68,6 +67,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.internal.browser.WorkbenchBrowserSupport;
 
+@SuppressWarnings("restriction")
 public class AboutDlg extends Dialog {
 
     public AboutDlg(Shell parentShell) {
@@ -169,7 +169,7 @@ class AboutItem {
         final Color imageBackgroundColor = new Color(parent.getDisplay(), 255, 255, 255);
         final Color fontColor = new Color(parent.getDisplay(), 102, 118, 145);
         
-        final String version = Messages.getString("AboutDialog.About.versionPrefix") + SQLExplorerPlugin.getDefault().getVersion();        
+        final String version = Messages.getString("AboutDialog.About.versionPrefix") + SQLExplorerPlugin.getDefault().getVersion() + "RC6";        
         imgComposite.addPaintListener(new PaintListener() {
 
             public void paintControl(PaintEvent event) {
@@ -192,6 +192,7 @@ class AboutItem {
             public void handleEvent(Event event) {
 
                 try {
+                	@SuppressWarnings("restriction")
                     IWebBrowser browser = WorkbenchBrowserSupport.getInstance().getExternalBrowser();
                     browser.openURL(new URL(event.text));
                 } catch (Exception e) {
