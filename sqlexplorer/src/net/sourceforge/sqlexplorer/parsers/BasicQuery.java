@@ -26,21 +26,18 @@ package net.sourceforge.sqlexplorer.parsers;
  */
 public class BasicQuery extends AbstractQuery {
 
-	private String querySql;
+	private CharSequence querySql;
 	private int lineNo;
 	private QueryType queryType;
 	
-	public BasicQuery(String querySql, int lineNo) {
+	public BasicQuery(CharSequence querySql, int lineNo) {
 		super();
 		this.querySql = querySql;
 		this.lineNo = lineNo;
 		queryType = QueryType.UNKNOWN;
-		String lower = querySql.toLowerCase();
-		int selectPos = lower.indexOf("select");
-		if (selectPos > -1) {
-			int createPos = lower.indexOf("create");
-			if (createPos < 0 || createPos > selectPos)
-				queryType = QueryType.SELECT;
+		String lower = querySql.toString().toLowerCase().trim();
+		if (lower.startsWith("select") && !lower.contains("into")) {
+			queryType = QueryType.SELECT;
 		}
 	}
 

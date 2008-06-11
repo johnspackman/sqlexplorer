@@ -19,76 +19,102 @@
 package net.sourceforge.sqlexplorer.parsers;
 
 import java.util.Iterator;
-import java.util.StringTokenizer;
+import java.util.LinkedList;
+
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
 import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentException;
 import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-
 import org.eclipse.core.runtime.Preferences;
 
 /**
- * This is the original QueryTokenizer implementation from SQLExplorer v3.0; it's included
- * for completness and for backward compatibility but be warned this code has a few bugs 
- * (eg regarding comments).  
- * 
  * This parser is based on scanning the SQL text looking for separators (eg ";", "go", or 
  * "/") that show where to split the text into separate queries; conversely, the new 
  * AbstractSyntaxQueryParser derived style is based on scanning the SQL text for language grammar
  * tokens so that it can split the SQL by natural syntax.
  * 
+ * (Note: the previous version was the SE3.0.0 parser, this is a rewrite for SE3.5RC6 
+ * 
  * @modified John Spackman
  */
 public class BasicQueryParser extends AbstractQueryParser {
 
-    private static String _alternateQuerySeparator;
+	// Quote marks that wrap a string
+	private static final String QUOTE_CHARS = "'\"";
+	
+	// Current line number into sql
+	private int lineNo;
+	
+	// Current position into sql for the parser
+	private int charIndex;
+	
+	// Whether quotes inside strings are escaped - and if so, the quote character
+	private char quoteEscapes;
+	
+	// The start of a single-line comment
+	private String slComment;
+	
+	// The start of a multi-line comment
+	private String mlCommentStart;
+	
+	// The end of a multi-line comment
+	private String mlCommentEnd;
+	
+	// Command separator
+	private String cmdSeparator;
+	
+	// Alternative separator (must occur on a line on its own)
+	private String altSeparator;
+	
+	// Whether structured comments are enabled
+	private boolean enableStructuredComments;
 
-    private static String _querySeparator;
-
-    private String _sQuerys;
-
-    private String _sNextQuery;
-    
-    private int lineNo = 1;
-    
+	// The SQL
     private CharSequence sql;
-
-    /**
-     * These characters at the beginning of an SQL statement indicate that it is
-     * a comment.
-     */
-    private String _solComment;
     
+    // Parsed queries
+    private LinkedList<Query> queries;
+    
+    /**
+     * Constructor
+     * @param sql
+     */
 	public BasicQueryParser(CharSequence sql) {
 		super();
-	    Preferences prefs = SQLExplorerPlugin.getDefault().getPluginPreferences();
-	    String querySeparator = prefs.getString(IConstants.SQL_QRY_DELIMITER);
-	    String alternateSeparator = prefs.getString(IConstants.SQL_ALT_QRY_DELIMITER);
-	    String solComment = prefs.getString(IConstants.SQL_COMMENT_DELIMITER);
-	    
-        if (querySeparator != null && querySeparator.trim().length() > 0) {
-            _querySeparator = querySeparator.substring(0, 1);
-        } else {
-            // failsave..
-            _querySeparator = ";";
-        }
-        
-        if (alternateSeparator != null && alternateSeparator.trim().length() > 0) {
-            _alternateQuerySeparator = alternateSeparator;    
-        } else {
-            _alternateQuerySeparator = null;
-        }        
-
-        if (solComment != null && solComment.trim().length() > 0) {
-            _solComment = solComment;
-        } else {
-            _solComment = null;
-        }
-        
         if (sql == null)
-        	sql = "";
-        this.sql = sql;
+        	this.sql = "";
+        else
+        	this.sql = sql;
+        lineNo = 1;
+        
+        cmdSeparator = ";";
+	    altSeparator = "GO";
+	    slComment = "--";
+	    mlCommentStart = "/*";
+	    mlCommentEnd = "*/";	    
+	}
+
+    /**
+     * Constructor
+     * @param sql
+     */
+	public BasicQueryParser(CharSequence sql, Preferences prefs) {
+		this(sql);
+	    setCmdSeparator(prefs.getString(IConstants.SQL_QRY_DELIMITER));
+	    setAltSeparator(prefs.getString(IConstants.SQL_ALT_QRY_DELIMITER));
+	    setSlComment(prefs.getString(IConstants.SQL_SL_COMMENT));
+	    setMlCommentStart(prefs.getString(IConstants.SQL_ML_COMMENT_START));
+	    setMlCommentEnd(prefs.getString(IConstants.SQL_ML_COMMENT_END));
+	    setQuoteEscapes(prefs.getString(IConstants.SQL_QUOTE_ESCAPE_CHAR));
+	    enableStructuredComments = prefs.getBoolean(IConstants.ENABLE_STRUCTURED_COMMENTS);
+	    
+	    String str = getPref(prefs, IConstants.SQL_QUOTE_ESCAPE_CHAR);
+	    if (str != null) {
+	    	str = str.trim();
+	    	if (str.length() > 0)
+	    		quoteEscapes = str.charAt(0);
+	    }
 	}
 
     /* (non-JavaDoc)
@@ -98,8 +124,7 @@ public class BasicQueryParser extends AbstractQueryParser {
 		if (sql == null)
 			return;
 
-	    Preferences prefs = SQLExplorerPlugin.getDefault().getPluginPreferences();
-		if (prefs.getBoolean(IConstants.ENABLE_STRUCTURED_COMMENTS)) {
+	    if (enableStructuredComments) {
 			StringBuffer buffer = new StringBuffer(sql.toString());
 			Tokenizer tokenizer = new Tokenizer(buffer);
 			StructuredCommentParser structuredComments = new StructuredCommentParser(this, buffer);
@@ -124,9 +149,11 @@ public class BasicQueryParser extends AbstractQueryParser {
 			sql = buffer;
 		}
         
-        _sQuerys = prepareSQL(sql.toString());
-        _sNextQuery = doParse();
-        sql = null;
+        charIndex = 0;
+        BasicQuery query;
+        queries = new LinkedList<Query>();
+        while ((query = getNextQuery()) != null)
+        	queries.add(query);
 	}
 
 	/* (non-JavaDoc)
@@ -147,212 +174,246 @@ public class BasicQueryParser extends AbstractQueryParser {
 	 * @see net.sourceforge.sqlexplorer.parsers.QueryParser#iterator()
 	 */
 	public Iterator<Query> iterator() {
-		return new Iterator<Query>() {
-
-			/* (non-JavaDoc)
-			 * @see java.util.Iterator#hasNext()
-			 */
-			public boolean hasNext() {
-		        return _sNextQuery != null;
+		return queries.iterator();
+	}
+	
+	/**
+	 * Gets the next query, or returns null if there are no more
+	 * @return
+	 */
+	private BasicQuery getNextQuery() {
+		if (charIndex >= sql.length())
+			return null;
+		
+		int start = charIndex;
+		int startOfLine = -1;
+		char cQuote = 0;
+		boolean inSLComment = false;
+		boolean inMLComment = false;
+		int startLineNo = -1;
+		for (; charIndex < sql.length(); charIndex++) {
+			char c = sql.charAt(charIndex);
+			char nextC = 0;
+			if (charIndex < sql.length() - 1)
+				nextC = sql.charAt(charIndex + 1);
+			
+			// If we're quoting
+			if (cQuote != 0) {
+				if (c == quoteEscapes && QUOTE_CHARS.indexOf(nextC) > -1)
+					charIndex++;
+				else if (cQuote == c)
+					cQuote = 0;
+				continue;
 			}
 
-			/* (non-JavaDoc)
-			 * @see java.util.Iterator#next()
-			 */
-			public Query next() {
-				return nextQuery();
+			// Skip leading whitespace
+			if (start == charIndex && Character.isWhitespace(c)) {
+				start++;
+				if (c == '\n') {
+					startOfLine = -1;
+					lineNo++;
+				}
+				continue;
 			}
-
-			/* (non-JavaDoc)
-			 * @see java.util.Iterator#remove()
-			 */
-			public void remove() {
-				throw new IllegalAccessError();
+			// Calculate the start of line (gets reset to -1 on every \n) 
+			if (startOfLine < 0 && !Character.isWhitespace(c))
+				startOfLine = charIndex;
+			
+			if (cmdSeparator != null && nextIs(cmdSeparator)) {
+				int oldCharIndex = charIndex;
+				charIndex += cmdSeparator.length();
+				if (startLineNo < 0 || start + cmdSeparator.length() >= oldCharIndex) {
+					start = charIndex;
+					startLineNo = -1;
+					startOfLine = -1;
+					continue;
+				}
+				return new BasicQuery(sql.subSequence(start, oldCharIndex), startLineNo);
+			}
+			// Starting a quote?
+			if (QUOTE_CHARS.indexOf(c) > -1) {
+				cQuote = c;
+				continue;
 			}
 			
-		};
+			// Newlines - count line numbers, and look for "GO" (or equivelant)
+			if (c == '\n') {
+				if (rangeIs(startOfLine, charIndex, altSeparator)) {
+					if (startLineNo < 0 || start + altSeparator.length() >= startOfLine) {
+						start = charIndex + 1;
+						startLineNo = -1;
+						startOfLine = -1;
+						lineNo++;
+						continue;
+					}
+					return new BasicQuery(sql.subSequence(start, startOfLine), startLineNo);
+				}
+				startOfLine = -1;
+				lineNo++;
+				if (inSLComment) {
+					inSLComment = false;
+					continue;
+				}
+			}
+			
+			// Skip comments
+			if (inSLComment)
+				continue;
+			if (inMLComment && nextIs(mlCommentEnd)) {
+				inMLComment = false;
+				continue;
+			}
+			
+			// Starting a single-line comment
+			if (nextIs(slComment)) {
+				if (rangeIs(startOfLine, charIndex, altSeparator)) {
+					if (startLineNo < 0 || start + altSeparator.length() >= startOfLine) {
+						start = charIndex;
+						startLineNo = -1;
+						startOfLine = -1;
+						continue;
+					}
+					return new BasicQuery(sql.subSequence(start, startOfLine), startLineNo);
+				}
+				inSLComment = true;
+				continue;
+			}
+			
+			// Starting a multi-line comment
+			if (nextIs(mlCommentStart)) {
+				if (rangeIs(startOfLine, charIndex, altSeparator)) {
+					if (startLineNo < 0 || start + altSeparator.length() >= startOfLine) {
+						start = charIndex;
+						startLineNo = -1;
+						startOfLine = -1;
+						continue;
+					}
+					return new BasicQuery(sql.subSequence(start, startOfLine), startLineNo);
+				}
+				inMLComment = true;
+				continue;
+			}
+			
+			// Only update the startLineNo when we know when code starts
+			if (startLineNo < 0 && !Character.isWhitespace(c))
+				startLineNo = lineNo;
+		}
+		
+		// Returns something if there is something to return
+		if (start < charIndex) {
+			if (rangeIs(startOfLine, charIndex, altSeparator)) {
+				charIndex = sql.length();
+				if (startLineNo < 0 || start + altSeparator.length() >= startOfLine)
+					return null;
+				return new BasicQuery(sql.subSequence(start, startOfLine), startLineNo);
+			}
+			return new BasicQuery(sql.subSequence(start, charIndex), startLineNo);
+		}
+		return null;
 	}
 
 	/**
-	 * Retrieves the next Query in the sequence
+	 * Determines whether the next part of the SQL is a given string
+	 * @param str
 	 * @return
 	 */
-    public Query nextQuery() {
-    	if (_sNextQuery == null)
-    		return null;
-		String sReturnQuery = _sNextQuery;
-		int thisLineNo = lineNo;
-        _sNextQuery = doParse();
-        if (sReturnQuery == null)
-        	return null;
-        if (sReturnQuery.startsWith("--"))
-        	return nextQuery();
-    	
-        return new BasicQuery(sReturnQuery, thisLineNo);
-    }
+	private boolean nextIs(String str) {
+		if (str == null)
+			return false;
+		if (str.length() > sql.length() - charIndex)
+			return false;
+		CharSequence sub = sql.subSequence(charIndex, charIndex + str.length());
+		return str.equals(sub.toString());
+	}
+	
+	/**
+	 * Determines whether a string is exactly in a given range
+	 * @param start
+	 * @param end
+	 * @param str
+	 * @return
+	 */
+	private boolean rangeIs(int start, int end, String str) {
+		if (str == null || end - start != str.length())
+			return false;
+		String sub = sql.subSequence(start, end).toString();
+		return str.equalsIgnoreCase(sub);
+	}
+	
+	/**
+	 * Gets a string from preferences, or null if the string is empty
+	 * @param prefs
+	 * @param id
+	 * @return
+	 */
+	private String getPref(Preferences prefs, String id) {
+		String str = prefs.getString(id);
+		if (str == null)
+			return null;
+		str = str.trim();
+		if (str.length() == 0)
+			return null;
+		return str;
+	}
 
-    private int findFirstSeparator() {
+	private String getValue(String value) {
+		if (value == null)
+			return null;
+		value = value.trim();
+		if (value.length() == 0)
+			return null;
+		return value;
+	}
+	public String getAltSeparator() {
+		return altSeparator;
+	}
 
-        String separator = _querySeparator;
-        int separatorLength = _querySeparator.length();
-        int iQuoteCount = 1;
-        int iIndex1 = 0 - separatorLength;
-        
-        while (iQuoteCount % 2 != 0) {
-            
-            iQuoteCount = 0;
-            iIndex1 = _sQuerys.indexOf(separator, iIndex1 + separatorLength);
+	public void setAltSeparator(String altSeparator) {
+		this.altSeparator = getValue(altSeparator);
+	}
 
-            if (iIndex1 > -1) {
-                int iIndex2 = _sQuerys.lastIndexOf('\'', iIndex1 + separatorLength - 1);
-                while (iIndex2 != -1) {
-                    if (_sQuerys.charAt(iIndex2 - 1) != '\\') {
-                        iQuoteCount++;
-                    }
-                    iIndex2 = _sQuerys.lastIndexOf('\'', iIndex2 - 1);
-                }
-            } else {
-                return -1;
-            }
-        }
-        
-        return iIndex1;
-    }
+	public String getCmdSeparator() {
+		return cmdSeparator;
+	}
 
-    private int findFirstAlternateSeparator() {
+	public void setCmdSeparator(String cmdSeparator) {
+		this.cmdSeparator = getValue(cmdSeparator);
+	}
 
-        if (_alternateQuerySeparator == null) {
-            return -1;
-        }
+	public String getMlCommentEnd() {
+		return mlCommentEnd;
+	}
 
-        String separator = _alternateQuerySeparator;
-        int separatorLength = _alternateQuerySeparator.length();
-        int iQuoteCount = 1;
-        int iIndex1 = 0 - separatorLength;
-        
-        while (iQuoteCount % 2 != 0) {
-            
-            iQuoteCount = 0;
-            iIndex1 = _sQuerys.indexOf(separator, iIndex1 + separatorLength);
+	public void setMlCommentEnd(String mlCommentEnd) {
+		this.mlCommentEnd = getValue(mlCommentEnd);
+	}
 
-            if (iIndex1 > -1) {
-                int iIndex2 = _sQuerys.lastIndexOf('\'', iIndex1 + separatorLength - 1);
-                while (iIndex2 != -1) {
-                    if (_sQuerys.charAt(iIndex2 - 1) != '\\') {
-                        iQuoteCount++;
-                    }
-                    iIndex2 = _sQuerys.lastIndexOf('\'', iIndex2 - 1);
-                }
-            } else {
-                return -1;
-            }
-        }
-        
-        return iIndex1;
-    }
+	public String getMlCommentStart() {
+		return mlCommentStart;
+	}
 
-    public String doParse() {
-        
-        if (_sQuerys.length() == 0) {
-            return null;
-        }
-        
-        String separator = _querySeparator;
-                
-        int indexSep = findFirstSeparator();
-        int indexAltSep = findFirstAlternateSeparator();
-        
-        if (indexAltSep > -1) {
-            if (indexSep < 0 || indexAltSep < indexSep) {
-                // use alternate separator
-                separator = _alternateQuerySeparator;
-            }
-        }
-        
-        int separatorLength = separator.length();
-        int iQuoteCount = 1;
-        int iIndex1 = 0 - separatorLength;
-        
-        while (iQuoteCount % 2 != 0) {
-            
-            iQuoteCount = 0;
-            iIndex1 = _sQuerys.indexOf(separator, iIndex1 + separatorLength);
+	public void setMlCommentStart(String mlCommentStart) {
+		this.mlCommentStart = getValue(mlCommentStart);
+	}
 
-            if (iIndex1 > -1) {
-                int iIndex2 = _sQuerys.lastIndexOf('\'', iIndex1 + separatorLength - 1);
-                while (iIndex2 != -1) {
-                    if (_sQuerys.charAt(iIndex2 - 1) != '\\') {
-                        iQuoteCount++;
-                    }
-                    iIndex2 = _sQuerys.lastIndexOf('\'', iIndex2 - 1);
-                }
-            } else {
-                String sNextQuery = _sQuerys;
-                _sQuerys = "";
-                if (_solComment != null && sNextQuery.startsWith(_solComment)) {
-                    return doParse();
-                }
-                return replaceLineFeeds(sNextQuery);
-            }
-        }
-        String sNextQuery = _sQuerys.substring(0, iIndex1);
-        _sQuerys = _sQuerys.substring(iIndex1 + separatorLength).trim();
-        if (_solComment != null && sNextQuery.startsWith(_solComment)) {
-            return doParse();
-        }
-        return replaceLineFeeds(sNextQuery);
-    }
+	public char getQuoteEscapes() {
+		return quoteEscapes;
+	}
 
-    private String prepareSQL(String sql) {
-        StringBuffer results = new StringBuffer(1024);
+	public void setQuoteEscapes(char quoteEscapes) {
+		this.quoteEscapes = quoteEscapes;
+	}
 
-        for (StringTokenizer tok = new StringTokenizer(sql.trim(), "\n", false); tok.hasMoreTokens();) {
-            String line = tok.nextToken();
-            if (!line.startsWith(_solComment)) {
-                results.append(line).append('\n');
-            }
-        }
+	public void setQuoteEscapes(String quoteEscapes) {
+		quoteEscapes = getValue(quoteEscapes);
+		this.quoteEscapes = quoteEscapes == null ? 0 : quoteEscapes.charAt(0);
+	}
 
-        // JHS 2007-07-16
-        // PL/SQL does not like having a forced CR (presumably only a Windows issue)
-        for (int i = 0; i < results.length(); ) {
-        	if (results.charAt(i) == '\r')
-        		results.deleteCharAt(i);
-        	else 
-        		i++;
-        }
-        
-        return results.toString();
-    }
+	public String getSlComment() {
+		return slComment;
+	}
 
-    private String replaceLineFeeds(String sql) {
-        StringBuffer sbReturn = new StringBuffer();
-        int iPrev = 0;
-        int linefeed = sql.indexOf('\n');
-        int iQuote = -1;
-        while (linefeed != -1) {
-            iQuote = sql.indexOf('\'', iQuote + 1);
-            if (iQuote != -1 && iQuote < linefeed) {
-                int iNextQute = sql.indexOf('\'', iQuote + 1);
-                if (iNextQute > linefeed) {
-                    sbReturn.append(sql.substring(iPrev, linefeed));
-                    sbReturn.append('\n');
-                    iPrev = linefeed + 1;
-                    linefeed = sql.indexOf('\n', iPrev);
-                }
-            } else {
-                linefeed = sql.indexOf('\n', linefeed + 1);
-            }
-        }
-        sbReturn.append(sql.substring(iPrev));
-        
-        // Count up the line numbers.  This is a dirty and inefficient hack but as the parser 
-        //	is to be completely rewritten soon anyway... >:)
-        for (int i = 0; i < sbReturn.length(); i++)
-        	if (sbReturn.charAt(i) == '\n')
-    			lineNo++;
-        
-        return sbReturn.toString();
-    }
-
+	public void setSlComment(String slComment) {
+		this.slComment = getValue(slComment);
+	}
 }
