@@ -18,14 +18,10 @@
  */
 package net.sourceforge.sqlexplorer.connections.actions;
 
-import java.util.Set;
-
 import org.eclipse.swt.widgets.Display;
 
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
-import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.dialogs.EditUserDlg;
-import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
 
 
 /**

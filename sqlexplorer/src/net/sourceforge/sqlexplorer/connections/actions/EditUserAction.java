@@ -1,13 +1,9 @@
 package net.sourceforge.sqlexplorer.connections.actions;
 
-import java.sql.SQLException;
-
 import org.eclipse.swt.widgets.Display;
 
-import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.dialogs.EditUserDlg;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 public class EditUserAction extends AbstractConnectionTreeAction {
 

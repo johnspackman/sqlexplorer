@@ -102,13 +102,11 @@ public class GeneralPreferencePage extends AbstractPreferencePage {
 		});
 		commitOnCloseBox.setEnabled(!autoCommitBox.getSelection());
 
-		addField(new BooleanFieldEditor(IConstants.SQL_ASSIST, Messages
-				.getString("GeneralPreferencePage.Tables_and_columns_auto-completing_assistance._Use_only_with_fast_database_connections_1"), getFieldEditorParent()));
+		addField(new BooleanFieldEditor(IConstants.SQL_ASSIST, Messages.getString("GeneralPreferencePage.Tables_and_columns_auto-completing_assistance._Use_only_with_fast_database_connections_1"), getFieldEditorParent()));
 
 		
-		sEdit = new StringFieldEditor(IConstants.SQL_QRY_DELIMITER, Messages
-				.getString("Preferences.SQLExplorer.QueryDelimiter"), getFieldEditorParent());
-		sEdit.setEmptyStringAllowed(false);
+		sEdit = new StringFieldEditor(IConstants.SQL_QRY_DELIMITER, Messages.getString("Preferences.SQLExplorer.QueryDelimiter"), getFieldEditorParent());
+		sEdit.setEmptyStringAllowed(true);
 		sEdit.setTextLimit(1);
 		sEdit.setErrorMessage(Messages.getString("Preferences.SQLExplorer.QueryDelimiter.Error"));
 		addField(sEdit);
@@ -116,20 +114,42 @@ public class GeneralPreferencePage extends AbstractPreferencePage {
 			sEdit.loadDefault();
 
 		
-		sEdit = new StringFieldEditor(IConstants.SQL_ALT_QRY_DELIMITER, Messages
-				.getString("Preferences.SQLExplorer.AltQueryDelimiter"), getFieldEditorParent());
+		sEdit = new StringFieldEditor(IConstants.SQL_ALT_QRY_DELIMITER, Messages.getString("Preferences.SQLExplorer.AltQueryDelimiter"), getFieldEditorParent());
 		sEdit.setEmptyStringAllowed(true);
 		sEdit.setTextLimit(4);
 		addField(sEdit);
 
 		
-		sEdit = new StringFieldEditor(IConstants.SQL_COMMENT_DELIMITER, Messages
-				.getString("Preferences.SQLExplorer.CommentDelimiter"), getFieldEditorParent());
-		sEdit.setEmptyStringAllowed(false);
+		sEdit = new StringFieldEditor(IConstants.SQL_SL_COMMENT, Messages.getString("Preferences.SQLExplorer.SLComment"), getFieldEditorParent());
+		sEdit.setEmptyStringAllowed(true);
 		sEdit.setTextLimit(4);
-		sEdit.setErrorMessage(Messages.getString("Preferences.SQLExplorer.CommentDelimiter.Error"));
+		sEdit.setErrorMessage(Messages.getString("Preferences.SQLExplorer.SLComment.Error"));
 		addField(sEdit);
-		if (sEdit.getStringValue() == null || sEdit.getStringValue().length() == 0)
+		if (sEdit.getStringValue() == null)
+			sEdit.loadDefault();
+
+		sEdit = new StringFieldEditor(IConstants.SQL_ML_COMMENT_START, Messages.getString("Preferences.SQLExplorer.MLCommentStart"), getFieldEditorParent());
+		sEdit.setEmptyStringAllowed(true);
+		sEdit.setTextLimit(4);
+		sEdit.setErrorMessage(Messages.getString("Preferences.SQLExplorer.MLCommentStart.Error"));
+		addField(sEdit);
+		if (sEdit.getStringValue() == null)
+			sEdit.loadDefault();
+
+		sEdit = new StringFieldEditor(IConstants.SQL_ML_COMMENT_END, Messages.getString("Preferences.SQLExplorer.MLCommentEnd"), getFieldEditorParent());
+		sEdit.setEmptyStringAllowed(true);
+		sEdit.setTextLimit(4);
+		sEdit.setErrorMessage(Messages.getString("Preferences.SQLExplorer.MLCommentEnd.Error"));
+		addField(sEdit);
+		if (sEdit.getStringValue() == null)
+			sEdit.loadDefault();
+
+		sEdit = new StringFieldEditor(IConstants.SQL_QUOTE_ESCAPE_CHAR, Messages.getString("Preferences.SQLExplorer.QuoteEscapeChar"), getFieldEditorParent());
+		sEdit.setEmptyStringAllowed(true);
+		sEdit.setTextLimit(1);
+		sEdit.setErrorMessage(Messages.getString("Preferences.SQLExplorer.QuoteEscapeChar.Error"));
+		addField(sEdit);
+		if (sEdit.getStringValue() == null)
 			sEdit.loadDefault();
 
 		

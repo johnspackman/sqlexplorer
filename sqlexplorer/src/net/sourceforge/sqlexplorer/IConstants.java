@@ -36,6 +36,9 @@ public interface IConstants {
 		NO
 	}
 
+    String SQL_EDITOR_CLASS = SQLEditor.class.getName();
+
+	
     String AUTO_COMMIT = "SQLEditor.AutoCommit";
 
     String AUTO_OPEN_EDITOR = "SQLEditor.AutoOpenEditor";
@@ -62,43 +65,39 @@ public interface IConstants {
 
     String PRE_ROW_COUNT = "SQLEditor.PreRowCount";
 
-    String SQL_ALT_QRY_DELIMITER = "SQLEditor.AltQueryDelimiter";
-
     String SQL_ASSIST = "SQLEditor.Assist";
 
     /** The color key for database tables column names */
-    String SQL_COLUMS = "SQLEditor.ColumnsColor";
-    
-    String SQL_COMMENT_DELIMITER = "SQLEditor.CommentDelimiter";
+    String SQL_COLOR_COLUMS = "SQLEditor.ColumnsColor";
 
-    /**
-     * The color key for everthing in SQL code for which no other color is
-     * specified.
-     */
-    String SQL_DEFAULT = "SQLEditor.DefaultColor";
-
-    String SQL_EDITOR_CLASS = SQLEditor.class.getName();
+    /** The color key for everthing in SQL code for which no other color is specified. */
+    String SQL_COLOR_DEFAULT = "SQLEditor.DefaultColor";
 
     /** The color key for SQL keywords in Java code. */
-    String SQL_KEYWORD = "SQLEditor.KeywordColor";
+    String SQL_COLOR_KEYWORD = "SQLEditor.KeywordColor";
 
     /** The color key for multi-line comments in Java code. */
-    String SQL_MULTILINE_COMMENT = "SQLEditor.MultiLineCommentColor";
-
-    String SQL_QRY_DELIMITER = "SQLEditor.QueryDelimiter";
+    String SQL_COLOR_MULTILINE_COMMENT = "SQLEditor.MultiLineCommentColor";
 
     /** The color key for single-line comments in Java code. */
-    String SQL_SINGLE_LINE_COMMENT = "SQLEditor.SingleLineCommentColor";
+    String SQL_COLOR_SINGLE_LINE_COMMENT = "SQLEditor.SingleLineCommentColor";
 
     /** The color key for string and character literals in Java code. */
-    String SQL_STRING = "SQLEditor.StringColor";
+    String SQL_COLOR_STRING = "SQLEditor.StringColor";
 
     /** The color key for database tables names */
-    String SQL_TABLE = "SQLEditor.TableColor";
+    String SQL_COLOR_TABLE = "SQLEditor.TableColor";
 
     String WARN_LIMIT = "SQLEditor.WarnLimit";
     
     String WORD_WRAP = "SQLEditor.AutoWrap";
+    
+    String SQL_QRY_DELIMITER = "SQLEditor.QueryDelimiter";
+    String SQL_ALT_QRY_DELIMITER = "SQLEditor.AltQueryDelimiter";
+    String SQL_SL_COMMENT = "SQLEditor.SLCommentStart";
+    String SQL_ML_COMMENT_START = "SQLEditor.MLCommentStart";
+    String SQL_ML_COMMENT_END = "SQLEditor.MLCommentEnd";
+    String SQL_QUOTE_ESCAPE_CHAR = "SQLEditor.QuoteEscapeChar";
     
     // When executing the code in an editor, should we clear all the results tabs and 
     //	empty the messages list 

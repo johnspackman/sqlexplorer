@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import net.sourceforge.sqlexplorer.parsers.BasicQueryParser;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverClassLoader;
@@ -63,7 +64,7 @@ public class DefaultDatabaseProduct extends AbstractDatabaseProduct {
 	}
 
 	public QueryParser getQueryParser(String sql, int initialLineNo) {
-		return new BasicQueryParser(sql);
+		return new BasicQueryParser(sql, SQLExplorerPlugin.getDefault().getPluginPreferences());
 	}
 
 	public Collection<Message> getErrorMessages(SQLConnection connection, Query query) throws SQLException {

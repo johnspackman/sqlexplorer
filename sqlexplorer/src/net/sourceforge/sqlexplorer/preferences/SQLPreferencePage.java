@@ -88,33 +88,33 @@ public class SQLPreferencePage extends OverlaidPreferencePage implements IWorkbe
 	//	this to determine whether it should store updated values, and if so which method to invoke
 	public static final OverlayPreferenceStore.OverlayKey[] PREFERENCES = new OverlayPreferenceStore.OverlayKey[] {
 		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.FONT),
-		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_MULTILINE_COMMENT),
-		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_MULTILINE_COMMENT + BOLD),
-		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_TABLE),
-		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_TABLE + BOLD),
-		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_COLUMS),
-		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_COLUMS + BOLD),
-		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_SINGLE_LINE_COMMENT),
-		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_SINGLE_LINE_COMMENT + BOLD),
-		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_DEFAULT),
-		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_DEFAULT + BOLD),
-		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_STRING),
-		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_STRING + BOLD),
-		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_KEYWORD),
-		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_KEYWORD + BOLD),
+		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_COLOR_MULTILINE_COMMENT),
+		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_COLOR_MULTILINE_COMMENT + BOLD),
+		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_COLOR_TABLE),
+		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_COLOR_TABLE + BOLD),
+		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_COLOR_COLUMS),
+		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_COLOR_COLUMS + BOLD),
+		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_COLOR_SINGLE_LINE_COMMENT),
+		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_COLOR_SINGLE_LINE_COMMENT + BOLD),
+		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_COLOR_DEFAULT),
+		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_COLOR_DEFAULT + BOLD),
+		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_COLOR_STRING),
+		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_COLOR_STRING + BOLD),
+		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.SQL_COLOR_KEYWORD),
+		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.SQL_COLOR_KEYWORD + BOLD),
 		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, IConstants.CLIP_EXPORT_COLUMNS),
 		new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, IConstants.CLIP_EXPORT_SEPARATOR)
 	};
 
 	// Syntax highlighting
 	private final Highlight[] highlights = new Highlight[] {
-			new Highlight(Messages.getString("SQL_Table_1"), IConstants.SQL_TABLE),
-			new Highlight(Messages.getString("SQL_Column_2"), IConstants.SQL_COLUMS),
-			new Highlight(Messages.getString("SQL_Keyword_3"), IConstants.SQL_KEYWORD),
-			new Highlight(Messages.getString("SQL_Single_Line_Comment_4"), IConstants.SQL_SINGLE_LINE_COMMENT),
-			new Highlight(Messages.getString("SQL_Multi_Line_Comment_5"), IConstants.SQL_MULTILINE_COMMENT),
-			new Highlight(Messages.getString("String_6"), IConstants.SQL_STRING),
-			new Highlight(Messages.getString("Others_7"), IConstants.SQL_DEFAULT) };
+			new Highlight(Messages.getString("SQL_Table_1"), IConstants.SQL_COLOR_TABLE),
+			new Highlight(Messages.getString("SQL_Column_2"), IConstants.SQL_COLOR_COLUMS),
+			new Highlight(Messages.getString("SQL_Keyword_3"), IConstants.SQL_COLOR_KEYWORD),
+			new Highlight(Messages.getString("SQL_Single_Line_Comment_4"), IConstants.SQL_COLOR_SINGLE_LINE_COMMENT),
+			new Highlight(Messages.getString("SQL_Multi_Line_Comment_5"), IConstants.SQL_COLOR_MULTILINE_COMMENT),
+			new Highlight(Messages.getString("String_6"), IConstants.SQL_COLOR_STRING),
+			new Highlight(Messages.getString("Others_7"), IConstants.SQL_COLOR_DEFAULT) };
 
 	// FieldEditor for fonts
 	private FontFieldEditor fontFieldEditor;

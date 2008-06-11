@@ -223,7 +223,7 @@ public abstract class AbstractNode implements INode {
      * Get the parent of this node.
      * 
      * @return Parent node of this node.
-     * @see net.sourceforge.sqlexplorer.db.INode#getParent()
+     * @see net.sourceforge.sqlexplorer.db.INode#getControlParent()
      */
     public final INode getParent() {
 

@@ -18,16 +18,11 @@
  */
 package net.sourceforge.sqlexplorer.connections;
 
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-
 import net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction;
-import net.sourceforge.sqlexplorer.connections.actions.AutoCommitAction;
 import net.sourceforge.sqlexplorer.connections.actions.ChangeAliasAction;
 import net.sourceforge.sqlexplorer.connections.actions.CloseAllConnectionsAction;
 import net.sourceforge.sqlexplorer.connections.actions.CloseConnectionAction;
 import net.sourceforge.sqlexplorer.connections.actions.CommitAction;
-import net.sourceforge.sqlexplorer.connections.actions.CommitOnCloseAction;
 import net.sourceforge.sqlexplorer.connections.actions.ConnectAliasAction;
 import net.sourceforge.sqlexplorer.connections.actions.NewUserAction;
 import net.sourceforge.sqlexplorer.connections.actions.CopyAliasAction;

@@ -11,7 +11,6 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 
@@ -24,6 +23,7 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableTreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -86,10 +86,14 @@ public class ExplainExecution extends AbstractSQLExecution {
 
             public void run() {
 
-            	ResultsTab resultsTab = allocateResultsTab(query);
+            	CTabItem tabItem = allocateResultsTab(query);
+            	if (tabItem == null)
+            		return;
 
+            	Composite composite = null;
                 try {
-                    Composite composite = resultsTab.getParent();
+                    composite = new Composite(tabItem.getParent().getParent(), SWT.NONE);
+                    tabItem.setControl(composite);
 
                     GridLayout gLayout = new GridLayout();
                     gLayout.numColumns = 2;
@@ -207,7 +211,6 @@ public class ExplainExecution extends AbstractSQLExecution {
 
                     // add message
                     String message = e.getMessage();
-	                Composite composite = resultsTab.getParent();
                     Label errorLabel = new Label(composite, SWT.FILL);
                     errorLabel.setText(message);
                     errorLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));

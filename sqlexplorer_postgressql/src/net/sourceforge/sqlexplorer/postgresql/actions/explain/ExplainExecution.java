@@ -10,7 +10,6 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.editors.ResultsTab;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.postgresql.dataset.tree.TreeDataSet;
 import net.sourceforge.sqlexplorer.postgresql.ui.TreeDataSetViewer;
@@ -21,6 +20,7 @@ import net.sourceforge.squirrel_sql.fw.util.log.LoggerController;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -207,10 +207,14 @@ public class ExplainExecution extends AbstractSQLExecution {
 
 					public void run() {
 
-		            	ResultsTab resultsTab = allocateResultsTab(query);
+		            	CTabItem tabItem = allocateResultsTab(query);
+		            	if (tabItem == null)
+		            		return;
 
-						try {
-			                Composite composite = resultsTab.getParent();
+		            	Composite composite = null;
+		                try {
+		                    composite = new Composite(tabItem.getParent().getParent(), SWT.NONE);
+		                    tabItem.setControl(composite);
 			                
 							TreeDataSetViewer v = new TreeDataSetViewer(composite);
 							String[] l = null;
@@ -261,7 +265,6 @@ public class ExplainExecution extends AbstractSQLExecution {
 							composite.layout();
 							composite.redraw();
 						} catch (Exception e) {
-			                Composite composite = resultsTab.getParent();
 							String m = e.getMessage();
 							Label errorLabel = new Label(composite, SWT.FILL);
 							errorLabel.setText(m);

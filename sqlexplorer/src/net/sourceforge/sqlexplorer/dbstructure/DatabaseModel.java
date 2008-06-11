@@ -131,7 +131,7 @@ public class DatabaseModel implements INode {
     /**
      * Always returns null, since this is the root...
      * 
-     * @see net.sourceforge.sqlexplorer.dbviewer.model.IDbModel#getParent()
+     * @see net.sourceforge.sqlexplorer.dbviewer.model.IDbModel#getControlParent()
      */
     public INode getParent() {
 

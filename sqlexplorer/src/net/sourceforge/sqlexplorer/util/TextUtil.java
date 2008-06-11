@@ -165,7 +165,7 @@ public class TextUtil {
 				sb.delete(maxLength, sb.length());
 		}
 		
-		return sb.toString();
+		return sb.toString().trim();
     }
     
 

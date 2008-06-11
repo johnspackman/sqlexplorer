@@ -39,7 +39,7 @@ public class FunctionPrivilegeTab extends AbstractDataSetTab {
     	DataSet ds = new DataSet(null, sql, null, getNode().getSession());
     	DataSetRow dsw[] = ds.getRows();
     	_logger.debug("DataSetRow size during query specific name" + dsw.length);
-    	String specificName = (String)dsw[0].getPrettyObjectValue(0);
+    	String specificName = ds.getColumn(0).getDisplayValue(dsw[0].getCellValue(0));
     	return specificName;
     }
 }

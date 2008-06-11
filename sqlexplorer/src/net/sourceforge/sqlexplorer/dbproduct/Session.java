@@ -26,7 +26,7 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 /**
- * The SessionTreeNode represents one active database session.
+ * The Session represents one active database session.
  * 
  * @modified Davy Vanherbergen
  */

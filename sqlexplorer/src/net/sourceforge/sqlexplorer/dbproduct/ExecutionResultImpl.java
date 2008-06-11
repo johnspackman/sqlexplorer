@@ -87,9 +87,11 @@ public final class ExecutionResultImpl implements ExecutionResults {
 		
 		// While we have more secondary results (i.e. those that come directly from Statement but after the first getResults())
 		while (state == State.SECONDARY_RESULTS) {
-			if (stmt.getMoreResults())
+			if (stmt.getMoreResults()) {
 				currentResultSet = stmt.getResultSet();
-			else {
+				if (currentResultSet != null)
+					return new DataSet(currentResultSet, null, maxRows);
+			} else {
 				int updateCount = stmt.getUpdateCount();
 				if (updateCount != -1)
 					this.updateCount += updateCount;
