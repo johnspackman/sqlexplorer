@@ -18,12 +18,14 @@
  */
 package net.sourceforge.sqlexplorer.dataset;
 
+import net.sourceforge.sqlexplorer.sqleditor.results.FlatCellRangeRow;
+
 /**
  * DataSetRow, represents one row in a dataSet.
  * 
  * @author Davy Vanherbergen
  */
-public class DataSetRow {
+public class DataSetRow extends FlatCellRangeRow {
 
 	private DataSet dataset;
     private Comparable[] _values;
@@ -49,25 +51,11 @@ public class DataSetRow {
     }
 
     /**
-     * Returns value of given column. It's pretty, i.e. guaranteed to be
-     * not <tt>null</tt>.
-     * 
-     * @param column first column is 0
-     * @return Pretty column value.
-     */
-    public Object getPrettyObjectValue(int column) {
-        Object tmp = _values[column];
-        if (tmp != null)
-            return tmp;
-        return "<null>";
-    }
-
-    /**
      * Returns the raw value of given column.
      * @param column first column is 0
      * @return Raw column value, maybe <tt>null</tt>.
      */
-    public Object getRawObjectValue(int column) {
+    public Object getCellValue(int column) {
     	return _values[column];
     }
 

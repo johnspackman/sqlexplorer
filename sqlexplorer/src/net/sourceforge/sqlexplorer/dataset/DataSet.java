@@ -33,7 +33,9 @@ import java.util.Arrays;
 import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.sqleditor.results.ResultProvider;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 /**
@@ -52,36 +54,13 @@ import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
  * @author Davy Vanherbergen
  * @modified John Spackman
  */
-public class DataSet {
-	
-	public static class Column {
-		private String caption;
-		private boolean rightJustify;
-		
-		public Column(String caption, boolean rightJustify) {
-			super();
-			this.caption = caption;
-			this.rightJustify = rightJustify;
-		}
-
-		public String getCaption() {
-			return caption;
-		}
-
-		public boolean isRightJustify() {
-			return rightJustify;
-		}
-
-		public Format getFormat() {
-			return null;
-		}
-	}
+public class DataSet implements ResultProvider {
 	
 	public static class FormattedColumn extends Column {
 		private Format format;
 
-		public FormattedColumn(String caption, boolean rightJustify, Format format) {
-			super(caption, rightJustify);
+		public FormattedColumn(int colIndex, String caption, boolean rightJustify, Format format) {
+			super(colIndex, caption, rightJustify);
 			this.format = format;
 		}
 
@@ -104,6 +83,12 @@ public class DataSet {
 
     // Default date format (from preferences)
 	private SimpleDateFormat dateFormat; 
+	
+	// The time taken to execute the SQL that generated the results
+	private long executionTime;
+	
+	// The Query which triggered these result sets (if available)
+	private Query query;
 	
     /**
      * Create a new dataSet based on an existing ResultSet.
@@ -140,18 +125,6 @@ public class DataSet {
     public DataSet(String caption, ResultSet resultSet, int[] relevantIndeces, int maxRows) throws SQLException {
     	this.caption = caption;
         initialize(null, resultSet, relevantIndeces, maxRows);
-    }
-
-    /**
-     * Create a new dataSet based on an existing ResultSet.
-     * @param resultSet ResultSet with values [mandatory]
-     * @param relevantIndeces int[] of all columns to add to the dataSet, use
-     *            null if all columns should be included.
-     * 
-     * @throws Exception if the dataset could not be created
-     */
-    public DataSet(String caption, ResultSet resultSet, int[] relevantIndeces) throws SQLException {
-        this(caption, resultSet, relevantIndeces, 0);
     }
 
     /**
@@ -262,7 +235,7 @@ public class DataSet {
      * Called to create a Column object from the given metadata; this is broken out into
      * a separate method so that database-specific implementations can override it
      * @param metadata
-     * @param columnIndex
+     * @param columnIndex The JDBC column index (1-based)
      * @return
      * @throws SQLException
      */
@@ -274,7 +247,7 @@ public class DataSet {
         	int precision = metadata.getPrecision(columnIndex);
         	int scale = metadata.getScale(columnIndex);
         	if (precision < 1 || scale > precision )
-            	return new FormattedColumn(metadata.getColumnName(columnIndex), true, null);//new DecimalFormat("#.#"));
+            	return new FormattedColumn(columnIndex - 1, metadata.getColumnName(columnIndex), true, null);//new DecimalFormat("#.#"));
         	
     		/*
     		 * NOTE: Scale can be negative (although possibly limited to Oracle), but we cope with 
@@ -293,14 +266,14 @@ public class DataSet {
         	else if (scale < 0)
         		sb.insert(1, '.');
         	
-        	return new FormattedColumn(metadata.getColumnName(columnIndex), true, new DecimalFormat(sb.toString()));
+        	return new FormattedColumn(columnIndex - 1, metadata.getColumnName(columnIndex), true, new DecimalFormat(sb.toString()));
     	}
     	
     	if (type == Types.DATE || type == Types.TIMESTAMP || type == Types.TIME) {
-    		return new FormattedColumn(metadata.getColumnName(columnIndex), false, getDateFormat());
+    		return new FormattedColumn(columnIndex - 1, metadata.getColumnName(columnIndex), false, getDateFormat());
     	}
 
-    	return new Column(metadata.getColumnName(columnIndex), false);
+    	return new Column(columnIndex - 1, metadata.getColumnName(columnIndex), false);
     }
     
     /**
@@ -311,7 +284,7 @@ public class DataSet {
     private Column[] convertColumnLabels(String[] columnLabels) {
     	Column[] result = new Column[columnLabels.length];
     	for (int i = 0; i < columnLabels.length; i++)
-    		result[i] = new Column(columnLabels[i], false);
+    		result[i] = new Column(i, columnLabels[i], false);
     	return result;
     }
 
@@ -328,7 +301,15 @@ public class DataSet {
         return 0;
     }
 
-    /**
+    public Column getColumn(int colIndex) {
+		return columns[colIndex];
+	}
+
+	public int getNumberOfColumns() {
+		return columns.length;
+	}
+
+	/**
      * @return String[] with all column labels
      */
     public Column[] getColumns() {
@@ -339,7 +320,7 @@ public class DataSet {
      * Obtain number of rows.
      * @return Number of rows.
      */
-    public int getRowCount() {
+    public int getNumberOfRows() {
     	return _rows.length;
     }
 
@@ -438,15 +419,40 @@ public class DataSet {
      * @param columnIndex primary sort column index
      * @param sortDirection SWT.UP | SWT.DOWN
      */    
-	public void sort(int columnIndex, int sortDirection) {
+	public boolean sortData(int columnIndex, int sortDirection) {
     	if (_sorter == null) {
     		_sorter = new DataSetTableSorter(this);
     	}
     	_sorter.setTopPriority(columnIndex, sortDirection);
     	
     	Arrays.sort(_rows, _sorter);
+    	return true;
     }
 	
+	public boolean refresh() {
+		/*
+		if (_tab != null) {
+	        _tab.refresh();
+	    }
+	    disposePopup();
+	    
+	    // refresh SQL Results
+	    try {
+	        Object o = _parent.getData("parenttab");
+	        if (o != null) {
+	            SQLExecution sqlExec = (SQLExecution) ((TabItem)o).getData();
+	            if (sqlExec != null) {
+	                sqlExec.startExecution();
+	            }
+	        }
+	    } catch (Exception e1) {
+	        SQLExplorerPlugin.error("Error refreshing", e1);
+	    }
+	    return true;
+	    */
+		return false;
+	}
+
 	private DateFormat getDateFormat() {
 		if (formatDates == null)
 		    formatDates = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.DATASETRESULT_FORMAT_DATES);
@@ -462,5 +468,21 @@ public class DataSet {
 
 	public String getCaption() {
 		return caption;
+	}
+
+	public long getExecutionTime() {
+		return executionTime;
+	}
+
+	public void setExecutionTime(long executionTime) {
+		this.executionTime = executionTime;
+	}
+
+	public Query getQuery() {
+		return query;
+	}
+
+	public void setQuery(Query query) {
+		this.query = query;
 	}
 }

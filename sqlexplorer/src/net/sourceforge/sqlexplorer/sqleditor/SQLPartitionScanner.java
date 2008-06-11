@@ -91,9 +91,9 @@ public class SQLPartitionScanner extends RuleBasedPartitionScanner {
 		super();
 
 		//IToken skip= new Token(SKIP);
-		IToken string= new Token(IConstants.SQL_STRING);
-		IToken multiLineComment= new Token(IConstants.SQL_MULTILINE_COMMENT);
-		IToken singleLineComment= new Token(IConstants.SQL_SINGLE_LINE_COMMENT);
+		IToken string= new Token(IConstants.SQL_COLOR_STRING);
+		IToken multiLineComment= new Token(IConstants.SQL_COLOR_MULTILINE_COMMENT);
+		IToken singleLineComment= new Token(IConstants.SQL_COLOR_SINGLE_LINE_COMMENT);
 
 		List rules= new ArrayList();
 

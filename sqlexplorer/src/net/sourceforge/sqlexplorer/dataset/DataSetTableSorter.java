@@ -30,12 +30,14 @@ import org.eclipse.swt.SWT;
  */
 public class DataSetTableSorter implements Comparator {
    
+	private DataSet dataSet;
+	
     protected int[] _priorities;
 
     protected int[] _directions;
 
     public DataSetTableSorter(DataSet dataSet) {
-        
+    	this.dataSet = dataSet;
     	int length = dataSet.getColumns().length;
         _priorities = new int[length];
         _directions = new int[length];
@@ -84,30 +86,28 @@ public class DataSetTableSorter implements Comparator {
         int direction = _directions[columnNumber];
         int result = 0;
 
-        // check for null values
-        Object o1 = m1.getPrettyObjectValue(columnNumber);
-        Object o2 = m2.getPrettyObjectValue(columnNumber);        
+        // Get the values (may be null)
+        Object o1 = m1.getCellValue(columnNumber);
+        Object o2 = m2.getCellValue(columnNumber);        
         
         // sort based on null values
     	if (o1 == null || o2 == null) {
-    		if (o1 == null && o2 != null) {
+    		if (o1 == null && o2 != null)
     			result = 1;
-    		} else if (o1 != null && o2 == null) {
+    		else if (o1 != null && o2 == null)
     			result = -1;
-    		} else {
-    			result = 0;
-    		}
+    		else
+                result = 0;
     		
-            if (result == 0) {
-                return compareColumnValue(m1, m2, depth + 1);
-            }
+            if (direction == SWT.DOWN)
+            	result *= -1;
             
-            if (direction == SWT.DOWN) {
-            	return result * -1;
-            }
             return result;
     	}
         
+    	// Convert into a viewable, non-null string
+        o1 = dataSet.getColumn(columnNumber).getDisplayValue(o1);
+        o2 = dataSet.getColumn(columnNumber).getDisplayValue(o2);
     	
     	// sort on non-null values
     	if (o1 instanceof Comparable && o2 instanceof Comparable)

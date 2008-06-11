@@ -101,16 +101,16 @@ public class SQLSourceViewerConfiguration extends SourceViewerConfiguration {
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 
 		dr= new DefaultDamagerRepairer(getMultilineCommentScanner());		
-		reconciler.setDamager(dr, IConstants.SQL_MULTILINE_COMMENT);
-		reconciler.setRepairer(dr, IConstants.SQL_MULTILINE_COMMENT);
+		reconciler.setDamager(dr, IConstants.SQL_COLOR_MULTILINE_COMMENT);
+		reconciler.setRepairer(dr, IConstants.SQL_COLOR_MULTILINE_COMMENT);
 
 		dr= new DefaultDamagerRepairer(getSinglelineCommentScanner());		
-		reconciler.setDamager(dr, IConstants.SQL_SINGLE_LINE_COMMENT);
-		reconciler.setRepairer(dr, IConstants.SQL_SINGLE_LINE_COMMENT);
+		reconciler.setDamager(dr, IConstants.SQL_COLOR_SINGLE_LINE_COMMENT);
+		reconciler.setRepairer(dr, IConstants.SQL_COLOR_SINGLE_LINE_COMMENT);
 		
 		dr= new DefaultDamagerRepairer(getStringScanner());
-		reconciler.setDamager(dr, IConstants.SQL_STRING);
-		reconciler.setRepairer(dr, IConstants.SQL_STRING);
+		reconciler.setDamager(dr, IConstants.SQL_COLOR_STRING);
+		reconciler.setRepairer(dr, IConstants.SQL_COLOR_STRING);
 		
 		return reconciler;
 	}
@@ -124,8 +124,8 @@ public class SQLSourceViewerConfiguration extends SourceViewerConfiguration {
 			ContentAssistant assistant= new ContentAssistant(){
 				public void uninstall(){
 					//System.out.println("Uninstalling content assistant");
-					SQLCompletionProcessor p1=(SQLCompletionProcessor)getContentAssistProcessor(IConstants.SQL_STRING);
-					SQLCompletionProcessor p2=(SQLCompletionProcessor)getContentAssistProcessor(IConstants.SQL_SINGLE_LINE_COMMENT);
+					SQLCompletionProcessor p1=(SQLCompletionProcessor)getContentAssistProcessor(IConstants.SQL_COLOR_STRING);
+					SQLCompletionProcessor p2=(SQLCompletionProcessor)getContentAssistProcessor(IConstants.SQL_COLOR_SINGLE_LINE_COMMENT);
 					p1.dispose();
 					p2.dispose();
 					super.uninstall();
@@ -135,8 +135,8 @@ public class SQLSourceViewerConfiguration extends SourceViewerConfiguration {
 			SQLCompletionProcessor processor= new SQLCompletionProcessor(fSQLTextTools.getDictionary());
 			assistant.setContentAssistProcessor(processor, IDocument.DEFAULT_CONTENT_TYPE);
 				// Register the same processor for strings and single line comments to get code completion at the start of those partitions.
-			assistant.setContentAssistProcessor(processor, IConstants.SQL_STRING);
-			assistant.setContentAssistProcessor(processor, IConstants.SQL_SINGLE_LINE_COMMENT);
+			assistant.setContentAssistProcessor(processor, IConstants.SQL_COLOR_STRING);
+			assistant.setContentAssistProcessor(processor, IConstants.SQL_COLOR_SINGLE_LINE_COMMENT);
 			assistant.enableAutoActivation(true);
 
 			assistant.setAutoActivationDelay(500);

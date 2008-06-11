@@ -147,8 +147,8 @@ public class SQLTextViewer extends SourceViewer {
             }
         });
 
-        String[] contentTypes = {IDocument.DEFAULT_CONTENT_TYPE, IConstants.SQL_SINGLE_LINE_COMMENT, IConstants.SQL_STRING,
-                IConstants.SQL_MULTILINE_COMMENT};
+        String[] contentTypes = {IDocument.DEFAULT_CONTENT_TYPE, IConstants.SQL_COLOR_SINGLE_LINE_COMMENT, IConstants.SQL_COLOR_STRING,
+                IConstants.SQL_COLOR_MULTILINE_COMMENT};
         for (int i = 0; i < contentTypes.length; i++) {
 
             super.setTextHover(new ITextHover() {

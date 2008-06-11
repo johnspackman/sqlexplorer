@@ -32,7 +32,6 @@ import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.sqleditor.actions.SQLEditorToolBar;
-import net.sourceforge.sqlexplorer.sqleditor.results.ResultsTab;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 import net.sourceforge.sqlexplorer.util.PartAdapter2;
 
@@ -685,7 +684,7 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 	 * @param sqlExec
 	 * @return
 	 */
-	public ResultsTab createResultsTab(AbstractSQLExecution job) {
+	public CTabItem createResultsTab(AbstractSQLExecution job) {
 		if (tabFolder.isDisposed())
 			return null;
 
@@ -698,14 +697,10 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 		// Make sure we can track the execution
 		tabItem.setData(job);
 
-		// Create a composite to add all controls to
-		Composite composite = new Composite(tabFolder, SWT.NONE);
-		tabItem.setControl(composite);
-		
 		// Make sure we're visible
         getSite().getPage().bringToTop(this);
         
-		return new ResultsTab(this, tabItem, composite);
+		return tabItem;
 	}
 	
 	public boolean isClosed() {

@@ -2,9 +2,8 @@ package net.sourceforge.sqlexplorer.dbdetail.tab;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
-import net.sourceforge.sqlexplorer.dataset.DataSetTable;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-
+import net.sourceforge.sqlexplorer.sqleditor.results.DataSetResultsTab;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
@@ -12,7 +11,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-
 
 public abstract class AbstractDataSetTab extends AbstractTab {
    
@@ -39,8 +37,10 @@ public abstract class AbstractDataSetTab extends AbstractTab {
             // store for later use in dataset table
             composite.setData("IDetailTab", this);
             
-            new DataSetTable(composite, dataSet, getStatusMessage());
-                         
+            DataSetResultsTab results = new DataSetResultsTab(dataSet);
+            results.setHasStatusBar(true);
+            results.setStatusMessage(getStatusMessage());
+            results.createControls(composite);
             
         } catch (Exception e) {
             

@@ -79,11 +79,11 @@ public class SQLTextTools {
         fColorManager = new SQLColorManager();
         fCodeScanner = new SQLCodeScanner(fColorManager, store, dictionary);
         fMultilineCommentScanner = new SingleTokenSQLScanner(fColorManager,
-                store, IConstants.SQL_MULTILINE_COMMENT);
+                store, IConstants.SQL_COLOR_MULTILINE_COMMENT);
         fSinglelineCommentScanner = new SingleTokenSQLScanner(fColorManager,
-                store, IConstants.SQL_SINGLE_LINE_COMMENT);
+                store, IConstants.SQL_COLOR_SINGLE_LINE_COMMENT);
         fStringScanner = new SingleTokenSQLScanner(fColorManager, store,
-                IConstants.SQL_STRING);
+                IConstants.SQL_COLOR_STRING);
         fPartitionScanner = new SQLPartitionScanner();
 
     }
@@ -144,9 +144,9 @@ public class SQLTextTools {
     public IDocumentPartitioner createDocumentPartitioner() {
 
         String[] types = new String[] { IDocument.DEFAULT_CONTENT_TYPE,
-                IConstants.SQL_MULTILINE_COMMENT,
-                IConstants.SQL_SINGLE_LINE_COMMENT,
-                IConstants.SQL_STRING };
+                IConstants.SQL_COLOR_MULTILINE_COMMENT,
+                IConstants.SQL_COLOR_SINGLE_LINE_COMMENT,
+                IConstants.SQL_COLOR_STRING };
 
         return new FastPartitioner(getPartitionScanner(), types);
     }

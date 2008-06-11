@@ -37,7 +37,6 @@ import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.sqleditor.results.ResultsTab;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
@@ -46,6 +45,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -152,14 +152,14 @@ public abstract class AbstractSQLExecution extends Job {
 	 * Creates a new tab for the results in SQLEditor
 	 * @return
 	 */
-	protected ResultsTab allocateResultsTab(Query query) {
-		ResultsTab resultsTab = _editor.createResultsTab(this);
+	protected CTabItem allocateResultsTab(Query query) {
+		CTabItem resultsTab = _editor.createResultsTab(this);
 		if (resultsTab == null)
 			return null;
 		boolean longCaptions = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.USE_LONG_CAPTIONS_ON_RESULTS);
 		if (longCaptions) {
-			String caption = resultsTab.getTabItem().getText() + " [" + TextUtil.compressWhitespace(query.getQuerySql(), MAX_CAPTION_LENGTH) + "]";
-			resultsTab.getTabItem().setText(caption);
+			String caption = resultsTab.getText() + " [" + TextUtil.compressWhitespace(query.getQuerySql(), MAX_CAPTION_LENGTH) + "]";
+			resultsTab.setText(caption);
 		}
 		return resultsTab;
 	}

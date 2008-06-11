@@ -23,23 +23,24 @@ import java.sql.Statement;
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
-import net.sourceforge.sqlexplorer.dataset.DataSetTable;
 import net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.sqleditor.results.ResultsTab;
-
+import net.sourceforge.sqlexplorer.sqleditor.results.DataSetResultsTab;
+import net.sourceforge.sqlexplorer.sqleditor.results.EditorResultsTab;
+import net.sourceforge.sqlexplorer.sqleditor.results.GenericAction;
+import net.sourceforge.sqlexplorer.sqleditor.results.GenericActionGroup;
+import net.sourceforge.sqlexplorer.sqleditor.results.ResultsTableAction;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.custom.CTabItem;
 
 /**
  * Executes one or more SQL statements in sequence, displaying the results in tabs
@@ -76,67 +77,61 @@ public class SQLExecution extends AbstractSQLExecution {
      * Display SQL Results in result pane
      * @param sqlResult the results of the query
      */
-    protected void displayResults(final SQLResult sqlResult) {
+    protected void displayResults(final DataSet dataSet) {
 
     	// Switch to the UI thread to execute this
     	getEditor().getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
             public void run() {
             	
-            	ResultsTab resultsTab = allocateResultsTab(sqlResult.getQuery());
-            	if (resultsTab == null)
+            	CTabItem tabItem = allocateResultsTab(dataSet.getQuery());
+            	if (tabItem == null)
             		return;
-            	String caption = sqlResult.getDataSet().getCaption();
+            	
+            	final DataSetResultsTab table = new DataSetResultsTab(dataSet);
+            	EditorResultsTab resultsTab = new EditorResultsTab(tabItem, table);
+            	String caption = dataSet.getCaption();
             	if (caption != null)
-            		resultsTab.getTabItem().setText(caption);
+            		resultsTab.setTabTitle(caption);
+
+                // add context menu to table & cursor
+                final GenericActionGroup actionGroup = new GenericActionGroup("dataSetTableContextAction", getEditor().getSite().getShell()) {
+        			@Override
+        			public void initialiseAction(GenericAction action) {
+        				super.initialiseAction(action);
+        				ResultsTableAction dsAction = (ResultsTableAction)action;
+        				dsAction.setResultsTable(table);
+        			}
+                };
+                table.getMenuManager().addMenuListener(new IMenuListener() {
+                    public void menuAboutToShow(IMenuManager manager) {
+                        actionGroup.fillContextMenu(manager);
+                    }
+                });
 
                 try {
                     // set initial message
                     setProgressMessage(Messages.getString("SQLResultsView.ConnectionWait"));
                     
-                	Composite composite = resultsTab.getParent();
-
-                    GridLayout gLayout = new GridLayout();
-                    gLayout.numColumns = 2;
-                    gLayout.marginLeft = 0;
-                    gLayout.horizontalSpacing = 0;
-                    gLayout.verticalSpacing = 0;
-                    gLayout.marginWidth = 0;
-                    gLayout.marginHeight = 0;
-                    composite.setLayout(gLayout);
-
-                    int resultCount = sqlResult.getDataSet().getRows().length;
+                    int resultCount = dataSet.getRows().length;
                     String statusMessage = Messages.getString("SQLResultsView.Time.Prefix") + " "
-                            + sqlResult.getExecutionTimeMillis() + " "
+                            + dataSet.getExecutionTime() + " "
                             + Messages.getString("SQLResultsView.Time.Postfix");
                     getEditor().setMessage(statusMessage);
                     
                     if (resultCount > 0)
                         statusMessage = statusMessage + "  " + Messages.getString("SQLResultsView.Count.Prefix") + " " + resultCount;
 
-                    Query sql = sqlResult.getQuery();
+                    Query sql = dataSet.getQuery();
                     int lineNo = sql.getLineNo();
                     lineNo = getQueryParser().adjustLineNo(lineNo);
                     getEditor().addMessage(new Message(Message.Status.SUCCESS, lineNo, 0, sql.getQuerySql(), statusMessage));
-                    new DataSetTable(composite, sqlResult.getDataSet(), statusMessage);
-
-                    composite.setData("parenttab", resultsTab.getTabItem());
-
-                    composite.layout();
-                    composite.redraw();
 
                     // reset to start message in case F5 will be used
                     setProgressMessage(Messages.getString("SQLResultsView.ConnectionWait"));
 
                 } catch (Exception e) {
-
-                    // add message
-                	if (resultsTab != null) {
-	                    String message = e.getMessage();
-	                    Label errorLabel = new Label(resultsTab.getParent(), SWT.FILL);
-	                    errorLabel.setText(message);
-	                    errorLabel.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-                	}
+                	MessageDialog.openError(getEditor().getSite().getShell(), "Error creating result tab", e.getMessage());
                     SQLExplorerPlugin.error("Error creating result tab", e);
                 }
             };
@@ -199,10 +194,8 @@ public class SQLExecution extends AbstractSQLExecution {
 	            	while ((dataSet = results.nextDataSet()) != null) {
 
 	                    // update sql result
-	            		SQLResult sqlResult = new SQLResult();
-	            		sqlResult.setQuery(query);
-	                    sqlResult.setDataSet(dataSet);
-	                    sqlResult.setExecutionTimeMillis(endTime - startTime);
+	            		dataSet.setQuery(query);
+	            		dataSet.setExecutionTime(endTime - startTime);
 	
 	                    // Save successfull query
 	                    SQLExplorerPlugin.getDefault().getSQLHistory().addSQL(querySQL, _session);
@@ -214,7 +207,7 @@ public class SQLExecution extends AbstractSQLExecution {
 	                    checkedForMessages = true;
 	                    
 	                    // show results..
-	                    displayResults(sqlResult);
+	                    displayResults(dataSet);
 	            	}
 	            	overallUpdateCount += results.getUpdateCount();
 	            	
