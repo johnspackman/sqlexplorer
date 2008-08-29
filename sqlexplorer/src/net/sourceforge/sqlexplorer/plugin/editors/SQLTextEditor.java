@@ -26,8 +26,6 @@ import net.sourceforge.sqlexplorer.sqleditor.SQLTextViewer;
 import net.sourceforge.sqlexplorer.sqleditor.actions.ExecSQLAction;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
@@ -219,14 +217,6 @@ public class SQLTextEditor extends TextEditor {
 						if (event.stateMask == SWT.CTRL && event.keyCode == 13) {
 							event.doit = false;
 							_execSQLAction.run();
-						}
-						if (event.stateMask == SWT.CTRL && event.keyCode == ' ') {
-							event.doit = false;
-							sqlTextViewer.showAssistance();
-						}
-						if (event.stateMask == SWT.CTRL && event.keyCode == 's') {
-							event.doit = false;
-							editor.doSave(false, null);
 						}
 					}
 				});
