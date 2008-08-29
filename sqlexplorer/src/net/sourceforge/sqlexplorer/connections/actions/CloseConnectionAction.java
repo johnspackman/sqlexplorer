@@ -49,9 +49,9 @@ public class CloseConnectionAction extends AbstractConnectionTreeAction implemen
 			if (session != null && !session.isConnectionInUse()) {
 		    	if (confirm) {
 			    	MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoQuestion(getView().getSite().getShell(), 
-			    			Messages.getString("ConnectionsView.Actions.CloseAll.Confirm.Title"), 
-			    			Messages.getString("ConnectionsView.Actions.CloseAll.Confirm.Message"), 
-			    			Messages.getString("ConnectionsView.Actions.CloseAll.Confirm.Toggle"), 
+			    			Messages.getString("ConnectionsView.Actions.Close.Confirm.Title"), 
+			    			Messages.getString("ConnectionsView.Actions.Close.Confirm.Message"), 
+			    			Messages.getString("ConnectionsView.Actions.Close.Confirm.Toggle"), 
 			    			false, null, null);
 
 			    	if (dialog.getToggleState() && dialog.getReturnCode() == IDialogConstants.YES_ID)
