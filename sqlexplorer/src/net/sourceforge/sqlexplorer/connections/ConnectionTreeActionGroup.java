@@ -63,8 +63,6 @@ public class ConnectionTreeActionGroup extends ActionGroup {
         // If nothing is selected, then show the default ones
         if (selection == null || selection.length != 1) {
         	addAction(menu, new NewAliasAction());
-            addAction(menu, new CloseConnectionAction());
-            addAction(menu, new CloseAllConnectionsAction());
             return;
         }
 
@@ -82,6 +80,11 @@ public class ConnectionTreeActionGroup extends ActionGroup {
                     menu.add(new Separator());
             		break;
             	}
+            if(view.getSelectedConnections(true).size() > 0)
+            {
+                addAction(menu, new CloseAllConnectionsAction());
+            	menu.add(new Separator());
+            }
             
             addAction(menu, new NewUserAction());
             addAction(menu, new ChangeAliasAction());
@@ -94,12 +97,18 @@ public class ConnectionTreeActionGroup extends ActionGroup {
             addAction(menu, new NewEditorAction());
             addAction(menu, new NewDatabaseStructureViewAction());
             addAction(menu, new ConnectAliasAction());
+            
             menu.add(new Separator());
         	if (!user.isAutoCommit()) {
                 addAction(menu, new CommitAction());
                 addAction(menu, new RollbackAction());
                 menu.add(new Separator());
         	}
+            if(view.getSelectedConnections(true).size() > 0)
+            {
+                addAction(menu, new CloseAllConnectionsAction());
+            	menu.add(new Separator());
+            }
         	
             addAction(menu, new NewUserAction());
             addAction(menu, new EditUserAction());
