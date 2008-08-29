@@ -21,6 +21,8 @@ import org.eclipse.ui.application.IActionBarConfigurer;
 public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor {
 	
 	private IWorkbenchAction _exitAction;
+	private IWorkbenchAction _saveAction;
+	private IWorkbenchAction _saveAsAction;
 
     private IWorkbenchAction _preferencesAction;
     
@@ -43,12 +45,15 @@ public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor {
 	 */
 	protected void makeActions(final IWorkbenchWindow window) {
 
-        _exitAction = ActionFactory.QUIT.create(window);               
-		register(_exitAction);
-        
+		register(ActionFactory.QUIT.create(window));
+
+		register(ActionFactory.SAVE.create(window));               
+		register(ActionFactory.SAVE_AS.create(window));               
+		register(ActionFactory.SAVE_ALL.create(window));               
+
         _viewList = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
         
-        _preferencesAction = ActionFactory.PREFERENCES.create(window);
+        register(ActionFactory.PREFERENCES.create(window));
         
       
 	}
@@ -70,9 +75,15 @@ public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor {
                
         // create file menu
         menuBar.add(fileMenu);
-        fileMenu.add(_preferencesAction);
+        fileMenu.add(getAction(ActionFactory.PREFERENCES.getId()));
         fileMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-        fileMenu.add(_exitAction);        
+        fileMenu.add(new Separator(IWorkbenchActionConstants.FILE_START));
+        fileMenu.add(getAction(ActionFactory.SAVE.getId()));
+        fileMenu.add(getAction(ActionFactory.SAVE_AS.getId()));
+        fileMenu.add(getAction(ActionFactory.SAVE_ALL.getId()));
+        fileMenu.add(new Separator(IWorkbenchActionConstants.FILE_END));
+        fileMenu.add(getAction(ActionFactory.QUIT.getId()));        
+        fileMenu.add(new Separator());
         
         // create edit menu
         menuBar.add(editMenu);
