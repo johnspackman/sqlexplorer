@@ -62,8 +62,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 		this.parameters = parameters;
 		this.maxRows = maxRows;
 		
-		if (!hasResults)
-			state = State.SECONDARY_RESULTS;
+		state = State.PRIMARY_RESULTS;
 	}
 
 	public DataSet nextDataSet() throws SQLException {
@@ -78,25 +77,48 @@ public final class ExecutionResultImpl implements ExecutionResults {
 			return null;
 		
 		// Get the first set
-		if (state == State.PRIMARY_RESULTS) {
-			currentResultSet = stmt.getResultSet();
+		if (state == State.PRIMARY_RESULTS) 
+		{
 			state = State.SECONDARY_RESULTS;
+			currentResultSet = stmt.getResultSet();
 			if (currentResultSet != null)
+			{
 				return new DataSet(currentResultSet, null, maxRows);
+			}
+			int affectedRows = stmt.getUpdateCount();
+			if(affectedRows < 0)
+			{
+				state = State.PARAMETER_RESULTS;
+			}
+			else
+			{
+				this.updateCount += affectedRows;
+				return new DataSet(updateCount);
+			}
 		}
 		
 		// While we have more secondary results (i.e. those that come directly from Statement but after the first getResults())
-		while (state == State.SECONDARY_RESULTS) {
-			if (stmt.getMoreResults()) {
+		while (state == State.SECONDARY_RESULTS) 
+		{
+			if (stmt.getMoreResults()) 
+			{
 				currentResultSet = stmt.getResultSet();
 				if (currentResultSet != null)
+				{
 					return new DataSet(currentResultSet, null, maxRows);
+				}
 			} else {
-				int updateCount = stmt.getUpdateCount();
-				if (updateCount != -1)
-					this.updateCount += updateCount;
-				else
+				int affectedRows = stmt.getUpdateCount();
+				if(affectedRows < 0)
+				{
 					state = State.PARAMETER_RESULTS;
+				}
+				else
+				{
+					this.updateCount += affectedRows;
+					return new DataSet(updateCount);
+				}
+				
 			}
 		}
 		
