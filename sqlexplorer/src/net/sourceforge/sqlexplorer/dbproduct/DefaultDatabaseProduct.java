@@ -29,7 +29,6 @@ import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
-import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverClassLoader;
 
 public class DefaultDatabaseProduct extends AbstractDatabaseProduct {
@@ -55,7 +54,21 @@ public class DefaultDatabaseProduct extends AbstractDatabaseProduct {
 
 	public Collection<Message> getErrorMessages(SQLConnection connection, SQLException e, int lineNoOffset) throws SQLException {
 		LinkedList list = new LinkedList();
-		list.add(new Message(Message.Status.FAILURE, lineNoOffset + 1, 0, e.getMessage()));
+		String message = e.getMessage();
+		int offset = 1;
+		if(message != null)
+		{
+			int pos = message.indexOf(" at line ");
+			if(pos > 0)
+			{
+				try
+				{
+					offset = Integer.parseInt(message.substring(pos + " at line ".length()));
+				}
+				catch(Exception ignored){}
+			}
+		}
+		list.add(new Message(Message.Status.FAILURE, lineNoOffset + offset, 0, e.getMessage()));
 		return list;
 	}
 
@@ -64,7 +77,7 @@ public class DefaultDatabaseProduct extends AbstractDatabaseProduct {
 	}
 
 	public QueryParser getQueryParser(String sql, int initialLineNo) {
-		return new BasicQueryParser(sql, SQLExplorerPlugin.getDefault().getPluginPreferences());
+		return new BasicQueryParser(sql, SQLExplorerPlugin.getDefault().getPluginPreferences(),initialLineNo);
 	}
 
 	public Collection<Message> getErrorMessages(SQLConnection connection, Query query) throws SQLException {
