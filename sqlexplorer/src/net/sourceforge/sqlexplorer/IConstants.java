@@ -113,6 +113,7 @@ public interface IConstants {
     String STOP_ON_ERROR = "SQLEditor.StopOnError";
     
     String LOG_SUCCESS_MESSAGES = "SQLEditor.LogSuccess Messages";
+    String LOG_SQL_HISTORY = "SQLEditor.LogSQLHistory";
     
     // Whether unsaved editors should prompt to be saved when they are closed 
     String REQUIRE_SAVE_ON_CLOSE_EDITOR = "SQLEditor.RequireSaveOnClose";

@@ -24,6 +24,7 @@ import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct;
+import net.sourceforge.sqlexplorer.parsers.ExecutionContext;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -134,7 +135,7 @@ public class SQLExecution extends AbstractSQLExecution {
                     int lineNo = sql.getLineNo();
                     lineNo = getQueryParser().adjustLineNo(lineNo);
                     
-                    if(!getQueryParser().getContext().isOff("LOG_SUCCESS"))
+                    if(getQueryParser().getContext().isOn(ExecutionContext.LOG_SUCCESS))
                     {
                     	getEditor().addMessage(new Message(Message.Status.SUCCESS, lineNo, 0, sql.getQuerySql(), statusMessageLarge));
                     }
@@ -210,7 +211,7 @@ public class SQLExecution extends AbstractSQLExecution {
 	            		dataSet.setExecutionTime(endTime - startTime);
 	
 	                    // Save successfull query
-	            		if(!getQueryParser().getContext().isOff("LOG_SQL"))
+	            		if(getQueryParser().getContext().isOn(ExecutionContext.LOG_SQL))
 	            		{
 	            			SQLExplorerPlugin.getDefault().getSQLHistory().addSQL(querySQL, _session);
 	            		}
