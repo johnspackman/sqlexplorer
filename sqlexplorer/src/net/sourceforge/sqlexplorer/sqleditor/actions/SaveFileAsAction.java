@@ -38,7 +38,7 @@ public class SaveFileAsAction extends AbstractEditorAction {
     }
 
     public String getText() {
-        return Messages.getString("SQLEditor.Actions.SaveAs");
+        return Messages.getString("SQLEditor.Actions.Save");
     }
 
     public boolean isEnabled() {
@@ -46,7 +46,7 @@ public class SaveFileAsAction extends AbstractEditorAction {
     }
 
     public String getToolTipText() {
-        return Messages.getString("SQLEditor.Actions.SaveAsToolTip"); //$NON-NLS-1$
+        return Messages.getString("SQLEditor.Actions.SaveToolTip"); //$NON-NLS-1$
     }
 
     public void run() {
