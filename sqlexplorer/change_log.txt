@@ -8,6 +8,8 @@
 +. added new option to treat new editors as scratch files
 +. added close connection to context menu
 +. added project support to standalone RCP
++. new structured comments for setting logging options per file ${set LOG_SQL} Off, ${set LOG_SUCCESS} Off
+
 
 3.5.0.RC5 - John Spackman, Zenesis Ltd
 ======================================
