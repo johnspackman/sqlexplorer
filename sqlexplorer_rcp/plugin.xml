@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         id="net.sourceforge.sqlexplorer.rcp.application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run class="net.sourceforge.sqlexplorer.rcp.SQLExplorerApplication"/>
+      </application>
+   </extension>
+   <extension
+         id="product"
+         name="SQL Explorer"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="net.sourceforge.sqlexplorer.rcp.application"
+            name="SQL Explorer">
+         <property
+               name="windowImages"
+               value="icons/logo16.gif,icons/logo32.gif">
+		 </property>               
+         <property
+               name="appName"
+               value="SQL Explorer">
+         </property>
+      </product>
+   </extension>
+
+</plugin>
