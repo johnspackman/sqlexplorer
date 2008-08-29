@@ -340,7 +340,7 @@ public class Dictionary {
                 }
 
                 INode tableNodes[] = typeNode.getChildNodes();
-                if (tableNodes != null) {
+                if (tableNodes != null && tableNodes.length > 0) {
 
                     // check for cancellation by user
                     if (monitor.isCanceled()) {
