@@ -90,6 +90,18 @@ public class DataSet implements ResultProvider {
 	// The Query which triggered these result sets (if available)
 	private Query query;
 	
+	// The update count for none data results (insert,update,delete,ddl)
+	private int updateCount = -1;
+
+    /**
+     * Create a new dataSet based on an updated row counter.
+     * @param pUpdateCount affected rows for this result [mandatory]
+     * 
+     */
+    public DataSet(int pUpdateCount) {
+        this.updateCount = pUpdateCount;
+    }
+	
     /**
      * Create a new dataSet based on an existing ResultSet.
      * @param resultSet ResultSet with values [mandatory]
@@ -224,7 +236,7 @@ public class DataSet implements ResultProvider {
             columns = new Column[ri.length];
             for (int i = 0; i < ri.length; i++) {
             	int columnIndex = ri[i];
-            	columns[i] = createColumn(metadata, columnIndex);
+            	columns[i] = createColumn(metadata, columnIndex, i);
             }
         }
 
@@ -239,7 +251,7 @@ public class DataSet implements ResultProvider {
      * @return
      * @throws SQLException
      */
-    protected Column createColumn(ResultSetMetaData metadata, int columnIndex) throws SQLException {
+    private Column createColumn(ResultSetMetaData metadata, int columnIndex, int targetIndex) throws SQLException {
     	int type = metadata.getColumnType(columnIndex);
     	
     	// Numeric - figure out a display format
@@ -247,7 +259,7 @@ public class DataSet implements ResultProvider {
         	int precision = metadata.getPrecision(columnIndex);
         	int scale = metadata.getScale(columnIndex);
         	if (precision < 1 || scale > precision )
-            	return new FormattedColumn(columnIndex - 1, metadata.getColumnName(columnIndex), true, null);//new DecimalFormat("#.#"));
+            	return new FormattedColumn(targetIndex, metadata.getColumnName(columnIndex), true, null);//new DecimalFormat("#.#"));
         	
     		/*
     		 * NOTE: Scale can be negative (although possibly limited to Oracle), but we cope with 
@@ -266,14 +278,14 @@ public class DataSet implements ResultProvider {
         	else if (scale < 0)
         		sb.insert(1, '.');
         	
-        	return new FormattedColumn(columnIndex - 1, metadata.getColumnName(columnIndex), true, new DecimalFormat(sb.toString()));
+        	return new FormattedColumn(targetIndex, metadata.getColumnName(columnIndex), true, new DecimalFormat(sb.toString()));
     	}
     	
     	if (type == Types.DATE || type == Types.TIMESTAMP || type == Types.TIME) {
     		return new FormattedColumn(columnIndex - 1, metadata.getColumnName(columnIndex), false, getDateFormat());
     	}
 
-    	return new Column(columnIndex - 1, metadata.getColumnName(columnIndex), false);
+    	return new Column(targetIndex, metadata.getColumnName(columnIndex), false);
     }
     
     /**
@@ -484,5 +496,14 @@ public class DataSet implements ResultProvider {
 
 	public void setQuery(Query query) {
 		this.query = query;
+	}
+	
+	public boolean hasData()
+	{
+		return getUpdateCount() < 0;
+	}
+	public int getUpdateCount()
+	{
+		return this.updateCount;
 	}
 }
