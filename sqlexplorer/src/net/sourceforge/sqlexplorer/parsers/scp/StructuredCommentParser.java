@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import net.sourceforge.sqlexplorer.parsers.ExecutionContext;
 import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer;
@@ -181,6 +182,12 @@ public class StructuredCommentParser {
 			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
 				new ParameterCommand(parser, comment, tokenizer, data);
 				return null;
+			}
+		},		
+		SET {
+			@Override
+			public Command createInstance(StructuredCommentParser parser, Token comment, Tokenizer tokenizer, CharSequence data) throws ParserException {
+				return new SetCommand(parser, comment, tokenizer, data);
 			}
 		};
 		
@@ -347,7 +354,7 @@ public class StructuredCommentParser {
 					
 					// Else delete the comment
 					} else
-						delete(iter, def, def, true);
+						replace(iter, def, def.data);
 					
 				// Single-line ifdef
 				} else {
@@ -410,6 +417,8 @@ public class StructuredCommentParser {
 				
 			} else if (command.commandType == CommandType.PARAMETER) {
 				
+			} else {
+				command.process(iter);
 			}
 		}
 	}
@@ -425,6 +434,9 @@ public class StructuredCommentParser {
 		sb.delete(0, 2);
 		if (comment.getTokenType() == TokenType.ML_COMMENT)
 			sb.delete(sb.length() - 2, sb.length());
+		// support sl comment with space before ${ to be a real sl comment
+		if (comment.getTokenType() == TokenType.EOL_COMMENT && sb.charAt(0) == ' ')
+			sb.delete(0, 1);
 		
 		// Make sure it begins ${, but silently ignore it if not
 		int pos = sb.indexOf("}", 2);
@@ -544,4 +556,8 @@ public class StructuredCommentParser {
 		replace(iter, token, token, replacement);
 	}
 
+	public ExecutionContext getContext()
+	{
+		return this.parser.getContext();
+	}
 }
