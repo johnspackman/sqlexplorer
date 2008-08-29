@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.parsers.scp;
 
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer;
@@ -53,5 +54,10 @@ import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser.CommandTy
 		Token token;
 		while ((token = tokenizer.nextToken()) != null)
 			tokens.add(token);
+	}
+	
+	public void process(ListIterator<Command> pIter)
+	{
+		
 	}
 }
