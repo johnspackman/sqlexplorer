@@ -25,7 +25,7 @@ import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
 import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentException;
 import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+
 import org.eclipse.core.runtime.Preferences;
 
 /**
@@ -99,7 +99,7 @@ public class BasicQueryParser extends AbstractQueryParser {
      * Constructor
      * @param sql
      */
-	public BasicQueryParser(CharSequence sql, Preferences prefs) {
+	public BasicQueryParser(CharSequence sql, Preferences prefs, int pLineNo) {
 		this(sql);
 	    setCmdSeparator(prefs.getString(IConstants.SQL_QRY_DELIMITER));
 	    setAltSeparator(prefs.getString(IConstants.SQL_ALT_QRY_DELIMITER));
@@ -115,6 +115,7 @@ public class BasicQueryParser extends AbstractQueryParser {
 	    	if (str.length() > 0)
 	    		quoteEscapes = str.charAt(0);
 	    }
+	    lineNo = pLineNo;
 	}
 
     /* (non-JavaDoc)
@@ -150,10 +151,12 @@ public class BasicQueryParser extends AbstractQueryParser {
 		}
         
         charIndex = 0;
-        BasicQuery query;
+        //BasicQuery query;
         queries = new LinkedList<Query>();
-        while ((query = getNextQuery()) != null)
+        for (BasicQuery query = getNextQuery(); query != null; query = getNextQuery())
+        {
         	queries.add(query);
+        }
 	}
 
 	/* (non-JavaDoc)
@@ -166,8 +169,8 @@ public class BasicQueryParser extends AbstractQueryParser {
 	/* (non-JavaDoc)
 	 * @see net.sourceforge.sqlexplorer.parsers.QueryParser#adjustLineNo(int)
 	 */
-	public int adjustLineNo(int lineNo) {
-		return lineNo; // Not implemented
+	public int adjustLineNo(int pLineNo) {
+		return pLineNo; // Not implemented
 	}
 
 	/* (non-JavaDoc)
@@ -197,6 +200,27 @@ public class BasicQueryParser extends AbstractQueryParser {
 			if (charIndex < sql.length() - 1)
 				nextC = sql.charAt(charIndex + 1);
 			
+			// Skip comments
+			if(inSLComment)
+			{
+				if(c == '\n')
+				{
+					inSLComment = false;
+				}
+				else
+				{
+					continue;
+				}
+			}
+			if (inMLComment) 
+			{
+				if (c == '\n') {
+					startOfLine = -1;
+					lineNo++;
+				}				
+				inMLComment =  !nextIs(mlCommentEnd);
+				continue;
+			}
 			// If we're quoting
 			if (cQuote != 0) {
 				if (c == quoteEscapes && QUOTE_CHARS.indexOf(nextC) > -1)
@@ -248,6 +272,32 @@ public class BasicQueryParser extends AbstractQueryParser {
 					}
 					return new BasicQuery(sql.subSequence(start, startOfLine), startLineNo);
 				}
+				if(startOfLine >= 0)
+				{
+					String lineStart = sql.subSequence(startOfLine, Math.min(charIndex, startOfLine + 15)).toString().toLowerCase();
+					if (lineStart.startsWith("delimiter")) 
+					{					
+						String delimiter = lineStart.substring(9).trim();
+						if(delimiter.length() == 1)
+						{
+						    setCmdSeparator(delimiter);
+						    setAltSeparator(null);
+						}
+						else
+						{
+						    setCmdSeparator(new String(new byte[]{0}));
+						    setAltSeparator(delimiter);						
+						}
+						if (startLineNo < 0 || start + lineStart.length() >= startOfLine) {
+							start = charIndex + 1;
+							startLineNo = -1;
+							startOfLine = -1;
+							lineNo++;
+							continue;
+						}
+						return new BasicQuery(sql.subSequence(start, startOfLine), startLineNo);
+					}
+				}
 				startOfLine = -1;
 				lineNo++;
 				if (inSLComment) {
@@ -256,13 +306,6 @@ public class BasicQueryParser extends AbstractQueryParser {
 				}
 			}
 			
-			// Skip comments
-			if (inSLComment)
-				continue;
-			if (inMLComment && nextIs(mlCommentEnd)) {
-				inMLComment = false;
-				continue;
-			}
 			
 			// Starting a single-line comment
 			if (nextIs(slComment)) {
