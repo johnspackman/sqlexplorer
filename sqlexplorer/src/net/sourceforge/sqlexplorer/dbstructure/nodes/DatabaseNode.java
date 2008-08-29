@@ -212,6 +212,13 @@ public class DatabaseNode extends AbstractNode {
      * set.
      */
     public void loadChildren() {
+    	synchronized(this)
+    	{
+    		syncLoadChildren();
+    	}
+    }
+    
+    private void syncLoadChildren() {
 
         _childNames = new ArrayList();
 
