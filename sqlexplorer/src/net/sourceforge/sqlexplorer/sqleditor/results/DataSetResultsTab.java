@@ -19,7 +19,9 @@ public class DataSetResultsTab extends TableResultsTable {
 	 * @see net.sourceforge.sqlexplorer.sqleditor.results.TableResultsTab#onSelectCell(org.eclipse.swt.custom.TableCursor)
 	 */
 	@Override
-	protected void onSelectCell(TableCursor cursor) {
+	protected void onSelectCell(TableCursor cursor) 
+	{
+		super.onSelectCell(cursor);
         // Show the preview
 		IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		if (page != null) {
