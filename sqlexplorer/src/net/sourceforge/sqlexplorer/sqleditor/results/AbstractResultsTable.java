@@ -103,10 +103,10 @@ public abstract class AbstractResultsTable implements KeyListener {
 	        
 	        statusBar = createStatusBar(parent);
 //			Composite statusBar = new Composite(parent, SWT.NONE);
-//	        gd = new GridData();
-//	        gd.grabExcessHorizontalSpace = true;
-//	        gd.horizontalAlignment = SWT.FILL;
-//	        statusBar.setLayoutData(gd);
+	        gd = new GridData();
+	        gd.grabExcessHorizontalSpace = true;
+	        gd.horizontalAlignment = SWT.FILL;
+	        statusBar.setLayoutData(gd);
 		} else {
 			controlParent = parent;
 		}
