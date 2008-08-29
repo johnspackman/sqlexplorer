@@ -1,3 +1,14 @@
+3.5.0.RC6 - John Spackman (Zenesis Ltd), Heiko Hilbert
+======================================================
++. ???
++. show none select queries in success log too
++. position cursor to the beginning of a failed query in case of a SQL execution error
++. added an error node to procedure node if there is an exception while querying procedure list
++. added synchronize block to prevent duplicate nodes in structure view
++. added new option to treat new editors as scratch files
++. added close connection to context menu
++. added project support to standalone RCP
+
 3.5.0.RC5 - John Spackman, Zenesis Ltd
 ======================================
 +. Fixed problem with creating Oracle triggers
