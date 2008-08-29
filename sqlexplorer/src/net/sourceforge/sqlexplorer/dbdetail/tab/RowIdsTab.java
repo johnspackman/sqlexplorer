@@ -31,13 +31,13 @@ import net.sourceforge.squirrel_sql.fw.sql.dbobj.BestRowIdentifier;
 public class RowIdsTab extends AbstractDataSetTab {
 
     private static final String[] COLUMN_LABELS = {
-    	"DatabaseDetailView.Tab.RowIds.Col.Scope",
-    	"DatabaseDetailView.Tab.RowIds.Col.ColumnName",
-    	"DatabaseDetailView.Tab.RowIds.Col.DataType",
-    	"DatabaseDetailView.Tab.RowIds.Col.TypeName",
-    	"DatabaseDetailView.Tab.RowIds.Col.ColumnSize",
-    	"DatabaseDetailView.Tab.RowIds.Col.DecimalDigits",
-    	"DatabaseDetailView.Tab.RowIds.Col.PseudoColumn"
+    	Messages.getString("DatabaseDetailView.Tab.RowIds.Col.Scope"),
+    	Messages.getString("DatabaseDetailView.Tab.RowIds.Col.ColumnName"),
+    	Messages.getString("DatabaseDetailView.Tab.RowIds.Col.DataType"),
+    	Messages.getString("DatabaseDetailView.Tab.RowIds.Col.TypeName"),
+    	Messages.getString("DatabaseDetailView.Tab.RowIds.Col.ColumnSize"),
+    	Messages.getString("DatabaseDetailView.Tab.RowIds.Col.DecimalDigits"),
+    	Messages.getString("DatabaseDetailView.Tab.RowIds.Col.PseudoColumn")
     };
     
     public String getLabelText() {
