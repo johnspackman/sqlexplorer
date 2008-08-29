@@ -123,6 +123,9 @@ public interface IConstants {
     // Whether structured comments are enabled in SQL queries
     String ENABLE_STRUCTURED_COMMENTS = "SQLEditor.EnableStructuredComments";
     
+    // Treat new SQL editors as scratch file (becomes not dirty)
+    String TREAT_NEW_AS_SCRATCH = "SQLEditor.TreatNewAsScratch";
+
     // Debug logging level for queries
     String QUERY_DEBUG_LOG_LEVEL = "SQLEditor.QueryDebugLog";
     String QUERY_DEBUG_OFF = "off";

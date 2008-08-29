@@ -143,6 +143,8 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 	// True if the editor does not have a filename yet
 	private boolean isUntitled;
 
+	private boolean isScratchFile;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -425,7 +427,8 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
     /* (non-JavaDoc)
 	 * @see org.eclipse.ui.part.EditorPart#setInput(org.eclipse.ui.IEditorInput)
 	 */
-	protected void setInput(IEditorInput input) {
+	protected void setInput(IEditorInput input) 
+	{
 		super.setInput(input);
 		if (textEditor != null)
 			textEditor.setInput(input);
@@ -441,9 +444,15 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 							setSession(session);
 						}
 					});
-				isDirty = true;
+				isDirty = false;
 				isUntitled = true;
+				isScratchFile = sqlInput.getFile() == null &&
+							SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.TREAT_NEW_AS_SCRATCH);
 			}
+		}
+		else
+		{
+			isScratchFile = false;
 		}
 
 		setPartName(input.getName());
@@ -796,7 +805,7 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 	 */
 	public boolean isDirty() {
     	boolean saveOnClose = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.REQUIRE_SAVE_ON_CLOSE_EDITOR);
-		return saveOnClose && (isDirty || textEditor.isDirty());
+		return saveOnClose && !isScratchFile && (isDirty || textEditor.isDirty());
 	}
 	
 	protected void setIsDirty(boolean isDirty) {
