@@ -84,49 +84,61 @@ public class SQLExecution extends AbstractSQLExecution {
 
             public void run() {
             	
-            	CTabItem tabItem = allocateResultsTab(dataSet.getQuery());
-            	if (tabItem == null)
-            		return;
-            	
-            	final DataSetResultsTab table = new DataSetResultsTab(dataSet);
-            	EditorResultsTab resultsTab = new EditorResultsTab(tabItem, table);
-            	String caption = dataSet.getCaption();
-            	if (caption != null)
-            		resultsTab.setTabTitle(caption);
-
-                // add context menu to table & cursor
-                final GenericActionGroup actionGroup = new GenericActionGroup("dataSetTableContextAction", getEditor().getSite().getShell()) {
-        			@Override
-        			public void initialiseAction(GenericAction action) {
-        				super.initialiseAction(action);
-        				ResultsTableAction dsAction = (ResultsTableAction)action;
-        				dsAction.setResultsTable(table);
-        			}
-                };
-                table.getMenuManager().addMenuListener(new IMenuListener() {
-                    public void menuAboutToShow(IMenuManager manager) {
-                        actionGroup.fillContextMenu(manager);
-                    }
-                });
-
+                int resultCount = dataSet.hasData() ? dataSet.getRows().length : dataSet.getUpdateCount();
+                String statusMessageSmall = Messages.getString("SQLResultsView.Time.Prefix") + " "
+                        + dataSet.getExecutionTime() + " "
+                        + Messages.getString("SQLResultsView.Time.Postfix");
+                String statusMessageLarge =  statusMessageSmall;                   
+                if(resultCount >= 0)
+                {
+                	statusMessageLarge = statusMessageLarge + "  " + 
+                    (dataSet.hasData() ? Messages.getString("SQLResultsView.Count.Prefix") : Messages.getString("SQLResultsView.Update.Prefix"))
+                    + " " + resultCount;
+                }
+            	if(dataSet.hasData())
+            	{
+	            	CTabItem tabItem = allocateResultsTab(dataSet.getQuery());
+	            	if (tabItem == null)
+	            		return;
+	            	
+	            	final DataSetResultsTab table = new DataSetResultsTab(dataSet);
+	            	table.setHasStatusBar(true);
+	            	table.setStatusMessage(statusMessageLarge);
+	            	EditorResultsTab resultsTab = new EditorResultsTab(tabItem, table);
+	            	String caption = dataSet.getCaption();
+	            	if (caption != null)
+	            		resultsTab.setTabTitle(caption);
+	
+	                // add context menu to table & cursor
+	                final GenericActionGroup actionGroup = new GenericActionGroup("dataSetTableContextAction", getEditor().getSite().getShell()) {
+	        			@Override
+	        			public void initialiseAction(GenericAction action) {
+	        				super.initialiseAction(action);
+	        				ResultsTableAction dsAction = (ResultsTableAction)action;
+	        				dsAction.setResultsTable(table);
+	        			}
+	                };
+	                table.getMenuManager().addMenuListener(new IMenuListener() {
+	                    public void menuAboutToShow(IMenuManager manager) {
+	                        actionGroup.fillContextMenu(manager);
+	                    }
+	                });
+            	}
                 try {
                     // set initial message
                     setProgressMessage(Messages.getString("SQLResultsView.ConnectionWait"));
                     
-                    int resultCount = dataSet.getRows().length;
-                    String statusMessage = Messages.getString("SQLResultsView.Time.Prefix") + " "
-                            + dataSet.getExecutionTime() + " "
-                            + Messages.getString("SQLResultsView.Time.Postfix");
-                    getEditor().setMessage(statusMessage);
+                    getEditor().setMessage(statusMessageSmall);
                     
-                    if (resultCount > 0)
-                        statusMessage = statusMessage + "  " + Messages.getString("SQLResultsView.Count.Prefix") + " " + resultCount;
-
                     Query sql = dataSet.getQuery();
                     int lineNo = sql.getLineNo();
                     lineNo = getQueryParser().adjustLineNo(lineNo);
-                    getEditor().addMessage(new Message(Message.Status.SUCCESS, lineNo, 0, sql.getQuerySql(), statusMessage));
-
+                    
+                    if(!getQueryParser().getContext().isOff("LOG_SUCCESS"))
+                    {
+                    	getEditor().addMessage(new Message(Message.Status.SUCCESS, lineNo, 0, sql.getQuerySql(), statusMessageLarge));
+                    }
+                    
                     // reset to start message in case F5 will be used
                     setProgressMessage(Messages.getString("SQLResultsView.ConnectionWait"));
 
@@ -198,7 +210,10 @@ public class SQLExecution extends AbstractSQLExecution {
 	            		dataSet.setExecutionTime(endTime - startTime);
 	
 	                    // Save successfull query
-	                    SQLExplorerPlugin.getDefault().getSQLHistory().addSQL(querySQL, _session);
+	            		if(!getQueryParser().getContext().isOff("LOG_SQL"))
+	            		{
+	            			SQLExplorerPlugin.getDefault().getSQLHistory().addSQL(querySQL, _session);
+	            		}
 
 	                    if (monitor.isCanceled())
 	                        return;
@@ -239,12 +254,12 @@ public class SQLExecution extends AbstractSQLExecution {
 	            	}
 	            }
             }
-            if (!hasMessages || SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.LOG_SUCCESS_MESSAGES)) {
+            if (!hasMessages ) {
                 long overallTime = System.currentTimeMillis() - overallStartTime;
-                String message = Long.toString(overallUpdateCount) + " " + Messages.getString("SQLEditor.Update.Prefix") + " " + 
+                String message = Messages.getString("SQLEditor.Overall.Prefix") + " " + 
     				Long.toString(overallTime) + " " + Messages.getString("SQLEditor.Update.Postfix");
             
-            	addMessage(new Message(Message.Status.STATUS, getQueryParser().adjustLineNo(1), 0, "", message));
+            	addMessage(new Message(Message.Status.STATUS, -1, 0, "", message));
             }
         } catch (Exception e) {
             closeStatement();
