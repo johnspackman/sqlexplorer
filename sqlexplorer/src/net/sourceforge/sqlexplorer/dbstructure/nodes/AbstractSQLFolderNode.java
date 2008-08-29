@@ -71,7 +71,12 @@ public abstract class AbstractSQLFolderNode extends AbstractFolderNode {
 
             rs.close();
 
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
+        	
+            ObjectNode node = new ObjectNode("Error loading children: " + e.getLocalizedMessage(), "error", this, null);
+            addChildNode(node);
 
             SQLExplorerPlugin.error("Couldn't load children for: " + getName(), e);
 
