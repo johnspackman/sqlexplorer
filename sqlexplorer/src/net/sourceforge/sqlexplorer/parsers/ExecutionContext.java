@@ -23,4 +23,13 @@ public class ExecutionContext
 	{
 		return this.options.get(pOption);
 	}
+	
+	public boolean isOff(String pOption)
+	{
+		return "off".equalsIgnoreCase(get(pOption));
+	}
+	public boolean isOn(String pOption)
+	{
+		return "on".equalsIgnoreCase(get(pOption));
+	}
 }
