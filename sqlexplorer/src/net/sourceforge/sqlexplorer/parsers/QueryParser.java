@@ -58,4 +58,10 @@ public interface QueryParser extends Iterable<Query> {
 	 * @param parameter
 	 */
 	public void addParameter(NamedParameter parameter);
+	
+	/**
+	 * returns the ExceutionContext for this parser
+	 * @return 
+	 */
+	public ExecutionContext getContext();
 }

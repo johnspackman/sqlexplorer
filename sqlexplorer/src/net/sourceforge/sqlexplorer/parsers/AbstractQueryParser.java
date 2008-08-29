@@ -26,6 +26,7 @@ public abstract class AbstractQueryParser implements QueryParser {
 	//	they are scoped according to their position.  The list is expected to
 	//	be in the order in which they appeared in the original query
 	private LinkedHashSet<NamedParameter> parameters = new LinkedHashSet<NamedParameter>();
+	private ExecutionContext context = new ExecutionContext();
 
 	public void addParameter(NamedParameter parameter) {
 		parameters.add(parameter);
@@ -33,5 +34,10 @@ public abstract class AbstractQueryParser implements QueryParser {
 
 	public LinkedHashSet<NamedParameter> getParameters() {
 		return parameters;
+	}
+	
+	public ExecutionContext getContext()
+	{
+		return this.context;
 	}
 }
