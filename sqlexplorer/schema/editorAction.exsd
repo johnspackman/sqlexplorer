@@ -57,13 +57,13 @@
                   <meta.attribute kind="resource"/>
                </appInfo>
             </annotation>
-         </attribute>         
+         </attribute>
       </complexType>
    </element>
 
    <element name="extension">
       <complexType>
-         <sequence>
+         <sequence minOccurs="1" maxOccurs="unbounded">
             <element ref="action"/>
          </sequence>
          <attribute name="point" type="string">

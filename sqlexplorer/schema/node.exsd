@@ -91,7 +91,7 @@
 
    <element name="extension">
       <complexType>
-         <sequence>
+         <sequence minOccurs="1" maxOccurs="unbounded">
             <element ref="node"/>
          </sequence>
          <attribute name="point" type="string">

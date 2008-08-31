@@ -66,7 +66,7 @@ Use a comma seperated list to specifiy multiple types.
 
    <element name="extension">
       <complexType>
-         <sequence>
+         <sequence minOccurs="1" maxOccurs="unbounded">
             <element ref="detailtab"/>
          </sequence>
          <attribute name="point" type="string">
