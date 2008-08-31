@@ -8,7 +8,6 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ContributionItemFactory;
-import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 
@@ -18,14 +17,9 @@ import org.eclipse.ui.application.IActionBarConfigurer;
  * 
  * @author Davy Vanherbergen
  */
-public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor {
-	
-	private IWorkbenchAction _exitAction;
-	private IWorkbenchAction _saveAction;
-	private IWorkbenchAction _saveAsAction;
-
-    private IWorkbenchAction _preferencesAction;
-    
+public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor 
+{
+	    
     private IContributionItem _viewList;
     
     
