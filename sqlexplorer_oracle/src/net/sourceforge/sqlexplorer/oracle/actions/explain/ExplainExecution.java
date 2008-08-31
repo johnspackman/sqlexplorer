@@ -32,7 +32,6 @@ import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.sqleditor.results.ResultsTab;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -48,6 +47,7 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableTreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -108,7 +108,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 
             public void run() {
 
-            	ResultsTab resultsTab = allocateResultsTab(query);
+            	CTabItem resultsTab = allocateResultsTab(query);
 
                 try {
 	                Composite composite = resultsTab.getParent();
@@ -122,7 +122,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 	                gLayout.marginHeight = 0;
 	                composite.setLayout(gLayout);
 
-                    composite.setData("parenttab", resultsTab.getTabItem());
+                    composite.setData("parenttab", resultsTab.getParent());
 
                     Composite pp = new Composite(composite, SWT.NULL);
                     pp.setLayout(new FillLayout());
