@@ -159,7 +159,7 @@ public class ShowProcedureSource extends AbstractDBTreeContextAction {
 	
 	private StringBuffer getGrantStatements(String fullSpName, String dbName, Statement stmt, String delim) throws SQLException {
 
-		List grantees = new ArrayList();
+		List<String> grantees = new ArrayList<String>();
 		
 		String sql = "SELECT user_name(s.uid)"
 			+ " FROM " + dbName + "..sysprotects s NOHOLDLOCK"

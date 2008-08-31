@@ -46,7 +46,7 @@ public class TableIndexNode extends AbstractNode {
     }
 
 
-    public Comparator getComparator() {
+    public Comparator<INode> getComparator() {
 
         // we don't want any sorting here.
         return null;

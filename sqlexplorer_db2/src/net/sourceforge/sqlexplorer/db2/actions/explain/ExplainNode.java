@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.db2.actions.explain;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ExplainNode {
 
@@ -53,7 +54,7 @@ public class ExplainNode {
         return parent;
     }
 
-    ArrayList ls = new ArrayList();
+    List<ExplainNode> ls = new ArrayList<ExplainNode>();
 
 
     public ExplainNode[] getChildren() {

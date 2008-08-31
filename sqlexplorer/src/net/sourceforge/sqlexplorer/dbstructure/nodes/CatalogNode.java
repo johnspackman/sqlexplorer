@@ -44,7 +44,7 @@ import org.eclipse.core.runtime.Platform;
  */
 public class CatalogNode extends AbstractNode {
 
-    private List _childNames = new ArrayList();
+    private List<String> _childNames = new ArrayList<String>();
 
     private String[] _filteredNames;
 
@@ -286,7 +286,7 @@ public class CatalogNode extends AbstractNode {
      */
     public void loadChildren() {
 
-        _childNames = new ArrayList();
+        _childNames = new ArrayList<String>();
 
         try {
 

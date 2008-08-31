@@ -1,13 +1,6 @@
 package net.sourceforge.sqlexplorer.sybase.nodes;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 public class UserFolder  extends SysObjectFolder {
 	public UserFolder() {
@@ -18,7 +11,7 @@ public class UserFolder  extends SysObjectFolder {
 		return "user";
 	}
 
-	public Class getChildClass() {
+	public Class<? extends SysObjectNode> getChildClass() {
 		return UserNode.class;
 	}
 

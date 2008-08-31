@@ -2,13 +2,10 @@ package net.sourceforge.sqlexplorer.sybase.nodes;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
-import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
-import net.sourceforge.sqlexplorer.sybase.nodes.ProcedureNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
@@ -33,7 +30,7 @@ public class SysObjectFolder extends AbstractFolderNode {
 		return "none";
 	}
 	
-	public Class getChildClass() {
+	public Class<? extends SysObjectNode> getChildClass() {
 		return null;
 	}
 
@@ -62,7 +59,7 @@ public class SysObjectFolder extends AbstractFolderNode {
             		continue;
             	}
             	
-            	Class[] param = new Class[3];
+            	Class<?>[] param = new Class<?>[3];
             	Object[] params = new Object[3];
             	
             	try {

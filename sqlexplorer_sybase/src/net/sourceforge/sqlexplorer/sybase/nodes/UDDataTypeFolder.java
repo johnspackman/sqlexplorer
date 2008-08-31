@@ -1,7 +1,6 @@
 package net.sourceforge.sqlexplorer.sybase.nodes;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
 
 public class UDDataTypeFolder extends SysObjectFolder {
 
@@ -12,7 +11,7 @@ public class UDDataTypeFolder extends SysObjectFolder {
 		return "userdatatype";
 	}
 
-	public Class getChildClass() {
+	public Class<? extends SysObjectNode> getChildClass() {
 		return UDDataTypeNode.class;
 	}
 

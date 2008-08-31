@@ -43,7 +43,7 @@ import org.eclipse.core.runtime.Platform;
  */
 public class DatabaseNode extends AbstractNode {
 
-    private List _childNames = new ArrayList();
+    private List<String> _childNames = new ArrayList<String>();
 
     private String _databaseProductName = "";
 
@@ -88,15 +88,15 @@ public class DatabaseNode extends AbstractNode {
     /**
      * @return List of catalog nodes
      */
-    public List getCatalogs() {
+    public List<CatalogNode> getCatalogs() {
 
-        ArrayList catalogs = new ArrayList();
+        List<CatalogNode> catalogs = new ArrayList<CatalogNode>();
 
-        Iterator it = getChildIterator();
+        Iterator<INode> it = getChildIterator();
         while (it.hasNext()) {
             Object o = it.next();
             if (o instanceof CatalogNode) {
-                catalogs.add(o);
+                catalogs.add((CatalogNode)o);
             }
         }
 
@@ -137,15 +137,15 @@ public class DatabaseNode extends AbstractNode {
     /**
      * @return List of all database schemas
      */
-    public List getSchemas() {
+    public List<SchemaNode> getSchemas() {
 
-        ArrayList schemas = new ArrayList();
+        ArrayList<SchemaNode> schemas = new ArrayList<SchemaNode>();
 
-        Iterator it = getChildIterator();
+        Iterator<INode> it = getChildIterator();
         while (it.hasNext()) {
             Object o = it.next();
             if (o instanceof SchemaNode) {
-                schemas.add(o);
+                schemas.add((SchemaNode)o);
             }
         }
 
@@ -220,7 +220,7 @@ public class DatabaseNode extends AbstractNode {
     
     private void syncLoadChildren() {
 
-        _childNames = new ArrayList();
+        _childNames = new ArrayList<String>();
 
         String metaFilterExpression = _session.getUser().getAlias().getSchemaFilterExpression();
         if (metaFilterExpression != null && metaFilterExpression.trim().length() != 0) {

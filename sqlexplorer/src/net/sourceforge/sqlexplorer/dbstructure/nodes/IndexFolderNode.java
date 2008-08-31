@@ -48,9 +48,9 @@ public class IndexFolderNode extends AbstractFolderNode {
     /**
      * @return List of column names for this table.
      */
-    public List getIndexNames() {
+    public List<String> getIndexNames() {
 
-        List indexNames = new ArrayList();
+        List<String> indexNames = new ArrayList<String>();
 
         try {
             List<IndexInfo> infos = _session.getMetaData().getIndexInfo(_tableInfo);
@@ -89,7 +89,7 @@ public class IndexFolderNode extends AbstractFolderNode {
     public void loadChildren() {
 
         try {
-            Iterator it = getIndexNames().iterator();
+            Iterator<String> it = getIndexNames().iterator();
             while (it.hasNext()) {
                 addChildNode(new IndexNode(this, (String) it.next(), _session, (TableNode) getParent()));
             }

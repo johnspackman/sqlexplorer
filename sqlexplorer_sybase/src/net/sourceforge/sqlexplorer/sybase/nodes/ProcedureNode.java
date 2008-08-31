@@ -2,7 +2,6 @@ package net.sourceforge.sqlexplorer.sybase.nodes;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 

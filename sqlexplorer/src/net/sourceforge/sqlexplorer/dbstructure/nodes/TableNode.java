@@ -40,13 +40,13 @@ public class TableNode extends AbstractNode {
 
     private List<String> _columnNames;
 
-    private List _foreignKeyNames;
+    private List<String> _foreignKeyNames;
 
-    private List _primaryKeyNames;
+    private List<String> _primaryKeyNames;
 
     private ITableInfo _tableInfo;
 
-    private List _folderNames = new ArrayList();
+    private List<String> _folderNames = new ArrayList<String>();
 
     /**
      * Create new database table node.
@@ -142,7 +142,7 @@ public class TableNode extends AbstractNode {
     /**
      * @return List of column names for this table.
      */
-    public List getColumnNames() {
+    public List<String> getColumnNames() {
 
         if (_columnNames == null) {
 
@@ -164,11 +164,11 @@ public class TableNode extends AbstractNode {
     /**
      * @return List of column names for this table.
      */
-    public List getForeignKeyNames() {
+    public List<String> getForeignKeyNames() {
 
         if (_foreignKeyNames == null) {
 
-            _foreignKeyNames = new ArrayList();
+            _foreignKeyNames = new ArrayList<String>();
             try {
                 ResultSet resultSet = _session.getMetaData().getImportedKeys(_tableInfo);
                 while (resultSet.next()) {
@@ -188,11 +188,11 @@ public class TableNode extends AbstractNode {
     /**
      * @return List of column names for this table.
      */
-    public List getPrimaryKeyNames() {
+    public List<String> getPrimaryKeyNames() {
 
         if (_primaryKeyNames == null) {
 
-            _primaryKeyNames = new ArrayList();
+            _primaryKeyNames = new ArrayList<String>();
             try {
                 ResultSet resultSet = _session.getMetaData().getPrimaryKeys(_tableInfo);
                 while (resultSet.next()) {

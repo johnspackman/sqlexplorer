@@ -79,7 +79,7 @@ public class JobsNode extends AbstractNode {
 	}
 
 	@Override
-	public Comparator getComparator() {
+	public Comparator<INode> getComparator() {
 
         return new Comparator() {
 

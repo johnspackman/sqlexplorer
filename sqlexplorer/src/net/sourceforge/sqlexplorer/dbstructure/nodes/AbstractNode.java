@@ -106,7 +106,7 @@ public abstract class AbstractNode implements INode {
      * 
      * @return Iterator of child elements
      */
-    public final Iterator getChildIterator() {
+    public final Iterator<INode> getChildIterator() {
 
         if (!_childrenLoaded) {
             load();
@@ -127,7 +127,7 @@ public abstract class AbstractNode implements INode {
 
         if (!_childrenLoaded) {
             load();
-            Comparator comp = getComparator();
+            Comparator<INode> comp = getComparator();
             if (comp != null) {
                 Collections.sort(_children, getComparator());
             }
@@ -140,17 +140,17 @@ public abstract class AbstractNode implements INode {
     /**
      * Override this method to implement custom sorting of child nodes.
      */
-    public Comparator getComparator() {
+    public Comparator<INode> getComparator() {
 
-        return new Comparator() {
+        return new Comparator<INode>() {
 
-            public int compare(Object arg0, Object arg1) {
+            public int compare(INode arg0, INode arg1) {
 
                 if (arg0 == null || arg1 == null) {
                     return 0;
                 }
-                String name0 = ((INode) arg0).getName();
-                String name1 = ((INode) arg1).getName();
+                String name0 = arg0.getName();
+                String name1 = arg1.getName();
 
                 if (name0 == null || name1 == null) {
                     return 0;

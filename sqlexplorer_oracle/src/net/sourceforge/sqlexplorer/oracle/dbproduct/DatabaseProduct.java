@@ -102,7 +102,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 	public Driver getDriver(ManagedDriver driver) throws ClassNotFoundException {
 		try {
 	        ClassLoader loader = new SQLDriverClassLoader(getClass().getClassLoader(), driver);
-	        Class driverCls = loader.loadClass(driver.getDriverClassName());
+	        Class<?> driverCls = loader.loadClass(driver.getDriverClassName());
 //	        loader.loadClass("oracle.xml.parser.v2.XMLParseException");
 	        return (Driver)driverCls.newInstance();
 		} catch(MalformedURLException e) {

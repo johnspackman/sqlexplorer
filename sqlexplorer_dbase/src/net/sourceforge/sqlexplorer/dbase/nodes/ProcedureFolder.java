@@ -6,16 +6,12 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 public class ProcedureFolder extends AbstractSQLFolderNode {
 
 	public ProcedureFolder() {
+		super(Messages.getString("dbase.dbstructure.procedures"));
 	}
 
 	@Override
 	public String getChildType() {
 		return "procedure";
-	}
-
-	@Override
-	public String getName() {
-		return Messages.getString("dbase.dbstructure.procedures");
 	}
 
 	@Override

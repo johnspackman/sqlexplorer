@@ -1,15 +1,8 @@
 package net.sourceforge.sqlexplorer.sybase.nodes;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
-import net.sourceforge.sqlexplorer.sybase.nodes.ProcedureNode;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 public class ProcedureFolder extends SysObjectFolder {
 
@@ -25,7 +18,7 @@ public class ProcedureFolder extends SysObjectFolder {
 		return "procedure";
 	}
 	
-	public Class getChildClass() {
+	public Class<? extends SysObjectNode> getChildClass() {
 		return ProcedureNode.class;
 	}
 

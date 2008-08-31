@@ -42,11 +42,11 @@ public class ColumnFolderNode extends AbstractFolderNode {
     /**
      * Sort columns: PK - FK - Name..
      */
-    public Comparator getComparator() {
+    public Comparator<INode> getComparator() {
 
-        return new Comparator() {
+        return new Comparator<INode>() {
 
-            public int compare(Object arg0, Object arg1) {
+            public int compare(INode arg0, INode arg1) {
 
                 if (arg0 == null || arg1 == null) {
                     return 0;
@@ -89,7 +89,7 @@ public class ColumnFolderNode extends AbstractFolderNode {
     public void loadChildren() {
 
         try {
-            Iterator it = ((TableNode) _parent).getColumnNames().iterator();
+            Iterator<String> it = ((TableNode) _parent).getColumnNames().iterator();
             while (it.hasNext()) {
                 addChildNode(new ColumnNode(this, (String) it.next(), _session, (TableNode) _parent, true));
             }
