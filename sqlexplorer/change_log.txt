@@ -9,6 +9,11 @@
 +. added close connection to context menu
 +. added project support to standalone RCP
 +. new structured comments for setting logging options per file ${set LOG_SQL} Off, ${set LOG_SUCCESS} Off
++. Upgraded PostgreSQL support to include a full parser based on the Oracle implementation.
+	This really should be parameterised because the language structure that the parser actually
+	*uses* is simple (it's NOT a full blown parser)
++. Completely rewrote the basic query parser so that it works properly, ie supports comments
+	quotes strings etc
 
 
 3.5.0.RC5 - John Spackman, Zenesis Ltd
