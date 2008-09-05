@@ -29,12 +29,18 @@ import net.sourceforge.sqlexplorer.dbproduct.Session;
  */
 public interface SwitchableSessionEditor {
 
+	
 	/**
-	 * Returns the session
+	 * Returns the current session
 	 * @return
 	 */
 	public Session getSession();
-	
+
+	/**
+	 * Called when the session changes (including if the session failed).  This is always
+	 * called in the main Workspace thread.
+	 * @param session the new session; null if the session could not be established
+	 */
 	public void setSession(Session session);
 	
 	public IWorkbenchSite getSite();

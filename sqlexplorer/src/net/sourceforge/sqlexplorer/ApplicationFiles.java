@@ -42,6 +42,10 @@ public class ApplicationFiles {
     /** Name of file that contains users database driver information. */
     public static final String USER_DRIVER_FILE_NAME = USER_SETTINGS_FOLDER + File.separator + "SQLDrivers.xml";
 
+    /** Name of file that contains users database product configuration; only present if installed manually by
+     * the user to override the defaults in the plugins dbproducts.xml */
+    public static final String USER_DBPRODUCTS_XML = USER_SETTINGS_FOLDER + File.separator + "dbproducts.xml";
+
     /** Flle to log execution information to. */
     public static final String EXECUTION_LOG_FILE = USER_SETTINGS_FOLDER + File.separator + "jfacedbc-sql.log";
 

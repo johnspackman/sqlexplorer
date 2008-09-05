@@ -6,12 +6,17 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.LinkedList;
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.connections.ConnectionsView;
 import net.sourceforge.sqlexplorer.connections.SessionEstablishedAdapter;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.plugin.editors.Message;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
+import net.sourceforge.sqlexplorer.plugin.editors.SwitchableSessionEditor;
+import net.sourceforge.sqlexplorer.sqleditor.actions.SQLEditorSessionSwitcher;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.sqlexplorer.util.PartAdapter2;
 
@@ -20,13 +25,31 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabFolder2Adapter;
+import org.eclipse.swt.custom.CTabFolderEvent;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Sash;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -36,13 +59,14 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
 
-public class FileListEditor extends EditorPart {
+public class FileListEditor extends EditorPart implements SwitchableSessionEditor {
 	
     private static final Log _logger = LogFactory.getLog(BatchJob.class);
     
 	private TextEditor editor;
 	private Session session;
-
+	private Text messagesText;
+	
 	@Override
 	public void createPartControl(Composite parent) {
 		parent.setLayout(new FillLayout());
@@ -73,7 +97,28 @@ public class FileListEditor extends EditorPart {
 				return Messages.getString("FileListEditor.Actions.Execute.ToolTip");
 			}
 		});
+		
+        SQLEditorSessionSwitcher sessionSwitcher = new SQLEditorSessionSwitcher(this);
+        mgr.add(sessionSwitcher);
+        
 		mgr.update(true);
+		
+		// Create sash and attach it to 75% of the way down
+		final Sash sash = createSash(myParent);
+		data = new FormData();
+		data.top = new FormAttachment(75, 0);
+		data.left = new FormAttachment(0, 0);
+		data.right = new FormAttachment(100, 0);
+		sash.setLayoutData(data);
+
+		// Attach the tabs to the bottom of the sash and the bottom of the composite
+		CTabFolder tabFolder = createResultTabs(myParent);
+		data = new FormData();
+		data.top = new FormAttachment(sash, 0);
+		data.left = new FormAttachment(0, 0);
+		data.right = new FormAttachment(100, 0);
+		data.bottom = new FormAttachment(100, 0);
+		tabFolder.setLayoutData(data);
 		
 		// Attach the editor to the toolbar and the top of the sash
 		Composite editorParent = new Composite(myParent, SWT.NONE);
@@ -81,10 +126,78 @@ public class FileListEditor extends EditorPart {
 		editor.createPartControl(editorParent);
 		data = new FormData();
 		data.top = new FormAttachment(toolBar, 0);
-		data.bottom = new FormAttachment(100, 100);
+		data.bottom = new FormAttachment(sash, 0);
 		data.left = new FormAttachment(0, 0);
 		data.right = new FormAttachment(100, 0);
 		editorParent.setLayoutData(data);
+	}
+
+	/**
+	 * Creates the results tabs in the bottom half
+	 * 
+	 * @param parent
+	 * @return
+	 */
+	private CTabFolder createResultTabs(Composite parent) {
+		CTabFolder tabFolder = new CTabFolder(parent, SWT.TOP | SWT.CLOSE);
+		tabFolder.setBorderVisible(true);
+		tabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
+		
+		// Set up a gradient background for the selected tab
+		Display display = getSite().getShell().getDisplay();
+	    tabFolder.setSelectionBackground(
+	    		new Color[] {
+				        display.getSystemColor(SWT.COLOR_WHITE),
+		                new Color(null, 211, 225, 250),
+		                new Color(null, 175, 201, 246),
+		                IConstants.TAB_BORDER_COLOR
+	    		},
+	    		new int[] {25, 50, 75},
+	    		true
+	    	);
+
+	    
+		CTabItem messagesTab = new CTabItem(tabFolder, SWT.NONE);
+		messagesTab.setText(Messages
+				.getString("SQLEditor.Results.Messages.Caption"));
+
+		messagesText = new Text(tabFolder, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+		Font f = JFaceResources.getFontRegistry().get(JFaceResources.TEXT_FONT);
+		messagesText.setFont(f);
+		messagesTab.setControl(messagesText);
+		tabFolder.setSelection(messagesTab);
+	    
+		return tabFolder;
+	}
+
+	/**
+	 * Creates the sash (the draggable splitter) between the editor and the
+	 * results tab
+	 * 
+	 * @param parent
+	 * @return
+	 */
+	private Sash createSash(Composite parent) {
+		// Create the sash and put it in the middle
+		final Sash sash = new Sash(parent, SWT.HORIZONTAL);
+		sash.setBackground(IConstants.TAB_BORDER_COLOR);
+
+		sash.addSelectionListener(new SelectionListener() {
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				FormData data = (FormData)sash.getLayoutData();
+				Rectangle rect = sash.getParent().getBounds();
+				data.top = new FormAttachment(e.y, rect.height, 0);
+				sash.getParent().layout();
+				sash.getParent().getParent().layout();
+			}
+		});
+
+		return sash;
 	}
 
 	@Override
@@ -109,7 +222,6 @@ public class FileListEditor extends EditorPart {
 					onCloseEditor();
 				}
 			}
-			
 		});
 
 		// If we havn't got a view, then try for the current session in the ConnectionsView
@@ -127,7 +239,22 @@ public class FileListEditor extends EditorPart {
 	        }
 		}
 	}
-
+	
+	/**
+	 * Adds a message to the message window
+	 * @param message
+	 */
+	public void addMessage(final String msg) {
+		if (messagesText.isDisposed())
+			return;
+		
+        editor.getEditorSite().getShell().getDisplay().syncExec(new Runnable() {
+			public void run() {
+				messagesText.append(msg + "\r\n");
+			}
+        });
+	}
+	
 	/**
 	 * Called internally when the user tries to close the editor
 	 */
@@ -191,6 +318,7 @@ public class FileListEditor extends EditorPart {
 	}
 	
 	protected void execute() {
+		messagesText.setText("");
 		IDocument doc = editor.getDocumentProvider().getDocument(editor.getEditorInput());
 		String str = doc.get();
 		BufferedReader reader = new BufferedReader(new StringReader(str));
@@ -203,7 +331,7 @@ public class FileListEditor extends EditorPart {
 					continue;
 				File file = new File(line);
 				if (!file.exists() || !file.canRead())
-					SQLExplorerPlugin.error("Cannot locate/read file " + file.getAbsolutePath());
+					addMessage("Cannot locate/read file " + file.getAbsolutePath());
 				else
 					files.add(file);
 			}
@@ -213,7 +341,7 @@ public class FileListEditor extends EditorPart {
 		if (files.isEmpty())
 			return;
 		
-        final BatchJob bgJob = new BatchJob(getSession().getUser(), files);
+        final BatchJob bgJob = new BatchJob(this, getSession().getUser(), files);
         
         editor.getEditorSite().getShell().getDisplay().syncExec(new Runnable() {
 			public void run() {
@@ -223,4 +351,8 @@ public class FileListEditor extends EditorPart {
 			}
         });
 	}
+
+	public void refreshToolbars() {
+	}
+	
 }

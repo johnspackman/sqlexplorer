@@ -34,20 +34,20 @@ import org.eclipse.core.runtime.jobs.Job;
  */
 public class BatchJob extends Job {
 	
-    private static final Log _logger = LogFactory.getLog(BatchJob.class);
-    
+    private FileListEditor editor;
 	private User user;
 	
 	private Session session;
 	
 	private List<File> files;
 
-	public BatchJob(User user, List<File> files) {
-		this(Messages.getString("BatchJob.Title"), user, files);
+	public BatchJob(FileListEditor editor, User user, List<File> files) {
+		this(editor, Messages.getString("BatchJob.Title"), user, files);
 	}
 
-	public BatchJob(String name, User user, List<File> files) {
+	public BatchJob(FileListEditor editor, String name, User user, List<File> files) {
 		super(name);
+		this.editor = editor;
 		this.user = user;
 		this.files = files;
 	}
@@ -68,7 +68,6 @@ public class BatchJob extends Job {
 					break;
 				monitor.worked(index++);
 				monitor.subTask(file.getName());
-				_logger.fatal(file.getAbsolutePath());
 	
 				String sql = null;
 				try {
@@ -77,7 +76,7 @@ public class BatchJob extends Job {
 					int length = reader.read(buffer);
 					reader.close();
 					if (length < 0 || length >= buffer.length) {
-						SQLExplorerPlugin.error("Cannot read from file " + file.getAbsolutePath());
+						editor.addMessage("Cannot read from file " + file.getAbsolutePath());
 						continue;
 					}
 					// Normalise this to have standard \n in strings.  \r confuses Oracle and
@@ -93,14 +92,16 @@ public class BatchJob extends Job {
 			    	sql = sb.toString();
 			    	sb = null;
 				}catch(IOException e) {
-					SQLExplorerPlugin.error("Cannot read from file " + file.getAbsolutePath(), e);
+					editor.addMessage("Cannot read from file " + file.getAbsolutePath() + ": " + e.getMessage());
 					continue;
 				}
 				
+				editor.addMessage("Loading file " + file.getAbsolutePath());
 				QueryParser parser = product.getQueryParser(sql, 1);
 				parser.parse();
 				for (Query query : parser) {
 		            DatabaseProduct.ExecutionResults results = null;
+	            	StringBuilder errors = new StringBuilder();
 		            try {
 		            	results = product.executeQuery(connection, query, -1);
 		            	DataSet dataSet;
@@ -115,12 +116,17 @@ public class BatchJob extends Job {
 		                    	messages.addAll(messagesTmp);
 	                    	for (Message msg : messages)
 	                    		msg.setLineNo(parser.adjustLineNo(msg.getLineNo()));
-		                    for (Message message : messages) {
-		                    	_logger.fatal(message.getSql());
+		                    for (Message msg : messages) {
+		                    	StringBuilder sb = new StringBuilder(msg.getMessage());
+		                    	for (int i = 0; i < sb.length(); i++) {
+		                    		if ("\r\n".indexOf(sb.charAt(i)) > -1)
+		                    			sb.setCharAt(i, ' ');
+		                    	}
+		                    	errors.append("line " + msg.getLineNo() + ": " + sb.toString());
 		                    }
 		            	}
 		            }catch(SQLException e) {
-                    	_logger.fatal(e.getMessage());
+		            	errors.append("Exception: " + e.getMessage());
 		            } finally {
 		            	try {
 		            		if (results != null) {
@@ -130,6 +136,10 @@ public class BatchJob extends Job {
 		            	}catch(SQLException e) {
 		            		// Nothing
 		            	}
+		            }
+		            if (errors.length() > 0) {
+		            	errors.append("\n");
+		            	editor.addMessage(errors.toString());
 		            }
 				}
 			}

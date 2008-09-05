@@ -103,7 +103,7 @@ public class SQLEditorSessionSwitcher extends ControlContribution implements Con
     		return;
         _sessionCombo.removeAll();
         _sessionCombo.add("");
-        
+
         int index = 0;
         User currentUser = null;
         if (_editor.getSession() != null)
