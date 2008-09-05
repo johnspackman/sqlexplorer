@@ -435,7 +435,7 @@ public class StructuredCommentParser {
 		if (comment.getTokenType() == TokenType.ML_COMMENT)
 			sb.delete(sb.length() - 2, sb.length());
 		// support sl comment with space before ${ to be a real sl comment
-		if (comment.getTokenType() == TokenType.EOL_COMMENT && sb.charAt(0) == ' ')
+		if (comment.getTokenType() == TokenType.EOL_COMMENT && sb.length() > 0 && sb.charAt(0) == ' ')
 			sb.delete(0, 1);
 		
 		// Make sure it begins ${, but silently ignore it if not
