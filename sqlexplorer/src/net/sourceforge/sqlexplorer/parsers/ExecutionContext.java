@@ -6,6 +6,8 @@ package net.sourceforge.sqlexplorer.parsers;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
@@ -23,12 +25,19 @@ public class ExecutionContext
 
 	private Map<String,String> options = new HashMap<String, String>();
 	
-	public ExecutionContext()
-	{
-		set(LOG_SUCCESS,SQLExplorerPlugin.getDefault().getPreferenceStore().
-				getBoolean(IConstants.LOG_SUCCESS_MESSAGES) ? ON : OFF);
-		set(LOG_SQL,SQLExplorerPlugin.getDefault().getPreferenceStore().
-				getBoolean(IConstants.LOG_SQL_HISTORY) ? ON : OFF);
+	public ExecutionContext() {
+		// Set default
+		set(LOG_SUCCESS, ON);
+		set(LOG_SQL, ON);
+		
+		// Will be null during unit tests of the query parser etc 
+		if (SQLExplorerPlugin.getDefault() != null) {
+			IPreferenceStore store = SQLExplorerPlugin.getDefault().getPreferenceStore();
+			if (store != null) {
+				set(LOG_SUCCESS, store.getBoolean(IConstants.LOG_SUCCESS_MESSAGES) ? ON : OFF);
+				set(LOG_SQL, store.getBoolean(IConstants.LOG_SQL_HISTORY) ? ON : OFF);
+			}
+		}
 	}
 	
 	public void set(String pOption, String pValue)

@@ -518,6 +518,8 @@ public class StructuredCommentParser {
 	 * @param replacement the replacement text
 	 */
 	protected void replace(ListIterator<Command> iter, Command startCmd, Command endCmd, CharSequence replacement) {
+		if (replacement == null)
+			replacement = "";
 		int numLines = endCmd.comment.getLineNo() - startCmd.comment.getLineNo();
 		for (char c : endCmd.comment)
 			if (c == '\n')
