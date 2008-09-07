@@ -12,18 +12,18 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 public class JobsFolder extends AbstractFolderNode {
 
-	public JobsFolder() {
+	public JobsFolder() 
+	{
+		super("mssql.dbstructure.jobs");
 	}
 
-	public JobsFolder(INode parent, SessionTreeNode sessionNode) {
+	public JobsFolder(INode parent, SessionTreeNode sessionNode) 
+	{
+		this();
 		_type = "JOBS_FOLDER";
 		initialize(parent, null, sessionNode);
 	}
 
-	@Override
-	public String getName() {
-		return Messages.getString("mssql.dbstructure.jobs");
-	}
 
 	@Override
 	public void loadChildren() {
