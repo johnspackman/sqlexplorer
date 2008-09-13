@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description>
+      SQL Explorer SourceForge Site
+   </description>
+   <feature url="features/net.sourceforge.sqlexplorer_3.5.0.RC6.jar" id="net.sourceforge.sqlexplorer" version="3.5.0.RC6"/>
+</site>
