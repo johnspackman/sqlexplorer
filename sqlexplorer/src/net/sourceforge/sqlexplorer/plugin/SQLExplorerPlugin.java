@@ -90,6 +90,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         
+        PluginPreferences.setCurrent(getPreferenceStore());
         try {
         	getLog().addLogListener(new ILogListener() {
 				public void logging(IStatus status, String plugin) {
@@ -191,6 +192,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         // save SQL History for next session
         _history.save();
 
+        PluginPreferences.setCurrent(null);
         super.stop(context);
     }
 
