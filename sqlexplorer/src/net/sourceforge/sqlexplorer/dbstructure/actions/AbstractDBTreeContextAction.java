@@ -68,6 +68,18 @@ public abstract class AbstractDBTreeContextAction extends Action {
         return true;
     }
 
+    /**
+     * Implement this method to return true when your action is the default action
+     * for the selected node.  When true, the action will be run when a double click
+     * on a node occurs. 
+     * 
+     * 
+     * @return true if the action should be included in the context menu
+     */
+    public boolean isDefault() {
+        return false;
+    }
+    
 	protected DatabaseStructureView getView() {
 		return SQLExplorerPlugin.getDefault().getDatabaseStructureView();
 	}

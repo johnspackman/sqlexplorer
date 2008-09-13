@@ -233,6 +233,12 @@
             name="Copy Node Name"
             node-type="*"/>
       <action
+            class="net.sourceforge.sqlexplorer.dbstructure.actions.InsertTextAction"
+            database-product-name="*"
+            id="sqlexplorer.dbstructure.actions.InsertTextAction"
+            name="Copy Node Name to Editor"
+            node-type="*"/>
+      <action
             class="net.sourceforge.sqlexplorer.dbstructure.actions.GenerateSelectSQLAction"
             database-product-name="*"
             id="sqlexplorer.dbstructure.actions.GenerateSelectSQLAction"
@@ -308,6 +314,10 @@
          <property
                name="windowImages"
                value="platform:/plugin/net.sourceforge.sqlexplorer.rcp/icons/logo16.gif,platform:/plugin/net.sourceforge.sqlexplorer.rcp/icons/logo32.gif">
+         </property>
+         <property
+               name="appName"
+               value="SQL Explorer">
          </property>
       </product>
    </extension>

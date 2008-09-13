@@ -898,6 +898,14 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 	}
 
 	/**
+	 * insert the text at the current text cursor position of the editor
+	 * 
+	 * @param txt
+	 */
+	public void insertText(String pText) {
+		textEditor.sqlTextViewer.insertText(pText);
+	}
+	/**
 	 * Returns the text to be executed; this is the entire text if there is no
 	 * selection, else just the selected text
 	 * 

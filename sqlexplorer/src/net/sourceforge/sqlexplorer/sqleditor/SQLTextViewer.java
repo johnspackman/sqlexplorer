@@ -24,6 +24,7 @@ import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;
@@ -47,6 +48,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -257,5 +259,17 @@ public class SQLTextViewer extends SourceViewer {
      */
     public void clearText() {
         getTextWidget().setText("");
+    }
+    /**
+     * 
+     */
+    public void insertText(String pText) {
+    	Point selection = getTextWidget().getSelectionRange();
+    	try {
+			getDocument().replace(selection.x, selection.y, pText);
+			getTextWidget().setSelection(selection.x + pText.length());
+			getTextWidget().setFocus();
+		} catch (BadLocationException ignored) {
+		}        
     }
 }

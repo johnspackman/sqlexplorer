@@ -37,6 +37,9 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.ui.actions.ActionGroup;
 
 /**
@@ -47,170 +50,208 @@ import org.eclipse.ui.actions.ActionGroup;
  */
 public class DBTreeActionGroup extends ActionGroup {
 
-    private TreeViewer _treeViewer;
+	private TreeViewer _treeViewer;
 
+	/**
+	 * Construct a new action group for a given database structure outline.
+	 * 
+	 * @param treeViewer
+	 *            TreeViewer used for this outline.
+	 */
+	public DBTreeActionGroup(TreeViewer treeViewer) {
 
-    /**
-     * Construct a new action group for a given database structure outline.
-     * 
-     * @param treeViewer TreeViewer used for this outline.
-     */
-    public DBTreeActionGroup(TreeViewer treeViewer) {
+		_treeViewer = treeViewer;
+		treeViewer.getTree().addMouseListener(new MouseAdapter() {
 
-        _treeViewer = treeViewer;
-    }
+			public void mouseDoubleClick(MouseEvent e) {
+				runDefault();
 
+			}
 
-    /**
-     * Fill the node context menu with all the correct actions.
-     * 
-     * @see org.eclipse.ui.actions.ActionGroup#fillContextMenu(org.eclipse.jface.action.IMenuManager)
-     */
-    public void fillContextMenu(IMenuManager menu) {
+		});
+	}
 
-        // find our target node..
-        IStructuredSelection selection = (IStructuredSelection) _treeViewer.getSelection();
+	private void runDefault() {
+		INode[] nodes = getSelectedNodes();
+		if (nodes == null) {
+			return;
+		}
+		AbstractDBTreeContextAction[] actions = getContextActions(nodes);
 
-        // check if we have a valid selection
-        if (selection == null) {
-            return;
-        }
+		for (AbstractDBTreeContextAction current : actions) {
+			if(current.isDefault())
+			{
+				current.run();
+			}
+		}
 
-        ArrayList selectedNodes = new ArrayList();
-        Iterator it = selection.iterator();
+	}
 
-        while (it.hasNext()) {
-            Object object = it.next();
-            if (object instanceof INode) {
-                selectedNodes.add(object);
-            }
-        }
+	/**
+	 * Fill the node context menu with all the correct actions.
+	 * 
+	 * @see org.eclipse.ui.actions.ActionGroup#fillContextMenu(org.eclipse.jface.action.IMenuManager)
+	 */
+	public void fillContextMenu(IMenuManager menu) {
 
-        if (selectedNodes.size() == 0) {
-            return;
-        }
+		INode[] nodes = getSelectedNodes();
+		if (nodes == null) {
+			return;
+		}
+		AbstractDBTreeContextAction[] actions = getContextActions(nodes);
 
-        INode[] nodes = (INode[]) selectedNodes.toArray(new INode[] {});
-        IAction[] actions = getContextActions(nodes);
+		for (AbstractDBTreeContextAction current : actions) {
+			menu.add(current);
+		}
 
-        for (int i = 0; i < actions.length; i++) {
-            menu.add(actions[i]);
-        }
+	}
 
-    }
+	private INode[] getSelectedNodes() {
+		// find our target node..
+		IStructuredSelection selection = (IStructuredSelection) _treeViewer
+				.getSelection();
 
+		// check if we have a valid selection
+		if (selection == null) {
+			return null;
+		}
 
-    /**
-     * Loop through all extensions and add the appropriate actions.
-     * 
-     * Actions are selected by database product name, node type and
-     * availability.
-     * 
-     * @param nodes currently selected nodes
-     * @return array of actions
-     */
-    private IAction[] getContextActions(INode[] nodes) {
+		List<INode> selectedNodes = new ArrayList<INode>();
+		Iterator<?> it = selection.iterator();
 
-        String databaseProductName = nodes[0].getSession().getRoot().getDatabaseProductName().toLowerCase().trim();
-        String nodeType = nodes[0].getType().toLowerCase().trim();
+		while (it.hasNext()) {
+			Object object = it.next();
+			if (object instanceof INode) {
+				selectedNodes.add((INode) object);
+			}
+		}
 
-        List actions = new ArrayList();
+		if (selectedNodes.size() == 0) {
+			return null;
+		}
 
-        IExtensionRegistry registry = Platform.getExtensionRegistry();
-        IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "nodeContextAction");
-        IExtension[] extensions = point.getExtensions();
+		INode[] nodes = selectedNodes.toArray(new INode[selectedNodes.size()]);
+		return nodes;
+	}
 
-        for (int i = 0; i < extensions.length; i++) {
+	/**
+	 * Loop through all extensions and add the appropriate actions.
+	 * 
+	 * Actions are selected by database product name, node type and
+	 * availability.
+	 * 
+	 * @param nodes
+	 *            currently selected nodes
+	 * @return array of actions
+	 */
+	private AbstractDBTreeContextAction[] getContextActions(INode[] nodes) {
 
-            IExtension e = extensions[i];
+		String databaseProductName = nodes[0].getSession().getRoot()
+				.getDatabaseProductName().toLowerCase().trim();
+		String nodeType = nodes[0].getType().toLowerCase().trim();
 
-            IConfigurationElement[] ces = e.getConfigurationElements();
+		List<AbstractDBTreeContextAction> actions = new ArrayList<AbstractDBTreeContextAction>();
 
-            for (int j = 0; j < ces.length; j++) {
-                try {
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		IExtensionPoint point = registry.getExtensionPoint(
+				"net.sourceforge.sqlexplorer", "nodeContextAction");
+		IExtension[] extensions = point.getExtensions();
 
-                    boolean isValidProduct = false;
-                    boolean isValidNodeType = false;
+		for (int i = 0; i < extensions.length; i++) {
 
-                    String id = ces[j].getAttribute("id");
-                    String[] validProducts = ces[j].getAttribute("database-product-name").split(",");
-                    String[] validNodeTypes = ces[j].getAttribute("node-type").split(",");
-                    String imagePath = ces[j].getAttribute("icon");
+			IExtension e = extensions[i];
 
-                    // check if action is valid for current database product
-                    for (int k = 0; k < validProducts.length; k++) {
+			IConfigurationElement[] ces = e.getConfigurationElements();
 
-                        String product = validProducts[k].toLowerCase().trim();
+			for (int j = 0; j < ces.length; j++) {
+				try {
 
-                        if (product.length() == 0) {
-                            continue;
-                        }
+					boolean isValidProduct = false;
+					boolean isValidNodeType = false;
 
-                        if (product.equals("*")) {
-                            isValidProduct = true;
-                            break;
-                        }
+					String id = ces[j].getAttribute("id");
+					String[] validProducts = ces[j].getAttribute(
+							"database-product-name").split(",");
+					String[] validNodeTypes = ces[j].getAttribute("node-type")
+							.split(",");
+					String imagePath = ces[j].getAttribute("icon");
 
-                        String regex = TextUtil.replaceChar(product, '*', ".*");
-                        if (databaseProductName.matches(regex)) {
-                            isValidProduct = true;
-                            break;
-                        }
+					// check if action is valid for current database product
+					for (int k = 0; k < validProducts.length; k++) {
 
-                    }
+						String product = validProducts[k].toLowerCase().trim();
 
-                    if (!isValidProduct) {
-                        continue;
-                    }
+						if (product.length() == 0) {
+							continue;
+						}
 
-                    // check if action is valid for current node type
-                    for (int k = 0; k < validNodeTypes.length; k++) {
+						if (product.equals("*")) {
+							isValidProduct = true;
+							break;
+						}
 
-                        String type = validNodeTypes[k].toLowerCase().trim();
+						String regex = TextUtil.replaceChar(product, '*', ".*");
+						if (databaseProductName.matches(regex)) {
+							isValidProduct = true;
+							break;
+						}
 
-                        if (type.length() == 0) {
-                            continue;
-                        }
+					}
 
-                        if (type.equals("*")) {
-                            isValidNodeType = true;
-                            break;
-                        }
+					if (!isValidProduct) {
+						continue;
+					}
 
-                        String regex = TextUtil.replaceChar(type, '*', ".*");
-                        if (nodeType.matches(regex)) {
-                            isValidNodeType = true;
-                            break;
-                        }
+					// check if action is valid for current node type
+					for (int k = 0; k < validNodeTypes.length; k++) {
 
-                    }
+						String type = validNodeTypes[k].toLowerCase().trim();
 
-                    if (!isValidNodeType) {
-                        continue;
-                    }
+						if (type.length() == 0) {
+							continue;
+						}
 
-                    // check if the action thinks it is suitable..
-                    AbstractDBTreeContextAction action = (AbstractDBTreeContextAction) ces[j].createExecutableExtension("class");
-                    action.setSelectedNodes(nodes);
-                    action.setTreeViewer(_treeViewer);
+						if (type.equals("*")) {
+							isValidNodeType = true;
+							break;
+						}
 
-                    String fragmentId = id.substring(0, id.indexOf('.', 28));
+						String regex = TextUtil.replaceChar(type, '*', ".*");
+						if (nodeType.matches(regex)) {
+							isValidNodeType = true;
+							break;
+						}
 
-                    if (imagePath != null && imagePath.trim().length() != 0) {
-                        action.setImageDescriptor(ImageUtil.getFragmentDescriptor(fragmentId, imagePath));
-                    }
+					}
 
-                    if (action.isAvailable()) {
-                        actions.add(action);
-                    }
+					if (!isValidNodeType) {
+						continue;
+					}
 
-                } catch (Throwable ex) {
-                    SQLExplorerPlugin.error("Could not create menu action", ex);
-                }
-            }
-        }
+					// check if the action thinks it is suitable..
+					AbstractDBTreeContextAction action = (AbstractDBTreeContextAction) ces[j]
+							.createExecutableExtension("class");
+					action.setSelectedNodes(nodes);
+					action.setTreeViewer(_treeViewer);
 
-        return (IAction[]) actions.toArray(new IAction[] {});
-    }
+					String fragmentId = id.substring(0, id.indexOf('.', 28));
+
+					if (imagePath != null && imagePath.trim().length() != 0) {
+						action.setImageDescriptor(ImageUtil
+								.getFragmentDescriptor(fragmentId, imagePath));
+					}
+
+					if (action.isAvailable()) {
+						actions.add(action);
+					}
+
+				} catch (Throwable ex) {
+					SQLExplorerPlugin.error("Could not create menu action", ex);
+				}
+			}
+		}
+
+		return actions.toArray(new AbstractDBTreeContextAction[actions.size()]);
+	}
 
 }
