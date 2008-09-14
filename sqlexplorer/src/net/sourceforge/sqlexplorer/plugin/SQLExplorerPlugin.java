@@ -67,6 +67,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     private static SQLExplorerPlugin plugin;
 
     public final static String PLUGIN_ID = "net.sourceforge.sqlexplorer";
+    public final static String HELP_PLUGIN_ID = "net.sourceforge.sqlexplorer.help";
 
     private boolean _defaultConnectionsStarted = false;
     

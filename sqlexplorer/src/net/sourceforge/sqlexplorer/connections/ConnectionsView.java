@@ -82,7 +82,6 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
      */
     public void createPartControl(Composite parent) {
 
-        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, SQLExplorerPlugin.PLUGIN_ID + ".AliasView");
 
         SQLExplorerPlugin.getDefault().getAliasManager().addListener(this);
 
@@ -149,6 +148,8 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
         });
         _treeViewer.expandToLevel(2);
 
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(_treeViewer.getControl(), SQLExplorerPlugin.HELP_PLUGIN_ID + ".connection_view");
+        
         parent.layout();
 
         SQLExplorerPlugin.getDefault().startDefaultConnections(this);

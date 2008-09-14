@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 /**
@@ -132,6 +133,8 @@ public class CreateAliasDlg extends TitleAreaDialog {
                 ImageUtil.disposeImage("Images.WizardLogo");
             }
         });
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, SQLExplorerPlugin.HELP_PLUGIN_ID + ".connection_view");
+        
         return contents;
     }
 
