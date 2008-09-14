@@ -26,11 +26,14 @@ import net.sourceforge.sqlexplorer.dbproduct.ConnectionJob;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
+import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
 import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkbenchPage;
 
 public class OpenPasswordConnectDialogAction extends Action {
 
@@ -42,10 +45,7 @@ public class OpenPasswordConnectDialogAction extends Action {
 	// The user to try and login
     private User user;
     
-    // Whether to prompt for the password, even if the user is auto-logon etc
-    private boolean alwaysPrompt;
-
-    public OpenPasswordConnectDialogAction(Alias alias, User user, boolean alwaysPrompt) {
+    public OpenPasswordConnectDialogAction(Alias alias, User user) {
     	super();
     	if (alias == null)
     		throw new IllegalArgumentException("Alias cannot be null!");
@@ -53,28 +53,49 @@ public class OpenPasswordConnectDialogAction extends Action {
     		throw new IllegalArgumentException("User is attached the wrong alias");
     	this.alias = alias;
         this.user = user;
-        this.alwaysPrompt = alwaysPrompt;
     }
 
-    public void run() {
+    public void run(final boolean pOpenEditor)
+    {
     	SessionEstablishedListener listener = null;
-    	if (!user.hasAuthenticated())
-    		listener = new SessionEstablishedAdapter() {
-				@Override
-				public void sessionEstablished(Session session) {
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
+    	final boolean openDbView = ! user.hasAuthenticated();
+		listener = new SessionEstablishedAdapter() {
+			@Override
+			public void sessionEstablished(Session session) {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						if(openDbView)
+						{
 			        		DatabaseStructureView dsView = SQLExplorerPlugin.getDefault().getDatabaseStructureView();
 			        		if (dsView != null)
 			        			try {
 			        				dsView.addUser(user);
 			        			}catch(SQLCannotConnectException e) {
 			        	        	MessageDialog.openError(Display.getDefault().getActiveShell(), "Cannot connect", e.getMessage());
-			        			}
-						}
-					});
-				}
-    		};
-    	ConnectionJob.createSession(alias, user, listener, alwaysPrompt);
+			        			}			        	     
+		        		}
+		        		if(pOpenEditor)
+		        		{
+		        			try
+		        			{
+			                    SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo() + ").sql");
+			                    input.setUser(user);
+			                    IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+			                    page.openEditor(input, SQLEditor.class.getName());
+		        	        } catch (Throwable e) {
+		        	            SQLExplorerPlugin.error("Error creating sql editor", e);
+		        	        }
+		        			
+		        		}
+					}
+				});
+			}
+		};
+    		
+    	ConnectionJob.createSession(alias, user, listener);
+    	
+    }
+    public void run() {
+    	run(false);
     }
 }

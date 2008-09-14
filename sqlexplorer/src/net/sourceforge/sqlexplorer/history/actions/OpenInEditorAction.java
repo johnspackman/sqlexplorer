@@ -91,7 +91,7 @@ public class OpenInEditorAction extends AbstractHistoryContextAction {
                                 + Messages.getString("SQLHistoryView.OpenInEditor.Confirm.Message.Postfix"));
 
                 if (okToOpen) {
-                	OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(alias, user, false);
+                	OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(alias, user);
                 	openDlgAction.run();
                 }
             }

@@ -52,10 +52,7 @@ public class ConnectionJob extends Job {
 	
 	// The callback to give the new session to
 	private SessionEstablishedListener listener;
-	
-	// Whether to ask for the password on the first pass, instead of trying a saved one
-	private boolean requirePassword;
-	
+		
 	// True if the password dialog was cancelled
 	private boolean cancelled;
 
@@ -66,36 +63,15 @@ public class ConnectionJob extends Job {
 	 * @param listener Callback listener
 	 * @param requirePassword Whether to always prompt the user for a password, even if one is already known
 	 */
-	public ConnectionJob(Alias alias, User user, SessionEstablishedListener listener, boolean requirePassword) {
+	public ConnectionJob(Alias alias, User user, SessionEstablishedListener listener) {
 		super(Messages.getString("Progress.Connection.Title") + " " + alias.getName() + '/' + ((user != null) ? user.getUserName() : "?"));
 		this.alias = alias;
 		this.user = user;
 		if (user != null && user.getAlias() != alias)
 			throw new RuntimeException("Invalid User - users alias must match the alias provided");
 		this.listener = listener;
-		this.requirePassword = user == null || requirePassword;
-    	if (alias.hasNoUserName())
-    		requirePassword = false;
 	}
 
-	/**
-	 * Constructor; asks for a password on the first attempt only if the alias.isAutoLogin() is false
-	 * @param alias Alias to connect
-	 * @param user User to establish a connection for
-	 * @param listener Callback listener
-	 */
-	public ConnectionJob(Alias alias, User user, SessionEstablishedListener listener) {
-		this(alias, user, listener, !alias.isAutoLogon());
-	}
-
-	/**
-	 * Constructor; logs in a brand new user
-	 * @param alias Alias to connect
-	 * @param listener Callback listener
-	 */
-	public ConnectionJob(Alias alias, SessionEstablishedListener listener) {
-		this(alias, null, listener, true);
-	}
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
@@ -107,7 +83,7 @@ public class ConnectionJob extends Job {
 
 			// Try to login
 			try {
-				if (!firstPass || !requirePassword)
+				if (!firstPass || user.hasAuthenticated() || alias.isAutoLogon())
 					session = user.createSession();
 				if (session != null) {
 					if (!user.hasAuthenticated()) {
@@ -200,15 +176,6 @@ public class ConnectionJob extends Job {
     	});
 	}
 
-	/**
-	 * Establishes a connection in the background
-	 * @param alias Alias to connect
-	 * @param user User to establish a connection for
-	 * @param listener Callback listener
-	 */
-	public static void createSession(Alias alias, User user, SessionEstablishedListener listener) {
-		createSession(alias, user, listener, false);
-	}
 	
 	/**
 	 * Establishes a connection in the background for a brand new set of user credentials
@@ -217,7 +184,7 @@ public class ConnectionJob extends Job {
 	 * @param listener Callback listener
 	 */
 	public static void createSession(Alias alias, SessionEstablishedListener listener) {
-		createSession(alias, null, listener, false);
+		createSession(alias, null, listener);
 	}
 	
 	/**
@@ -227,8 +194,8 @@ public class ConnectionJob extends Job {
 	 * @param listener Callback listener
 	 * @param requirePassword Whether to always prompt the user for a password, even if one is already known
 	 */
-	public static void createSession(Alias alias, User user, SessionEstablishedListener listener, boolean requirePassword) {
-        final ConnectionJob bgJob = new ConnectionJob(alias, user, listener, requirePassword);
+	public static void createSession(Alias alias, User user, SessionEstablishedListener listener) {
+        final ConnectionJob bgJob = new ConnectionJob(alias, user, listener);
         final IWorkbenchSite site = SQLExplorerPlugin.getDefault().getSite();
         
         site.getShell().getDisplay().syncExec(new Runnable() {

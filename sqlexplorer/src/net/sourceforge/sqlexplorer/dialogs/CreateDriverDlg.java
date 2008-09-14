@@ -48,7 +48,6 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -367,12 +366,6 @@ public class CreateDriverDlg extends TitleAreaDialog {
         }
     }
 
-
-    protected Point getInitialSize() {
-        return new Point(600, 500);
-    }
-
-
     private void createJavaClassPathPanel(TabFolder tabFolder, TabItem tabItem) {
         Composite parent = new Composite(tabFolder, SWT.NULL);
         parent.setLayout(new FillLayout());
@@ -424,7 +417,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
                     try {
 
                         MyURLClassLoader cl = new MyURLClassLoader(file.toURL());
-                        Class[] classes = cl.getAssignableClasses(Driver.class);
+                        Class<?>[] classes = cl.getAssignableClasses(Driver.class);
                         for (int i = 0; i < classes.length; ++i) {
                             combo.add(classes[i].getName());
                         }
@@ -522,7 +515,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
                 if (file != null) {
                     try {
                         MyURLClassLoader cl = new MyURLClassLoader(file.toURL());
-                        Class[] classes = cl.getAssignableClasses(Driver.class);
+                        Class<?>[] classes = cl.getAssignableClasses(Driver.class);
 
                         for (int i = 0; i < classes.length; ++i) {
                             combo.add(classes[i].getName());
@@ -568,7 +561,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
                 dlg.setFilterExtensions(new String[] {"*.jar;*.zip"});
                 String str = dlg.open();
                 if (str != null) {
-                    Object obj = new File(str);
+                    File obj = new File(str);
                     defaultModel.add(obj);
                     extraClassPathList.refresh();
                     StructuredSelection sel = new StructuredSelection(obj);
@@ -626,7 +619,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
 
 }
 
-class DefaultFileListBoxModel extends java.util.Vector {
+class DefaultFileListBoxModel extends java.util.Vector<File> {
 
     public static final long serialVersionUID = 1;
 
@@ -647,7 +640,7 @@ class DefaultFileListBoxModel extends java.util.Vector {
      *             <TT>getSize()</TT>.
      */
     public File getFile(int idx) {
-        return (File) get(idx);
+        return get(idx);
     }
 
 
@@ -671,7 +664,7 @@ class DefaultFileListBoxModel extends java.util.Vector {
 
 
     public File removeFile(int idx) {
-        return (File) remove(idx);
+        return remove(idx);
     }
 }
 
@@ -706,7 +699,7 @@ class ClassPathListModel extends DefaultFileListBoxModel {
 class FileContentProvider implements IStructuredContentProvider {
 
     public Object[] getElements(Object input) {
-        return ((java.util.Vector) input).toArray();
+        return ((DefaultFileListBoxModel) input).toArray();
     }
 
 

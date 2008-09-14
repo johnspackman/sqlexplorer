@@ -37,7 +37,7 @@ public class ConnectAliasAction extends AbstractConnectionTreeAction {
     public void run() {
     	Set<User> users = getView().getSelectedUsers(true);
     	for (User user : users) {
-            OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(user.getAlias(), user, false);
+            OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(user.getAlias(), user);
             openDlgAction.run();
         }
         getView().refresh();

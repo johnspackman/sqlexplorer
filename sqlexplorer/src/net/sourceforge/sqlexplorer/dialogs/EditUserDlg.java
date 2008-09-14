@@ -11,7 +11,6 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -63,7 +62,6 @@ public class EditUserDlg extends TitleAreaDialog {
 		gridLayout.numColumns = 2;
 		container.setLayout(gridLayout);
 		final GridData gd_container = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gd_container.heightHint = 126;
 		container.setLayoutData(gd_container);
 
 		final Label connectionProfileLabel = new Label(container, SWT.NONE);
@@ -117,7 +115,13 @@ public class EditUserDlg extends TitleAreaDialog {
         autoCommit.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				commitOnClose.setEnabled(!autoCommit.getSelection());
+				checkCommitBoxes();
+			}
+        });
+        commitOnClose.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				checkCommitBoxes();
 			}
         });
 
@@ -143,6 +147,22 @@ public class EditUserDlg extends TitleAreaDialog {
 		return area;
 	}
 
+    private void checkCommitBoxes()
+    {
+    	boolean checked = autoCommit.getSelection();
+    	if(checked)
+    	{
+    		commitOnClose.setSelection(false);
+    	}
+		commitOnClose.setEnabled(!checked);
+    	checked = commitOnClose.getSelection();
+    	if(checked)
+    	{
+    		autoCommit.setSelection(false);
+    	}
+		autoCommit.setEnabled(!checked);
+    }
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.Dialog#okPressed()
 	 */
@@ -176,14 +196,6 @@ public class EditUserDlg extends TitleAreaDialog {
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-	}
-
-	/**
-	 * Return the initial size of the dialog
-	 */
-	@Override
-	protected Point getInitialSize() {
-		return new Point(376, 304);
 	}
 
 }

@@ -145,8 +145,6 @@ public class PasswordConnDlg extends TitleAreaDialog {
         Label label4 = new Label(nameGroup, SWT.WRAP);
         label4.setText(Messages.getString("User_4")); //$NON-NLS-1$
         userTxt = new Text(nameGroup, SWT.BORDER);
-        if (user != null)
-        	userTxt.setText(user.getUserName());
         data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         data.horizontalSpan = 1;
@@ -155,8 +153,6 @@ public class PasswordConnDlg extends TitleAreaDialog {
         Label label5 = new Label(nameGroup, SWT.WRAP);
         label5.setText(Messages.getString("Password_5")); //$NON-NLS-1$
         pswdTxt = new Text(nameGroup, SWT.BORDER);
-        if (user != null)
-        	pswdTxt.setText(user.getPassword());
         pswdTxt.setEchoChar('*');
 
         data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
@@ -165,18 +161,18 @@ public class PasswordConnDlg extends TitleAreaDialog {
         pswdTxt.setLayoutData(data);
         pswdTxt.setFocus();
 
+        new Label(nameGroup, SWT.None);
         fAutoCommitBox = new Button(nameGroup, SWT.CHECK);
         fAutoCommitBox.setText(Messages.getString("PasswordConnDlg.AutoCommit_1")); //$NON-NLS-1$
         GridData gd = new GridData(GridData.FILL_HORIZONTAL);
         gd.horizontalAlignment = GridData.BEGINNING;
-        gd.horizontalSpan = 1;
         fAutoCommitBox.setLayoutData(gd);
 
+        new Label(nameGroup, SWT.None);
         fCommitOnCloseBox = new Button(nameGroup, SWT.CHECK);
         fCommitOnCloseBox.setText(Messages.getString("PasswordConnDlg.Commit_On_Close_2")); //$NON-NLS-1$
         gd = new GridData(GridData.FILL_HORIZONTAL);
         gd.horizontalAlignment = GridData.BEGINNING;
-        gd.horizontalSpan = 2;
         fCommitOnCloseBox.setLayoutData(gd);
 
         fAutoCommitBox.addSelectionListener(new SelectionListener() {
@@ -185,28 +181,42 @@ public class PasswordConnDlg extends TitleAreaDialog {
             }
 
             public void widgetSelected(SelectionEvent e) {
-                if (fAutoCommitBox.getSelection()) {
-                    fCommitOnCloseBox.setEnabled(false);
-                } else
-                    fCommitOnCloseBox.setEnabled(true);
+                checkCommitBoxes();
             }
         });
 
-        fAutoCommitBox.getDisplay().asyncExec(new Runnable() {
-
-            public void run() {
-            	IPreferenceStore store = SQLExplorerPlugin.getDefault().getPreferenceStore();
-                fCommitOnCloseBox.setSelection(store.getBoolean(IConstants.COMMIT_ON_CLOSE));//$NON-NLS-1$
-                fAutoCommitBox.setSelection(store.getBoolean(IConstants.AUTO_COMMIT));//$NON-NLS-1$
-                if (fAutoCommitBox.getSelection()) {
-                    fCommitOnCloseBox.setEnabled(false);
-                } else
-                    fCommitOnCloseBox.setEnabled(true);
-            }
-        });
+        if (user != null)
+        {
+        	userTxt.setText(user.getUserName());
+        	pswdTxt.setText(user.getPassword());
+        	fAutoCommitBox.setSelection(user.isAutoCommit());
+        	fCommitOnCloseBox.setSelection(user.isCommitOnClose());
+            checkCommitBoxes();
+        }
+        else
+        {
+        	IPreferenceStore store = SQLExplorerPlugin.getDefault().getPreferenceStore();
+            fCommitOnCloseBox.setSelection(store.getBoolean(IConstants.COMMIT_ON_CLOSE));//$NON-NLS-1$
+            fAutoCommitBox.setSelection(store.getBoolean(IConstants.AUTO_COMMIT));//$NON-NLS-1$        	
+        }
 
         return parentComposite;
     }
+
+	private void checkCommitBoxes() {
+    	boolean checked = fAutoCommitBox.getSelection();
+    	if(checked)
+    	{
+    		fCommitOnCloseBox.setSelection(false);
+    	}
+    	fCommitOnCloseBox.setEnabled(!checked);
+    	checked = fCommitOnCloseBox.getSelection();
+    	if(checked)
+    	{
+    		fAutoCommitBox.setSelection(false);
+    	}
+    	fAutoCommitBox.setEnabled(!checked);
+	}
 
     public String getPassword() {
         return passwd;

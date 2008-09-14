@@ -149,9 +149,10 @@ public class CreateAliasDlg extends TitleAreaDialog {
         layout.verticalSpacing = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_SPACING);
         layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
         composite.setLayout(layout);
-        final GridData gd_composite = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gd_composite.heightHint = 238;
-        composite.setLayoutData(gd_composite);
+//        final GridData gd_composite = new GridData(SWT.FILL, SWT.FILL, true, true);
+//        gd_composite.heightHint = 238;
+//        composite.setLayoutData(gd_composite);
+        composite.setLayoutData(new GridData(GridData.FILL_BOTH));
         composite.setFont(parentComposite.getFont());
 
         Composite nameGroup = new Composite(composite, SWT.NONE);
@@ -160,7 +161,6 @@ public class CreateAliasDlg extends TitleAreaDialog {
         layout.marginWidth = 10;
         nameGroup.setLayout(layout);
         GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-        data.heightHint = 211;
         nameGroup.setLayoutData(data);
 
         Label label = new Label(nameGroup, SWT.WRAP);
@@ -244,7 +244,31 @@ public class CreateAliasDlg extends TitleAreaDialog {
 
         noUsernameRequired = new Button(nameGroup, SWT.CHECK);
         noUsernameRequired.setText("Username is not required for this database");
+        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
+        data.horizontalSpan = 2;
+        noUsernameRequired.setLayoutData(data);
+
         new Label(nameGroup, SWT.NONE);
+
+        Composite connectionPropertiesComposite = new Composite(nameGroup, SWT.NONE);
+        connectionPropertiesComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.numColumns = 2;
+        gridLayout.marginWidth = 0;
+        connectionPropertiesComposite.setLayout(gridLayout);
+        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
+        data.horizontalSpan = 2;
+        connectionPropertiesComposite.setLayoutData(data);
+        
+        autoLogonButton = new Button(connectionPropertiesComposite, SWT.CHECK);
+        autoLogonButton.setToolTipText("If set, SQLExplorer will try to logon without prompting");
+        GridData gd_autoLogonButton = new GridData(158, SWT.DEFAULT);
+        autoLogonButton.setLayoutData(gd_autoLogonButton);
+        autoLogonButton.setText("Auto logon");
+        
+        logonAtStartupButton = new Button(connectionPropertiesComposite, SWT.CHECK);
+        logonAtStartupButton.setToolTipText("If set, SQLExplorer will establish a connection during startup");
+        logonAtStartupButton.setText("Logon during startup");
 
         Label label4 = new Label(nameGroup, SWT.WRAP);
         label4.setText("User Name"); //$NON-NLS-1$
@@ -268,6 +292,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
             };
         });
 
+        
         Label label5 = new Label(nameGroup, SWT.WRAP);
         label5.setText("Password"); //$NON-NLS-1$
         passwordField = new Text(nameGroup, SWT.BORDER);
@@ -292,51 +317,55 @@ public class CreateAliasDlg extends TitleAreaDialog {
         }     
         new Label(nameGroup, SWT.NONE);
 
-        final Composite connectionPropertiesComposite = new Composite(nameGroup, SWT.NONE);
+        connectionPropertiesComposite = new Composite(nameGroup, SWT.NONE);
         connectionPropertiesComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-        final GridLayout gridLayout = new GridLayout();
+        gridLayout = new GridLayout();
         gridLayout.numColumns = 2;
+        gridLayout.marginWidth = 0;
         connectionPropertiesComposite.setLayout(gridLayout);
-        new Label(nameGroup, SWT.NONE);
-        new Label(nameGroup, SWT.NONE);
-
-        autoLogonButton = new Button(connectionPropertiesComposite, SWT.CHECK);
-        autoLogonButton.setToolTipText("If set, SQLExplorer will try to logon without prompting");
-        final GridData gd_autoLogonButton = new GridData(158, SWT.DEFAULT);
-        autoLogonButton.setLayoutData(gd_autoLogonButton);
-        autoLogonButton.setText("Auto logon");
+        data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
+        data.horizontalSpan = 2;
+        connectionPropertiesComposite.setLayoutData(data);
         
         autoCommitButton = new Button(connectionPropertiesComposite, SWT.CHECK);
         autoCommitButton.setToolTipText("Sets the default for new SQL Editors");
         autoCommitButton.setText("Auto Commit");
-
-        logonAtStartupButton = new Button(connectionPropertiesComposite, SWT.CHECK);
-        logonAtStartupButton.setToolTipText("If set, SQLExplorer will establish a connection during startup");
-        logonAtStartupButton.setText("Logon during startup");
-
+        data = new GridData(158, SWT.DEFAULT);
+        autoCommitButton.setLayoutData(data);
+        
         commitOnCloseButton = new Button(connectionPropertiesComposite, SWT.CHECK);
         commitOnCloseButton.setToolTipText("Sets the default for new SQL editors");
         commitOnCloseButton.setText("Commit on close");
-        new Label(nameGroup, SWT.NONE);
         
         autoLogonButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				boolean checked = autoLogonButton.getSelection();
 				logonAtStartupButton.setEnabled(checked);
+				passwordField.setEnabled(checked);
 				if (!checked)
+				{					
 					logonAtStartupButton.setSelection(false);
+					passwordField.setText("");
+				}
 			}
 		});
-        logonAtStartupButton.setEnabled(alias.isConnectAtStartup());
-        logonAtStartupButton.setSelection(alias.isConnectAtStartup());
-        autoLogonButton.setSelection(alias.isConnectAtStartup());
         
         autoCommitButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				commitOnCloseButton.setEnabled(!autoCommitButton.getSelection());
+				checkCommitBoxes();
 			}
         });
+        commitOnCloseButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				checkCommitBoxes();
+			}
+        });
+
+        logonAtStartupButton.setEnabled(alias.isAutoLogon());
+        logonAtStartupButton.setSelection(alias.isConnectAtStartup());
+        autoLogonButton.setSelection(alias.isAutoLogon());
         User user = alias.getDefaultUser();
         if (user != null) {
         	autoCommitButton.setSelection(user.isAutoCommit());
@@ -346,8 +375,17 @@ public class CreateAliasDlg extends TitleAreaDialog {
         
         noUsernameRequired.addSelectionListener(new SelectionAdapter() {
         	public void widgetSelected(final SelectionEvent e) {
-        		userField.setEnabled(!noUsernameRequired.getSelection());
-        		passwordField.setEnabled(!noUsernameRequired.getSelection());
+        		boolean checked = noUsernameRequired.getSelection();
+        		userField.setEnabled(!checked);
+        		passwordField.setEnabled((!checked) && autoLogonButton.getSelection());
+        		if(checked)
+        		{
+        			userField.setText("");
+        			passwordField.setText("");
+        			autoLogonButton.setSelection(true);
+        			logonAtStartupButton.setEnabled(true);
+        		}
+    			autoLogonButton.setEnabled(!checked);
         	}
         });
         
@@ -355,10 +393,14 @@ public class CreateAliasDlg extends TitleAreaDialog {
     		noUsernameRequired.setSelection(true);
     		userField.setEnabled(false);
     		passwordField.setEnabled(false);
+			autoLogonButton.setSelection(true);
+			logonAtStartupButton.setEnabled(true);
+			autoLogonButton.setEnabled(false);
     	} else {
     		noUsernameRequired.setSelection(false);
+			autoLogonButton.setEnabled(true);
     		userField.setEnabled(true);
-    		passwordField.setEnabled(true);
+    		passwordField.setEnabled(alias.isAutoLogon());
 	        if (alias.getDefaultUser() != null) {
 		        userField.setText(alias.getDefaultUser().getUserName());
 		        passwordField.setText(alias.getDefaultUser().getPassword());
@@ -371,6 +413,22 @@ public class CreateAliasDlg extends TitleAreaDialog {
             urlField.setText(alias.getUrl());
         }
         return parentComposite;
+    }
+
+    private void checkCommitBoxes()
+    {
+    	boolean checked = autoCommitButton.getSelection();
+    	if(checked)
+    	{
+    		commitOnCloseButton.setSelection(false);
+    	}
+		commitOnCloseButton.setEnabled(!checked);
+    	checked = commitOnCloseButton.getSelection();
+    	if(checked)
+    	{
+    		autoCommitButton.setSelection(false);
+    	}
+		autoCommitButton.setEnabled(!checked);
     }
 
     private void populateCombo() {

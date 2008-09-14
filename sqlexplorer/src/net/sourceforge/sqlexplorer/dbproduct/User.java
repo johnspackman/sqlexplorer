@@ -107,7 +107,7 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 	public Element describeAsXml() {
 		Element root = new DefaultElement(USER);
 		root.addElement(USER_NAME).setText(userName);
-		root.addElement(PASSWORD).setText(password);
+		root.addElement(PASSWORD).setText(getAlias().isAutoLogon() ? password : "");
 		root.addAttribute(AUTO_COMMIT, Boolean.toString(autoCommit));
 		root.addAttribute(COMMIT_ON_CLOSE, Boolean.toString(commitOnClose));
 		return root;
@@ -172,18 +172,12 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 	 * @param listener
 	 * @param requirePassword
 	 */
-	public synchronized void queueForNewSession(SessionEstablishedListener listener, boolean requirePassword) {
+	public synchronized void queueForNewSession(SessionEstablishedListener listener) {
 		newSessionsQueue.add(listener);
 		if (newSessionsQueue.size() == 1)
-			ConnectionJob.createSession(alias, this, this, requirePassword);
+			ConnectionJob.createSession(alias, this, this);
 	}
 	
-	/**
-	 * @see queueForNewSession(SessionEstablishedListener, boolean)
-	 */
-	public synchronized void queueForNewSession(SessionEstablishedListener listener) {
-		queueForNewSession(listener, false);
-	}
 	
 	/**
 	 * Callback when a session cannot be established; notifies all listeners and then
@@ -203,7 +197,7 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 		SessionEstablishedListener listener = newSessionsQueue.removeFirst();
 		listener.sessionEstablished(session);
 		if (!newSessionsQueue.isEmpty())
-			ConnectionJob.createSession(alias, this, this, false);
+			ConnectionJob.createSession(alias, this, this);
 	}
 
 	/**

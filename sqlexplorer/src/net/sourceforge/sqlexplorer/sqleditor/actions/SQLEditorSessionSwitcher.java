@@ -82,7 +82,7 @@ public class SQLEditorSessionSwitcher extends ControlContribution implements Con
     				return;
 
     			// Start the connection job
-    			ConnectionJob.createSession(user.getAlias(), user, SQLEditorSessionSwitcher.this, false);
+    			ConnectionJob.createSession(user.getAlias(), user, SQLEditorSessionSwitcher.this);
             }
         });
         setSessionOptions();

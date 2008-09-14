@@ -21,7 +21,7 @@ public class NewConnection extends Action {
     }
 
     public void run() {
-        OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(user.getAlias(), user, false);
+        OpenPasswordConnectDialogAction openDlgAction = new OpenPasswordConnectDialogAction(user.getAlias(), user);
         openDlgAction.run();
     }
 

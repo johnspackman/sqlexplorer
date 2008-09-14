@@ -27,6 +27,7 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.CatalogNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.SchemaNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -37,7 +38,6 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -110,7 +110,7 @@ public class FilterStructureDialog extends Dialog {
 
         // extract selections for schemas
 
-        List schemaSelection = new ArrayList();
+        List<String> schemaSelection = new ArrayList<String>();
         TableItem[] items = _schemaTable.getItems();
 
         if (items != null) {
@@ -128,7 +128,7 @@ public class FilterStructureDialog extends Dialog {
 
         // extract selections for folders
 
-        List folderSelection = new ArrayList();
+        List<String> folderSelection = new ArrayList<String>();
         items = _folderTable.getItems();
 
         if (items != null) {
@@ -191,7 +191,8 @@ public class FilterStructureDialog extends Dialog {
             GridData gridData = new GridData(GridData.FILL_BOTH);
             gridData.grabExcessHorizontalSpace = true;
             gridData.grabExcessVerticalSpace = true;
-
+            gridData.widthHint = 380;
+            
             composite.setLayout(layout);
             composite.setLayoutData(gridData);
 
@@ -335,6 +336,10 @@ public class FilterStructureDialog extends Dialog {
                 }
             });
 
+            t2GridData = new GridData(GridData.FILL_HORIZONTAL);
+            t2GridData.horizontalSpan = 2;
+            t2GridData.horizontalAlignment = SWT.FILL;
+            t2GridData.verticalIndent = 15;
             // add filter text
             _patternButton = new Button(composite, SWT.CHECK | SWT.WRAP);
             _patternButton.setLayoutData(t2GridData);
@@ -398,12 +403,6 @@ public class FilterStructureDialog extends Dialog {
     public String[] getFolderFilter() {
 
         return _folderFilter;
-    }
-
-
-    protected Point getInitialSize() {
-
-        return new Point(300, 440);
     }
 
 

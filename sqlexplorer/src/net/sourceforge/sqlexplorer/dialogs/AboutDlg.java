@@ -111,7 +111,7 @@ public class AboutDlg extends Dialog {
     }
 
     protected Point getInitialSize() {
-        return new Point(455, 340);
+        return new Point(455, 380);
     }
 
     protected void createButtonsForButtonBar(Composite parent) {
@@ -261,6 +261,10 @@ class CreditsItem {
         String separator = System.getProperty("line.separator"); //$NON-NLS-1$
 
         final String credits =    
+            "Developers (versions 3.5.0.RC6):" + separator +
+            " - John Spackman (Zenesis Limited - www.zenesis.com)" + separator + 
+            " - Heiko Hilbert" + separator + 
+            separator +              
             "Developers (versions 3.5.0):" + separator +
             " - John Spackman (Zenesis Limited - www.zenesis.com)" + separator + 
             separator +              
@@ -304,7 +308,7 @@ class SystemProperties {
         }
 
         public String getColumnText(Object element, int columnIndex) {
-            java.util.Map.Entry cp = (java.util.Map.Entry) element;
+            java.util.Map.Entry<?,?> cp = (java.util.Map.Entry<?,?>) element;
             if (columnIndex == 0)
                 return cp.getKey().toString();
             else

@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import net.sourceforge.sqlexplorer.SQLCannotConnectException;
 import net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction;
 import net.sourceforge.sqlexplorer.connections.actions.CloseAllConnectionsAction;
 import net.sourceforge.sqlexplorer.connections.actions.CloseConnectionAction;
@@ -36,9 +35,7 @@ import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
-import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
+import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
 
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IContributionItem;
@@ -46,7 +43,6 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -59,7 +55,6 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
@@ -160,6 +155,8 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
     }
     
     public void openNewEditor(User user) {
+		new OpenPasswordConnectDialogAction(user.getAlias(), user).run(true);
+/*		
         try {
         	// First time we connect, get the database structure view up too
         	if (!user.hasAuthenticated()) {
@@ -175,6 +172,7 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
         } catch (Throwable e) {
             SQLExplorerPlugin.error("Error creating sql editor", e);
         }
+*/        
     }
 
 	public void connectionClosed(Session session) {
@@ -259,7 +257,7 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
     		return EMPTY_ALIASES;
     	
     	LinkedHashSet<Alias> result = new LinkedHashSet<Alias>();
-    	Iterator iter = selection.iterator();
+    	Iterator<?> iter = selection.iterator();
     	while (iter.hasNext()) {
     		Object obj = iter.next();
     		if (obj instanceof Alias)
@@ -300,7 +298,7 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
     		return EMPTY_USERS;
     	
     	LinkedHashSet<User> result = new LinkedHashSet<User>();
-    	Iterator iter = selection.iterator();
+    	Iterator<?> iter = selection.iterator();
     	while (iter.hasNext()) {
     		Object obj = iter.next();
     		if (obj instanceof User)
@@ -341,7 +339,7 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
     		return EMPTY_CONNECTIONS;
     	
     	LinkedHashSet<SQLConnection> result = new LinkedHashSet<SQLConnection>();
-    	Iterator iter = selection.iterator();
+    	Iterator<?> iter = selection.iterator();
     	while (iter.hasNext()) {
     		Object obj = iter.next();
     		if (obj instanceof SQLConnection)
@@ -384,10 +382,10 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
      * @param set the set to look into (may be null)
      * @return
      */
-    private Object getFirstOf(Set set) {
+    private <T> T getFirstOf(Set<T> set) {
     	if (set == null)
     		return null;
-    	Iterator iter = set.iterator();
+    	Iterator<T> iter = set.iterator();
     	if (iter.hasNext())
     		return iter.next();
     	return null;
