@@ -11,7 +11,9 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.2.0",
  net.sourceforge.sqlexplorer,
  org.eclipse.ui,
  org.eclipse.ui.ide,
- org.eclipse.ui.ide.application
+ org.eclipse.ui.ide.application,
+ org.eclipse.help.ui,
+ org.eclipse.help.webapp
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: net.sourceforge.sqlexplorer.rcp

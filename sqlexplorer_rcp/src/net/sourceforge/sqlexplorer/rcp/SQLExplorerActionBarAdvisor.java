@@ -45,6 +45,8 @@ public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor
 		register(ActionFactory.SAVE_AS.create(window));               
 		register(ActionFactory.SAVE_ALL.create(window));               
 
+		register(ActionFactory.HELP_CONTENTS.create(window));               
+		
         _viewList = ContributionItemFactory.VIEWS_SHORTLIST.create(window);
         
         register(ActionFactory.PREFERENCES.create(window));
@@ -96,6 +98,9 @@ public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor
         
         // create help menu
 		menuBar.add(helpMenu);
+		helpMenu.add(new Separator(IWorkbenchActionConstants.HELP_START));
+		helpMenu.add(getAction(ActionFactory.HELP_CONTENTS.getId()));
+		helpMenu.add(new Separator(IWorkbenchActionConstants.HELP_END));
 
 	}
 
