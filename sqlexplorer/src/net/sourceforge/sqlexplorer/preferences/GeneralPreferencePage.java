@@ -46,6 +46,9 @@ import org.eclipse.swt.widgets.Button;
  */
 public class GeneralPreferencePage extends AbstractPreferencePage {
 	
+	private Button autoCommitBox;
+	private Button commitOnCloseBox;
+
 	public GeneralPreferencePage() {
         super(Messages.getString("General_Preferences_1"), GRID); 
 	}
@@ -69,38 +72,21 @@ public class GeneralPreferencePage extends AbstractPreferencePage {
 
 		BooleanFieldEditor bfe;
 		addField(bfe = new BooleanFieldEditor(IConstants.AUTO_COMMIT, Messages.getString("GeneralPreferencePage.AutoCommit_1"), getFieldEditorParent()));
-		final Button autoCommitBox = bfe.getCheckbox();
+		this.autoCommitBox = bfe.getCheckbox();
 		addField(bfe = new BooleanFieldEditor(IConstants.COMMIT_ON_CLOSE, Messages.getString("GeneralPreferencePage.Commit_On_Close_2"), getFieldEditorParent()));
-		final Button commitOnCloseBox = bfe.getCheckbox();
+		this.commitOnCloseBox = bfe.getCheckbox();
 
-		/*
-		final Button autoCommitBox = new Button(getFieldEditorParent(), SWT.CHECK);
-		autoCommitBox.setText(Messages.getString("GeneralPreferencePage.AutoCommit_1")); //$NON-NLS-1$
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalAlignment = GridData.BEGINNING;
-		gd.horizontalSpan = 2;
-		autoCommitBox.setLayoutData(gd);
-		addAccessor(new CheckBoxAccessor(IConstants.AUTO_COMMIT, autoCommitBox));
-
-
-		final Button commitOnCloseBox = new Button(getFieldEditorParent(), SWT.CHECK);
-		commitOnCloseBox.setText(Messages.getString("GeneralPreferencePage.Commit_On_Close_2")); //$NON-NLS-1$
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalAlignment = GridData.BEGINNING;
-		gd.horizontalSpan = 2;
-		commitOnCloseBox.setLayoutData(gd);
-		addAccessor(new CheckBoxAccessor(IConstants.COMMIT_ON_CLOSE, commitOnCloseBox));
-		*/
 
 		autoCommitBox.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (autoCommitBox.getSelection())
-					commitOnCloseBox.setEnabled(false);
-				else
-					commitOnCloseBox.setEnabled(true);
+				checkCommitBoxes();
 			}
 		});
-		commitOnCloseBox.setEnabled(!autoCommitBox.getSelection());
+		commitOnCloseBox.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				checkCommitBoxes();
+			}
+		});
 
 		addField(new BooleanFieldEditor(IConstants.SQL_ASSIST, Messages.getString("GeneralPreferencePage.Tables_and_columns_auto-completing_assistance._Use_only_with_fast_database_connections_1"), getFieldEditorParent()));
 
@@ -173,4 +159,26 @@ public class GeneralPreferencePage extends AbstractPreferencePage {
 		addField(combo);
 	}
 
+	@Override
+	protected void initialize() {
+		super.initialize();
+		checkCommitBoxes();
+	}
+
+	private void checkCommitBoxes() {
+		
+    	boolean checked = autoCommitBox.getSelection();
+    	if(checked)
+    	{
+    		commitOnCloseBox.setSelection(false);
+    	}
+    	commitOnCloseBox.setEnabled(!checked);
+    	checked = commitOnCloseBox.getSelection();
+    	if(checked)
+    	{
+    		autoCommitBox.setSelection(false);
+    	}
+    	autoCommitBox.setEnabled(!checked);
+	}
+	
 }
