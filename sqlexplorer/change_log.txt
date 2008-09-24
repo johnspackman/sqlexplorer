@@ -1,20 +1,24 @@
 3.5.0.RC6 - John Spackman (Zenesis Ltd), Heiko Hilbert
 ======================================================
-+. ???
 +. show none select queries in success log too
 +. position cursor to the beginning of a failed query in case of a SQL execution error
 +. added an error node to procedure node if there is an exception while querying procedure list
 +. added synchronize block to prevent duplicate nodes in structure view
 +. added new option to treat new editors as scratch files
 +. added close connection to context menu
-+. added project support to standalone RCP
++. added project and help support to standalone RCP
++. added update support to standalone RCP
 +. new structured comments for setting logging options per file ${set LOG_SQL} Off, ${set LOG_SUCCESS} Off
 +. Upgraded PostgreSQL support to include a full parser based on the Oracle implementation.
 	This really should be parameterised because the language structure that the parser actually
 	*uses* is simple (it's NOT a full blown parser)
 +. Completely rewrote the basic query parser so that it works properly, ie supports comments
 	quotes strings etc
-
++. Don't store passwords in file system on none 'auto login' connections
++. added MySQL 'delimiter' command support
++. added double click support to copy table or column names from database structure view to current editor
++. added new structured comment: ${set xxx}
++. fixed update site installation
 
 3.5.0.RC5 - John Spackman, Zenesis Ltd
 ======================================
