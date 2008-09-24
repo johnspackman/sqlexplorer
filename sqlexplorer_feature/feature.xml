@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.sqlexplorer"
       label="Eclipse SQL Explorer"
-      version="3.5.0.RC6"
+      version="3.5.0.v20080924_RC6"
       provider-name="SQL Explorer Project (eclipsesql.sourceforge.net)"
       plugin="net.sourceforge.sqlexplorer">
 
@@ -60,13 +60,13 @@ USA
          id="net.sourceforge.sqlexplorer"
          download-size="0"
          install-size="0"
-         version="3.5.0.RC6"/>
+         version="3.5.0.v20080924_RC6"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.db2"
          download-size="0"
          install-size="0"
-         version="3.5.0.RC6"
+         version="3.5.0.v20080924_RC6"
          fragment="true"
          unpack="false"/>
 
@@ -74,7 +74,7 @@ USA
          id="net.sourceforge.sqlexplorer.oracle"
          download-size="0"
          install-size="0"
-         version="3.5.0.RC6"
+         version="3.5.0.v20080924_RC6"
          fragment="true"
          unpack="false"/>
 
@@ -82,7 +82,7 @@ USA
          id="net.sourceforge.sqlexplorer.mysql"
          download-size="0"
          install-size="0"
-         version="3.5.0.RC6"
+         version="3.5.0.v20080924_RC6"
          fragment="true"
          unpack="false"/>
 
@@ -90,7 +90,7 @@ USA
          id="net.sourceforge.sqlexplorer.postgresql"
          download-size="0"
          install-size="0"
-         version="3.5.0.RC6"
+         version="3.5.0.v20080924_RC6"
          fragment="true"
          unpack="false"/>
 
@@ -98,6 +98,6 @@ USA
          id="net.sourceforge.sqlexplorer.help"
          download-size="0"
          install-size="0"
-         version="3.5.0.RC6"/>
+         version="3.5.0.v20080924_RC6"/>
 
 </feature>
