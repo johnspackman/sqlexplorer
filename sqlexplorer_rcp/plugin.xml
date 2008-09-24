@@ -25,5 +25,16 @@
          </property>
       </product>
    </extension>
+   <extension
+         point="org.eclipse.ui.activities">
+		<activityPatternBinding
+			activityId="activity.selectWorkingSets"
+			pattern="org\.eclipse\.ui\.ide/selectWorkingSets"
+		/>
+		<activity
+			id="activity.selectWorkingSets"
+			name="selectWorkingSets"
+		/>
+   </extension>
 
 </plugin>
