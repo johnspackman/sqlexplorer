@@ -29,11 +29,12 @@
   <driver id="-27">
     <name>Progress OpenEdge 10.1 JDBC Driver</name>
     <url>jdbc:datadirect:openedge://hostname:port;databaseName=name</url>
-    <jars>
+    <jars/>
+    <!-- jars>
       <jar>[[install-dir]]\java\openedge.jar</jar>
       <jar>[[install-dir]]\java\base.jar</jar>
       <jar>[[install-dir]]\java\util.jar</jar>
-    </jars>
+    </jars -->
   </driver>
   <driver id="-25">
     <name>JayBird JCA/JDBC Driver for Firebird</name>
@@ -82,6 +83,7 @@
   </driver>
   <driver id="-1">
     <name>JDBC ODBC Bridge</name>
+    <driver-class>sun.jdbc.odbc.JdbcOdbcDriver</driver-class> 
     <url>jdbc:odbc:&lt;alias&gt;</url>
     <jars/>
   </driver>
@@ -130,7 +132,6 @@
     <driver-class>org.postgresql.Driver</driver-class>
     <url>jdbc:postgresql:[&lt;//host&gt;[:&lt;5432&gt;/]]&lt;database&gt;</url>
     <jars>
-      <jar>C:\Program Files\PostgreSQL\8.2\jdbc\postgresql-8.2-506.jdbc4.jar</jar>
     </jars>
   </driver>
   <driver id="-9">
