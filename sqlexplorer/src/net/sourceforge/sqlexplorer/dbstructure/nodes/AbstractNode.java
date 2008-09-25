@@ -108,10 +108,7 @@ public abstract class AbstractNode implements INode {
      */
     public final Iterator<INode> getChildIterator() {
 
-        if (!_childrenLoaded) {
-            load();
-        }
-
+        load();
         return _children.iterator();
     }
 
@@ -124,16 +121,8 @@ public abstract class AbstractNode implements INode {
      * @see net.sourceforge.sqlexplorer.db.INode#getChildren()
      */
     public final INode[] getChildNodes() {
-
-        if (!_childrenLoaded) {
-            load();
-            Comparator<INode> comp = getComparator();
-            if (comp != null) {
-                Collections.sort(_children, getComparator());
-            }
-        }
-
-        return (INode[]) _children.toArray(new INode[] {});
+        load();
+        return (INode[]) _children.toArray(new INode[_children.size()]);
     }
 
 
@@ -326,27 +315,34 @@ public abstract class AbstractNode implements INode {
      */
     public final void load() {
 
-        if (!_childrenLoaded) {
-
-            try {
-
-                if (_logger.isDebugEnabled()) {
-                    _logger.debug("Loading child nodes for " + _name);
-                }
-
-                loadChildren();
-                _childrenLoaded = true;
-
-            } catch (AbstractMethodError e) {
-
-                SQLExplorerPlugin.error("Could not load child nodes for " + _name, e);
-
-            } catch (Throwable e) {
-
-                SQLExplorerPlugin.error("Could not load child nodes for " + _name, e);
-
-            }
-        }
+    	synchronized(this)
+    	{
+	        if (!_childrenLoaded) {
+	
+	            try {
+	
+	                if (_logger.isDebugEnabled()) {
+	                    _logger.debug("Loading child nodes for " + _name);
+	                }
+	
+	                loadChildren();
+	                Comparator<INode> comp = getComparator();
+	                if (comp != null) {
+	                    Collections.sort(_children, getComparator());
+	                }
+	                _childrenLoaded = true;
+	
+	            } catch (AbstractMethodError e) {
+	
+	                SQLExplorerPlugin.error("Could not load child nodes for " + _name, e);
+	
+	            } catch (Throwable e) {
+	
+	                SQLExplorerPlugin.error("Could not load child nodes for " + _name, e);
+	
+	            }
+	        }
+    	}
     }
 
 
