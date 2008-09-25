@@ -51,14 +51,6 @@ public class MetaDataSession extends Session {
 		if (getConnection() != null)
 			return;
 		
-        _assistanceEnabled = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.SQL_ASSIST);
-        if (_assistanceEnabled) {
-            // schedule job to load dictionary for this session
-        	dictionary = new Dictionary();
-            DictionaryLoader dictionaryLoader = new DictionaryLoader(this);
-            dictionaryLoader.schedule(500);
-        }
-        
 		SQLConnection connection = null;
 		try {
 			connection = grabConnection();
@@ -71,6 +63,15 @@ public class MetaDataSession extends Session {
 			if (connection != null)
 				releaseConnection(connection);
 		}
+
+		_assistanceEnabled = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.SQL_ASSIST);
+        if (_assistanceEnabled) {
+            // schedule job to load dictionary for this session
+        	dictionary = new Dictionary();
+            DictionaryLoader dictionaryLoader = new DictionaryLoader(this);
+            dictionaryLoader.schedule(500);
+        }
+        
 	}
 
 	/* (non-Javadoc)
@@ -137,6 +138,11 @@ public class MetaDataSession extends Session {
     		initialise();
     	}catch(SQLException e) {
     		SQLExplorerPlugin.error(e);
+    		return null;
+    	}
+    	if(dbModel == null)
+    	{
+    		SQLExplorerPlugin.error("Session not initialized");
     		return null;
     	}
     	return dbModel.getRoot();
