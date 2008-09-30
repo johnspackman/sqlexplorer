@@ -117,12 +117,14 @@ public class BatchJob extends Job {
 	                    	for (Message msg : messages)
 	                    		msg.setLineNo(parser.adjustLineNo(msg.getLineNo()));
 		                    for (Message msg : messages) {
-		                    	StringBuilder sb = new StringBuilder(msg.getMessage());
-		                    	for (int i = 0; i < sb.length(); i++) {
-		                    		if ("\r\n".indexOf(sb.charAt(i)) > -1)
-		                    			sb.setCharAt(i, ' ');
+		                    	if (msg.getMessage() != null) {
+			                    	StringBuilder sb = new StringBuilder(msg.getMessage());
+			                    	for (int i = 0; i < sb.length(); i++) {
+			                    		if ("\r\n".indexOf(sb.charAt(i)) > -1)
+			                    			sb.setCharAt(i, ' ');
+			                    	}
+			                    	errors.append("line " + msg.getLineNo() + ": " + sb.toString());
 		                    	}
-		                    	errors.append("line " + msg.getLineNo() + ": " + sb.toString());
 		                    }
 		            	}
 		            }catch(SQLException e) {
