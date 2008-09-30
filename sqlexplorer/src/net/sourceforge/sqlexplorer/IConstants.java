@@ -114,6 +114,9 @@ public interface IConstants {
     
     String LOG_SUCCESS_MESSAGES = "SQLEditor.LogSuccess Messages";
     String LOG_SQL_HISTORY = "SQLEditor.LogSQLHistory";
+
+    // retrieve binary data as hex converted string
+    String RETRIEVE_BLOB_AS_HEX = "DataSetResult.RetrieveBlobAsHex";
     
     // Whether unsaved editors should prompt to be saved when they are closed 
     String REQUIRE_SAVE_ON_CLOSE_EDITOR = "SQLEditor.RequireSaveOnClose";

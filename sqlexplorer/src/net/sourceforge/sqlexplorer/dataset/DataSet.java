@@ -18,6 +18,9 @@
  */
 package net.sourceforge.sqlexplorer.dataset;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -29,14 +32,16 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.parsers.Query;
+import net.sourceforge.sqlexplorer.plugin.PluginPreferences;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sqleditor.results.ResultProvider;
-import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 /**
  * Generic DataSet to hold values for TableViewer.
@@ -185,7 +190,7 @@ public class DataSet implements ResultProvider {
      * @param data string[][] with values for dataset [mandatory]
      * @throws Exception if dataSet could not be created
      */
-    public DataSet(String[] columnLabels, Comparable[][] data) {
+    public DataSet(String[] columnLabels, Comparable<?>[][] data) {
         this(null, columnLabels, data);
     }
 
@@ -196,7 +201,7 @@ public class DataSet implements ResultProvider {
      * @param data string[][] with values for dataset [mandatory]
      * @throws Exception if dataSet could not be created
      */
-    public DataSet(String caption, String[] columnLabels, Comparable[][] data) {
+    public DataSet(String caption, String[] columnLabels, Comparable<?>[][] data) {
     	this.caption = caption;
         columns = convertColumnLabels(columnLabels);
 
@@ -367,13 +372,13 @@ public class DataSet implements ResultProvider {
         ResultSetMetaData metadata = resultSet.getMetaData();
         
         // create rows
-        ArrayList rows = new ArrayList(maxRows > 0 ? maxRows : 100);
+        List<DataSetRow> rows = new ArrayList<DataSetRow>(maxRows > 0 ? maxRows : 100);
         int rowCount = 0;
         while (resultSet.next() && (maxRows == 0 || rowCount < maxRows)) {
             DataSetRow row = new DataSetRow(this);
             for (int i = 0; i < columns.length; i++) {
             	int columnIndex = relevantIndeces != null ? relevantIndeces[i] : i;
-            	Comparable obj = loadCellValue(columnIndex, metadata.getColumnType(columnIndex), resultSet);
+            	Comparable<?> obj = loadCellValue(columnIndex, metadata.getColumnType(columnIndex), resultSet);
                 if (resultSet.wasNull())
                     row.setValue(i, null);
                 else
@@ -382,7 +387,7 @@ public class DataSet implements ResultProvider {
             rows.add(row);
             rowCount++;
         }
-        _rows = (DataSetRow[]) rows.toArray(new DataSetRow[] {});
+        _rows = (DataSetRow[]) rows.toArray(new DataSetRow[rows.size()]);
     }
     
     /**
@@ -394,7 +399,7 @@ public class DataSet implements ResultProvider {
      * @return
      * @throws SQLException
      */
-    protected Comparable loadCellValue(int columnIndex, int dataType, ResultSet resultSet) throws SQLException {
+    protected Comparable<?> loadCellValue(int columnIndex, int dataType, ResultSet resultSet) throws SQLException {
         switch (dataType) {
 	        case Types.INTEGER:
 	        case Types.SMALLINT:
@@ -420,7 +425,44 @@ public class DataSet implements ResultProvider {
 	            
 	        case Types.TIME:
 	            return resultSet.getTime(columnIndex);
-	            
+	        case Types.LONGVARBINARY:
+	        	InputStream is = resultSet.getBinaryStream(columnIndex);
+	        	int current;
+
+	        	if(PluginPreferences.getCurrent().getBoolean(IConstants.RETRIEVE_BLOB_AS_HEX))
+	        	{
+		        	StringBuilder data = new StringBuilder();
+		        	try 
+		        	{
+						while((current = is.read()) != -1)
+						{
+							String converted = Integer.toHexString(current).toUpperCase();
+							if(converted.length() < 2)
+							{
+								data.append('0');
+							}
+							data.append(converted);
+						}		        		
+					} 
+					catch (IOException e) 
+					{
+						throw new SQLException(e.getMessage());
+					}
+		        	return data.toString();
+	        	}
+	        	ByteArrayOutputStream data = new ByteArrayOutputStream();
+	        	try 
+	        	{
+					while((current = is.read()) != -1)
+					{
+						data.write(current);
+					}
+				} 
+				catch (IOException e) 
+				{
+					throw new SQLException(e.getMessage());
+				}
+	        	return data.toString();
 	        default:
 	            return resultSet.getString(columnIndex);
 	    }

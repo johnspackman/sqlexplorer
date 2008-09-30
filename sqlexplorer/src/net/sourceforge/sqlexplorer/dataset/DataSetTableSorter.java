@@ -28,7 +28,7 @@ import org.eclipse.swt.SWT;
  * 
  * @author Davy Vanherbergen
  */
-public class DataSetTableSorter implements Comparator {
+public class DataSetTableSorter implements Comparator<DataSetRow> {
    
 	private DataSet dataSet;
 	
@@ -74,7 +74,7 @@ public class DataSetTableSorter implements Comparator {
         _directions[priority] = direction;
     }
 
-    public int compare(Object e1, Object e2) {
+    public int compare(DataSetRow e1, DataSetRow e2) {
         return compareColumnValue((DataSetRow) e1, (DataSetRow) e2, 0);
     }
 

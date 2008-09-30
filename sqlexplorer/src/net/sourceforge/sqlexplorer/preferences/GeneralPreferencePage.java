@@ -149,6 +149,7 @@ public class GeneralPreferencePage extends AbstractPreferencePage {
 		addField(new BooleanFieldEditor(IConstants.LOG_SQL_HISTORY, Messages.getString("Preferences.SQLExplorer.LogSQLHistory"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.REQUIRE_SAVE_ON_CLOSE_EDITOR, Messages.getString("Preferences.SQLExplorer.RequireSaveOnClose"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.ENABLE_STRUCTURED_COMMENTS, Messages.getString("Preferences.SQLExplorer.EnableStructuredComments"), getFieldEditorParent()));
+		addField(new BooleanFieldEditor(IConstants.RETRIEVE_BLOB_AS_HEX, Messages.getString("Preferences.SQLExplorer.RetrieveBinaryAsHex"), getFieldEditorParent()));
 		
 		final String[][] DEBUG_LEVEL_VALUES = new String[][] {
 				{ Messages.getString("Preferences.SQLExplorer.DebugLevelOff"), IConstants.QUERY_DEBUG_OFF },
