@@ -1,3 +1,10 @@
+3.5.0.RC6/P1 - John Spackman (Zenesis Ltd), Heiko Hilbert
+======================================================
++. fixed problem with getDatabaseMajorVersion() not implemented
++. fixed loading problem with content assist enabled
++. fixed problem with auto deserialization in MySql driver
++. fixed NPE in BatchJob
+
 3.5.0.RC6 - John Spackman (Zenesis Ltd), Heiko Hilbert
 ======================================================
 +. show none select queries in success log too
