@@ -427,6 +427,10 @@ public class DataSet implements ResultProvider {
 	            return resultSet.getTime(columnIndex);
 	        case Types.LONGVARBINARY:
 	        	InputStream is = resultSet.getBinaryStream(columnIndex);
+	        	if(is == null)
+	        	{
+	        		return null;
+	        	}
 	        	int current;
 
 	        	if(PluginPreferences.getCurrent().getBoolean(IConstants.RETRIEVE_BLOB_AS_HEX))
