@@ -18,10 +18,21 @@
  */
 package net.sourceforge.sqlexplorer.sqleditor.results.export;
 
+import java.io.File;
+import java.io.PrintStream;
+
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.sqleditor.results.CellRangeRow;
+import net.sourceforge.sqlexplorer.sqleditor.results.ResultProvider;
 import net.sourceforge.sqlexplorer.sqleditor.results.ResultsTableAction;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
+import net.sourceforge.sqlexplorer.util.TextUtil;
+
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -57,9 +68,106 @@ public class ExportAction extends ResultsTableAction {
     /**
      * Main method. Prompt for file name and save table contents to csv file.
      */
-    public void run() {
-    	ExportDlg dlg = new ExportDlg(shell);
-    	dlg.open();
+    public void run() 
+    {
+    	final ExportDlg	dlg = new ExportDlg(shell);
+    	if (dlg.open() != Window.OK)
+    		return;
+
+        // let's show the fancy wait cursor..
+        BusyIndicator.showWhile(Display.getCurrent(), new Runnable() 
+        {
+
+            public void run() 
+            {
+
+                try 
+                {
+                    // create new file
+                    File file = new File(dlg.getFilename());
+
+                    if (file.exists()) 
+                    {
+                        // overwrite existing files
+                        file.delete();
+                    }
+                    
+                    file.createNewFile();
+                    PrintStream writer = new PrintStream(file, dlg.getCharacterSet()); 
+                    
+                    // get column header and separator preferences
+                    String columnSeparator = dlg.getDelimiter(); 
+                    boolean includeColumnNames = dlg.includeHeaders();
+                    boolean rtrim = dlg.trimSpaces();
+                    boolean quote = dlg.quoteText();
+                    String nullValue = dlg.getNullValue();
+                                       
+                    // check if there is somethign in our table                    
+                    ResultProvider data = getResultsTable().getResultProvider();
+                    
+                    int columnCount = data.getNumberOfColumns();
+                    // export column names if we need to 
+                    if (includeColumnNames) 
+                    {
+                        
+                        for (int i = 0; i < columnCount; i++) 
+                        {
+                            if (i != 0)
+                            {
+                            	writer.print(columnSeparator);
+                            }
+                            writer.print(data.getColumn(i).getCaption());
+                        }
+                        writer.println();
+                    }
+
+                    // export column data
+                    for (CellRangeRow row : data.getRows()) 
+                    {
+                                           
+                        for (int j = 0; j < columnCount; j++) 
+                        {
+                        	Object o = row.getCellValue(j);
+                        	String t = o == null ? nullValue : o.toString();
+                        	if (rtrim)
+                        	{
+                        		t = TextUtil.rtrim(t);
+                        	}
+                        	if (quote && o instanceof String) 
+                        	{
+                        		writer.print("\"");
+                        		writer.print(t.replaceAll("\"", "\"\""));
+                        		writer.print("\"");
+                        	} 
+                        	else
+                        	{
+                        		writer.print(t);
+                        	}
+                        	/* don't append separator _after_ last column */
+                        	if (j < columnCount - 1)
+                        	{
+                        		writer.print(columnSeparator);
+                        	}
+                        }
+                        writer.println();
+                    }
+
+                    writer.close();
+
+
+                } 
+                catch (final Exception e) 
+                {
+                    shell.getDisplay().asyncExec(new Runnable() 
+                    {
+
+                        public void run() {
+                            MessageDialog.openError(shell, Messages.getString("SQLResultsView.Error.Export.Title"), e.getMessage());
+                        }
+                    });
+                }
+            }
+        });
     }
 
 }

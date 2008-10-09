@@ -28,7 +28,7 @@ import net.sourceforge.sqlexplorer.sqleditor.results.FlatCellRangeRow;
 public class DataSetRow extends FlatCellRangeRow {
 
 	private DataSet dataset;
-    private Comparable[] _values;
+    private Comparable<?>[] _values;
 
 	/**
      * Create new DataSetRow with columnCount values
@@ -45,7 +45,7 @@ public class DataSetRow extends FlatCellRangeRow {
      * 
      * @param values
      */
-    public DataSetRow(DataSet dataset, Comparable[] values) {
+    public DataSetRow(DataSet dataset, Comparable<?>[] values) {
     	this.dataset = dataset;
         _values = values;
     }
@@ -65,7 +65,7 @@ public class DataSetRow extends FlatCellRangeRow {
      * @param column first column is 0
      * @param value
      */
-    public void setValue(int column, Comparable value) {
+    public void setValue(int column, Comparable<?> value) {
         _values[column] = value;
     }
     

@@ -1,10 +1,10 @@
 package net.sourceforge.sqlexplorer.sqleditor.results.export;
 
-import java.util.Iterator;
 import java.nio.charset.Charset;
 import java.util.SortedMap;
 
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+
 import com.swtdesigner.ResourceManager;
 
 /**
@@ -73,7 +74,7 @@ public class ExportDlg extends TitleAreaDialog {
 
 	private String file;
 
-	private ExporterCSV exporter;
+	private ExporterCSV exporter = new ExporterCSV();
 
 	private static final String[] DELIMS = { ";", "|", "\\t [TAB]", "," }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
@@ -89,8 +90,9 @@ public class ExportDlg extends TitleAreaDialog {
 
 	protected Control createContents(Composite parent) {
 		Control contents = super.createContents(parent);
-		setTitle(Messages.ExportDlg_Title);
-		setMessage(Messages.ExportDlg_TitleMessage);
+		setTitle(Messages.getString("ExportDlg.Title"));
+		getShell().setText(Messages.getString("ExportDlg.Title"));
+		setMessage(Messages.getString("ExportDlg.TitleMessage"));
 		setTitleImage(ResourceManager.getPluginImage(SQLExplorerPlugin.getDefault(), "icons/ExportDataLarge.png"));
 		return contents;
 	}
@@ -106,24 +108,25 @@ public class ExportDlg extends TitleAreaDialog {
 		Label l = null;
 
 		Group fmtGroup = new Group(comp, SWT.SHADOW_ETCHED_IN);
-		fmtGroup.setText(Messages.ExportDlg_Format);
+		fmtGroup.setText(Messages.getString("ExportDlg.Format"));
 		fmtGroup.setLayout(new GridLayout(2, false));
 		int i = 0, def = 0;
 
 		l = new Label(fmtGroup, SWT.NONE);
-		l.setText(Messages.ExportDlg_CharacterSet);
+		l.setText(Messages.getString("ExportDlg.CharacterSet"));
 		uiCharset = new Combo(fmtGroup, SWT.READ_ONLY);
-		SortedMap m = Charset.availableCharsets();
-		for (Iterator it = m.keySet().iterator(); it.hasNext(); i++) {
-			Charset cs = (Charset) m.get(it.next());
+		SortedMap<String,Charset> m = Charset.availableCharsets();
+		for (Charset cs : m.values()) 
+		{
 			uiCharset.add(cs.displayName());
 			if (cs.displayName().toLowerCase().equals("utf-8")) //$NON-NLS-1$
 				def = i;
+			i++;
 		}
 		uiCharset.select(def);
 
 		l = new Label(fmtGroup, SWT.NONE);
-		l.setText(Messages.ExportDlg_Delimiter);
+		l.setText(Messages.getString("ExportDlg.Delimiter"));
 		uiDelim = new Combo(fmtGroup, SWT.NONE);
 		for (i = 0, def = 0; i < DELIMS.length; i++) {
 			uiDelim.add(DELIMS[i]);
@@ -133,27 +136,27 @@ public class ExportDlg extends TitleAreaDialog {
 		uiDelim.select(def);
 		
 		l = new Label(fmtGroup, SWT.NONE);
-		l.setText(Messages.ExportDlg_NullValue);
+		l.setText(Messages.getString("ExportDlg.NullValue"));
 		uiNullValue = new Text(fmtGroup, SWT.SINGLE | SWT.BORDER | SWT.FILL);
-		uiNullValue.setText(Messages.ExportDlg_null);
+		uiNullValue.setText(Messages.getString("ExportDlg.Null"));
 		uiNullValue.setLayoutData(new GridData(50, SWT.DEFAULT));
 
 		Group optionsGroup = new Group(comp, SWT.SHADOW_ETCHED_IN);
-		optionsGroup.setText(Messages.ExportDlg_Options);
+		optionsGroup.setText(Messages.getString("ExportDlg.Options"));
 		optionsGroup.setLayout(new GridLayout(1, true));
 
 		uiIncHeaders = new Button(optionsGroup, SWT.CHECK);
-		uiIncHeaders.setText(Messages.ExportDlg_Headers);
+		uiIncHeaders.setText(Messages.getString("ExportDlg.Headers"));
 		uiIncHeaders.setSelection(hdr);
 
 		uiQuoteText = new Button(optionsGroup, SWT.CHECK);
-		uiQuoteText.setText(Messages.ExportDlg_QuoteTextValues);
+		uiQuoteText.setText(Messages.getString("ExportDlg.QuoteTextValues"));
 
 		uiRtrim = new Button(optionsGroup, SWT.CHECK);
-		uiRtrim.setText(Messages.ExportDlg_RightTrimValues);
+		uiRtrim.setText(Messages.getString("ExportDlg.RightTrimValues"));
 
 		Group fileGroup = new Group(comp, SWT.SHADOW_ETCHED_IN);
-		fileGroup.setText(Messages.ExportDlg_Destination);
+		fileGroup.setText(Messages.getString("ExportDlg.Destination"));
 		fileGroup.setLayout(new GridLayout(2, false));
 
 		uiFile = new Text(fileGroup, SWT.BORDER | SWT.FILL | SWT.SINGLE);
@@ -169,7 +172,7 @@ public class ExportDlg extends TitleAreaDialog {
 			}
 		});
 		Button choose = new Button(fileGroup, SWT.NONE);
-		choose.setText(Messages.ExportDlg_Choose);
+		choose.setText(Messages.getString("ExportDlg.Choose"));
 		choose.addSelectionListener(new SelectionListener() {
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -202,7 +205,7 @@ public class ExportDlg extends TitleAreaDialog {
 	private void sync() {
 		String filename = uiFile.getText();
 		if (filename == null || filename.trim().length() == 0)
-			setErrorMessage(Messages.ExportDlg_Destination);
+			setErrorMessage(Messages.getString("ExportDlg.DestinationRequired"));
 		else
 			setErrorMessage(null);
 		Button ok = getButton(IDialogConstants.OK_ID);

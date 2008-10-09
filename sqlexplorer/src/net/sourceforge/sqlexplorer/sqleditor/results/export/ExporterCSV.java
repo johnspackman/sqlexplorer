@@ -16,7 +16,7 @@ public class ExporterCSV implements Exporter {
 	}
 
 	public String getTitle() {
-		return Messages.getString("ExportDialog.CSV");
+		return Messages.getString("ExportDlg.CSV");
 	}
 
 }
