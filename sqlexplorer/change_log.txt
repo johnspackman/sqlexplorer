@@ -1,3 +1,5 @@
++. fixed CSV export
+
 3.5.0.RC6/P1 - John Spackman (Zenesis Ltd), Heiko Hilbert
 ======================================================
 +. fixed problem with getDatabaseMajorVersion() not implemented
