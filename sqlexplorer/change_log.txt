@@ -1,4 +1,5 @@
-+. fixed CSV export
++. fixed Bug #2153183: Export to csv is broken
++. fixed Bug #2153849: Editor font preference not stored
 
 3.5.0.RC6/P1 - John Spackman (Zenesis Ltd), Heiko Hilbert
 ======================================================
