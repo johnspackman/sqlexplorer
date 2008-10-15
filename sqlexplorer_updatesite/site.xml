@@ -4,4 +4,5 @@
       SQL Explorer SourceForge Site
    </description>
    <feature url="features/net.sourceforge.sqlexplorer_3.5.0.v20080924_RC6.jar" id="net.sourceforge.sqlexplorer" version="3.5.0.v20080924_RC6"/>
+   <feature url="features/net.sourceforge.sqlexplorer.patch_3.5.0.v20081015_RC6_P2.jar" id="net.sourceforge.sqlexplorer.patch" version="3.5.0.v20081015_RC6_P2" patch="true"/>
 </site>
