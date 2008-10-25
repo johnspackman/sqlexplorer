@@ -685,6 +685,8 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 		TableColumn[] cols = messagesTable.getColumns();
 		for (int i = 0; i < cols.length; i++)
 			cols[i].pack();
+
+		messagesTable.showItem(tableRow);
 	}
 	
 	/**

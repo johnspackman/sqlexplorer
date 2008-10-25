@@ -1,3 +1,8 @@
+3.5.0 - John Spackman (Zenesis Ltd), Heiko Hilbert
+======================================================
++. make last inserted message visible in results message tab
+
+
 3.5.0.RC6/P2 - John Spackman (Zenesis Ltd), Heiko Hilbert
 ======================================================
 +. fixed Bug #2153183: Export to csv is broken
