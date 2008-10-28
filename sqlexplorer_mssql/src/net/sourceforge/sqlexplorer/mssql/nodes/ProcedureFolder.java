@@ -7,31 +7,26 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 public class ProcedureFolder extends AbstractFolderNode {
 
-	public ProcedureFolder() {
+	public ProcedureFolder(String name) {
+		super(name);
 	}
 
-	public ProcedureFolder(INode parent, SessionTreeNode sessionNode) {
-		_type = "FOLDER";
-		initialize(parent, null, sessionNode);
-	}
-
-	@Override
-	public String getName() {
-		return Messages.getString("mssql.dbstructure.procedures");
+	public ProcedureFolder(INode parent, MetaDataSession session) {
+		super(parent, Messages.getString("mssql.dbstructure.procedures"), session, "FOLDER");
 	}
 
 	@Override
 	public void loadChildren() {
-		SQLConnection connection = getSession().getInteractiveConnection();
         ResultSet rs = null;
         PreparedStatement pStmt = null;
 
         try {
+    		SQLConnection connection = getSession().grabConnection();
 
             // use prepared statement
         	pStmt = connection.prepareStatement(
@@ -47,7 +42,7 @@ public class ProcedureFolder extends AbstractFolderNode {
             		continue;
             	}
 
-            	ProcedureNode newNode = new ProcedureNode(this, rs.getString(1), rs.getInt(2), _sessionNode);
+            	ProcedureNode newNode = new ProcedureNode(this, rs.getString(1), rs.getInt(2), getSession());
 
                 addChildNode(newNode);
             }

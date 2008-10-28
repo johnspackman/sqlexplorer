@@ -58,7 +58,7 @@ public class ViewStep extends AbstractDBTreeContextAction {
 
 		try {
 			INode currNode = _selectedNodes[0];
-			SQLConnection connection = currNode.getSession().getInteractiveConnection();
+			SQLConnection connection = currNode.getSession().grabConnection();
 
 			// use prepared statement
 			pStmt = connection.prepareStatement("SELECT command FROM msdb.dbo.sysjobsteps " +
@@ -74,9 +74,9 @@ public class ViewStep extends AbstractDBTreeContextAction {
 
             rs.close();
 
-			SQLEditorInput input = new SQLEditorInput( "View Job Step " + currNode.getName()+"(" + SQLExplorerPlugin.getDefault().getNextElement()
+			SQLEditorInput input = new SQLEditorInput( "View Job Step " + currNode.getName()+"(" + SQLExplorerPlugin.getDefault().getEditorSerialNo()
 					+ ").sql" );
-			input.setSessionNode(currNode.getSession());
+			input.setUser(currNode.getSession().getUser());
             IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
             SQLEditor editorPart = (SQLEditor) page.openEditor((IEditorInput) input,

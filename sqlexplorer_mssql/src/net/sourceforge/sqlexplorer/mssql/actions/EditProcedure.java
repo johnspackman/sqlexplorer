@@ -60,7 +60,7 @@ public class EditProcedure extends AbstractDBTreeContextAction {
 
 		try {
 			INode currNode = _selectedNodes[0];
-			SQLConnection connection = currNode.getSession().getInteractiveConnection();
+			SQLConnection connection = currNode.getSession().grabConnection();
 
 			// use prepared statement
 			pStmt = connection.prepareStatement("SELECT sc.text FROM " + _selectedNodes[0].getSchemaOrCatalogName() +
@@ -76,9 +76,9 @@ public class EditProcedure extends AbstractDBTreeContextAction {
 
             rs.close();
 
-			SQLEditorInput input = new SQLEditorInput( "Edit Procedure " + _selectedNodes[0].getName()+"(" + SQLExplorerPlugin.getDefault().getNextElement()
+			SQLEditorInput input = new SQLEditorInput( "Edit Procedure " + _selectedNodes[0].getName()+"(" + SQLExplorerPlugin.getDefault().getEditorSerialNo()
 					+ ").sql" );
-			input.setSessionNode(_selectedNodes[0].getSession());
+			input.setUser(_selectedNodes[0].getSession().getUser());
             IWorkbenchPage page = SQLExplorerPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
             SQLEditor editorPart = (SQLEditor) page.openEditor((IEditorInput) input,

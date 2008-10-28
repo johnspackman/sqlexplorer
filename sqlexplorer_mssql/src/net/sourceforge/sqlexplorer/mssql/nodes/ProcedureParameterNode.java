@@ -33,7 +33,8 @@ import org.eclipse.swt.graphics.Image;
 
 public class ProcedureParameterNode extends AbstractNode {
 
-	public ProcedureParameterNode() {
+	public ProcedureParameterNode(String name) {
+		super(name);
 		_type = "PROCEDURE_PARAMETER";
 	}
 

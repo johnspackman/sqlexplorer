@@ -7,20 +7,23 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 public class ProcedureParametersFolder extends AbstractFolderNode {
 
 	protected int _id;
 
-	public ProcedureParametersFolder() {
+	public ProcedureParametersFolder(String name) {
+		super(name);
 	}
 
-	public ProcedureParametersFolder(INode parent, int id, SessionTreeNode sessionNode) {
+	public ProcedureParametersFolder(INode parent, int id, MetaDataSession session) {
+		super(null);
 		_type = "FOLDER";
 		_id = id;
-		initialize(parent, null, sessionNode);
+		this.setParent(parent);
+		this.setSession(session);
 	}
 
 	@Override
@@ -30,12 +33,11 @@ public class ProcedureParametersFolder extends AbstractFolderNode {
 
 	@Override
 	public void loadChildren() {
-		SQLConnection connection = getSession().getInteractiveConnection();
         ResultSet rs = null;
         PreparedStatement pStmt = null;
 
         try {
-
+    		SQLConnection connection = getSession().grabConnection();
             // use prepared statement
         	pStmt = connection.prepareStatement(
         			"select name from "+ getSchemaOrCatalogName() +"..syscolumns where id = "+ _id );
@@ -48,8 +50,8 @@ public class ProcedureParametersFolder extends AbstractFolderNode {
             		continue;
             	}
 
-            	ProcedureParameterNode newNode = new ProcedureParameterNode();
-            	newNode.initialize(this, rs.getString(1), _sessionNode);
+            	ProcedureParameterNode newNode = new ProcedureParameterNode(rs.getString(1));
+            	newNode.setSession(this.getSession());
 
                 addChildNode(newNode);
             }

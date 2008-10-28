@@ -33,7 +33,7 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
@@ -43,14 +43,14 @@ public class JobsNode extends AbstractNode {
 
 	protected String _id;
 
-	public JobsNode() {
+	public JobsNode(String name) {
+		super(name);
 		_type = "JobsNode";
 	}
 
-	public JobsNode( INode parent, String name, String id, SessionTreeNode sessionNode){
-		_type = "JobsNode";
+	public JobsNode( INode parent, String name, String id, MetaDataSession session){
+		super( parent, name, session, "JobsNode");
 		_id = id;
-		initialize( parent, name, sessionNode);
 	}
 
 
@@ -78,6 +78,7 @@ public class JobsNode extends AbstractNode {
 		return getParent().getQualifiedName() + "." + getName();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Comparator<INode> getComparator() {
 
@@ -98,11 +99,11 @@ public class JobsNode extends AbstractNode {
 
 	@Override
 	public void loadChildren() {
-		SQLConnection connection = getSession().getInteractiveConnection();
         ResultSet rs = null;
         PreparedStatement pStmt = null;
 
         try {
+    		SQLConnection connection = getSession().grabConnection();
 
             // use prepared statement
         	pStmt = connection.prepareStatement(
@@ -111,7 +112,7 @@ public class JobsNode extends AbstractNode {
             rs = pStmt.executeQuery();
 
             while (rs.next()) {
-            	JobNodeStep newNode = new JobNodeStep(this, rs.getString(1), rs.getInt(2), _sessionNode);
+            	JobNodeStep newNode = new JobNodeStep(this, rs.getString(1), rs.getInt(2), getSession());
                 addChildNode(newNode);
             }
 

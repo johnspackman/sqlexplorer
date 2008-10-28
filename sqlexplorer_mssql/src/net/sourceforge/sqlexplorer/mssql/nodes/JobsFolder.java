@@ -7,7 +7,7 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 public class JobsFolder extends AbstractFolderNode {
@@ -17,21 +17,19 @@ public class JobsFolder extends AbstractFolderNode {
 		super("mssql.dbstructure.jobs");
 	}
 
-	public JobsFolder(INode parent, SessionTreeNode sessionNode) 
+	public JobsFolder(INode parent, MetaDataSession session) 
 	{
-		this();
-		_type = "JOBS_FOLDER";
-		initialize(parent, null, sessionNode);
+		super(parent, "mssql.dbstructure.jobs", session, "JOBS_FOLDER");
 	}
 
 
 	@Override
 	public void loadChildren() {
-		SQLConnection connection = getSession().getInteractiveConnection();
         ResultSet rs = null;
         PreparedStatement pStmt = null;
 
         try {
+    		SQLConnection connection = getSession().grabConnection();
 
             // use prepared statement
         	pStmt = connection.prepareStatement(
@@ -45,7 +43,7 @@ public class JobsFolder extends AbstractFolderNode {
             		continue;
             	}
 
-            	JobsNode newNode = new JobsNode(this, rs.getString(1), rs.getString(2), _sessionNode);
+            	JobsNode newNode = new JobsNode(this, rs.getString(1), rs.getString(2), getSession());
 
                 addChildNode(newNode);
             }

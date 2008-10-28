@@ -6,16 +6,12 @@ import net.sourceforge.sqlexplorer.Messages;
 public class FunctionFolder extends AbstractSQLFolderNode {
 
 	public FunctionFolder() {
+		super(Messages.getString("mssql.dbstructure.functions"));
 	}
 
 	@Override
 	public String getChildType() {
 		return "function";
-	}
-
-	@Override
-	public String getName() {
-		return Messages.getString("mssql.dbstructure.functions");
 	}
 
 	@Override

@@ -28,7 +28,7 @@ package net.sourceforge.sqlexplorer.mssql.nodes;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.swt.graphics.Image;
@@ -37,14 +37,14 @@ public class JobNodeStep extends AbstractNode {
 
 	protected int _id;
 
-	public JobNodeStep() {
+	public JobNodeStep(String name) {
+		super(name);
 		_type = "JobNodeStep";
 	}
 
-	public JobNodeStep( INode parent, String name, int id, SessionTreeNode sessionNode){
-		_type = "JobNodeStep";
+	public JobNodeStep( INode parent, String name, int id, MetaDataSession session){
+		super( parent, name, session, "JobNodeStep");
 		_id = id;
-		initialize( parent, name, sessionNode);
 	}
 
 	@Override
@@ -55,11 +55,6 @@ public class JobNodeStep extends AbstractNode {
 	@Override
 	public Image getImage() {
 		return ImageUtil.getFragmentImage("net.sourceforge.sqlexplorer.mssql", Messages.getString("mssql.images.job"));
-	}
-
-	@Override
-	public String getName() {
-		return _name;
 	}
 
 	@Override

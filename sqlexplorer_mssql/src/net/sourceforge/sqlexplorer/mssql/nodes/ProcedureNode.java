@@ -29,7 +29,7 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import net.sourceforge.sqlexplorer.mssql.nodes.ProcedureParametersFolder;
@@ -41,14 +41,14 @@ public class ProcedureNode extends AbstractNode {
 
 	protected int _id;
 
-	public ProcedureNode() {
+	public ProcedureNode(String name) {
+		super(name);
 		_type = "PROCEDURE";
 	}
 
-	public ProcedureNode( INode parent, String name, int id, SessionTreeNode sessionNode){
-		_type = "PROCEDURE";
+	public ProcedureNode( INode parent, String name, int id, MetaDataSession session){
+		super(parent, name, session, "PROCEDURE");
 		_id = id;
-		initialize( parent, name, sessionNode);
 	}
 
 	public Image getImage() {
@@ -73,10 +73,10 @@ public class ProcedureNode extends AbstractNode {
 
 	public void loadChildren() {
 		try{
-			ProcedureParametersFolder newNode = new ProcedureParametersFolder(this, _id, _sessionNode);
+			ProcedureParametersFolder newNode = new ProcedureParametersFolder(this, _id, getSession());
 			addChildNode(newNode);
 
-			ProcedureDependenciesFolder newDepFolder = new ProcedureDependenciesFolder( this, _id, _sessionNode);
+			ProcedureDependenciesFolder newDepFolder = new ProcedureDependenciesFolder( this, _id, getSession());
 			addChildNode(newDepFolder);
 		}
 		catch (Exception e) {

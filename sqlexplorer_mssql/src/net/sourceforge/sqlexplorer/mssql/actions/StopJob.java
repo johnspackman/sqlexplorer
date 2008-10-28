@@ -51,7 +51,7 @@ public class StopJob extends AbstractDBTreeContextAction {
         for ( int i = 0; i < _selectedNodes.length; i++ )
         {
         	try {
-        		SQLConnection connection = _selectedNodes[i].getSession().getInteractiveConnection();
+        		SQLConnection connection = _selectedNodes[i].getSession().grabConnection();
 
         		// use prepared statement
         		pStmt = connection.prepareStatement("exec msdb.dbo.sp_stop_job @job_name=?");

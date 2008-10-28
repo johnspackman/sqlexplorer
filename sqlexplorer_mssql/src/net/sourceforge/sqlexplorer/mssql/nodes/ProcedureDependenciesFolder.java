@@ -7,7 +7,7 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.sessiontree.model.SessionTreeNode;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 public class ProcedureDependenciesFolder extends AbstractFolderNode {
@@ -15,27 +15,22 @@ public class ProcedureDependenciesFolder extends AbstractFolderNode {
 	protected int _id;
 
 	public ProcedureDependenciesFolder() {
+		super(Messages.getString("mssql.dbstructure.procedures.dependenciesfolder"));
 	}
 
-	public ProcedureDependenciesFolder(INode parent, int id, SessionTreeNode sessionNode) {
-		_type = "FOLDER";
+	public ProcedureDependenciesFolder(INode parent, int id, MetaDataSession session) {
+		super(parent, Messages.getString("mssql.dbstructure.procedures.dependenciesfolder"), session, "FOLDER");
 		_id = id;
-		initialize(parent, null, sessionNode);
-	}
-
-	@Override
-	public String getName() {
-		return Messages.getString("mssql.dbstructure.procedures.dependenciesfolder");
 	}
 
 	@Override
 	public void loadChildren() {
-		SQLConnection connection = getSession().getInteractiveConnection();
         ResultSet rs = null;
         PreparedStatement pStmt = null;
 
         try {
-
+    		SQLConnection connection = getSession().grabConnection();
+    		
             // use prepared statement
         	pStmt = connection.prepareStatement(
         			"select name from "+
@@ -51,8 +46,7 @@ public class ProcedureDependenciesFolder extends AbstractFolderNode {
             		continue;
             	}
 
-            	ProcedureDependenciesNode newNode = new ProcedureDependenciesNode();
-            	newNode.initialize(this, rs.getString(1), _sessionNode);
+            	ProcedureDependenciesNode newNode = new ProcedureDependenciesNode(this, rs.getString(1), getSession());
 
                 addChildNode(newNode);
             }

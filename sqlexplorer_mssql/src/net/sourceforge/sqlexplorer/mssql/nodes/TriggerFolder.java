@@ -6,6 +6,7 @@ import net.sourceforge.sqlexplorer.Messages;
 public class TriggerFolder extends AbstractSQLFolderNode {
 
 	public TriggerFolder() {
+		super("");
 	}
 
 	@Override

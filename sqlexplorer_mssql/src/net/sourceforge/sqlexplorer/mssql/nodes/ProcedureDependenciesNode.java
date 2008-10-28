@@ -27,14 +27,16 @@ package net.sourceforge.sqlexplorer.mssql.nodes;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.swt.graphics.Image;
 
 public class ProcedureDependenciesNode extends AbstractNode {
 
-	public ProcedureDependenciesNode() {
-		_type = "PROCEDURE_DEPENDENCY";
+	public ProcedureDependenciesNode(INode parent, String name, MetaDataSession session) {
+		super(parent, name, session, "PROCEDURE_DEPENDENCY");
 	}
 
 	public Image getImage() {
