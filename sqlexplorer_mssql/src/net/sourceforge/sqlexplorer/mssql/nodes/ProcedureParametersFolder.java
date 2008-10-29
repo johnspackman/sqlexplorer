@@ -35,6 +35,11 @@ public class ProcedureParametersFolder extends AbstractFolderNode {
         			"select name from "+ getSchemaOrCatalogName() +"..syscolumns where id = "+ _id );
 
             rs = pStmt.executeQuery();
+        } catch (Exception e) {
+        	SQLExplorerPlugin.error("Couldn't execute query for " + getName(), e);
+        }
+        
+        try {
 
             while (rs.next()) {
 

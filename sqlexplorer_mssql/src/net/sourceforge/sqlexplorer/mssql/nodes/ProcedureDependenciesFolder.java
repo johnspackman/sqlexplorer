@@ -39,7 +39,11 @@ public class ProcedureDependenciesFolder extends AbstractFolderNode {
         			getSchemaOrCatalogName() +".dbo.sysdepends where id = "+ _id+")" );
 
             rs = pStmt.executeQuery();
-
+        } catch (Exception e) {
+        	SQLExplorerPlugin.error("Couldn't execute query for " + getName(), e);
+        }
+        
+        try {
             while (rs.next()) {
 
             	if (isExcludedByFilter(rs.getString(1))) {

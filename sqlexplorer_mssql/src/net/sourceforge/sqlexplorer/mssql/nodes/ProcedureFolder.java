@@ -35,7 +35,11 @@ public class ProcedureFolder extends AbstractFolderNode {
         			"order by name");
 
             rs = pStmt.executeQuery();
-
+        } catch (Exception e) {
+        	SQLExplorerPlugin.error("Couldn't execute query for " + getName(), e);
+        }
+        
+        try {
             while (rs.next()) {
 
             	if (isExcludedByFilter(rs.getString(1))) {

@@ -110,7 +110,11 @@ public class JobsNode extends AbstractNode {
         			"select step_name, step_id from msdb.dbo.sysjobsteps where job_id = '"+ _id+"' order by step_id" );
 
             rs = pStmt.executeQuery();
-
+        } catch (Exception e) {
+        	SQLExplorerPlugin.error("Couldn't execute query for: " + getName(), e);
+        }
+        
+        try {
             while (rs.next()) {
             	JobNodeStep newNode = new JobNodeStep(this, rs.getString(1), rs.getInt(2), getSession());
                 addChildNode(newNode);
