@@ -13,16 +13,11 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 public class SystemProcedureFolder extends AbstractFolderNode {
 
 	public SystemProcedureFolder(String name) {
-		super(name);
+		super(Messages.getString("mssql.dbstructure.systemprocedures"));
 	}
 
 	public SystemProcedureFolder(INode parent, String name, MetaDataSession session) {
-		super(parent, name, session, "FOLDER");
-	}
-
-	@Override
-	public String getName() {
-		return Messages.getString("mssql.dbstructure.systemprocedures");
+		super(parent, Messages.getString("mssql.dbstructure.systemprocedures"), session, "FOLDER");
 	}
 
 	@Override

@@ -14,12 +14,12 @@ public class JobsFolder extends AbstractFolderNode {
 
 	public JobsFolder() 
 	{
-		super("mssql.dbstructure.jobs");
+		super(Messages.getString("mssql.dbstructure.jobs"));
 	}
 
 	public JobsFolder(INode parent, MetaDataSession session) 
 	{
-		super(parent, "mssql.dbstructure.jobs", session, "JOBS_FOLDER");
+		super(parent, Messages.getString("mssql.dbstructure.jobs"), session, "JOBS_FOLDER");
 	}
 
 

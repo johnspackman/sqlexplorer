@@ -15,20 +15,12 @@ public class ProcedureParametersFolder extends AbstractFolderNode {
 	protected int _id;
 
 	public ProcedureParametersFolder(String name) {
-		super(name);
+		super(Messages.getString("mssql.dbstructure.procedures.parameterfolder"));
 	}
 
 	public ProcedureParametersFolder(INode parent, int id, MetaDataSession session) {
-		super(null);
-		_type = "FOLDER";
+		super(parent, Messages.getString("mssql.dbstructure.procedures.parameterfolder"), session, "FOLDER");
 		_id = id;
-		this.setParent(parent);
-		this.setSession(session);
-	}
-
-	@Override
-	public String getName() {
-		return Messages.getString("mssql.dbstructure.procedures.parameterfolder");
 	}
 
 	@Override

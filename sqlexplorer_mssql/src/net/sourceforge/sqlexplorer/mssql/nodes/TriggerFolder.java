@@ -6,17 +6,12 @@ import net.sourceforge.sqlexplorer.Messages;
 public class TriggerFolder extends AbstractSQLFolderNode {
 
 	public TriggerFolder() {
-		super("");
+		super(Messages.getString("mssql.dbstructure.triggers"));
 	}
 
 	@Override
 	public String getChildType() {
 		return "trigger";
-	}
-
-	@Override
-	public String getName() {
-		return Messages.getString("mssql.dbstructure.triggers");
 	}
 
 	@Override
