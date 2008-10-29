@@ -11,7 +11,7 @@ import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextActi
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.mssql.nodes.ProcedureNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 
@@ -69,6 +69,7 @@ public class EditProcedure extends AbstractDBTreeContextAction {
 
 			pStmt.setString(1, currNode.getName());
 			rs = pStmt.executeQuery();
+			currNode.getSession().releaseConnection(connection);
 
             while (rs.next()) {
             	query.append(rs.getString(1));

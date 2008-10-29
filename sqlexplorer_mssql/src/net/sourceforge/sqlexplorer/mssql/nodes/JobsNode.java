@@ -35,7 +35,7 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 import org.eclipse.swt.graphics.Image;
 
@@ -110,6 +110,7 @@ public class JobsNode extends AbstractNode {
         			"select step_name, step_id from msdb.dbo.sysjobsteps where job_id = '"+ _id+"' order by step_id" );
 
             rs = pStmt.executeQuery();
+            getSession().releaseConnection(connection);
         } catch (Exception e) {
         	SQLExplorerPlugin.error("Couldn't execute query for: " + getName(), e);
         }

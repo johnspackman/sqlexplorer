@@ -7,7 +7,7 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.actions.AbstractDBTreeContextAction;
 import net.sourceforge.sqlexplorer.mssql.nodes.JobNodeStep;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 public class StartJobOnStep extends AbstractDBTreeContextAction {
 
@@ -59,6 +59,7 @@ public class StartJobOnStep extends AbstractDBTreeContextAction {
         		pStmt.setString(1, _selectedNodes[i].getParent().getName());
         		pStmt.setString(2, _selectedNodes[i].getName());
         		rs = pStmt.executeQuery();
+        		_selectedNodes[i].getSession().releaseConnection(connection);
         		rs.close();
         	} catch (Throwable e) {
         		SQLExplorerPlugin.error("Could not run job "+_selectedNodes[i].getParent().getName()+" step "+_selectedNodes[i].getName()+".", e);

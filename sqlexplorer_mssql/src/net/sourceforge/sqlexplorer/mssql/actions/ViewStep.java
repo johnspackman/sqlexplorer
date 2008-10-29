@@ -14,7 +14,7 @@ import net.sourceforge.sqlexplorer.mssql.nodes.JobsNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 public class ViewStep extends AbstractDBTreeContextAction {
 
@@ -67,6 +67,7 @@ public class ViewStep extends AbstractDBTreeContextAction {
 			pStmt.setString(1, ((JobsNode)currNode.getParent()).getID());
 			pStmt.setInt(2, ((JobNodeStep)currNode).getID());
 			rs = pStmt.executeQuery();
+			currNode.getSession().releaseConnection(connection);
 
             while (rs.next()) {
             	query.append(rs.getString(1));

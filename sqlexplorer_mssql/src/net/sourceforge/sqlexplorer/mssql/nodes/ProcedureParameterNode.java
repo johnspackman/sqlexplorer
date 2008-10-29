@@ -27,39 +27,29 @@ package net.sourceforge.sqlexplorer.mssql.nodes;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
+import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 import org.eclipse.swt.graphics.Image;
 
 public class ProcedureParameterNode extends AbstractNode {
 
-	public ProcedureParameterNode(String name) {
-		super(name);
-		_type = "PROCEDURE_PARAMETER";
+	public ProcedureParameterNode(INode parent, String name, MetaDataSession session) {
+		super(parent, name, session, "PROCEDURE_PARAMETER");
 	}
 
+	@Override
 	public Image getImage() {
 		return ImageUtil.getFragmentImage("net.sourceforge.sqlexplorer.mssql", Messages.getString("mssql.images.procedure.parameter"));
 	}
 
-	public String getName() {
-		return _name;
-	}
-
-	public String getQualifiedName() {
-		return _name;
-	}
-
-	public String getUniqueIdentifier() {
-		return getParent().getQualifiedName() + "." + getName();
-	}
-
+	@Override
 	public boolean isEndNode() {
 		return true;
 	}
 
+	@Override
 	public void loadChildren() {
 	}
-
-
 }

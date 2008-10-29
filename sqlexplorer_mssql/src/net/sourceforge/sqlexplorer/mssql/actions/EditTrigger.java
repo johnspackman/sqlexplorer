@@ -12,7 +12,7 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 public class EditTrigger extends AbstractDBTreeContextAction {
 
@@ -65,6 +65,7 @@ public class EditTrigger extends AbstractDBTreeContextAction {
 
 			pStmt.setString(1, currNode.getName());
 			rs = pStmt.executeQuery();
+			currNode.getSession().releaseConnection(connection);
 
             while (rs.next()) {
             	query.append(rs.getString(1));

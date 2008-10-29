@@ -44,18 +44,6 @@ public class ProcedureDependenciesNode extends AbstractNode {
 				Messages.getString("mssql.images.procedure.parameter.dependency"));
 	}
 
-	public String getName() {
-		return _name;
-	}
-
-	public String getQualifiedName() {
-		return _name;
-	}
-
-	public String getUniqueIdentifier() {
-		return getParent().getQualifiedName() + "." + getName();
-	}
-
 	public boolean isEndNode() {
 		return true;
 	}

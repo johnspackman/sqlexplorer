@@ -8,7 +8,7 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 public class ProcedureParametersFolder extends AbstractFolderNode {
 
@@ -35,6 +35,7 @@ public class ProcedureParametersFolder extends AbstractFolderNode {
         			"select name from "+ getSchemaOrCatalogName() +"..syscolumns where id = "+ _id );
 
             rs = pStmt.executeQuery();
+            getSession().releaseConnection(connection);
         } catch (Exception e) {
         	SQLExplorerPlugin.error("Couldn't execute query for " + getName(), e);
         }
@@ -47,7 +48,7 @@ public class ProcedureParametersFolder extends AbstractFolderNode {
             		continue;
             	}
 
-            	ProcedureParameterNode newNode = new ProcedureParameterNode(rs.getString(1));
+            	ProcedureParameterNode newNode = new ProcedureParameterNode(this, rs.getString(1), getSession());
             	newNode.setSession(this.getSession());
 
                 addChildNode(newNode);

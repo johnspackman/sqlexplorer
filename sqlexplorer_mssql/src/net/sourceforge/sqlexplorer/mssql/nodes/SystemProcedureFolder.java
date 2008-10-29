@@ -8,11 +8,11 @@ import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 public class SystemProcedureFolder extends AbstractFolderNode {
 
-	public SystemProcedureFolder(String name) {
+	public SystemProcedureFolder() {
 		super(Messages.getString("mssql.dbstructure.systemprocedures"));
 	}
 
@@ -35,12 +35,12 @@ public class SystemProcedureFolder extends AbstractFolderNode {
         			"order by name");
 
             rs = pStmt.executeQuery();
+            getSession().releaseConnection(connection);
         } catch (Exception e) {
         	SQLExplorerPlugin.error("Couldn't execute query for " + getName(), e);
         }
         
         try {
-
             while (rs.next()) {
 
             	if (isExcludedByFilter(rs.getString(1))) {
