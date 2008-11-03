@@ -141,7 +141,7 @@ public class SchemaNode extends AbstractNode {
 
 
     /**
-     * Location extenstion nodes for a given tableType
+     * Location extension nodes for a given tableType
      * 
      * @param tableType for which to find extension node
      * @return INode or null if no extensions found
