@@ -101,7 +101,7 @@ import org.eclipse.ui.part.EditorPart;
  * supported and now updates the main Eclipse status bar instead.  This means that
  * the "limit rows" feature moves to the Editor toolbar.
  * 
- * Behavoural Changes
+ * Behavioral Changes
  * The editors now prompt to save when they're closed; this is part of the slight
  * paradigm shift of SQLExplorer - instead of the SQL window being a scratch pad
  * for executing ad-hoc SQL, it's becoming part of a development environment

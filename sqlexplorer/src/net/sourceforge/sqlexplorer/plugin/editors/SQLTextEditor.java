@@ -51,7 +51,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 
 /**
- * TextEditor specialisation; encapsulates functionality specific to editing
+ * TextEditor specialization; encapsulates functionality specific to editing
  * SQL.
  * 
  * Virtually all of this code came from SQLEditor, which used to be derived

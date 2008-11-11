@@ -60,6 +60,7 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -216,7 +217,7 @@ public class DatabaseStructureView extends ViewPart {
 
         // add drag support
         // TODO improve drag support options
-        Transfer[] transfers = new Transfer[] {TableNodeTransfer.getInstance()};
+        Transfer[] transfers = new Transfer[] {TableNodeTransfer.getInstance(), TextTransfer.getInstance()};
         treeViewer.addDragSupport(DND.DROP_COPY, transfers, new DragSourceListener() {
 
             public void dragFinished(DragSourceEvent event) {
@@ -227,9 +228,12 @@ public class DatabaseStructureView extends ViewPart {
 
 
             public void dragSetData(DragSourceEvent event) {
-
-                Object sel = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
-                event.data = sel;
+            	if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
+            		event.data = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement().toString();
+            	} else {
+            		Object sel = ((IStructuredSelection) treeViewer.getSelection()).getFirstElement();
+            		event.data = sel;
+            	}
             }
 
 

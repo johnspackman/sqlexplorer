@@ -160,6 +160,7 @@ public abstract class AbstractSQLExecution extends Job {
 		if (longCaptions) {
 			String caption = resultsTab.getText() + " [" + TextUtil.compressWhitespace(query.getQuerySql(), MAX_CAPTION_LENGTH) + "]";
 			resultsTab.setText(caption);
+			resultsTab.setToolTipText(resultsTab.getText() + " [" + query.getQuerySql() + "]");
 		}
 		return resultsTab;
 	}

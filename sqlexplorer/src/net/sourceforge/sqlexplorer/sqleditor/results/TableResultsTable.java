@@ -116,10 +116,10 @@ public class TableResultsTable extends AbstractResultsTable {
 	};
 	
 	// Whether the table can be sorted according to a given column
-	private boolean sortableByColumn;
+	private boolean sortableByColumn = true;
 	
 	// Whether columns can be moved
-	private boolean movableColumns;
+	private boolean movableColumns = true;
 	
 	// The TableViewer
 	private TableViewer tableViewer;
