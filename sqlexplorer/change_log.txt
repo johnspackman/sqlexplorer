@@ -1,7 +1,10 @@
-3.5.0 - John Spackman (Zenesis Ltd), Heiko Hilbert
+3.5.0 - Heiko Hilbert, Austin Morgan
 ======================================================
 +. make last inserted message visible in results message tab
-
++. fixed ConcurrentModificationException on closing all connections while shutting down eclipse
++. Set tables for return grids to be sortable and have movable columns by default.
++. Add the ability to drop Fully Qualified domain names for elements that know how to retrieve text drag and drop.  Unfortunately we still can't drag and drop on to the editor.
++. Add tool tip to results tab
 
 3.5.0.RC6/P2 - John Spackman (Zenesis Ltd), Heiko Hilbert
 ======================================================
