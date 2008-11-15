@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.dbproduct;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -256,10 +257,16 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 	/**
 	 * Closes all connections; note that ConnectionListeners are NOT invoked
 	 */
-	/*package*/ void closeAllSessions() {
-		for (Session session : sessions)
+	/*package*/ void closeAllSessions() 
+	{
+		// copy list to avoid concurrent modification exception
+		List<Session> copy = new ArrayList<Session>(this.sessions);
+		for (Session session : copy)
+		{
 			session.close();
-		if (metaDataSession != null) {
+		}
+		if (metaDataSession != null) 
+		{
 			metaDataSession.close();
 			metaDataSession = null;
 		}
