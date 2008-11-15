@@ -100,4 +100,28 @@ USA
          install-size="0"
          version="3.5.0.v20080924_RC6"/>
 
+   <plugin
+         id="net.sourceforge.sqlexplorer.dbase"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="net.sourceforge.sqlexplorer.mssql"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="net.sourceforge.sqlexplorer.sybase"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
 </feature>
