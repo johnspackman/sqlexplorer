@@ -50,6 +50,10 @@ public class AliasManager implements ConnectionListener {
 	// Connection Listeners
 	private LinkedList<ConnectionListener> connectionListeners = new LinkedList<ConnectionListener>();
 	
+	private String checkNull(String pString)
+	{
+		return pString == null ? "" : pString;
+	}
 	/**
 	 * Loads Aliases from the users preferences
 	 *
@@ -188,15 +192,15 @@ public class AliasManager implements ConnectionListener {
 			Element alias = result.addElement(Alias.ALIAS);
 			alias.addAttribute(Alias.AUTO_LOGON, Boolean.toString(getBoolean(bean.elementText("autoLogon"), false)));
 			alias.addAttribute(Alias.CONNECT_AT_STARTUP, Boolean.toString(getBoolean(bean.elementText("connectAtStartup"), false)));
-			alias.addAttribute(Alias.DRIVER_ID, bean.element("driverIdentifier").elementText("string"));
-			alias.addElement(Alias.NAME).setText(bean.elementText("name"));
+			alias.addAttribute(Alias.DRIVER_ID, checkNull(bean.element("driverIdentifier").elementText("string")));
+			alias.addElement(Alias.NAME).setText(checkNull(bean.elementText("name")));
 			Element userElem = alias.addElement(Alias.USERS).addElement(User.USER);
-			userElem.addElement(User.USER_NAME).setText(bean.elementText("userName"));
-			userElem.addElement(User.PASSWORD).setText(bean.elementText("password"));
-			alias.addElement(Alias.URL).setText(bean.elementText("url"));
-			alias.addElement(Alias.FOLDER_FILTER_EXPRESSION).setText(bean.elementText("folderFilterExpression"));
-			alias.addElement(Alias.NAME_FILTER_EXPRESSION).setText(bean.elementText("nameFilterExpression"));
-			alias.addElement(Alias.SCHEMA_FILTER_EXPRESSION).setText(bean.elementText("schemaFilterExpression"));
+			userElem.addElement(User.USER_NAME).setText(checkNull(bean.elementText("userName")));
+			userElem.addElement(User.PASSWORD).setText(checkNull(bean.elementText("password")));
+			alias.addElement(Alias.URL).setText(checkNull(bean.elementText("url")));
+			alias.addElement(Alias.FOLDER_FILTER_EXPRESSION).setText(checkNull(bean.elementText("folderFilterExpression")));
+			alias.addElement(Alias.NAME_FILTER_EXPRESSION).setText(checkNull(bean.elementText("nameFilterExpression")));
+			alias.addElement(Alias.SCHEMA_FILTER_EXPRESSION).setText(checkNull(bean.elementText("schemaFilterExpression")));
 		}
 		
 		return result;
