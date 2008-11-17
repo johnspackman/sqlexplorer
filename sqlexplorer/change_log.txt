@@ -6,7 +6,9 @@
 +. Add the ability to drop Fully Qualified domain names for elements that know how to retrieve text drag and drop.  
    Unfortunately we still can't drag and drop on to the editor.
 +. Add tool tip to results tab
-+. fixed #2209630,#2284792 Exception while converting old SQlAliases.xml
++. fixed #2209630,#2284792: Exception while converting old SQlAliases.xml
++. fixed #1824644: Copy Connection Profile does not work, 
+   renamed action to Duplicate Connection Profile
 
 3.5.0.RC6/P2 - John Spackman (Zenesis Ltd), Heiko Hilbert
 ======================================================

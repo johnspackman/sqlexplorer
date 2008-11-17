@@ -178,7 +178,13 @@ public class Alias {
 	 */
 	public Alias(Alias copyFrom) {
 		this("Copy of " + copyFrom.getName());
-		if (copyFrom.defaultUser != null) {
+		setAutoLogon(copyFrom.isAutoLogon());
+		setConnectAtStartup(copyFrom.isConnectAtStartup());
+		setDriver(copyFrom.getDriver());
+		setHasNoUserName(copyFrom.hasNoUserName());
+		setUrl(copyFrom.getUrl());
+		if (copyFrom.defaultUser != null) 
+		{
 			defaultUser = copyFrom.defaultUser.createCopy();
 			addUser(defaultUser);
 		}

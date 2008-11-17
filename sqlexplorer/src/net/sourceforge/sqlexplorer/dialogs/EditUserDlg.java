@@ -125,7 +125,8 @@ public class EditUserDlg extends TitleAreaDialog {
 			}
         });
 
-        if (user != null) {
+        if (user != null) 
+        {
         	if (type != Type.COPY) {
 	        	userName.setText(user.getUserName());
 	        	password.setText(user.getPassword());

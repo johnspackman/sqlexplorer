@@ -116,10 +116,10 @@ public class CreateAliasDlg extends TitleAreaDialog {
             setTitle(Messages.getString("AliasDialog.Create.Title")); //$NON-NLS-1$
         } else if (type == Type.CHANGE) {
             setTitle(Messages.getString("AliasDialog.Change.Title")); //$NON-NLS-1$
-            setMessage("Modify the alias"); //$NON-NLS-1$			
+            setMessage(Messages.getString("AliasDialog.Change.SubTitle")); //$NON-NLS-1$			
         } else if (type == Type.COPY) {
             setTitle(Messages.getString("AliasDialog.Copy.Title")); //$NON-NLS-1$
-            setMessage("Copy the alias"); //$NON-NLS-1$						
+            setMessage(Messages.getString("AliasDialog.Copy.SubTitle")); //$NON-NLS-1$						
         }
 
         Image image = ImageUtil.getImage("Images.WizardLogo");
@@ -412,8 +412,13 @@ public class CreateAliasDlg extends TitleAreaDialog {
     	
         if (type != Type.CREATE) {
         	if (alias.getDriver() != null)
+        	{
         		cboDriver.setText(alias.getDriver().getName());
-            urlField.setText(alias.getUrl());
+        	}
+        	if (alias.getUrl() != null)
+        	{
+        		urlField.setText(alias.getUrl());
+        	}
         }
         return parentComposite;
     }
