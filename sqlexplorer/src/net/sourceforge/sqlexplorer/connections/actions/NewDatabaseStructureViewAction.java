@@ -44,10 +44,10 @@ public class NewDatabaseStructureViewAction extends AbstractConnectionTreeAction
 	 */
 	@Override
 	public void run() {
-		DatabaseStructureView view = SQLExplorerPlugin.getDefault().getDatabaseStructureView();
+		DatabaseStructureView view = SQLExplorerPlugin.getDefault().showDatabaseStructureView();
 		if (view == null)
 			return;
-		
+
 		Collection<User> users = getView().getSelectedUsers(true);
 		for (User user : users)
 			try {

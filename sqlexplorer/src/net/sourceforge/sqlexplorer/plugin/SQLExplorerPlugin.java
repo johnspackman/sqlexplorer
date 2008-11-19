@@ -338,6 +338,18 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 		}
 		return databaseStructureView;
 	}
+	public DatabaseStructureView showDatabaseStructureView() {
+		IWorkbenchPage page = getActivePage();
+		if (page != null) 
+		{
+        	try {
+        		databaseStructureView = (DatabaseStructureView)page.showView(DatabaseStructureView.class.getName());
+        	} catch(PartInitException e) {
+        		error(e);
+        	}
+		}
+		return databaseStructureView;
+	}
 	
 	public void setDatabaseStructureView(DatabaseStructureView databaseStructureView) {
 		this.databaseStructureView = databaseStructureView;
