@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.dbproduct;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Our SQLConnection, which adds the connection to our User object
@@ -92,4 +93,30 @@ public class SQLConnection extends net.sourceforge.squirrel_sql.fw.sql.SQLConnec
 	public void setSession(Session session) {
 		this.session = session;
 	}
+
+	
+	/**
+	 * @param value new auto commit value
+	 */
+	@Override
+	public void setAutoCommit(boolean value) throws SQLException 
+    {
+    	validateConnection();
+    	final Connection conn = getConnection();
+    	final boolean oldValue = conn.getAutoCommit();
+    	if (oldValue != value) 
+    	{
+    		// added for sybase to prevent SET CHAINED command not allowed within multi-statement transaction.
+    		if(oldValue)
+    		{
+    			conn.commit();
+    		}
+    		else
+    		{
+    			conn.rollback();
+    		}
+    		conn.setAutoCommit(value);
+    	}
+    }
+
 }
