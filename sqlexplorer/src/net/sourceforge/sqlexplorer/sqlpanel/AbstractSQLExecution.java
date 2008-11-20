@@ -158,7 +158,13 @@ public abstract class AbstractSQLExecution extends Job {
 			return null;
 		boolean longCaptions = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.USE_LONG_CAPTIONS_ON_RESULTS);
 		if (longCaptions) {
-			String caption = resultsTab.getText() + " [" + TextUtil.compressWhitespace(query.getQuerySql(), MAX_CAPTION_LENGTH) + "]";
+			String caption = resultsTab.getText();
+			int pos = caption.indexOf(" [");
+			if(pos > 0)
+			{
+				caption = caption.substring(0, pos);
+			}
+			caption = caption + " [" + TextUtil.compressWhitespace(query.getQuerySql(), MAX_CAPTION_LENGTH) + "]";
 			resultsTab.setText(caption);
 			resultsTab.setToolTipText(resultsTab.getText() + " [" + query.getQuerySql() + "]");
 		}

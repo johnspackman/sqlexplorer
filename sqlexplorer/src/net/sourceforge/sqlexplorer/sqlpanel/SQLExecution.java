@@ -35,9 +35,12 @@ import net.sourceforge.sqlexplorer.sqleditor.results.EditorResultsTab;
 import net.sourceforge.sqlexplorer.sqleditor.results.GenericAction;
 import net.sourceforge.sqlexplorer.sqleditor.results.GenericActionGroup;
 import net.sourceforge.sqlexplorer.sqleditor.results.ResultsTableAction;
+import net.sourceforge.sqlexplorer.sqleditor.results.actions.ReRunAction;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -98,7 +101,7 @@ public class SQLExecution extends AbstractSQLExecution {
                 }
             	if(dataSet.hasData())
             	{
-	            	CTabItem tabItem = allocateResultsTab(dataSet.getQuery());
+	            	final CTabItem tabItem = allocateResultsTab(dataSet.getQuery());
 	            	if (tabItem == null)
 	            		return;
 	            	
@@ -122,6 +125,8 @@ public class SQLExecution extends AbstractSQLExecution {
 	                table.getMenuManager().addMenuListener(new IMenuListener() {
 	                    public void menuAboutToShow(IMenuManager manager) {
 	                        actionGroup.fillContextMenu(manager);
+	                        manager.add(new Separator());
+	                        manager.add(new ReRunAction(tabItem));
 	                    }
 	                });
             	}

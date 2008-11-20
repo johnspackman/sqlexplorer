@@ -699,10 +699,15 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 		if (tabFolder.isDisposed())
 			return null;
 
-		// Create the new tab, make it second to last (IE keep the messages tab
-		//	always at the end) and set the new tab's title to the 1-based index
-		CTabItem tabItem = new CTabItem(tabFolder, SWT.CLOSE, tabFolder.getItems().length - 1);
-		tabItem.setText(Integer.toString(tabFolder.getItems().length - 1));
+		// check if tab exists
+		CTabItem tabItem = getResultsTab(job);
+		if(tabItem == null)
+		{
+			// Create the new tab, make it second to last (IE keep the messages tab
+			//	always at the end) and set the new tab's title to the 1-based index
+			tabItem = new CTabItem(tabFolder, SWT.CLOSE, tabFolder.getItems().length - 1);
+			tabItem.setText(Integer.toString(tabFolder.getItems().length - 1));
+		}
 		tabFolder.setSelection(tabItem);
 		
 		// Make sure we can track the execution

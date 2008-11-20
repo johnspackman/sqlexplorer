@@ -34,6 +34,10 @@ public class EditorResultsTab {
 		this.tabItem = tabItem;
 		this.results = results;
 		Composite composite = results.createControls(tabItem.getParent());
+		if(tabItem.getControl() != null)
+		{
+			tabItem.getControl().dispose();
+		}
 		tabItem.setControl(composite);
 	}
 	

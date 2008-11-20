@@ -11,6 +11,7 @@
    renamed action to Duplicate Connection Profile
 +. fixed problem with sybase setAutoCommit (ET CHAINED command not allowed within multi-statement transaction)   
 +. show Database Structure View when 'View Database Structure' is invoked
++. added Re-Run action to results table
 
 3.5.0.RC6/P2 - John Spackman (Zenesis Ltd), Heiko Hilbert
 ======================================================
