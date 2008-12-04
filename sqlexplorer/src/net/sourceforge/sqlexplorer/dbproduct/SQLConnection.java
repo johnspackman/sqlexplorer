@@ -107,11 +107,7 @@ public class SQLConnection extends net.sourceforge.squirrel_sql.fw.sql.SQLConnec
     	if (oldValue != value) 
     	{
     		// added for sybase to prevent SET CHAINED command not allowed within multi-statement transaction.
-    		if(oldValue)
-    		{
-    			conn.commit();
-    		}
-    		else
+    		if(!oldValue)
     		{
     			conn.rollback();
     		}
