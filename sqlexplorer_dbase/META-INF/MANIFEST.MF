@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DBase extension for SQLExplorer
 Bundle-SymbolicName: net.sourceforge.sqlexplorer.dbase;singleton:=true
-Bundle-Version: 3.5.0.v20081015_RC6_P3
+Bundle-Version: 3.5.0.v20081204_RC6_P3
 Bundle-Vendor: Austin Morgan
 Fragment-Host: net.sourceforge.sqlexplorer;bundle-version="3.0.0"
 Bundle-Localization: plugin
