@@ -9,9 +9,9 @@
 +. fixed #2209630,#2284792: Exception while converting old SQlAliases.xml
 +. fixed #1824644: Copy Connection Profile does not work, 
    renamed action to Duplicate Connection Profile
-+. fixed problem with sybase setAutoCommit (ET CHAINED command not allowed within multi-statement transaction)   
++. fixed problem with Sybase setAutoCommit (CHAINED command not allowed within multi-statement transaction)   
 +. show Database Structure View when 'View Database Structure' is invoked
-+. added Re-Run action to results table
++. added Re-Run action to results tables
 
 3.5.0.RC6/P2 - John Spackman (Zenesis Ltd), Heiko Hilbert
 ======================================================
