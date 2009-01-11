@@ -1,3 +1,7 @@
+3.5.0.RC6/P4 - heiko Hilbert
+======================================================
++. fixed problem with PreparedStatement.setQueryTimeout not implemented in postgreSQL drivers
+
 3.5.0.RC6/P3 - Heiko Hilbert, Austin Morgan
 ======================================================
 +. make last inserted message visible in results message tab
