@@ -1,13 +1,12 @@
 package net.sourceforge.sqlexplorer.postgresql.nodes;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.util.log.ILogger;
 import net.sourceforge.squirrel_sql.fw.util.log.LoggerController;
 
@@ -44,8 +43,8 @@ public abstract class AbstractFolder extends AbstractSQLFolderNode implements
 		ResultSet rs = null;
 		SQLConnection connection = null;
 		try {
-			Connection c = _session.grabConnection().getConnection();
-			stmt = c.createStatement();
+			connection = _session.grabConnection();
+			stmt = connection.createStatement();
 			logger.debug("Running [" + sql + "]");
 			rs = stmt.executeQuery(sql);
 			int i = 0;
