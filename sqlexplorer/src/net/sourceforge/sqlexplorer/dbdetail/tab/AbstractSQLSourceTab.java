@@ -43,14 +43,30 @@ public abstract class AbstractSQLSourceTab extends AbstractSourceTab {
                 
                 // use normal statement                
                 stmt = connection.createStatement();
-                stmt.setQueryTimeout(timeOut);
+                try
+                {
+                	stmt.setQueryTimeout(timeOut);
+                }
+                catch(Exception ignored)
+                {
+                	// some postgreSQL drivers does not implement this method
+                	// silently ignore this
+                }
                 rs = stmt.executeQuery(getSQL());
                 
             } else {
                 
                 // use prepared statement
                 pStmt = connection.prepareStatement(getSQL());
-                pStmt.setQueryTimeout(timeOut);
+                try
+                {
+                	pStmt.setQueryTimeout(timeOut);
+                }
+                catch(Exception ignored)
+                {
+                	// some postgreSQL drivers does not implement this method
+                	// silently ignore this
+                }
                 
                 for (int i = 0; i < params.length; i++) {
                     

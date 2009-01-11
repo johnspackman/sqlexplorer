@@ -29,7 +29,11 @@ public abstract class AbstractSQLTab extends AbstractDataSetTab {
         PreparedStatement pStmt = null;
         
         try {
-        	connection = getNode().getSession().grabConnection();
+            // this is done before grabbing the connection, because some implementations
+            // require SQL Execution to determine correct SQL
+            String sql = getSQL();
+
+            connection = getNode().getSession().grabConnection();
                     
             Object[] params = getSQLParameters();
             if (params == null || params.length == 0) {
@@ -37,14 +41,30 @@ public abstract class AbstractSQLTab extends AbstractDataSetTab {
                 
                 // use normal statement
                 stmt = connection.createStatement();
-                stmt.setQueryTimeout(timeOut);
-                rs = stmt.executeQuery(getSQL());
+                try
+                {
+                	stmt.setQueryTimeout(timeOut);
+                }
+                catch(Exception ignored)
+                {
+                	// some postgreSQL drivers does not implement this method
+                	// silently ignore this
+                }
+                rs = stmt.executeQuery(sql);
                 
             } else {
                 
                 // use prepared statement
-                pStmt = connection.prepareStatement(getSQL());
-                pStmt.setQueryTimeout(timeOut);
+                pStmt = connection.prepareStatement(sql);
+                try
+                {
+                	pStmt.setQueryTimeout(timeOut);
+                }
+                catch(Exception ignored)
+                {
+                	// some postgreSQL drivers does not implement this method
+                	// silently ignore this
+                }
                 
                 for (int i = 0; i < params.length; i++) {
                     
