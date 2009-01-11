@@ -1,4 +1,4 @@
-3.5.0.RC6/P4 - heiko Hilbert
+3.5.0.RC6/P4 - Heiko Hilbert
 ======================================================
 +. fixed problem with PreparedStatement.setQueryTimeout not implemented in postgreSQL drivers
 
