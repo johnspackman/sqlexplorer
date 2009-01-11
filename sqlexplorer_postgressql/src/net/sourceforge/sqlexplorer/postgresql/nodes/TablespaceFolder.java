@@ -30,7 +30,7 @@ public class TablespaceFolder extends AbstractFolder {
 	private static final Object[] DEFAULT_LIMIT = { "%", "%" };
 
 	private static final String OID_QUERY = "SELECT DISTINCT oid FROM "
-			+ "pg_tablespace WHERE ? LIKE '%' AND spcname = ?";
+			+ "pg_tablespace WHERE ? = '%' AND spcname = ?";
 
 	public TablespaceFolder() {
 		super(Messages.getString("postgresql.node.tablespace"));
@@ -63,8 +63,6 @@ public class TablespaceFolder extends AbstractFolder {
 	}
 
 	public String getRequiredBySQL(Object[] params) {
-		String oid = getList("SELECT DISTINCT oid FROM pg_tablespace WHERE spcname = '"
-				+ params[1] + "'");
 		String s = Messages.processTemplate("SELECT "
 				+ "CASE relkind "
 				+ "WHEN 'M' THEN '${postgresql.object.Tablespace}' "
@@ -98,11 +96,9 @@ public class TablespaceFolder extends AbstractFolder {
 				+ "LEFT OUTER JOIN pg_namespace cin ON ci.relnamespace=cin.oid, "
 				+ "pg_database "
 				+ "WHERE datname = current_database() "
-				+ "AND (cl.reltablespace = "
-				+ oid
-				+ " OR (cl.reltablespace=0 AND dattablespace =  "
-				+ oid
-				+ " )) AND ? LIKE '%' AND ? LIKE '%' AND ? LIKE '%' AND ? LIKE '%'"
+				+ "AND (cl.reltablespace in ("+OID_QUERY+") "
+				+ " OR (cl.reltablespace=0 AND dattablespace in ("+OID_QUERY+")  "
+				+ " ))"
 				+ " ) AS tmp " + "	ORDER BY 1,2");
 		logger.debug("Will run [" + s + "]");
 
