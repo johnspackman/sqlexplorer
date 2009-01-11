@@ -2,6 +2,7 @@ package net.sourceforge.sqlexplorer.postgresql.tabs;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSQLTab;
+import net.sourceforge.sqlexplorer.postgresql.util.PgUtil;
 
 /**
  * Detail tab providing info about database wide locks.
@@ -11,10 +12,11 @@ import net.sourceforge.sqlexplorer.dbdetail.tab.AbstractSQLTab;
  */
 public class LockTab extends AbstractSQLTab {
 
-	private static final String QUERY = "SELECT "
+	private static final String QUERY1 = "SELECT "
 			+ "    pgl.relation::regclass AS \"Class\", "
 			+ "    pg_get_userbyid(pg_stat_get_backend_userid(svrid)) AS \"User\", "
-			+ "    pgl.transaction AS \"Transaction\", "
+			+ "    pgl.transaction";
+	private static final String QUERY2 = " AS \"Transaction\", "
 			+ "    pg_stat_get_backend_pid(svrid) AS \"Pid\", "
 			+ "    pgl.mode AS \"Mode\", "
 			+ "    pgl.granted AS \"Granted\", "
@@ -24,7 +26,7 @@ public class LockTab extends AbstractSQLTab {
 			+ "    pg_stat_get_backend_idset() svrid, pg_locks pgl, pg_database db "
 			+ "WHERE "
 			+ "    datname = current_database() AND pgl.pid = pg_stat_get_backend_pid(svrid) AND db.oid = pgl.database "
-			+ "ORDER BY " + "    user,pid";;
+			+ "ORDER BY " + "    user,pid";
 
 	@Override
 	public String getLabelText() {
@@ -32,8 +34,13 @@ public class LockTab extends AbstractSQLTab {
 	}
 
 	@Override
-	public String getSQL() {
-		return QUERY;
+	public String getSQL() 
+	{
+		if(PgUtil.hasVersion(getNode().getSession(), 8, 1))
+		{
+			return QUERY1+"id"+QUERY2;
+		}
+		return QUERY1+QUERY2;
 	}
 
 	@Override
