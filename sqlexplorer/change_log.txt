@@ -1,3 +1,11 @@
+3.5.0.RC6/P5 - Heiko Hilbert
+======================================================
++. fixed problem with result tab tool tip
++. fixed charset problem for saved sql history
++. added source tab to postgresql plugin
++. fixed parser problem with dollar quoted strings in postgresql plugin
++. added source tab and function folder to mysql plugin
+
 3.5.0.RC6/P4 - Heiko Hilbert
 ======================================================
 +. fixed problem with PreparedStatement.setQueryTimeout not implemented in postgreSQL drivers
