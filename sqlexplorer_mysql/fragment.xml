@@ -39,6 +39,12 @@
             id="net.sourceforge.sqlexplorer.mysql.openTablesTab"
             name="Open Tables"
             node-type="catalog"/>                                          
+      <detailtab
+            class="net.sourceforge.sqlexplorer.mysql.tabs.SourceTab"
+            database-product-name="MySQL*"
+            id="net.sourceforge.sqlexplorer.mysql.tabs.SourceTab"
+            name="Generic Source Tab"
+            node-type="function,procedure,trigger"/>    
    </extension>
    <extension
          point="net.sourceforge.sqlexplorer.nodeContextAction">
@@ -59,6 +65,13 @@
             name="Procedure Folder"
             parent-node="schema+catalog"
             table-type="procedure_folder"/>
+      <node
+            class="net.sourceforge.sqlexplorer.mysql.nodes.FunctionFolder"
+            database-product-name="MySQL*"
+            id="net.sourceforge.sqlexplorer.mysql.nodes.FunctionFolder"
+            name="Function Folder"
+            parent-node="schema+catalog"
+            table-type="function_folder"/>
    </extension>
    <extension
          point="net.sourceforge.sqlexplorer.nodeContextAction">
