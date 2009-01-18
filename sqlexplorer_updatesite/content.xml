@@ -3,13 +3,13 @@
 <repository name='Eclipse SQL Explorer Updates' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1.0.0'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1231691281421'/>
+    <property name='p2.timestamp' value='1232305121718'/>
   </properties>
   <references size='2'>
     <repository url='http://eclipsesql.sourceforge.net/' type='1' options='0'/>
     <repository url='http://eclipsesql.sourceforge.net/' type='0' options='0'/>
   </references>
-  <units size='28'>
+  <units size='35'>
     <unit id='net.sourceforge.sqlexplorer.feature.jar' version='3.5.0.v20080924_RC6'>
       <update id='net.sourceforge.sqlexplorer.feature.jar' range='[0.0.0,3.5.0.v20080924_RC6)' severity='0'/>
       <properties size='5'>
@@ -936,7 +936,7 @@
       <touchpointData size='1'>
         <instructions size='1'>
           <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Fragment-Host: net.sourceforge.sqlexplorer;bundle-version=&quot;3.5.0&quot;&#xA;Created-By: 1.5.0_12-b04 (Sun Microsystems Inc.)&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 3.5.0.v20090111_RC6_P4&#xA;Bundle-SymbolicName: net.sourceforge.sqlexplorer.postgresql;singleton:=true&#xA;Bundle-Localization: plugin&#xA;Ant-Version: Apache Ant 1.7.0&#xA;Bundle-Name: PostgesSQL Support for SqlExplorer&#xA;Bundle-Vendor: SQL Explorer Project (eclipsesql.sourceforge.net)&#xA;
+            Bundle-ManifestVersion: 2&#xA;Fragment-Host: net.sourceforge.sqlexplorer;bundle-version=&quot;3.5.0&quot;&#xA;Created-By: 1.5.0_12-b04 (Sun Microsystems Inc.)&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 3.5.0.v20090111_RC6_P4&#xA;Bundle-SymbolicName: net.sourceforge.sqlexplorer.postgresql;singleton:=true&#xA;Bundle-Localization: plugin&#xA;Ant-Version: Apache Ant 1.7.0&#xA;Bundle-Name: PostgesSQL Support for SqlExplorer&#xA;Bundle-Vendor: SQL Explorer Project (eclipsesql.sourceforge.net)
           </instruction>
         </instructions>
       </touchpointData>
@@ -1059,7 +1059,7 @@
       <touchpointData size='1'>
         <instructions size='2'>
           <instruction key='manifest'>
-            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Bundle-Name: SQLExplorer Plugin&#xA;Ant-Version: Apache Ant 1.7.0&#xA;Bundle-ClassPath: sqlexplorer.jar,lib/commons-logging.jar,lib/log4j.jar,lib/rowset.jar,lib/dom4j.jar,lib/squirrel.jar,lib/hibernate3.2.4.sp1.jar&#xA;Require-Bundle: org.eclipse.ui;bundle-version=&quot;3.2.0&quot;,org.eclipse.core.runtime;bundle-version=&quot;3.2.0&quot;,org.eclipse.core.resources;bundle-version=&quot;3.2.0&quot;,org.eclipse.ui.ide;bundle-version=&quot;3.2.0&quot;,org.eclipse.ui.workbench.texteditor;bundle-version=&quot;3.2.0&quot;,org.eclipse.jface.text;bundle-version=&quot;3.2.0&quot;,org.eclipse.ui.editors;bundle-version=&quot;3.2.0&quot;&#xA;Bundle-Activator: net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin&#xA;Bundle-Vendor: SQL Explorer Project (eclipsesql.sourceforge.net)&#xA;Created-By: 1.5.0_12-b04 (Sun Microsystems Inc.)&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 3.5.0.v20090111_RC6_P4&#xA;Bundle-Localization: plugin&#xA;Export-Package: META-INF,com.sun.rowset,com.sun.rowset.internal;x-internal:=true,com.sun.rowset.providers,javax.sql.rowset,javax.sql.rowset.serial,javax.sql.rowset.spi,net.sourceforge.sqlexplorer,net.sourceforge.sqlexplorer.connections,net.sourceforge.sqlexplorer.connections.actions,net.sourceforge.sqlexplorer.dataset,net.sourceforge.sqlexplorer.dbdetail,net.sourceforge.sqlexplorer.dbdetail.tab,net.sourceforge.sqlexplorer.dbproduct,net.sourceforge.sqlexplorer.dbstructure,net.sourceforge.sqlexplorer.dbstructure.actions,net.sourceforge.sqlexplorer.dbstructure.nodes,net.sourceforge.sqlexplorer.dialogs,net.sourceforge.sqlexplorer.history,net.sourceforge.sqlexplorer.history.actions,net.sourceforge.sqlexplorer.parsers,net.sourceforge.sqlexplorer.parsers.scp,net.sourceforge.sqlexplorer.plugin,net.sourceforge.sqlexplorer.plugin.actions,net.sourceforge.sqlexplorer.plugin.editors,net.sourceforge.sqlexplorer.plugin.perspectives,net.sourceforge.sqlexplorer.plugin.views,net.sourceforge.sqlexplorer.plugin.wizards,net.sourceforge.sqlexplorer.preferences,net.sourceforge.sqlexplorer.preview,net.sourceforge.sqlexplorer.sessiontree.actions,net.sourceforge.sqlexplorer.sessiontree.model.utility,net.sourceforge.sqlexplorer.sqleditor,net.sourceforge.sqlexplorer.sqleditor.actions,net.sourceforge.sqlexplorer.sqleditor.results.actions,net.sourceforge.sqlexplorer.sqlpanel,net.sourceforge.sqlexplorer.sqlpanel.actions,net.sourceforge.sqlexplorer.util,net.sourceforge.squirrel_sql.fw.datasetviewer,net.sourceforge.squirrel_sql.fw.datasetviewer.cellcomponent,net.sourceforge.squirrel_sql.fw.gui,net.sourceforge.squirrel_sql.fw.gui.action,net.sourceforge.squirrel_sql.fw.gui.image,net.sourceforge.squirrel_sql.fw.id,net.sourceforge.squirrel_sql.fw.persist,net.sourceforge.squirrel_sql.fw.resources,net.sourceforge.squirrel_sql.fw.resources.images.eclipse,net.sourceforge.squirrel_sql.fw.resources.images.gnome,net.sourceforge.squirrel_sql.fw.sql,net.sourceforge.squirrel_sql.fw.util,net.sourceforge.squirrel_sql.fw.util.beanwrapper,net.sourceforge.squirrel_sql.fw.util.log,net.sourceforge.squirrel_sql.fw.xml,org.apache.commons.logging,org.apache.commons.logging.impl,org.apache.log4j,org.apache.log4j.chainsaw,org.apache.log4j.config,org.apache.log4j.helpers,org.apache.log4j.jdbc,org.apache.log4j.jmx,org.apache.log4j.lf5,org.apache.log4j.lf5.config,org.apache.log4j.lf5.util,org.apache.log4j.lf5.viewer,org.apache.log4j.lf5.viewer.categoryexplorer,org.apache.log4j.lf5.viewer.configure,org.apache.log4j.lf5.viewer.images,org.apache.log4j.net,org.apache.log4j.nt,org.apache.log4j.or,org.apache.log4j.or.jms,org.apache.log4j.or.sax,org.apache.log4j.spi,org.apache.log4j.varia,org.apache.log4j.xml,org.dom4j,org.dom4j.bean,org.dom4j.datatype,org.dom4j.dom,org.dom4j.dtd,org.dom4j.io,org.dom4j.jaxb,org.dom4j.rule,org.dom4j.rule.pattern,org.dom4j.swing,org.dom4j.tree,org.dom4j.util,org.dom4j.xpath,org.dom4j.xpp,org.eclipse.jface.preference&#xA;Bundle-SymbolicName: net.sourceforge.sqlexplorer; singleton:=true&#xA;Eclipse-LazyStart: true&#xA;
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Bundle-Name: SQLExplorer Plugin&#xA;Ant-Version: Apache Ant 1.7.0&#xA;Bundle-ClassPath: sqlexplorer.jar,lib/commons-logging.jar,lib/log4j.jar,lib/rowset.jar,lib/dom4j.jar,lib/squirrel.jar,lib/hibernate3.2.4.sp1.jar&#xA;Require-Bundle: org.eclipse.ui;bundle-version=&quot;3.2.0&quot;,org.eclipse.core.runtime;bundle-version=&quot;3.2.0&quot;,org.eclipse.core.resources;bundle-version=&quot;3.2.0&quot;,org.eclipse.ui.ide;bundle-version=&quot;3.2.0&quot;,org.eclipse.ui.workbench.texteditor;bundle-version=&quot;3.2.0&quot;,org.eclipse.jface.text;bundle-version=&quot;3.2.0&quot;,org.eclipse.ui.editors;bundle-version=&quot;3.2.0&quot;&#xA;Bundle-Activator: net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin&#xA;Bundle-Vendor: SQL Explorer Project (eclipsesql.sourceforge.net)&#xA;Created-By: 1.5.0_12-b04 (Sun Microsystems Inc.)&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 3.5.0.v20090111_RC6_P4&#xA;Bundle-Localization: plugin&#xA;Export-Package: META-INF,com.sun.rowset,com.sun.rowset.internal;x-internal:=true,com.sun.rowset.providers,javax.sql.rowset,javax.sql.rowset.serial,javax.sql.rowset.spi,net.sourceforge.sqlexplorer,net.sourceforge.sqlexplorer.connections,net.sourceforge.sqlexplorer.connections.actions,net.sourceforge.sqlexplorer.dataset,net.sourceforge.sqlexplorer.dbdetail,net.sourceforge.sqlexplorer.dbdetail.tab,net.sourceforge.sqlexplorer.dbproduct,net.sourceforge.sqlexplorer.dbstructure,net.sourceforge.sqlexplorer.dbstructure.actions,net.sourceforge.sqlexplorer.dbstructure.nodes,net.sourceforge.sqlexplorer.dialogs,net.sourceforge.sqlexplorer.history,net.sourceforge.sqlexplorer.history.actions,net.sourceforge.sqlexplorer.parsers,net.sourceforge.sqlexplorer.parsers.scp,net.sourceforge.sqlexplorer.plugin,net.sourceforge.sqlexplorer.plugin.actions,net.sourceforge.sqlexplorer.plugin.editors,net.sourceforge.sqlexplorer.plugin.perspectives,net.sourceforge.sqlexplorer.plugin.views,net.sourceforge.sqlexplorer.plugin.wizards,net.sourceforge.sqlexplorer.preferences,net.sourceforge.sqlexplorer.preview,net.sourceforge.sqlexplorer.sessiontree.actions,net.sourceforge.sqlexplorer.sessiontree.model.utility,net.sourceforge.sqlexplorer.sqleditor,net.sourceforge.sqlexplorer.sqleditor.actions,net.sourceforge.sqlexplorer.sqleditor.results.actions,net.sourceforge.sqlexplorer.sqlpanel,net.sourceforge.sqlexplorer.sqlpanel.actions,net.sourceforge.sqlexplorer.util,net.sourceforge.squirrel_sql.fw.datasetviewer,net.sourceforge.squirrel_sql.fw.datasetviewer.cellcomponent,net.sourceforge.squirrel_sql.fw.gui,net.sourceforge.squirrel_sql.fw.gui.action,net.sourceforge.squirrel_sql.fw.gui.image,net.sourceforge.squirrel_sql.fw.id,net.sourceforge.squirrel_sql.fw.persist,net.sourceforge.squirrel_sql.fw.resources,net.sourceforge.squirrel_sql.fw.resources.images.eclipse,net.sourceforge.squirrel_sql.fw.resources.images.gnome,net.sourceforge.squirrel_sql.fw.sql,net.sourceforge.squirrel_sql.fw.util,net.sourceforge.squirrel_sql.fw.util.beanwrapper,net.sourceforge.squirrel_sql.fw.util.log,net.sourceforge.squirrel_sql.fw.xml,org.apache.commons.logging,org.apache.commons.logging.impl,org.apache.log4j,org.apache.log4j.chainsaw,org.apache.log4j.config,org.apache.log4j.helpers,org.apache.log4j.jdbc,org.apache.log4j.jmx,org.apache.log4j.lf5,org.apache.log4j.lf5.config,org.apache.log4j.lf5.util,org.apache.log4j.lf5.viewer,org.apache.log4j.lf5.viewer.categoryexplorer,org.apache.log4j.lf5.viewer.configure,org.apache.log4j.lf5.viewer.images,org.apache.log4j.net,org.apache.log4j.nt,org.apache.log4j.or,org.apache.log4j.or.jms,org.apache.log4j.or.sax,org.apache.log4j.spi,org.apache.log4j.varia,org.apache.log4j.xml,org.dom4j,org.dom4j.bean,org.dom4j.datatype,org.dom4j.dom,org.dom4j.dtd,org.dom4j.io,org.dom4j.jaxb,org.dom4j.rule,org.dom4j.rule.pattern,org.dom4j.swing,org.dom4j.tree,org.dom4j.util,org.dom4j.xpath,org.dom4j.xpp,org.eclipse.jface.preference&#xA;Bundle-SymbolicName: net.sourceforge.sqlexplorer; singleton:=true&#xA;Eclipse-LazyStart: true
           </instruction>
           <instruction key='zipped'>
             true
@@ -1185,6 +1185,337 @@
       <copyright url='http://sourceforge.net/projects/eclipsesql'>
         Copyright (C) 2006,2007,2008 SQL Explorer Development Team&#xA;This program is free software; you can redistribute it and/or&#xA;modify it under the terms of the GNU Lesser General Public&#xA;License as published by the Free Software Foundation; either&#xA;version 2.1 of the License, or (at your option) any later version.&#xA;This library is distributed in the hope that it will be useful,&#xA;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA;GNU Lesser General Public License for more details.&#xA;You should have received a copy of the GNU Lesser General Public&#xA;License along with this library; if not, write to the Free Software&#xA;Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307&#xA;USA
       </copyright>
+    </unit>
+    <unit id='net.sourceforge.sqlexplorer.mysql' version='3.5.0.v20090118_RC6_P5'>
+      <update id='net.sourceforge.sqlexplorer.mysql' range='[0.0.0,3.5.0.v20090118_RC6_P5)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='MySQL extension for SQL Explorer'/>
+        <property name='org.eclipse.equinox.p2.provider' value='SQL Explorer Project (eclipsesql.sourceforge.net)'/>
+      </properties>
+      <provides size='4'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.mysql' version='3.5.0.v20090118_RC6_P5'/>
+        <provided namespace='osgi.bundle' name='net.sourceforge.sqlexplorer.mysql' version='3.5.0.v20090118_RC6_P5'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+        <provided namespace='osgi.fragment' name='net.sourceforge.sqlexplorer' version='3.5.0.v20090118_RC6_P5'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='osgi.bundle' name='net.sourceforge.sqlexplorer' range='3.5.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.sourceforge.sqlexplorer.mysql' version='3.5.0.v20090118_RC6_P5'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Fragment-Host: net.sourceforge.sqlexplorer;bundle-version=&quot;3.5.0&quot;&#xA;Created-By: 1.5.0_12-b04 (Sun Microsystems Inc.)&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 3.5.0.v20090118_RC6_P5&#xA;Bundle-SymbolicName: net.sourceforge.sqlexplorer.mysql;singleton:=true&#xA;Bundle-Localization: plugin&#xA;Ant-Version: Apache Ant 1.7.0&#xA;Bundle-Name: MySQL extension for SQL Explorer&#xA;Bundle-Vendor: SQL Explorer Project (eclipsesql.sourceforge.net)&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='net.sourceforge.sqlexplorer.patch.feature.jar' version='3.5.0.v20090118_RC6_P5'>
+      <update id='net.sourceforge.sqlexplorer.patch.feature.jar' range='[0.0.0,3.5.0.v20090118_RC6_P5)' severity='0'/>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Eclipse SQL Explorer RC6 P5'/>
+        <property name='org.eclipse.equinox.p2.description' value='3.5.0.RC6/P5 - Heiko Hilbert&#xA;======================================================&#xA;+. fixed problem with result tab tool tip&#xA;+. fixed charset problem for saved sql history&#xA;+. added source tab to postgresql plugin&#xA;+. fixed parser problem with dollar quoted strings in postgresql plugin&#xA;+. added source tab and function folder to mysql plugin&#xA;&#xA;3.5.0.RC6/P4 - Heiko Hilbert&#xA;======================================================&#xA;+. fixed problem with PreparedStatement.setQueryTimeout not implemented&#xA;in postgreSQL drivers&#xA;&#xA;3.5.0.RC6/P3 &#xA;======================================================&#xA;+. make last inserted message visible in results message tab&#xA;+. fixed ConcurrentModificationException on closing all connections&#xA;while shutting down eclipse&#xA;+. Set tables for return grids to be sortable and have movable&#xA;columns by default.&#xA;+. Add the ability to drop Fully Qualified domain names for elements&#xA;that know how to retrieve text drag and drop.  &#xA;Unfortunately we still can&apos;t drag and drop on to the editor.&#xA;+. Add tool tip to results tab&#xA;+. fixed #2209630,#2284792: Exception while converting old SQlAliases.xml&#xA;+. fixed #1824644: Copy Connection Profile does not work, &#xA;renamed action to Duplicate Connection Profile&#xA;+. fixed problem with Sybase setAutoCommit (CHAINED command not&#xA;allowed within multi-statement transaction)   &#xA;+. show Database Structure View when &apos;View Database Structure&apos;&#xA;is invoked&#xA;+. added Re-Run action to results tables&#xA;and includes all fixes from&#xA;&#xA;3.5.0.RC6/P2 fixes some problems from RC6:&#xA;======================================================&#xA;+. fixed Bug #2153183: Export to csv is broken&#xA;+. fixed Bug #2153849: Editor font preference not stored&#xA;and includes all fixes from&#xA;&#xA;3.5.0.RC6/P1 &#xA;======================================================&#xA;+. fixed problem with getDatabaseMajorVersion() not implemented&#xA;+. fixed loading problem with content assist enabled&#xA;+. fixed problem with auto deserialization in MySql driver&#xA;+. fixed NPE in BatchJob'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='SQL Explorer SourceForge Site'/>
+        <property name='org.eclipse.equinox.p2.provider' value='SQL Explorer Project (eclipsesql.sourceforge.net)'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.patch.feature.jar' version='3.5.0.v20090118_RC6_P5'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='net.sourceforge.sqlexplorer.patch' version='3.5.0.v20090118_RC6_P5'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.sqlexplorer.patch' version='3.5.0.v20090118_RC6_P5'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license>
+          This program is free software; you can redistribute it and/or&#xA;modify it under the terms of the GNU Lesser General Public&#xA;License as published by the Free Software Foundation; either&#xA;version 2.1 of the License, or (at your option) any later version.&#xA;This library is distributed in the hope that it will be useful,&#xA;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA;GNU Lesser General Public License for more details.&#xA;You should have received a copy of the GNU Lesser General Public&#xA;License along with this library; if not, write to the Free Software&#xA;Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307&#xA;USA
+        </license>
+      </licenses>
+      <copyright url='http://sourceforge.net/projects/eclipsesql'>
+        Copyright (C) 2006,2007,2008 SQL Explorer Development Team&#xA;This program is free software; you can redistribute it and/or&#xA;modify it under the terms of the GNU Lesser General Public&#xA;License as published by the Free Software Foundation; either&#xA;version 2.1 of the License, or (at your option) any later version.&#xA;This library is distributed in the hope that it will be useful,&#xA;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA;GNU Lesser General Public License for more details.&#xA;You should have received a copy of the GNU Lesser General Public&#xA;License along with this library; if not, write to the Free Software&#xA;Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307&#xA;USA
+      </copyright>
+    </unit>
+    <unit id='net.sourceforge.sqlexplorer.postgresql' version='3.5.0.v20090118_RC6_P5'>
+      <update id='net.sourceforge.sqlexplorer.postgresql' range='[0.0.0,3.5.0.v20090118_RC6_P5)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='PostgesSQL Support for SqlExplorer'/>
+        <property name='org.eclipse.equinox.p2.provider' value='SQL Explorer Project (eclipsesql.sourceforge.net)'/>
+      </properties>
+      <provides size='4'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.postgresql' version='3.5.0.v20090118_RC6_P5'/>
+        <provided namespace='osgi.bundle' name='net.sourceforge.sqlexplorer.postgresql' version='3.5.0.v20090118_RC6_P5'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+        <provided namespace='osgi.fragment' name='net.sourceforge.sqlexplorer' version='3.5.0.v20090118_RC6_P5'/>
+      </provides>
+      <requires size='1'>
+        <required namespace='osgi.bundle' name='net.sourceforge.sqlexplorer' range='3.5.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.sourceforge.sqlexplorer.postgresql' version='3.5.0.v20090118_RC6_P5'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Fragment-Host: net.sourceforge.sqlexplorer;bundle-version=&quot;3.5.0&quot;&#xA;Created-By: 1.5.0_12-b04 (Sun Microsystems Inc.)&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 3.5.0.v20090118_RC6_P5&#xA;Bundle-SymbolicName: net.sourceforge.sqlexplorer.postgresql;singleton:=true&#xA;Bundle-Localization: plugin&#xA;Ant-Version: Apache Ant 1.7.0&#xA;Bundle-Name: PostgesSQL Support for SqlExplorer&#xA;Bundle-Vendor: SQL Explorer Project (eclipsesql.sourceforge.net)&#xA;
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='net.sourceforge.sqlexplorer' version='3.5.0.v20090111_RC6_P5'>
+      <update id='net.sourceforge.sqlexplorer' range='[0.0.0,3.5.0.v20090111_RC6_P5)' severity='0'/>
+      <properties size='2'>
+        <property name='org.eclipse.equinox.p2.name' value='SQLExplorer Plugin'/>
+        <property name='org.eclipse.equinox.p2.provider' value='SQL Explorer Project (eclipsesql.sourceforge.net)'/>
+      </properties>
+      <provides size='94'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer' version='3.5.0.v20090111_RC6_P5'/>
+        <provided namespace='osgi.bundle' name='net.sourceforge.sqlexplorer' version='3.5.0.v20090111_RC6_P5'/>
+        <provided namespace='java.package' name='META-INF' version='0.0.0'/>
+        <provided namespace='java.package' name='com.sun.rowset' version='0.0.0'/>
+        <provided namespace='java.package' name='com.sun.rowset.internal' version='0.0.0'/>
+        <provided namespace='java.package' name='com.sun.rowset.providers' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sql.rowset' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sql.rowset.serial' version='0.0.0'/>
+        <provided namespace='java.package' name='javax.sql.rowset.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.connections' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.connections.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dataset' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dbdetail' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dbdetail.tab' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dbproduct' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dbstructure' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dbstructure.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dbstructure.nodes' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dialogs' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.history' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.history.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.parsers' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.parsers.scp' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.plugin' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.plugin.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.plugin.editors' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.plugin.perspectives' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.plugin.views' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.plugin.wizards' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.preferences' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.preview' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.sessiontree.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.sessiontree.model.utility' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.sqleditor' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.sqleditor.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.sqleditor.results.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.sqlpanel' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.sqlpanel.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.util' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.datasetviewer' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.datasetviewer.cellcomponent' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.gui' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.gui.action' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.gui.image' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.id' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.persist' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.resources' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.resources.images.eclipse' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.resources.images.gnome' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.sql' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.util' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.util.beanwrapper' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.util.log' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.xml' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.commons.logging' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.commons.logging.impl' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.chainsaw' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.config' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.helpers' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.jdbc' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.jmx' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.lf5' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.lf5.config' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.lf5.util' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.lf5.viewer' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.lf5.viewer.categoryexplorer' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.lf5.viewer.configure' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.lf5.viewer.images' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.net' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.nt' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.or' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.or.jms' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.or.sax' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.spi' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.varia' version='0.0.0'/>
+        <provided namespace='java.package' name='org.apache.log4j.xml' version='0.0.0'/>
+        <provided namespace='java.package' name='org.dom4j' version='0.0.0'/>
+        <provided namespace='java.package' name='org.dom4j.bean' version='0.0.0'/>
+        <provided namespace='java.package' name='org.dom4j.datatype' version='0.0.0'/>
+        <provided namespace='java.package' name='org.dom4j.dom' version='0.0.0'/>
+        <provided namespace='java.package' name='org.dom4j.dtd' version='0.0.0'/>
+        <provided namespace='java.package' name='org.dom4j.io' version='0.0.0'/>
+        <provided namespace='java.package' name='org.dom4j.jaxb' version='0.0.0'/>
+        <provided namespace='java.package' name='org.dom4j.rule' version='0.0.0'/>
+        <provided namespace='java.package' name='org.dom4j.rule.pattern' version='0.0.0'/>
+        <provided namespace='java.package' name='org.dom4j.swing' version='0.0.0'/>
+        <provided namespace='java.package' name='org.dom4j.tree' version='0.0.0'/>
+        <provided namespace='java.package' name='org.dom4j.util' version='0.0.0'/>
+        <provided namespace='java.package' name='org.dom4j.xpath' version='0.0.0'/>
+        <provided namespace='java.package' name='org.dom4j.xpp' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.jface.preference' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='7'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='3.2.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='3.2.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.2.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='3.2.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.workbench.texteditor' range='3.2.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='3.2.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.editors' range='3.2.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.sourceforge.sqlexplorer' version='3.5.0.v20090111_RC6_P5'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='manifest'>
+            Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Bundle-Name: SQLExplorer Plugin&#xA;Ant-Version: Apache Ant 1.7.0&#xA;Bundle-ClassPath: sqlexplorer.jar,lib/commons-logging.jar,lib/log4j.jar,lib/rowset.jar,lib/dom4j.jar,lib/squirrel.jar,lib/hibernate3.2.4.sp1.jar&#xA;Require-Bundle: org.eclipse.ui;bundle-version=&quot;3.2.0&quot;,org.eclipse.core.runtime;bundle-version=&quot;3.2.0&quot;,org.eclipse.core.resources;bundle-version=&quot;3.2.0&quot;,org.eclipse.ui.ide;bundle-version=&quot;3.2.0&quot;,org.eclipse.ui.workbench.texteditor;bundle-version=&quot;3.2.0&quot;,org.eclipse.jface.text;bundle-version=&quot;3.2.0&quot;,org.eclipse.ui.editors;bundle-version=&quot;3.2.0&quot;&#xA;Bundle-Activator: net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin&#xA;Bundle-Vendor: SQL Explorer Project (eclipsesql.sourceforge.net)&#xA;Created-By: 1.5.0_12-b04 (Sun Microsystems Inc.)&#xA;Manifest-Version: 1.0&#xA;Bundle-Version: 3.5.0.v20090111_RC6_P5&#xA;Bundle-Localization: plugin&#xA;Export-Package: META-INF,com.sun.rowset,com.sun.rowset.internal;x-internal:=true,com.sun.rowset.providers,javax.sql.rowset,javax.sql.rowset.serial,javax.sql.rowset.spi,net.sourceforge.sqlexplorer,net.sourceforge.sqlexplorer.connections,net.sourceforge.sqlexplorer.connections.actions,net.sourceforge.sqlexplorer.dataset,net.sourceforge.sqlexplorer.dbdetail,net.sourceforge.sqlexplorer.dbdetail.tab,net.sourceforge.sqlexplorer.dbproduct,net.sourceforge.sqlexplorer.dbstructure,net.sourceforge.sqlexplorer.dbstructure.actions,net.sourceforge.sqlexplorer.dbstructure.nodes,net.sourceforge.sqlexplorer.dialogs,net.sourceforge.sqlexplorer.history,net.sourceforge.sqlexplorer.history.actions,net.sourceforge.sqlexplorer.parsers,net.sourceforge.sqlexplorer.parsers.scp,net.sourceforge.sqlexplorer.plugin,net.sourceforge.sqlexplorer.plugin.actions,net.sourceforge.sqlexplorer.plugin.editors,net.sourceforge.sqlexplorer.plugin.perspectives,net.sourceforge.sqlexplorer.plugin.views,net.sourceforge.sqlexplorer.plugin.wizards,net.sourceforge.sqlexplorer.preferences,net.sourceforge.sqlexplorer.preview,net.sourceforge.sqlexplorer.sessiontree.actions,net.sourceforge.sqlexplorer.sessiontree.model.utility,net.sourceforge.sqlexplorer.sqleditor,net.sourceforge.sqlexplorer.sqleditor.actions,net.sourceforge.sqlexplorer.sqleditor.results.actions,net.sourceforge.sqlexplorer.sqlpanel,net.sourceforge.sqlexplorer.sqlpanel.actions,net.sourceforge.sqlexplorer.util,net.sourceforge.squirrel_sql.fw.datasetviewer,net.sourceforge.squirrel_sql.fw.datasetviewer.cellcomponent,net.sourceforge.squirrel_sql.fw.gui,net.sourceforge.squirrel_sql.fw.gui.action,net.sourceforge.squirrel_sql.fw.gui.image,net.sourceforge.squirrel_sql.fw.id,net.sourceforge.squirrel_sql.fw.persist,net.sourceforge.squirrel_sql.fw.resources,net.sourceforge.squirrel_sql.fw.resources.images.eclipse,net.sourceforge.squirrel_sql.fw.resources.images.gnome,net.sourceforge.squirrel_sql.fw.sql,net.sourceforge.squirrel_sql.fw.util,net.sourceforge.squirrel_sql.fw.util.beanwrapper,net.sourceforge.squirrel_sql.fw.util.log,net.sourceforge.squirrel_sql.fw.xml,org.apache.commons.logging,org.apache.commons.logging.impl,org.apache.log4j,org.apache.log4j.chainsaw,org.apache.log4j.config,org.apache.log4j.helpers,org.apache.log4j.jdbc,org.apache.log4j.jmx,org.apache.log4j.lf5,org.apache.log4j.lf5.config,org.apache.log4j.lf5.util,org.apache.log4j.lf5.viewer,org.apache.log4j.lf5.viewer.categoryexplorer,org.apache.log4j.lf5.viewer.configure,org.apache.log4j.lf5.viewer.images,org.apache.log4j.net,org.apache.log4j.nt,org.apache.log4j.or,org.apache.log4j.or.jms,org.apache.log4j.or.sax,org.apache.log4j.spi,org.apache.log4j.varia,org.apache.log4j.xml,org.dom4j,org.dom4j.bean,org.dom4j.datatype,org.dom4j.dom,org.dom4j.dtd,org.dom4j.io,org.dom4j.jaxb,org.dom4j.rule,org.dom4j.rule.pattern,org.dom4j.swing,org.dom4j.tree,org.dom4j.util,org.dom4j.xpath,org.dom4j.xpp,org.eclipse.jface.preference&#xA;Bundle-SymbolicName: net.sourceforge.sqlexplorer; singleton:=true&#xA;Eclipse-LazyStart: true&#xA;
+          </instruction>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
+    <unit id='net.sourceforge.sqlexplorer.patch.feature.group' version='3.5.0.v20090118_RC6_P5' singleton='false'>
+      <patchScope>
+        <scope>
+          <requires size='1'>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.5.0.v20080924_RC6,3.5.0.v20080924_RC6]'/>
+          </requires>
+        </scope>
+      </patchScope>
+      <changes>
+        <change>
+          <from>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer' range='0.0.0'/>
+          </from>
+          <to>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer' range='[3.5.0.v20090111_RC6_P5,3.5.0.v20090111_RC6_P5]'/>
+          </to>
+        </change>
+        <change>
+          <from>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.postgresql' range='0.0.0'/>
+          </from>
+          <to>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.postgresql' range='[3.5.0.v20090118_RC6_P5,3.5.0.v20090118_RC6_P5]'/>
+          </to>
+        </change>
+        <change>
+          <from>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.dbase' range='0.0.0'/>
+          </from>
+          <to>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.dbase' range='[3.5.0.v20081204_RC6_P3,3.5.0.v20081204_RC6_P3]'/>
+          </to>
+        </change>
+        <change>
+          <from>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.mssql' range='0.0.0'/>
+          </from>
+          <to>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.mssql' range='[3.5.0.v20081204_RC6_P3,3.5.0.v20081204_RC6_P3]'/>
+          </to>
+        </change>
+        <change>
+          <from>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.sybase' range='0.0.0'/>
+          </from>
+          <to>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.sybase' range='[3.5.0.v20081204_RC6_P3,3.5.0.v20081204_RC6_P3]'/>
+          </to>
+        </change>
+        <change>
+          <from>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.mysql' range='0.0.0'/>
+          </from>
+          <to>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.mysql' range='[3.5.0.v20090118_RC6_P5,3.5.0.v20090118_RC6_P5]'/>
+          </to>
+        </change>
+      </changes>
+      <lifeCycle>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.5.0.v20080924_RC6,3.5.0.v20080924_RC6]' greedy='false'/>
+      </lifeCycle>
+      <update id='net.sourceforge.sqlexplorer.patch.feature.group' range='[0.0.0,3.5.0.v20090118_RC6_P5)' severity='0'/>
+      <properties size='6'>
+        <property name='org.eclipse.equinox.p2.name' value='Eclipse SQL Explorer RC6 P5'/>
+        <property name='org.eclipse.equinox.p2.description' value='3.5.0.RC6/P5 - Heiko Hilbert&#xA;======================================================&#xA;+. fixed problem with result tab tool tip&#xA;+. fixed charset problem for saved sql history&#xA;+. added source tab to postgresql plugin&#xA;+. fixed parser problem with dollar quoted strings in postgresql plugin&#xA;+. added source tab and function folder to mysql plugin&#xA;&#xA;3.5.0.RC6/P4 - Heiko Hilbert&#xA;======================================================&#xA;+. fixed problem with PreparedStatement.setQueryTimeout not implemented&#xA;in postgreSQL drivers&#xA;&#xA;3.5.0.RC6/P3 &#xA;======================================================&#xA;+. make last inserted message visible in results message tab&#xA;+. fixed ConcurrentModificationException on closing all connections&#xA;while shutting down eclipse&#xA;+. Set tables for return grids to be sortable and have movable&#xA;columns by default.&#xA;+. Add the ability to drop Fully Qualified domain names for elements&#xA;that know how to retrieve text drag and drop.  &#xA;Unfortunately we still can&apos;t drag and drop on to the editor.&#xA;+. Add tool tip to results tab&#xA;+. fixed #2209630,#2284792: Exception while converting old SQlAliases.xml&#xA;+. fixed #1824644: Copy Connection Profile does not work, &#xA;renamed action to Duplicate Connection Profile&#xA;+. fixed problem with Sybase setAutoCommit (CHAINED command not&#xA;allowed within multi-statement transaction)   &#xA;+. show Database Structure View when &apos;View Database Structure&apos;&#xA;is invoked&#xA;+. added Re-Run action to results tables&#xA;and includes all fixes from&#xA;&#xA;3.5.0.RC6/P2 fixes some problems from RC6:&#xA;======================================================&#xA;+. fixed Bug #2153183: Export to csv is broken&#xA;+. fixed Bug #2153849: Editor font preference not stored&#xA;and includes all fixes from&#xA;&#xA;3.5.0.RC6/P1 &#xA;======================================================&#xA;+. fixed problem with getDatabaseMajorVersion() not implemented&#xA;+. fixed loading problem with content assist enabled&#xA;+. fixed problem with auto deserialization in MySql driver&#xA;+. fixed NPE in BatchJob'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='SQL Explorer SourceForge Site'/>
+        <property name='org.eclipse.equinox.p2.provider' value='SQL Explorer Project (eclipsesql.sourceforge.net)'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
+        <property name='org.eclipse.equinox.p2.type.patch' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.patch.feature.group' version='3.5.0.v20090118_RC6_P5'/>
+      </provides>
+      <requires size='2'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.patch.feature.jar' range='[3.5.0.v20090118_RC6_P5,3.5.0.v20090118_RC6_P5]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.5.0.v20080924_RC6,3.5.0.v20080924_RC6]' greedy='false'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license>
+          This program is free software; you can redistribute it and/or&#xA;modify it under the terms of the GNU Lesser General Public&#xA;License as published by the Free Software Foundation; either&#xA;version 2.1 of the License, or (at your option) any later version.&#xA;This library is distributed in the hope that it will be useful,&#xA;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA;GNU Lesser General Public License for more details.&#xA;You should have received a copy of the GNU Lesser General Public&#xA;License along with this library; if not, write to the Free Software&#xA;Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307&#xA;USA
+        </license>
+      </licenses>
+      <copyright url='http://sourceforge.net/projects/eclipsesql'>
+        Copyright (C) 2006,2007,2008 SQL Explorer Development Team&#xA;This program is free software; you can redistribute it and/or&#xA;modify it under the terms of the GNU Lesser General Public&#xA;License as published by the Free Software Foundation; either&#xA;version 2.1 of the License, or (at your option) any later version.&#xA;This library is distributed in the hope that it will be useful,&#xA;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA;GNU Lesser General Public License for more details.&#xA;You should have received a copy of the GNU Lesser General Public&#xA;License along with this library; if not, write to the Free Software&#xA;Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307&#xA;USA
+      </copyright>
+    </unit>
+    <unit id='net.sourceforge.sqlexplorer.postgresql.translated_host_properties' version='3.5.0.v20090118_RC6_P5'>
+      <hostRequirements size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer' range='3.5.0' greedy='false'/>
+      </hostRequirements>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.type.fragment' value='true'/>
+      </properties>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer' range='3.5.0' greedy='false'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
+    </unit>
+    <unit id='net.sourceforge.sqlexplorer.mysql.translated_host_properties' version='3.5.0.v20090118_RC6_P5'>
+      <hostRequirements size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer' range='3.5.0' greedy='false'/>
+      </hostRequirements>
+      <properties size='1'>
+        <property name='org.eclipse.equinox.p2.type.fragment' value='true'/>
+      </properties>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer' range='3.5.0' greedy='false'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
     </unit>
   </units>
 </repository>

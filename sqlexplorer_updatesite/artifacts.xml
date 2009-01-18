@@ -3,14 +3,14 @@
 <repository name='Eclipse SQL Explorer Updates' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1.0.0'>
   <properties size='2'>
     <property name='p2.compressed' value='false'/>
-    <property name='p2.timestamp' value='1231691281406'/>
+    <property name='p2.timestamp' value='1232305121703'/>
   </properties>
   <mappings size='3'>
     <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
     <rule filter='(&amp; (classifier=binary))' output='${repoUrl}/binary/${id}_${version}'/>
     <rule filter='(&amp; (classifier=org.eclipse.update.feature))' output='${repoUrl}/features/${id}_${version}.jar'/>
   </mappings>
-  <artifacts size='13'>
+  <artifacts size='17'>
     <artifact classifier='osgi.bundle' id='net.sourceforge.sqlexplorer.mssql' version='3.5.0.v20081204_RC6_P3'>
       <properties size='3'>
         <property name='artifact.size' value='44258'/>
@@ -24,10 +24,24 @@
         <property name='download.size' value='2014'/>
       </properties>
     </artifact>
+    <artifact classifier='osgi.bundle' id='net.sourceforge.sqlexplorer.postgresql' version='3.5.0.v20090118_RC6_P5'>
+      <properties size='3'>
+        <property name='artifact.size' value='99646'/>
+        <property name='download.size' value='99646'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
     <artifact classifier='osgi.bundle' id='net.sourceforge.sqlexplorer.mysql' version='3.5.0.v20080924_RC6'>
       <properties size='3'>
         <property name='artifact.size' value='13869'/>
         <property name='download.size' value='13869'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='net.sourceforge.sqlexplorer.mysql' version='3.5.0.v20090118_RC6_P5'>
+      <properties size='3'>
+        <property name='artifact.size' value='15363'/>
+        <property name='download.size' value='15363'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
@@ -66,10 +80,23 @@
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.sqlexplorer.patch' version='3.5.0.v20090118_RC6_P5'>
+      <properties size='2'>
+        <property name='artifact.size' value='2114'/>
+        <property name='download.size' value='2114'/>
+      </properties>
+    </artifact>
     <artifact classifier='osgi.bundle' id='net.sourceforge.sqlexplorer.sybase' version='3.5.0.v20081204_RC6_P3'>
       <properties size='3'>
         <property name='artifact.size' value='23606'/>
         <property name='download.size' value='23606'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='net.sourceforge.sqlexplorer' version='3.5.0.v20090111_RC6_P5'>
+      <properties size='3'>
+        <property name='artifact.size' value='4130745'/>
+        <property name='download.size' value='4130745'/>
         <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
