@@ -20,12 +20,12 @@ package net.sourceforge.sqlexplorer.history;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.ApplicationFiles;
@@ -182,13 +182,16 @@ public class SQLHistory {
     	try {
 	    	File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME_V350);
 	        SAXReader reader = new SAXReader();
-	        Element root = reader.read(file).getRootElement();
+	        Element root = reader.read(new InputStreamReader(new FileInputStream(file), "UTF-8")).getRootElement();
 	        _history.clear();
 	        _filteredHistory.clear();
 	        for (Element elem : root.elements(SQLHistoryElement.ELEMENT))
 	        	_history.add(new SQLHistoryElement(elem));
 	        	
-    	}catch(DocumentException e) {
+    	}catch(IOException e) {
+    		SQLExplorerPlugin.error("Cannot load history (v3.5.0 format)", e);
+    	}
+    	catch(DocumentException e) {
     		SQLExplorerPlugin.error("Cannot load history (v3.5.0 format)", e);
     	}
     }
@@ -315,7 +318,7 @@ public class SQLHistory {
         	Element root = new DefaultElement(HISTORY);
         	for (SQLHistoryElement elem : _history)
         		root.add(elem.describeAsXml());
-        	XMLWriter xmlWriter = new XMLWriter(new FileWriter(file), OutputFormat.createPrettyPrint());
+        	XMLWriter xmlWriter = new XMLWriter(new OutputStreamWriter(new FileOutputStream(file),"UTF-8"), OutputFormat.createPrettyPrint());
         	xmlWriter.write(root);
         	xmlWriter.flush();
         	xmlWriter.close();
@@ -362,14 +365,10 @@ public class SQLHistory {
             return;
         }
         
-        _filteredHistory = new ArrayList();
+        _filteredHistory = new ArrayList<SQLHistoryElement>();
         String[] keyword = _qry.split(" ");
 
-        Iterator it = _history.iterator();
-
-        while (it.hasNext()) {
-
-            SQLHistoryElement el = (SQLHistoryElement) it.next();
+        for(SQLHistoryElement el :  _history) {
 
             boolean include = true;
 

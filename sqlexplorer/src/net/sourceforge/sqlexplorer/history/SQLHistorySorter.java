@@ -27,7 +27,7 @@ import org.eclipse.swt.SWT;
  * 
  * @author Davy Vanherbergen
  */
-public class SQLHistorySorter implements Comparator {
+public class SQLHistorySorter implements Comparator<SQLHistoryElement> {
 
     private int _direction = SWT.DOWN;
 
@@ -39,7 +39,7 @@ public class SQLHistorySorter implements Comparator {
     }
 
 
-    public int compare(Object e1, Object e2) {
+    public int compare(SQLHistoryElement e1, SQLHistoryElement e2) {
 
         SQLHistoryElement el1 = (SQLHistoryElement) e1;
         SQLHistoryElement el2 = (SQLHistoryElement) e2;
