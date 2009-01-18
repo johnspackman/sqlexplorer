@@ -57,6 +57,9 @@ public class PostgresQueryParser extends AbstractSyntaxQueryParser {
 	// The name of the object being created if this is a "CREATE ... " DDL statement
 	private String createName;
 
+	// The tag started a dollar quoted text, syntax: $someTextOrNothing$
+	private String dollarQuoteTag;
+
 	/**
 	 * Constructor
 	 * @param sql
@@ -97,6 +100,72 @@ public class PostgresQueryParser extends AbstractSyntaxQueryParser {
 			
 			if (type == TokenType.PUNCTUATION) {
 				String value = token.toString();
+
+				if (value.equals("$")) {
+					boolean found = false;
+					int revertLevel = 0;
+					nextToken();
+					revertLevel++;
+					token = getCurrentToken();
+					
+					// Remember the type of object being created and it's name
+					if (token.getTokenType() == TokenType.WORD)	{
+						String tagName = token.toString();
+						nextToken();
+						revertLevel++;
+						token = getCurrentToken();
+						if("$".equals(token.toString())) {
+							// reached end of named dollar quote
+							if(dollarQuoteTag == null) {
+								dollarQuoteTag = tagName;
+								found = true;
+							}
+							else {
+								if(dollarQuoteTag.equals(tagName)) {
+									dollarQuoteTag = null;
+									found = true;
+								}
+								else {
+									// nested dollar quote must have differnt tag names, so we can ignore it
+								}
+							}
+						}
+					}
+					else {
+						if("$".equals(token.toString())) {
+							// reached end of named dollar quote
+							if(dollarQuoteTag == null) {
+								dollarQuoteTag = "";
+								found = true;
+							}
+							else {
+								if(dollarQuoteTag.length() == 0) {
+									dollarQuoteTag = null;
+									found = true;
+								}
+								else {
+									// nested dollar quote must have differnt tag names, so we can ignore it
+								}
+							}
+						}
+					}
+					if(found) {
+						if(inPlSql && ! seenBegin) {
+							// we have a dollar quoted pl sql block, reset flag
+							inPlSql = false;
+						}
+					}
+					else {
+						while(revertLevel > 0) {
+							ungetToken();
+							revertLevel--;
+						}
+					}
+				}
+				else if(dollarQuoteTag != null) {
+					continue;
+				}
+					
 				
 				// For SQL*PLUS compatability, a / at the start of a line forces a break
 				if (token.getCharNo() == 1 && value.equals("/")) {
@@ -121,6 +190,10 @@ public class PostgresQueryParser extends AbstractSyntaxQueryParser {
 				}
 			}
 			
+				if(dollarQuoteTag != null)
+				{
+					continue;
+				}				
 			if (type == TokenType.WORD) {
 				String word = token.toString();
 				
