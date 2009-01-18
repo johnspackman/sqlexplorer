@@ -74,6 +74,12 @@
             id="net.sourceforge.sqlexplorer.postgresql.tabs.RequiredByTab"
             name="Required by Info"
             node-type="loginrole,grouprole,tablespace,language,cast,aggregate,function,procedure,trigger,conversion,domain,opclass,operator,type"/>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.postgresql.tabs.SourceTab"
+            database-product-name="PostgreSQL*"
+            id="net.sourceforge.sqlexplorer.postgresql.tabs.SourceTab"
+            name="Generic Source Tab"
+            node-type="function,procedure,trigger"/>    
    </extension>
    <extension
          id="net.sourceforge.sqlexplorer.postgresql.Nodes"
