@@ -24,21 +24,20 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
-import net.sourceforge.sqlexplorer.parsers.ParserException;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.util.TextUtil;
-import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -157,17 +156,16 @@ public abstract class AbstractSQLExecution extends Job {
 		if (resultsTab == null)
 			return null;
 		boolean longCaptions = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.USE_LONG_CAPTIONS_ON_RESULTS);
+		String caption = resultsTab.getText();
 		if (longCaptions) {
-			String caption = resultsTab.getText();
 			int pos = caption.indexOf(" [");
 			if(pos > 0)
 			{
 				caption = caption.substring(0, pos);
 			}
-			caption = caption + " [" + TextUtil.compressWhitespace(query.getQuerySql(), MAX_CAPTION_LENGTH) + "]";
-			resultsTab.setText(caption);
-			resultsTab.setToolTipText(resultsTab.getText() + " [" + query.getQuerySql() + "]");
+			resultsTab.setText(caption + " [" + TextUtil.compressWhitespace(query.getQuerySql(), MAX_CAPTION_LENGTH) + "]");
 		}
+		resultsTab.setToolTipText(caption + " [" + query.getQuerySql() + "]");
 		return resultsTab;
 	}
 
@@ -274,9 +272,7 @@ public abstract class AbstractSQLExecution extends Job {
 		_editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
             public void run() {
-        		Iterator iter = messages.iterator();
-        		while (iter.hasNext()) {
-        			Message message = (Message)iter.next();
+        		for(Message message : messages) {
         			_editor.addMessage(message);
         		}
             }
