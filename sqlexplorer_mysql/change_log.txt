@@ -1,0 +1,10 @@
+3.5.0.RC6/P6 - Heiko Hilbert
+======================================================
++. replaced source tab with DDL Tab for database,table,view,procedure,function,trigger
++. added Trigger folder
++. fixed problem with quoting of procedure/function names
+
+3.5.0.RC6/P5 - Heiko Hilbert
+======================================================
++. added source tab and function folder to mysql plugin
+
