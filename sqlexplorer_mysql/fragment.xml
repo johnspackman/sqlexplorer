@@ -40,11 +40,11 @@
             name="Open Tables"
             node-type="catalog"/>                                          
       <detailtab
-            class="net.sourceforge.sqlexplorer.mysql.tabs.SourceTab"
+            class="net.sourceforge.sqlexplorer.mysql.tabs.DDLTab"
             database-product-name="MySQL*"
-            id="net.sourceforge.sqlexplorer.mysql.tabs.SourceTab"
+            id="net.sourceforge.sqlexplorer.mysql.tabs.DDLTab"
             name="Generic Source Tab"
-            node-type="function,procedure,trigger"/>    
+            node-type="catalog,table,view,function,procedure,trigger"/>    
    </extension>
    <extension
          point="net.sourceforge.sqlexplorer.nodeContextAction">
@@ -59,12 +59,26 @@
    <extension
          point="net.sourceforge.sqlexplorer.node">
       <node
+            class="net.sourceforge.sqlexplorer.mysql.nodes.DummyNode"
+            database-product-name="MySQL*"
+            id="net.sourceforge.sqlexplorer.mysql.nodes.DummyNode"
+            name="Hidden"
+            parent-node="schema+catalog"
+            table-type="local temporary"/>
+      <node
             class="net.sourceforge.sqlexplorer.mysql.nodes.ProcedureFolder"
             database-product-name="MySQL*"
             id="net.sourceforge.sqlexplorer.mysql.nodes.ProcedureFolder"
             name="Procedure Folder"
             parent-node="schema+catalog"
             table-type="procedure_folder"/>
+      <node
+            class="net.sourceforge.sqlexplorer.mysql.nodes.TriggerFolder"
+            database-product-name="MySQL*"
+            id="net.sourceforge.sqlexplorer.mysql.nodes.TriggerFolder"
+            name="Procedure Folder"
+            parent-node="schema+catalog"
+            table-type="trigger_folder"/>
       <node
             class="net.sourceforge.sqlexplorer.mysql.nodes.FunctionFolder"
             database-product-name="MySQL*"
