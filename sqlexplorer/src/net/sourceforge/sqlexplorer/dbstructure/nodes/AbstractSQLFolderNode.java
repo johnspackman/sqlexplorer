@@ -80,7 +80,7 @@ public abstract class AbstractSQLFolderNode extends AbstractFolderNode {
 
                 String name = rs.getString(1);
                 if (!isExcludedByFilter(name)) {
-                    ObjectNode node = new ObjectNode(name, getChildType(), this, getImage());
+                    ObjectNode node = createChildNode(name);
                     addChildNode(node);
                 }
             }
@@ -120,5 +120,10 @@ public abstract class AbstractSQLFolderNode extends AbstractFolderNode {
         }
 
     }
+
+	protected ObjectNode createChildNode(String pName) {
+		ObjectNode node = new ObjectNode(pName, getChildType(), this, getImage());
+		return node;
+	}
 
 }
