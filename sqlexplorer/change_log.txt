@@ -1,3 +1,7 @@
+3.5.0.RC6/P6 - Heiko Hilbert
+======================================================
++. fixed refresh problems in structure view and database details
+
 3.5.0.RC6/P5 - Heiko Hilbert
 ======================================================
 +. fixed problem with result tab tool tip
