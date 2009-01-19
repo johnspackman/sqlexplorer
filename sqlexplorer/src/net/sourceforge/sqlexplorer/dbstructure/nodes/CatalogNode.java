@@ -303,6 +303,10 @@ public class CatalogNode extends AbstractNode {
 
                 INode childNode = findExtensionNode(tableTypes[i]);
                 if (childNode != null) {
+                	if(childNode.getLabelText().length() == 0) {
+                		// dummy node, ignore it
+                		continue;
+                	}
                     _childNames.add(childNode.getLabelText());
                     if (!isExcludedByFilter(childNode.getLabelText())) {
                         addChildNode(childNode);
