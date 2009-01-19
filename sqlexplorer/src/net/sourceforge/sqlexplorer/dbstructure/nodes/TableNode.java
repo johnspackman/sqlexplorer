@@ -47,6 +47,8 @@ public class TableNode extends AbstractNode {
     private ITableInfo _tableInfo;
 
     private List<String> _folderNames = new ArrayList<String>();
+    
+    private boolean isLoaded = false;
 
     /**
      * Create new database table node.
@@ -284,6 +286,27 @@ public class TableNode extends AbstractNode {
         return _tableInfo.getType().equalsIgnoreCase("VIEW");
     }
 
+    private void resetInfo()
+    {
+        try {
+			ITableInfo[] tables = getSession().getMetaData().getTables(_tableInfo.getCatalogName(), _tableInfo.getSchemaName(), "%"+_tableInfo.getSimpleName()+"%", new String[] {_tableInfo.getType()}, null);
+			for(ITableInfo info : tables)
+			{
+				if(_tableInfo.getQualifiedName().equals(info.getQualifiedName()))
+				{
+					_tableInfo = info;
+					break;
+				}
+			}
+			_folderNames.clear();
+			_columnNames = null;
+			_foreignKeyNames = null;
+			_primaryKeyNames = null;
+		} catch (SQLException e) {
+            SQLExplorerPlugin.error("Could not load child nodes for " + getQualifiedName(), e);
+		}
+    	
+    }
 
     /**
      * 
@@ -292,6 +315,11 @@ public class TableNode extends AbstractNode {
      */
     public void loadChildren() {
 
+    	if(this.isLoaded) {
+    		resetInfo();
+    		this.isLoaded = false;
+    	}
+    	this.isLoaded = true;
         try {            
             addExtensionNodes();
             

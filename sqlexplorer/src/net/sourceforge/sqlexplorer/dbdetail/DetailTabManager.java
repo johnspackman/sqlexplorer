@@ -2,8 +2,8 @@ package net.sourceforge.sqlexplorer.dbdetail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbdetail.tab.ColumnInfoTab;
@@ -51,11 +51,39 @@ import org.eclipse.swt.widgets.TabItem;
  */
 public class DetailTabManager {
 
+	private static class NodeCache {
+		List<IDetailTab> tabs = null;
+		Map<String, NodeCache> children = new HashMap<String, NodeCache>();
+		
+		public List<IDetailTab> getTabs() {
+			return this.tabs;
+		}
+		
+		public void setTabs(List<IDetailTab> tabs) {
+			this.tabs = tabs;
+		}
+		
+		public NodeCache getChild(INode pNode) {
+			NodeCache child = children.get(pNode.getName());
+			if(child == null) {
+				child = new NodeCache();
+				children.put(pNode.getName(), child);
+			}
+			return child;
+		}
+		public void reset() {
+			this.tabs = null;
+			for(NodeCache current : this.children.values()) {
+				current.reset();
+			}
+			this.children.clear();
+		}
+	}
     private static String _activeTabName = null;
 
     private static final Log _logger = LogFactory.getLog(DetailTabManager.class);
 
-    private static final HashMap<Session, HashMap<String, List<IDetailTab>>> _sessionTabCache = new HashMap();
+    private static final Map<Session, NodeCache> _sessionTabCache = new HashMap<Session, NodeCache>();
 
 
     /**
@@ -69,8 +97,12 @@ public class DetailTabManager {
             _logger.debug("Clearing tab cache for: " + node.getUniqueIdentifier());
         }
 
-        HashMap<String, List<IDetailTab>> tabCache = _sessionTabCache.get(node.getSession());
-        tabCache.remove(node.getUniqueIdentifier());
+        NodeCache nodeCache = _sessionTabCache.get(node.getSession());
+        if(nodeCache != null)
+        {
+        	nodeCache = findNodeCache(node, nodeCache);
+        	nodeCache.reset();
+        }
 
     }
 
@@ -100,7 +132,7 @@ public class DetailTabManager {
      */
     public static void createTabs(Composite composite, INode node) {
 
-        List tabs = getTabs(node);
+        List<IDetailTab> tabs = getTabs(node);
 
         if (tabs == null || tabs.size() == 0) {
             // no detail found..
@@ -146,12 +178,8 @@ public class DetailTabManager {
         });
 
         // add tabs to folder
-        Iterator it = tabs.iterator();
         int tabIndex = 0;
-
-        while (it.hasNext()) {
-
-            IDetailTab detailTab = (IDetailTab) it.next();
+        for(IDetailTab detailTab : tabs) {
 
             // create tab
             TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
@@ -359,26 +387,28 @@ public class DetailTabManager {
      * @param node INode for which to retrieve tabs.
      * @return List of tabs.
      */
-    private static List getTabs(INode node) {
+    private static List<IDetailTab> getTabs(INode node) {
 
         if (_logger.isDebugEnabled()) {
             _logger.debug("Loading tabs for: " + node.getUniqueIdentifier());
         }
 
-        HashMap<String, List<IDetailTab>> tabCache = _sessionTabCache.get(node.getSession());
+        NodeCache nodeCache = _sessionTabCache.get(node.getSession());
 
-        if (tabCache == null) {
+        if (nodeCache == null) {
             // create cache
-            tabCache = new HashMap<String, List<IDetailTab>>();
-            _sessionTabCache.put(node.getSession(), tabCache);
+        	nodeCache = new NodeCache();
+            _sessionTabCache.put(node.getSession(), nodeCache);
         }
-
-        List<IDetailTab> tabs = tabCache.get(node.getUniqueIdentifier());
+        
+        nodeCache = findNodeCache(node, nodeCache);
+        
+        List<IDetailTab> tabs = nodeCache.getTabs();
 
         if (tabs == null) {
             // create tabs & store for later
             tabs = createTabs(node);
-            tabCache.put(node.getUniqueIdentifier(), tabs);
+            nodeCache.setTabs(tabs);
         }
 
         // display parent details if we have nothing for this node..
@@ -390,7 +420,17 @@ public class DetailTabManager {
     }
 
 
-    /**
+    private static NodeCache findNodeCache(INode pNode,	NodeCache pNodeCache) {
+    	NodeCache found = 
+    		pNode.getParent() == null ? 
+    			pNodeCache : 
+    			findNodeCache(pNode.getParent(), pNodeCache);
+    	
+    	return found.getChild(pNode);
+	}
+
+
+	/**
      * Store the name of the active tab, so that we can reselect it when a
      * different node is selected.
      * 

@@ -359,6 +359,9 @@ public abstract class AbstractNode implements INode {
      */
     public final void refresh() {
 
+    	for(INode child : _children) {
+    		child.refresh();
+    	}
         _children.clear();
         _childrenLoaded = false;
         load();
