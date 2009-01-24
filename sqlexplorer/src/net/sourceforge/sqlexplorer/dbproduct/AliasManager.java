@@ -19,23 +19,18 @@
 package net.sourceforge.sqlexplorer.dbproduct;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
-import org.dom4j.tree.DefaultElement;
-
 import net.sourceforge.sqlexplorer.ApplicationFiles;
 import net.sourceforge.sqlexplorer.ExplorerException;
+import net.sourceforge.sqlexplorer.XMLUtils;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+
+import org.dom4j.Element;
+import org.dom4j.tree.DefaultElement;
 
 /**
  * Maintains the list of Alias objects
@@ -61,20 +56,14 @@ public class AliasManager implements ConnectionListener {
 	public void loadAliases() throws ExplorerException {
 		aliases.clear();
 		
-		try {
-			SAXReader reader = new SAXReader();
-			File file = new File(ApplicationFiles.USER_ALIAS_FILE_NAME);
-			if (file.exists()) {
-				Element root = reader.read(file).getRootElement();
-				if (root.getName().equals("Beans"))
-					root = convertToV350(root);
-				List<Element> list = root.elements(Alias.ALIAS);
-				if (list != null)
-					for (Element elem : list)
-						addAlias(new Alias(elem));
-			}
-		}catch(DocumentException e) {
-			throw new ExplorerException(e);
+		Element root = XMLUtils.readRoot(new File(ApplicationFiles.USER_ALIAS_FILE_NAME));
+		if(root != null ) {
+			if (root.getName().equals("Beans"))
+				root = convertToV350(root);
+			List<Element> list = root.elements(Alias.ALIAS);
+			if (list != null)
+				for (Element elem : list)
+					addAlias(new Alias(elem));
 		}
 	}
 
@@ -87,16 +76,7 @@ public class AliasManager implements ConnectionListener {
 		for (Alias alias : aliases.values())
 			root.add(alias.describeAsXml());
 
-		try {
-			FileWriter writer = new FileWriter(new File(ApplicationFiles.USER_ALIAS_FILE_NAME));
-			OutputFormat format = OutputFormat.createPrettyPrint();
-			XMLWriter xmlWriter = new XMLWriter(writer, format);
-			xmlWriter.write(root);
-			writer.flush();
-			writer.close();
-		}catch(IOException e) {
-			throw new ExplorerException(e);
-		}
+		XMLUtils.save(root, new File(ApplicationFiles.USER_ALIAS_FILE_NAME));
 	}
 	
 	/**

@@ -20,23 +20,20 @@ package net.sourceforge.sqlexplorer.dbproduct;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
-import org.dom4j.tree.DefaultElement;
 
 import net.sourceforge.sqlexplorer.ApplicationFiles;
 import net.sourceforge.sqlexplorer.ExplorerException;
+import net.sourceforge.sqlexplorer.XMLUtils;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.URLUtil;
+
+import org.dom4j.Element;
+import org.dom4j.tree.DefaultElement;
 
 /**
  * Provides access to the list of drivers, persisting their configuration in the
@@ -108,10 +105,11 @@ public class DriverManager {
 	 */
 	protected void loadDrivers(InputStream input) throws ExplorerException {
 		try {
-			SAXReader reader = new SAXReader();
-			Document doc = reader.read(input);
-			Element root = doc.getRootElement();
-			
+			Element root = XMLUtils.readRoot(input);
+			if(root == null)
+			{
+				throw new ExplorerException("Unable to read driver definitions");
+			}
 			if (root.getName().equals("Beans"))
 				root = convertFromV3(root);
 			
@@ -133,16 +131,7 @@ public class DriverManager {
 		for (ManagedDriver driver : drivers.values())
 			root.add(driver.describeAsXml());
 
-		try {
-			FileWriter writer = new FileWriter(new File(ApplicationFiles.USER_DRIVER_FILE_NAME));
-			OutputFormat format = OutputFormat.createPrettyPrint();
-			XMLWriter xmlWriter = new XMLWriter(writer, format);
-			xmlWriter.write(root);
-			writer.flush();
-			writer.close();
-		}catch(IOException e) {
-			throw new ExplorerException(e);
-		}
+		XMLUtils.save(root, new File(ApplicationFiles.USER_DRIVER_FILE_NAME));
 	}
 	
 	/**

@@ -20,25 +20,19 @@ package net.sourceforge.sqlexplorer.history;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.ApplicationFiles;
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.XMLUtils;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
 import org.dom4j.tree.DefaultElement;
 import org.eclipse.core.runtime.ListenerList;
 
@@ -179,20 +173,13 @@ public class SQLHistory {
     }
     
     private void loadFromFileV350() {
-    	try {
-	    	File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME_V350);
-	        SAXReader reader = new SAXReader();
-	        Element root = reader.read(new InputStreamReader(new FileInputStream(file), "UTF-8")).getRootElement();
+
+    	Element root = XMLUtils.readRoot(new File(ApplicationFiles.SQLHISTORY_FILE_NAME_V350));
+    	if(root != null) {
 	        _history.clear();
 	        _filteredHistory.clear();
 	        for (Element elem : root.elements(SQLHistoryElement.ELEMENT))
 	        	_history.add(new SQLHistoryElement(elem));
-	        	
-    	}catch(IOException e) {
-    		SQLExplorerPlugin.error("Cannot load history (v3.5.0 format)", e);
-    	}
-    	catch(DocumentException e) {
-    		SQLExplorerPlugin.error("Cannot load history (v3.5.0 format)", e);
     	}
     }
 
@@ -313,22 +300,13 @@ public class SQLHistory {
      */
     public void save() {
 
-        try {
-            File file = new File(ApplicationFiles.SQLHISTORY_FILE_NAME_V350);
-        	Element root = new DefaultElement(HISTORY);
-        	for (SQLHistoryElement elem : _history)
-        		root.add(elem.describeAsXml());
-        	XMLWriter xmlWriter = new XMLWriter(new OutputStreamWriter(new FileOutputStream(file),"UTF-8"), OutputFormat.createPrettyPrint());
-        	xmlWriter.write(root);
-        	xmlWriter.flush();
-        	xmlWriter.close();
-        	
-        	// Get rid of old versions
-        	new File(ApplicationFiles.SQLHISTORY_FILE_NAME_V300).delete();
+    	Element root = new DefaultElement(HISTORY);
+    	for (SQLHistoryElement elem : _history)
+    		root.add(elem.describeAsXml());
+    	XMLUtils.save(root, new File(ApplicationFiles.SQLHISTORY_FILE_NAME_V350));
 
-        } catch (IOException e) {
-            SQLExplorerPlugin.error("Couldn't save sql history.", e);
-        }
+    	// Get rid of old versions
+    	new File(ApplicationFiles.SQLHISTORY_FILE_NAME_V300).delete();
 
     }
 
