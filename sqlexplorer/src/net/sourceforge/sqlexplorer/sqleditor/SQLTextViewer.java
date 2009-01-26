@@ -22,6 +22,7 @@ import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DefaultInformationControl;
@@ -239,15 +240,13 @@ public class SQLTextViewer extends SourceViewer {
         	FontData[] fData = null;
         	if(event.getNewValue() instanceof String)
         	{
-        		fData = new FontData[]{new FontData((String)event.getNewValue())};
+        		fData = PreferenceConverter.basicGetFontData((String) event.getNewValue());
         	}
         	else
         	{
                 fData = (FontData[])event.getNewValue();
         		
         	}
-//            FontData[] fData = PreferenceConverter.getFontDataArray(store, IConstants.FONT);
-//            String des = store.getString(IConstants.FONT);
             String des = fData[0].toString();
             JFaceResources.getFontRegistry().put(des, fData);
             Control ctrl = this.getControl();

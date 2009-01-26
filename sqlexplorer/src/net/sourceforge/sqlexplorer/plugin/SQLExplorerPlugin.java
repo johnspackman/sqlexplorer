@@ -133,13 +133,13 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         if (_defaultConnectionsStarted)
             return;
 
-        String fontDesc = getPluginPreferences().getString(IConstants.FONT);
-        FontData fontData = null;
         try {
+            String fontDesc = getPluginPreferences().getString(IConstants.FONT);
+            FontData[] fontData = null;
 	        try {
-	        	fontData = new FontData(fontDesc);
+	        	fontData = PreferenceConverter.basicGetFontData(fontDesc);
 	        }catch(IllegalArgumentException e) {
-	        	fontData = new FontData("1|Courier New|10|0|WINDOWS|1|-13|0|0|0|400|0|0|0|0|3|2|1|49|Courier New");
+	        	fontData = new FontData[]{ new FontData("1|Courier New|10|0|WINDOWS|1|-13|0|0|0|400|0|0|0|0|3|2|1|49|Courier New")};
 	        }
 	        PreferenceConverter.setValue(getPreferenceStore(), IConstants.FONT, fontData);
         }catch(IllegalArgumentException e) {
