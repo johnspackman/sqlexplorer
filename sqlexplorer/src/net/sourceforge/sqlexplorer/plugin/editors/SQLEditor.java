@@ -433,6 +433,8 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 		if (textEditor != null)
 			textEditor.setInput(input);
 		
+		isScratchFile = false;
+
 		// Handle our own form of input
 		if (input instanceof SQLEditorInput) {
 			SQLEditorInput sqlInput = (SQLEditorInput) input;
@@ -449,10 +451,6 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 				isScratchFile = sqlInput.getFile() == null &&
 							SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.TREAT_NEW_AS_SCRATCH);
 			}
-		}
-		else
-		{
-			isScratchFile = false;
 		}
 
 		setPartName(input.getName());
