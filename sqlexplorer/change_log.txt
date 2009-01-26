@@ -3,6 +3,7 @@
 +. fixed refresh problems in structure view and database details
 +. second fix for Bug #2532963 encoding exception when loading SQLHistory with special chars (german letters Ä or Ö)
 +. refixed #2153849 Editor font preference not stored
++. some updates to mysql plugin
 
 3.5.0.RC6/P5 - Heiko Hilbert
 ======================================================
