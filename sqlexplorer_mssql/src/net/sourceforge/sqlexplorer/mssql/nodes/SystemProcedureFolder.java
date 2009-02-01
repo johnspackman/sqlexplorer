@@ -2,10 +2,12 @@ package net.sourceforge.sqlexplorer.mssql.nodes;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractFolderNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.ObjectNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
@@ -24,9 +26,9 @@ public class SystemProcedureFolder extends AbstractFolderNode {
 	public void loadChildren() {
         ResultSet rs = null;
         PreparedStatement pStmt = null;
-
+        SQLConnection connection = null;
         try {
-    		SQLConnection connection = getSession().grabConnection();
+    		connection = getSession().grabConnection();
 
             // use prepared statement
         	pStmt = connection.prepareStatement(
@@ -35,12 +37,7 @@ public class SystemProcedureFolder extends AbstractFolderNode {
         			"order by name");
 
             rs = pStmt.executeQuery();
-            getSession().releaseConnection(connection);
-        } catch (Exception e) {
-        	SQLExplorerPlugin.error("Couldn't execute query for " + getName(), e);
-        }
-        
-        try {
+
             while (rs.next()) {
 
             	if (isExcludedByFilter(rs.getString(1))) {
@@ -52,21 +49,31 @@ public class SystemProcedureFolder extends AbstractFolderNode {
                 addChildNode(newNode);
             }
 
-            rs.close();
-
-        } catch (Exception e) {
+            
+        } 
+        catch (Exception e) 
+        {
+        	
+            ObjectNode node = new ObjectNode("Error loading children: " + e.getLocalizedMessage(), "error", this, null);
+            addChildNode(node);
 
             SQLExplorerPlugin.error("Couldn't load children for: " + getName(), e);
 
         } finally {
-
-            if (pStmt != null) {
+            if (rs != null)
+            	try {
+            		rs.close();
+            	}catch(SQLException e) {
+            		SQLExplorerPlugin.error("Error closing result set", e);
+            	}
+            if (pStmt != null)
                 try {
                     pStmt.close();
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     SQLExplorerPlugin.error("Error closing statement", e);
                 }
-            }
+            if (connection != null)
+            	getSession().releaseConnection(connection);
         }
 	}
 
