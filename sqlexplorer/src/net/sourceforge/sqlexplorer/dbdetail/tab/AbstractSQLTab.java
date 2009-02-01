@@ -87,6 +87,7 @@ public abstract class AbstractSQLTab extends AbstractDataSetTab {
             
         } catch (Exception e) {
             
+        	dataSet = new DataSet(e.getLocalizedMessage());
             SQLExplorerPlugin.error("Couldn't load source for: " + getLabelText() + " node: " + getNode().getName(), e);
             
         } finally {
