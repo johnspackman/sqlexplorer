@@ -36,6 +36,7 @@ import java.util.List;
 
 import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.IConstants;
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.parsers.Query;
@@ -194,6 +195,15 @@ public class DataSet implements ResultProvider {
         this(null, columnLabels, data);
     }
 
+    /**
+     * constructor creating a dataset with a single error message
+     * 
+     * @param pErrorMessge message to disdplay
+     */
+    public DataSet(String pErrorMessge)
+    {
+    	this(new String[]{Messages.getString("Error...")}, new String[][]{{pErrorMessge}});
+    }
     /**
      * Create new dataset based on String[][].
      * @param caption 
