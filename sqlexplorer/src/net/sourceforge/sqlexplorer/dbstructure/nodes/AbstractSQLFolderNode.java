@@ -85,8 +85,6 @@ public abstract class AbstractSQLFolderNode extends AbstractFolderNode {
                 }
             }
 
-            rs.close();
-
         } 
         catch (Exception e) 
         {
