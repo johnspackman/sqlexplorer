@@ -6,6 +6,7 @@ import net.sourceforge.sqlexplorer.dbproduct.User;
 
 public class SQLCannotConnectException extends SQLException {
 	
+	private static final long serialVersionUID = 1L;
 	private Throwable cause;
 	private User user;
 
