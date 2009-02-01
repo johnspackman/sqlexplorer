@@ -18,8 +18,8 @@
  */
 package net.sourceforge.sqlexplorer.plugin;
 
-import java.util.ResourceBundle;
 import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.SQLCannotConnectException;
@@ -32,13 +32,12 @@ import net.sourceforge.sqlexplorer.history.SQLHistory;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
 import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.preference.PreferenceConverter;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.PartInitException;
@@ -132,19 +131,6 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     	this.connectionsView = connectionsView;
         if (_defaultConnectionsStarted)
             return;
-
-        try {
-            String fontDesc = getPluginPreferences().getString(IConstants.FONT);
-            FontData[] fontData = null;
-	        try {
-	        	fontData = PreferenceConverter.basicGetFontData(fontDesc);
-	        }catch(IllegalArgumentException e) {
-	        	fontData = new FontData[]{ new FontData("1|Courier New|10|0|WINDOWS|1|-13|0|0|0|400|0|0|0|0|3|2|1|49|Courier New")};
-	        }
-	        PreferenceConverter.setValue(getPreferenceStore(), IConstants.FONT, fontData);
-        }catch(IllegalArgumentException e) {
-        	error("Error setting font", e);
-        }
 
         boolean openEditor = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.AUTO_OPEN_EDITOR);
         
