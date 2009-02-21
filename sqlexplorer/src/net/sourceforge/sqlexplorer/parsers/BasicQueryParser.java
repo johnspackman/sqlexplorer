@@ -459,4 +459,8 @@ public class BasicQueryParser extends AbstractQueryParser {
 	public void setSlComment(String slComment) {
 		this.slComment = getValue(slComment);
 	}
+
+	public int numberOfQueries() {
+		return this.queries == null ? -1 : this.queries.size();
+	}
 }

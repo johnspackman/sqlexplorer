@@ -152,7 +152,7 @@ public abstract class AbstractSQLExecution extends Job {
 	 * @return
 	 */
 	protected CTabItem allocateResultsTab(Query query) {
-		CTabItem resultsTab = _editor.createResultsTab(this);
+		CTabItem resultsTab = _editor.createResultsTab(this, query);
 		if (resultsTab == null)
 			return null;
 		boolean longCaptions = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.USE_LONG_CAPTIONS_ON_RESULTS);

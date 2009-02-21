@@ -29,10 +29,13 @@ import net.sourceforge.sqlexplorer.connections.ConnectionsView;
 import net.sourceforge.sqlexplorer.connections.SessionEstablishedAdapter;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbproduct.User;
+import net.sourceforge.sqlexplorer.parsers.AlreadyParsedQueryParser;
+import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.sqleditor.actions.SQLEditorToolBar;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
+import net.sourceforge.sqlexplorer.sqlpanel.SQLExecution;
 import net.sourceforge.sqlexplorer.util.PartAdapter2;
 
 import org.eclipse.core.resources.IProject;
@@ -47,8 +50,6 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Adapter;
-import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ControlEvent;
@@ -407,20 +408,6 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 
 		tabFolder.setSelection(messagesTab);
 		
-	    // Add a listener to get the close button on each tab
-	    tabFolder.addCTabFolder2Listener(new CTabFolder2Adapter() {
-
-			/* (non-JavaDoc)
-			 * @see org.eclipse.swt.custom.CTabFolder2Adapter#close(org.eclipse.swt.custom.CTabFolderEvent)
-			 */
-			public void close(CTabFolderEvent event) {
-				super.close(event);
-				CTabItem tabItem = (CTabItem)event.item;
-				event.doit = onCloseTab(tabItem);
-			}
-	    	
-	    });
-	    
 		return tabFolder;
 	}
 
@@ -693,12 +680,20 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 	 * @param sqlExec
 	 * @return
 	 */
-	public CTabItem createResultsTab(AbstractSQLExecution job) {
+	public CTabItem createResultsTab(AbstractSQLExecution sqlExec, Query query) {
 		if (tabFolder.isDisposed())
 			return null;
 
+		AbstractSQLExecution execution = sqlExec;
+		if(sqlExec.getQueryParser().numberOfQueries() > 1)
+		{
+			execution = new SQLExecution(
+					this,
+					new AlreadyParsedQueryParser(query, sqlExec.getQueryParser().getContext()),
+					getLimitResults());
+		}
 		// check if tab exists
-		CTabItem tabItem = getResultsTab(job);
+		CTabItem tabItem = getResultsTab(execution);
 		if(tabItem == null)
 		{
 			// Create the new tab, make it second to last (IE keep the messages tab
@@ -709,7 +704,7 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 		tabFolder.setSelection(tabItem);
 		
 		// Make sure we can track the execution
-		tabItem.setData(job);
+		tabItem.setData(execution);
 
 		// Make sure we're visible
         getSite().getPage().bringToTop(this);
@@ -719,33 +714,6 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 	
 	public boolean isClosed() {
 		return tabFolder.isDisposed();
-	}
-	
-	/**
-	 * Called internally when the user tries to close a tab
-	 * @param tabItem
-	 * @return true if the tab should be closed
-	 */
-	private boolean onCloseTab(CTabItem tabItem) {
-		// Cannot close the messages tab
-		if (tabItem == messagesTab)
-			return false;
-
-		// The SQL query runs in a background thread and if the tab item gets disposed of 
-		//	BEFORE the query has finished we need to notify the thread that there is no UI
-		//	left and that the thread should terminate as soon as possible.
-		synchronized(this) {
-			// Get the SQL execution
-			AbstractSQLExecution job = getSqlExecution(tabItem);
-        
-			// Stop the statement - but allow it to happen asynchronously
-	        if (job != null) {
-		        tabItem.setData(null);
-		        job.cancel();
-	        }
-		}
-		
-		return true;
 	}
 	
 	/**
@@ -780,25 +748,16 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 	private void closeTab(CTabItem tab) {
         tab.dispose();
 	}
-	
+		
 	/**
-	 * Converts a TabItem into the AbstractSQLExecution for that tab
-	 * @param tab
+	 * search for a result tab with the given data
+	 * @param query
 	 * @return
 	 */
-	public AbstractSQLExecution getSqlExecution(CTabItem tab) {
-		return (AbstractSQLExecution)tab.getData();
-	}
-	
-	/**
-	 * Converts an AbstractSQLExecution into its TabItem
-	 * @param sqlExec
-	 * @return
-	 */
-	public CTabItem getResultsTab(AbstractSQLExecution sqlExec) {
+	public CTabItem getResultsTab(Object pData) {
 		CTabItem[] items = tabFolder.getItems();
 		for (int i = 0; i < items.length; i++)
-			if (items[i].getData() == sqlExec)
+			if (items[i].getData() == pData)
 				return items[i];
 		return null;
 	}

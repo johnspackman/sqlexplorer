@@ -64,4 +64,10 @@ public interface QueryParser extends Iterable<Query> {
 	 * @return 
 	 */
 	public ExecutionContext getContext();
+	
+	/**
+	 * returns the number of parsed queries
+	 * @return
+	 */
+	public int numberOfQueries();
 }
