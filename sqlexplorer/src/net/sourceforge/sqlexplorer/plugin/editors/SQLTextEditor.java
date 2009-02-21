@@ -88,6 +88,10 @@ public class SQLTextEditor extends TextEditor {
 		setPreferenceStore(SQLExplorerPlugin.getDefault().getPreferenceStore());
 	}
 
+	public SQLEditor getEditor()
+	{
+		return this.editor;
+	}
 	@Override
 	protected boolean isLineNumberRulerVisible() {
 		return true;

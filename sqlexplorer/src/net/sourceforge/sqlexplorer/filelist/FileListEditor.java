@@ -152,7 +152,7 @@ public class FileListEditor extends EditorPart implements SwitchableSessionEdito
 	    
 		CTabItem messagesTab = new CTabItem(tabFolder, SWT.NONE);
 		messagesTab.setText(Messages
-				.getString("SQLEditor.Results.Messages.Caption"));
+				.getString("FileListEditor.Messages.Caption"));
 
 		messagesText = new Text(tabFolder, SWT.READ_ONLY | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 		Font f = JFaceResources.getFontRegistry().get(JFaceResources.TEXT_FONT);

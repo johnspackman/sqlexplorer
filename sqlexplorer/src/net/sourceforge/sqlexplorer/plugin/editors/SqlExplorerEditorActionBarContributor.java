@@ -30,6 +30,13 @@ public class SqlExplorerEditorActionBarContributor extends
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
 		super.setActiveEditor(targetEditor);
-		((SQLEditor)targetEditor).updateCursorPosition();
+		if(targetEditor instanceof SQLTextEditor)
+		{
+			((SQLTextEditor)targetEditor).getEditor().updateCursorPosition();			
+		}
+		else
+		{
+			((SQLEditor)targetEditor).updateCursorPosition();
+		}
 	}
 }
