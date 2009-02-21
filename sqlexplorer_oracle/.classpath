@@ -4,7 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="/sqlexplorer/lib/dom4j.jar" sourcepath="C:/os/src/dom4j/dom4j-1.6.1/src/java"/>
-	<classpathentry kind="lib" path="/sqlexplorer/lib/squirrel.jar"/>
 	<classpathentry kind="lib" path="lib/xdb.jar"/>
 	<classpathentry kind="lib" path="lib/xml.jar"/>
 	<classpathentry kind="lib" path="lib/xmlparserv2.jar"/>

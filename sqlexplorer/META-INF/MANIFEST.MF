@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SQLExplorer Plugin
 Bundle-SymbolicName: net.sourceforge.sqlexplorer; singleton:=true
-Bundle-Version: 3.5.0.v20090126_RC6_P6
+Bundle-Version: 3.5.0.v20090212_RC6_P7
 Bundle-Activator: net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin
 Bundle-Vendor: SQL Explorer Project (eclipsesql.sourceforge.net)
 Bundle-Localization: plugin
@@ -19,7 +19,7 @@ Bundle-ClassPath: sqlexplorer.jar,
  lib/log4j.jar,
  lib/rowset.jar,
  lib/dom4j.jar,
- lib/squirrel.jar,
+ lib/fw.jar,
  lib/hibernate3.2.4.sp1.jar
 Export-Package: META-INF,
  com.sun.rowset,
@@ -59,17 +59,24 @@ Export-Package: META-INF,
  net.sourceforge.sqlexplorer.sqlpanel,
  net.sourceforge.sqlexplorer.sqlpanel.actions,
  net.sourceforge.sqlexplorer.util,
+ net.sourceforge.squirrel_sql.fw.codereformat,
+ net.sourceforge.squirrel_sql.fw.completion,
+ net.sourceforge.squirrel_sql.fw.completion.util,
  net.sourceforge.squirrel_sql.fw.datasetviewer,
  net.sourceforge.squirrel_sql.fw.datasetviewer.cellcomponent,
+ net.sourceforge.squirrel_sql.fw.dialects,
  net.sourceforge.squirrel_sql.fw.gui,
  net.sourceforge.squirrel_sql.fw.gui.action,
  net.sourceforge.squirrel_sql.fw.gui.image,
  net.sourceforge.squirrel_sql.fw.id,
  net.sourceforge.squirrel_sql.fw.persist,
+ net.sourceforge.squirrel_sql.fw.preferences,
  net.sourceforge.squirrel_sql.fw.resources,
  net.sourceforge.squirrel_sql.fw.resources.images.eclipse,
  net.sourceforge.squirrel_sql.fw.resources.images.gnome,
  net.sourceforge.squirrel_sql.fw.sql,
+ net.sourceforge.squirrel_sql.fw.sql.dbobj,
+ net.sourceforge.squirrel_sql.fw.sql.dbobj.adapter,
  net.sourceforge.squirrel_sql.fw.util,
  net.sourceforge.squirrel_sql.fw.util.beanwrapper,
  net.sourceforge.squirrel_sql.fw.util.log,
