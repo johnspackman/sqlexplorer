@@ -2,6 +2,8 @@
 ======================================================
 +. fixed some minor problems in mssql plugin (Database Structure display)
 +. show detail error in database detail view, if there is one
++. fixed #2609904, multiple results are not shown in multiple result tabs
++. update to latest SQuirreL (2.6.9) jars to fix #2593826
 
 3.5.0.RC6/P6 - Heiko Hilbert
 ======================================================
