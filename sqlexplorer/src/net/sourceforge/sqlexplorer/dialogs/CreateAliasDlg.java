@@ -167,7 +167,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
         nameGroup.setLayoutData(data);
 
         Label label = new Label(nameGroup, SWT.WRAP);
-        label.setText("Name"); //$NON-NLS-1$
+        label.setText(Messages.getString("Name")); //$NON-NLS-1$
         nameField = new Text(nameGroup, SWT.BORDER);
     	if (type != Type.CREATE)
     		nameField.setText(alias.getName());
@@ -190,7 +190,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
         });
 
         Label label2 = new Label(nameGroup, SWT.WRAP);
-        label2.setText("Driver"); //$NON-NLS-1$
+        label2.setText(Messages.getString("Driver")); //$NON-NLS-1$
         cboDriver = new Combo(nameGroup, SWT.BORDER | SWT.DROP_DOWN | SWT.READ_ONLY);
         final GridData gd_driver = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         gd_driver.widthHint = SIZING_TEXT_FIELD_WIDTH;
@@ -224,7 +224,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
         });
 
         Label label3 = new Label(nameGroup, SWT.WRAP);
-        label3.setText("URL"); //$NON-NLS-1$
+        label3.setText(Messages.getString("Url")); //$NON-NLS-1$
         urlField = new Text(nameGroup, SWT.BORDER);
         data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         data.horizontalSpan = 2;
@@ -246,7 +246,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
         new Label(nameGroup, SWT.NONE);
 
         noUsernameRequired = new Button(nameGroup, SWT.CHECK);
-        noUsernameRequired.setText("Username is not required for this database");
+        noUsernameRequired.setText(Messages.getString("AliasDialog.UserNameNotRequiredForDb")); //$NON-NLS-1$
         data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         data.horizontalSpan = 2;
         noUsernameRequired.setLayoutData(data);
@@ -264,17 +264,17 @@ public class CreateAliasDlg extends TitleAreaDialog {
         connectionPropertiesComposite.setLayoutData(data);
         
         autoLogonButton = new Button(connectionPropertiesComposite, SWT.CHECK);
-        autoLogonButton.setToolTipText("If set, SQLExplorer will try to logon without prompting");
+        autoLogonButton.setToolTipText(Messages.getString("AliasDialog.AutoLogonToolTip")); //$NON-NLS-1$
         GridData gd_autoLogonButton = new GridData(158, SWT.DEFAULT);
         autoLogonButton.setLayoutData(gd_autoLogonButton);
-        autoLogonButton.setText("Auto logon");
+        autoLogonButton.setText(Messages.getString("AliasDialog.AutoLogon")); //$NON-NLS-1$
         
         logonAtStartupButton = new Button(connectionPropertiesComposite, SWT.CHECK);
-        logonAtStartupButton.setToolTipText("If set, SQLExplorer will establish a connection during startup");
-        logonAtStartupButton.setText("Logon during startup");
+        logonAtStartupButton.setToolTipText(Messages.getString("AliasDialog.StartupLogonToolTip")); //$NON-NLS-1$
+        logonAtStartupButton.setText(Messages.getString("AliasDialog.StartupLogon")); //$NON-NLS-1$
 
         Label label4 = new Label(nameGroup, SWT.WRAP);
-        label4.setText("User Name"); //$NON-NLS-1$
+        label4.setText(Messages.getString("User")); //$NON-NLS-1$
         userField = new Text(nameGroup, SWT.BORDER);
         data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         data.horizontalSpan = 2;
@@ -297,7 +297,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
 
         
         Label label5 = new Label(nameGroup, SWT.WRAP);
-        label5.setText("Password"); //$NON-NLS-1$
+        label5.setText(Messages.getString("Password")); //$NON-NLS-1$
         passwordField = new Text(nameGroup, SWT.BORDER);
         passwordField.setEchoChar('*');
         data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
@@ -331,14 +331,14 @@ public class CreateAliasDlg extends TitleAreaDialog {
         connectionPropertiesComposite.setLayoutData(data);
         
         autoCommitButton = new Button(connectionPropertiesComposite, SWT.CHECK);
-        autoCommitButton.setToolTipText("Sets the default for new SQL Editors");
-        autoCommitButton.setText("Auto Commit");
+        autoCommitButton.setToolTipText(Messages.getString("AliasDialog.ForNewEditorsHint")); //$NON-NLS-1$
+        autoCommitButton.setText(Messages.getString("AutoCommit")); //$NON-NLS-1$
         data = new GridData(158, SWT.DEFAULT);
         autoCommitButton.setLayoutData(data);
         
         commitOnCloseButton = new Button(connectionPropertiesComposite, SWT.CHECK);
-        commitOnCloseButton.setToolTipText("Sets the default for new SQL editors");
-        commitOnCloseButton.setText("Commit on close");
+        commitOnCloseButton.setToolTipText(Messages.getString("AliasDialog.ForNewEditorsHint")); //$NON-NLS-1$
+        commitOnCloseButton.setText(Messages.getString("Commit_On_Close")); //$NON-NLS-1$
         
         autoLogonButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {

@@ -80,15 +80,15 @@ public class PasswordConnDlg extends TitleAreaDialog {
     
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
-        shell.setText(Messages.getString("Connection_1")); //$NON-NLS-1$
+        shell.setText(Messages.getString("PasswordConnDlg.Login")); //$NON-NLS-1$
     }
 
     protected Control createContents(Composite parent) {
 
         Control contents = super.createContents(parent);
 
-        setTitle(Messages.getString("Connection_4")); //$NON-NLS-1$
-        setMessage(Messages.getString("Insert_Password_1")); //$NON-NLS-1$
+        setTitle(Messages.getString("PasswordConnDlg.Login")); //$NON-NLS-1$
+        setMessage(Messages.getString("PasswordConnDlg.Insert_Password")); //$NON-NLS-1$
 
         Image image = ImageUtil.getImage("Images.WizardLogo");
         if (image != null) {
@@ -131,19 +131,19 @@ public class PasswordConnDlg extends TitleAreaDialog {
         nameGroup.setLayoutData(data);
 
         Label label = new Label(nameGroup, SWT.WRAP);
-        label.setText(Messages.getString("Alias_1")); //$NON-NLS-1$
+        label.setText(Messages.getString("Alias")); //$NON-NLS-1$
         Label aliasTxt = new Label(nameGroup, SWT.WRAP);
         aliasTxt.setText(alias.getName());
         Label label2 = new Label(nameGroup, SWT.WRAP);
-        label2.setText(Messages.getString("Driver_2")); //$NON-NLS-1$
+        label2.setText(Messages.getString("Driver")); //$NON-NLS-1$
         Label driverTxt = new Label(nameGroup, SWT.WRAP);
         driverTxt.setText(alias.getDriver().getName());
         Label label3 = new Label(nameGroup, SWT.WRAP);
-        label3.setText(Messages.getString("Url_3")); //$NON-NLS-1$
+        label3.setText(Messages.getString("Url")); //$NON-NLS-1$
         Label urlTxt = new Label(nameGroup, SWT.WRAP);
         urlTxt.setText(alias.getUrl());
         Label label4 = new Label(nameGroup, SWT.WRAP);
-        label4.setText(Messages.getString("User_4")); //$NON-NLS-1$
+        label4.setText(Messages.getString("User")); //$NON-NLS-1$
         userTxt = new Text(nameGroup, SWT.BORDER);
         data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
@@ -151,7 +151,7 @@ public class PasswordConnDlg extends TitleAreaDialog {
         userTxt.setLayoutData(data);
 
         Label label5 = new Label(nameGroup, SWT.WRAP);
-        label5.setText(Messages.getString("Password_5")); //$NON-NLS-1$
+        label5.setText(Messages.getString("Password")); //$NON-NLS-1$
         pswdTxt = new Text(nameGroup, SWT.BORDER);
         pswdTxt.setEchoChar('*');
 
@@ -163,14 +163,14 @@ public class PasswordConnDlg extends TitleAreaDialog {
 
         new Label(nameGroup, SWT.None);
         fAutoCommitBox = new Button(nameGroup, SWT.CHECK);
-        fAutoCommitBox.setText(Messages.getString("PasswordConnDlg.AutoCommit_1")); //$NON-NLS-1$
+        fAutoCommitBox.setText(Messages.getString("AutoCommit")); //$NON-NLS-1$
         GridData gd = new GridData(GridData.FILL_HORIZONTAL);
         gd.horizontalAlignment = GridData.BEGINNING;
         fAutoCommitBox.setLayoutData(gd);
 
         new Label(nameGroup, SWT.None);
         fCommitOnCloseBox = new Button(nameGroup, SWT.CHECK);
-        fCommitOnCloseBox.setText(Messages.getString("PasswordConnDlg.Commit_On_Close_2")); //$NON-NLS-1$
+        fCommitOnCloseBox.setText(Messages.getString("Commit_On_Close")); //$NON-NLS-1$
         gd = new GridData(GridData.FILL_HORIZONTAL);
         gd.horizontalAlignment = GridData.BEGINNING;
         fCommitOnCloseBox.setLayoutData(gd);

@@ -171,9 +171,8 @@ public class Messages {
 					resources[i + 1] = ResourceBundle.getBundle(fragments[i]
 							.getSymbolicName()
 							+ BUNDLE_NAME);
-				} catch (Exception e) {
-					SQLExplorerPlugin.error("No text.properties found for: "
-							+ fragments[1].getSymbolicName() + " [id=" + fragments[i].getBundleId() + "]", e);
+				} catch (Exception ignored) {
+					// ignore it
 				}
 			}
 		}

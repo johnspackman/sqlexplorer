@@ -112,11 +112,11 @@ public class CreateDriverDlg extends TitleAreaDialog {
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
         if (type == Type.CREATE) {
-            shell.setText(Messages.getString("DriverDialog.Create.WindowTitle"));
+            shell.setText(Messages.getString("DriverDialog.Create.WindowTitle"));//$NON-NLS-1$
         } else if (type == Type.MODIFY) {
-            shell.setText(Messages.getString("DriverDialog.Modify.WindowTitle"));
+            shell.setText(Messages.getString("DriverDialog.Modify.WindowTitle"));//$NON-NLS-1$
         } else if (type == Type.COPY) {
-            shell.setText(Messages.getString("DriverDialog.Copy.WindowTitle"));
+            shell.setText(Messages.getString("DriverDialog.Copy.WindowTitle"));//$NON-NLS-1$
         }
     }
 
@@ -126,17 +126,17 @@ public class CreateDriverDlg extends TitleAreaDialog {
         Control contents = super.createContents(parent);
 
         if (type == Type.CREATE) {
-            setTitle(Messages.getString("DriverDialog.Create.Title"));
-            setMessage(Messages.getString("DriverDialog.Create.Message"));
+            setTitle(Messages.getString("DriverDialog.Create.Title"));//$NON-NLS-1$
+            setMessage(Messages.getString("DriverDialog.Create.Message"));//$NON-NLS-1$
         } else if (type == Type.MODIFY) {
-            setTitle(Messages.getString("DriverDialog.Modify.Title"));
-            setMessage(Messages.getString("DriverDialog.Modify.Message"));
+            setTitle(Messages.getString("DriverDialog.Modify.Title"));//$NON-NLS-1$
+            setMessage(Messages.getString("DriverDialog.Modify.Message"));//$NON-NLS-1$
         } else if (type == Type.COPY) {
-            setTitle(Messages.getString("DriverDialog.Copy.Title"));
-            setMessage(Messages.getString("DriverDialog.Copy.Message"));
+            setTitle(Messages.getString("DriverDialog.Copy.Title"));//$NON-NLS-1$
+            setMessage(Messages.getString("DriverDialog.Copy.Message"));//$NON-NLS-1$
         }
 
-        Image image = ImageUtil.getImage("Images.WizardLogo");
+        Image image = ImageUtil.getImage("Images.WizardLogo");//$NON-NLS-1$
         
         if (image != null) {
             setTitleImage(image);
@@ -159,15 +159,15 @@ public class CreateDriverDlg extends TitleAreaDialog {
         driverClassName = (driverClassName != null ? driverClassName.trim() : "");
         String url = exampleUrlField.getText().trim();
         if (name.equals("")) {
-            MessageDialog.openError(this.getShell(), Messages.getString("Error..._2"), "Name is empty"); //$NON-NLS-2$
+            MessageDialog.openError(this.getShell(), Messages.getString("Error..."), Messages.getString("DriverDialog.ErrNameEmpty")); //$NON-NLS-2$
             return;
         }
         if (driverClassName.equals("")) {
-            MessageDialog.openError(this.getShell(), Messages.getString("Error..._2"), "Driver Class Name is empty"); //$NON-NLS-2$
+            MessageDialog.openError(this.getShell(), Messages.getString("Error..."), Messages.getString("DriverDialog.ErrDriverClassEmpty")); //$NON-NLS-2$
             return;
         }
         if (url.equals("")) {
-            MessageDialog.openError(this.getShell(), Messages.getString("Error..._2"), "URL is empty"); //$NON-NLS-2$
+            MessageDialog.openError(this.getShell(), Messages.getString("Error..."), Messages.getString("DriverDialog.ErrURLEmpty")); //$NON-NLS-2$
             return;
         }
 
@@ -237,7 +237,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         topComposite.setLayout(new GridLayout());
 
         Group topGroup = new Group(topComposite, SWT.NULL);
-        topGroup.setText(Messages.getString("Driver_14"));
+        topGroup.setText(Messages.getString("Driver")); //$NON-NLS-1$
 
         data = new GridData(GridData.FILL_VERTICAL | GridData.FILL_HORIZONTAL);
         data.horizontalSpan = 3;
@@ -249,7 +249,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         topGroup.setLayout(layout);
 
         Label label = new Label(topGroup, SWT.WRAP);
-        label.setText(Messages.getString("Name_15"));
+        label.setText(Messages.getString("Name")); //$NON-NLS-1$
         nameField = new Text(topGroup, SWT.BORDER);
         data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         data.horizontalSpan = 2;
@@ -269,7 +269,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         });
 
         Label label5 = new Label(topGroup, SWT.WRAP);
-        label5.setText(Messages.getString("Example_URL_16"));
+        label5.setText(Messages.getString("DriverDialog.ExampleURL")); //$NON-NLS-1$
         exampleUrlField = new Text(topGroup, SWT.BORDER);
         data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
@@ -297,14 +297,14 @@ public class CreateDriverDlg extends TitleAreaDialog {
 
         TabFolder tabFolder = new TabFolder(centralComposite, SWT.NULL);
         TabItem item1 = new TabItem(tabFolder, SWT.NULL);
-        item1.setText(Messages.getString("Java_Class_Path_17"));
+        item1.setText(Messages.getString("DriverDialog.JavaClassPath")); //$NON-NLS-1$
         TabItem item2 = new TabItem(tabFolder, SWT.NULL);
-        item2.setText(Messages.getString("Extra_Class_Path_18"));
+        item2.setText(Messages.getString("DriverDialog.ExtraClassPath")); //$NON-NLS-1$
         createJavaClassPathPanel(tabFolder, item1);
         createExtraClassPathPanel(tabFolder, item2);
 
         Label label4 = new Label(nameGroup, SWT.WRAP);
-        label4.setText(Messages.getString("Driver_Class_Name_19"));
+        label4.setText(Messages.getString("DriverDialog.DriverClassName")); //$NON-NLS-1$
         combo = new Combo(nameGroup, SWT.BORDER | SWT.DROP_DOWN);
         data = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
@@ -394,7 +394,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         data = new GridData();
         data.horizontalSpan = 1;
         data.grabExcessVerticalSpace = true;
-        data.widthHint = 100;
+        data.widthHint = 120;
         data.horizontalAlignment = GridData.FILL;
         data.verticalAlignment = GridData.FILL;
 
@@ -407,7 +407,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         left.setLayout(gridLayout);
 
         _javaClasspathListDriversBtn = new Button(left, SWT.NULL);
-        _javaClasspathListDriversBtn.setText(Messages.getString("List_Drivers_20"));
+        _javaClasspathListDriversBtn.setText(Messages.getString("DriverDialog.ListDrivers"));
         _javaClasspathListDriversBtn.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent event) {
@@ -493,7 +493,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         data = new GridData();
         data.horizontalSpan = 1;
         data.grabExcessVerticalSpace = true;
-        data.widthHint = 100;
+        data.widthHint = 120;
         data.horizontalAlignment = GridData.FILL;
         data.verticalAlignment = GridData.FILL;
 
@@ -506,7 +506,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         left.setLayout(gridLayout);
 
         _extraClasspathListDriversBtn = new Button(left, SWT.NULL);
-        _extraClasspathListDriversBtn.setText(Messages.getString("List_Drivers_21"));
+        _extraClasspathListDriversBtn.setText(Messages.getString("DriverDialog.ListDrivers"));
         _extraClasspathListDriversBtn.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent event) {
@@ -537,7 +537,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         _extraClasspathListDriversBtn.setLayoutData(data);
 
         _extraClasspathUpBtn = new Button(left, SWT.NULL);
-        _extraClasspathUpBtn.setText(Messages.getString("Up_22"));
+        _extraClasspathUpBtn.setText(Messages.getString("DriverDialog.Up"));
         _extraClasspathUpBtn.setEnabled(false);
         data = new GridData();
         data.grabExcessHorizontalSpace = true;
@@ -545,7 +545,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         _extraClasspathUpBtn.setLayoutData(data);
 
         _extraClasspathDownBtn = new Button(left, SWT.NULL);
-        _extraClasspathDownBtn.setText(Messages.getString("Down_23"));
+        _extraClasspathDownBtn.setText(Messages.getString("DriverDialog.Down"));
         _extraClasspathDownBtn.setEnabled(false);
         data = new GridData();
         data.grabExcessHorizontalSpace = true;
@@ -553,7 +553,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         _extraClasspathDownBtn.setLayoutData(data);
 
         newBtn = new Button(left, SWT.NULL);
-        newBtn.setText(Messages.getString("New_24"));
+        newBtn.setText(Messages.getString("DriverDialog.New"));
         newBtn.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent event) {
@@ -575,7 +575,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         newBtn.setLayoutData(data);
 
         _extraClasspathDeleteBtn = new Button(left, SWT.NULL);
-        _extraClasspathDeleteBtn.setText(Messages.getString("Delete_26"));
+        _extraClasspathDeleteBtn.setText(Messages.getString("DriverDialog.Delete"));
         _extraClasspathDeleteBtn.setEnabled(false);
         _extraClasspathDeleteBtn.addSelectionListener(new SelectionAdapter() {
 
