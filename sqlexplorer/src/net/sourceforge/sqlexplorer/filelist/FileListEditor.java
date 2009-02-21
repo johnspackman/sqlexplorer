@@ -13,8 +13,6 @@ import net.sourceforge.sqlexplorer.connections.SessionEstablishedAdapter;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
-import net.sourceforge.sqlexplorer.plugin.editors.Message;
-import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SwitchableSessionEditor;
 import net.sourceforge.sqlexplorer.sqleditor.actions.SQLEditorSessionSwitcher;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
@@ -29,10 +27,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Adapter;
-import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -46,13 +41,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Sash;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
@@ -320,6 +313,12 @@ public class FileListEditor extends EditorPart implements SwitchableSessionEdito
 	protected void execute() {
 		messagesText.setText("");
 		IDocument doc = editor.getDocumentProvider().getDocument(editor.getEditorInput());
+		File baseDir = null;
+		IEditorInput input = editor.getEditorInput();
+		if(input instanceof IPathEditorInput)
+		{
+			baseDir = ((IPathEditorInput) input).getPath().toFile().getParentFile();
+		}
 		String str = doc.get();
 		BufferedReader reader = new BufferedReader(new StringReader(str));
 		LinkedList<File> files = new LinkedList<File>();
@@ -330,6 +329,11 @@ public class FileListEditor extends EditorPart implements SwitchableSessionEdito
 				if (line.length() < 1)
 					continue;
 				File file = new File(line);
+				if(!file.exists() && !file.isAbsolute() && !file.getPath().startsWith(File.separator))
+				{
+					// make absolute path from base directory
+					file = new File(baseDir, file.getPath());
+				}
 				if (!file.exists() || !file.canRead())
 					addMessage("Cannot locate/read file " + file.getAbsolutePath());
 				else

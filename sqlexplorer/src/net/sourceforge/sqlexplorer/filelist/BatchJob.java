@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
@@ -20,8 +19,6 @@ import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -104,8 +101,7 @@ public class BatchJob extends Job {
 	            	StringBuilder errors = new StringBuilder();
 		            try {
 		            	results = product.executeQuery(connection, query, -1);
-		            	DataSet dataSet;
-		            	while ((dataSet = results.nextDataSet()) != null) {
+		            	while (results.nextDataSet() != null) {
 		            		
 	                    	LinkedList<Message> messages = new LinkedList<Message>();
 		                    Collection<Message> messagesTmp = session.getDatabaseProduct().getErrorMessages(connection, query);
