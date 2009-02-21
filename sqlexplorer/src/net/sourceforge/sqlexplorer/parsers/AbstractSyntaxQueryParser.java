@@ -47,7 +47,7 @@ public abstract class AbstractSyntaxQueryParser extends AbstractQueryParser {
 	/*
 	 * Simple class used to hold line number offset information
 	 */
-	private static class LineNoOffset implements Comparable {
+	private static class LineNoOffset implements Comparable<LineNoOffset> {
 		public int lineNo;
 		public int offset;
 		
@@ -57,9 +57,8 @@ public abstract class AbstractSyntaxQueryParser extends AbstractQueryParser {
 			this.offset = offset;
 		}
 
-		public int compareTo(Object o) {
-			LineNoOffset that = (LineNoOffset)o;
-			return lineNo - that.lineNo;
+		public int compareTo(LineNoOffset other) {
+			return lineNo - other.lineNo;
 		}
 
 		@Override
@@ -381,4 +380,9 @@ public abstract class AbstractSyntaxQueryParser extends AbstractQueryParser {
 		if (tokenizer != null)
 			tokenizer.setInitialLineNo(initialLineNo);
 	}
+	
+	public int numberOfQueries() {
+		return this.queries == null ? -1 : this.queries.size();
+	}
+	
 }
