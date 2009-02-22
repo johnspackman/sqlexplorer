@@ -68,11 +68,8 @@ public class CloseAllConnectionsAction extends AbstractConnectionTreeAction impl
     	for (SQLConnection connection : connections) {
     		synchronized(connection) {
 	    		Session session = connection.getSession();
-	    		if (session != null) {
-	    			synchronized(session) {
-	    				if (!session.isConnectionInUse())
-	    					session.disposeConnection();
-	    			}
+	    		if (session != null && !session.isConnectionInUse()) {
+   					session.disposeConnection();
 	    		} else
 	    			connection.getUser().releaseFromPool(connection);
     		}
