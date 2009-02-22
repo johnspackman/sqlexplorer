@@ -57,7 +57,7 @@ public class CommitAction extends AbstractConnectionTreeAction implements IViewA
 				if (!connection.getAutoCommit())
     				return true;
 			}catch(SQLException e) {
-				SQLExplorerPlugin.error(e);
+				SQLExplorerPlugin.error("Cannot query auto commit state", e);
 			}
 
         return false;

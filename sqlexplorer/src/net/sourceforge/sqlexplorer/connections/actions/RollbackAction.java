@@ -58,7 +58,7 @@ public class RollbackAction extends AbstractConnectionTreeAction implements IVie
 				if (!connection.getAutoCommit())
     				return true;
 			}catch(SQLException e) {
-				SQLExplorerPlugin.error("Cannot rollback session", e);
+				SQLExplorerPlugin.error("Cannot query auto commit state", e);
 			}
 
         return false;
