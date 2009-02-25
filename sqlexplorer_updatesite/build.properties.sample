@@ -1,0 +1,8 @@
+# sample property file for SQLExplorer P2 meta data generator ant script
+# copy it to build.properties and set your local values
+
+# path to eclipse executable
+eclipse=/apps/java/eclipse-3.4/eclipse.exe
+
+# path to update site directory to generate data for
+updatesite=.
