@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?pde version="3.1"?>
+<?pde version="3.4"?>
 
 <product name="SQL Explorer" id="net.sourceforge.sqlexplorer.rcp.product" application="net.sourceforge.sqlexplorer.rcp.application" useFeatures="true">
 
-   <configIni use="custom" path="/sqlexplorer_rcp/config.ini"/>
+   <configIni use="default">
+      <linux>/sqlexplorer_rcp/config.ini</linux>
+      <macosx>/sqlexplorer_rcp/config.ini</macosx>
+      <solaris>/sqlexplorer_rcp/config.ini</solaris>
+      <win32>/sqlexplorer_rcp/config.ini</win32>
+   </configIni>
 
    <launcherArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
@@ -53,7 +58,7 @@
       <plugin id="org.eclipse.core.net"/>
       <plugin id="org.eclipse.core.resources"/>
       <plugin id="org.eclipse.core.resources.compatibility" fragment="true"/>
-      <plugin id="org.eclipse.core.resources.win32" fragment="true"/>
+      <plugin id="org.eclipse.core.resources.win32"/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
       <plugin id="org.eclipse.equinox.app"/>
@@ -97,7 +102,7 @@
    </plugins>
 
    <features>
-      <feature id="net.sourceforge.sqlexplorer" version="3.5.0.v20080924_RC6"/>
+      <feature id="net.sourceforge.sqlexplorer" version="3.5.0.v20090225_RC7"/>
       <feature id="net.sourceforge.sqlexplorer.rcp" version="3.5.0.v20080924_RC6"/>
    </features>
 
