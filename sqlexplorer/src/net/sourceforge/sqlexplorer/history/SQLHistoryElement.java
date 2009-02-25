@@ -1,16 +1,15 @@
 package net.sourceforge.sqlexplorer.history;
 
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Date;
 
-import org.dom4j.Element;
-import org.dom4j.tree.DefaultElement;
-
-import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.TextUtil;
+
+import org.dom4j.Element;
+import org.dom4j.tree.DefaultElement;
 
 /**
  * SQLHistoryElement represents a single entry in the SQLHistoryView.
@@ -40,9 +39,10 @@ public class SQLHistoryElement {
 
     private long _time;
 
-    private static SimpleDateFormat _dateFormatter = new SimpleDateFormat(
-            SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_FORMAT));
+//    private static SimpleDateFormat _dateFormatter = new SimpleDateFormat(
+//            SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_FORMAT));
 
+    private static DateFormat _dateFormatter = DateFormat.getDateTimeInstance();
 
     public SQLHistoryElement(String rawSQLString, User user) {
         _rawSQLString = rawSQLString;
