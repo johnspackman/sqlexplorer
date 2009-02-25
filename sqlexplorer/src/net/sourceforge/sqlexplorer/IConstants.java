@@ -50,6 +50,8 @@ public interface IConstants {
     String COMMIT_ON_CLOSE = "SQLEditor.CommitOnClose";
 
     String DATASETRESULT_DATE_FORMAT = "DataSetResult.DateFormat";
+    String DATASETRESULT_TIME_FORMAT = "DataSetResult.TimeFormat";
+    String DATASETRESULT_DATE_TIME_FORMAT = "DataSetResult.DateTimeFormat";
 
     String DATASETRESULT_FORMAT_DATES = "DataSetResult.FormatDates";
 

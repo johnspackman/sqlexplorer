@@ -142,14 +142,11 @@ public class GeneralPreferencePage extends AbstractPreferencePage {
 		addField(new BooleanFieldEditor(IConstants.WORD_WRAP, Messages.getString("Preferences.SQLExplorer.WordWrap"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.AUTO_OPEN_EDITOR, Messages.getString("Preferences.SQLExplorer.OpenEditorOnConnection"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.TREAT_NEW_AS_SCRATCH, Messages.getString("Preferences.SQLExplorer.TreatNewAsScratch"), getFieldEditorParent()));
-		addField(new BooleanFieldEditor(IConstants.CLEAR_RESULTS_ON_EXECUTE, Messages.getString("Preferences.SQLExplorer.ClearResultsOnExecute"), getFieldEditorParent()));
-		addField(new BooleanFieldEditor(IConstants.USE_LONG_CAPTIONS_ON_RESULTS, Messages.getString("Preferences.SQLExplorer.UseLongCaptionsOnResults"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.STOP_ON_ERROR, Messages.getString("Preferences.SQLExplorer.StopOnError"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.LOG_SUCCESS_MESSAGES, Messages.getString("Preferences.SQLExplorer.LogSuccessMessages"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.LOG_SQL_HISTORY, Messages.getString("Preferences.SQLExplorer.LogSQLHistory"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.REQUIRE_SAVE_ON_CLOSE_EDITOR, Messages.getString("Preferences.SQLExplorer.RequireSaveOnClose"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.ENABLE_STRUCTURED_COMMENTS, Messages.getString("Preferences.SQLExplorer.EnableStructuredComments"), getFieldEditorParent()));
-		addField(new BooleanFieldEditor(IConstants.RETRIEVE_BLOB_AS_HEX, Messages.getString("Preferences.SQLExplorer.RetrieveBinaryAsHex"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.SHOW_SCHEMA_ON_TABLES, Messages.getString("Preferences.SQLExplorer.ShowSchemasOnTables"), getFieldEditorParent()));
 		
 		final String[][] DEBUG_LEVEL_VALUES = new String[][] {

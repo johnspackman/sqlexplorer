@@ -89,6 +89,8 @@ public class DataSet implements ResultProvider {
 
     // Default date format (from preferences)
 	private SimpleDateFormat dateFormat; 
+	private SimpleDateFormat timeFormat; 
+	private SimpleDateFormat dateTimeFormat; 
 	
 	// The time taken to execute the SQL that generated the results
 	private long executionTime;
@@ -297,7 +299,7 @@ public class DataSet implements ResultProvider {
     	}
     	
     	if (type == Types.DATE || type == Types.TIMESTAMP || type == Types.TIME) {
-    		return new FormattedColumn(columnIndex - 1, metadata.getColumnName(columnIndex), false, getDateFormat());
+    		return new FormattedColumn(columnIndex - 1, metadata.getColumnName(columnIndex), false, getDateFormat(type));
     	}
 
     	return new Column(targetIndex, metadata.getColumnName(columnIndex), false);
@@ -521,17 +523,39 @@ public class DataSet implements ResultProvider {
 		return false;
 	}
 
-	private DateFormat getDateFormat() {
+	private DateFormat getDateFormat(int pType) {
 		if (formatDates == null)
 		    formatDates = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.DATASETRESULT_FORMAT_DATES);
 		if (!formatDates)
 			return null;
 		
-		if (dateFormat == null)
-			dateFormat = new SimpleDateFormat(
-	            SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_FORMAT));
+		DateFormat result = null;
+		switch(pType)
+		{
+			case Types.DATE:
+				if (dateFormat == null)
+					dateFormat = new SimpleDateFormat(
+			            SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_FORMAT));
+				result = dateFormat;
+				break;
+				
+			case Types.TIME:
+				if (timeFormat == null)
+					timeFormat = new SimpleDateFormat(
+			            SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_TIME_FORMAT));
+				result = timeFormat;
+				break;
+				
+			case Types.TIMESTAMP:
+				if (dateTimeFormat == null)
+					dateTimeFormat = new SimpleDateFormat(
+			            SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_TIME_FORMAT));
+				result = dateTimeFormat;
+				break;
+				
+		}
 		
-		return dateFormat;
+		return result;
 	}
 
 	public String getCaption() {

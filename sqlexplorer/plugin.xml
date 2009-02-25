@@ -83,6 +83,10 @@
             class="net.sourceforge.sqlexplorer.preferences.ConfirmationsPreferencePage"
             id="net.sourceforge.sqlexplorer.preferences.ConfirmationsPreferencePage"
             name="Confirmations"/>
+      <page class="net.sourceforge.sqlexplorer.preferences.ResultsPreferencePage" 
+      		category="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage" 
+      		name="Results" 
+      		id="net.sourceforge.sqlexplorer.preferences.ResultsPreferencePage"/>
    </extension>
    <extension
          id="editors"
