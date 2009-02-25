@@ -4,6 +4,9 @@
 +. show detail error in database detail view, if there is one
 +. fixed #2609904, multiple results are not shown in multiple result tabs
 +. update to latest SQuirreL (2.6.9) jars to fix #2593826
++. extended FileListEditor to support file names relative to the containing fls file
++. allow 'Close All Connections' to close also connections in use
++. show table name with schema if this is supported by the DBMS, can be switched off in preferences
 
 3.5.0.RC6/P6 - Heiko Hilbert
 ======================================================

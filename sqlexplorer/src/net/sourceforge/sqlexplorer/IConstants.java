@@ -130,6 +130,9 @@ public interface IConstants {
     // Treat new SQL editors as scratch file (becomes not dirty)
     String TREAT_NEW_AS_SCRATCH = "SQLEditor.TreatNewAsScratch";
 
+    // Show schema name with table name
+    String SHOW_SCHEMA_ON_TABLES = "SQLEditor.ShowSchemaOnTables";
+
     // Debug logging level for queries
     String QUERY_DEBUG_LOG_LEVEL = "SQLEditor.QueryDebugLog";
     String QUERY_DEBUG_OFF = "off";

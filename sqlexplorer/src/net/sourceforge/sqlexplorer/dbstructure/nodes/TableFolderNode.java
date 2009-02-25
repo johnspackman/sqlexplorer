@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer.dbstructure.nodes;
 
 import java.util.LinkedList;
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -115,11 +116,19 @@ public class TableFolderNode extends AbstractFolderNode {
 
             }
 
+            boolean withSchema = _session.getMetaData().supportsSchemasInTableDefinitions() &&
+            		SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.SHOW_SCHEMA_ON_TABLES);
+            
             // add child nodes for all relevant tables
             for (int i = 0; i < tables.length; i++) {
                 if (tables[i].getType().equalsIgnoreCase(_origName)) {
-                    if (!isExcludedByFilter(tables[i].getSimpleName())) {
-                        addChildNode(new TableNode(this, tables[i].getSimpleName(), _session, tables[i]));
+                	String name = tables[i].getSimpleName();
+                	if(withSchema)
+                	{
+                		name = tables[i].getSchemaName() +'.'+name;
+                	}
+                    if (!isExcludedByFilter(name)) {
+                        addChildNode(new TableNode(this, name, _session, tables[i]));
                     }
                 }
             }
