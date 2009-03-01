@@ -14,6 +14,6 @@
 	<p><a href="http://sourceforge.net/project/showfiles.php?group_id=132863">Download</a> the Eclipse SQL Explorer plugin and extract the zip file in your eclipse directory (requires Eclipse 3.2 or better).<br />
 	After restarting eclipse with the -clean option, a new SQL Explorer perspective should be available.</p>
 	<p><i>Eclipse Update Site</i></p>
-	<p>You can install and update Eclipse SQL Explorer via the eclipse update mechanism.  The update site for Eclipse SQL Explorer is http://www.sqlexplorer.org/</p>
+	<p>You can install and update Eclipse SQL Explorer via the eclipse update mechanism.  The update site for Eclipse SQL Explorer is http://eclipsesql.sourceforge.net/</p>
 
 <?php include("common/footer.php"); ?>

@@ -1,4 +1,4 @@
-<?
+<?php
     $path = $_SERVER['PHP_SELF'];
     $page = basename($path);
 ?> 

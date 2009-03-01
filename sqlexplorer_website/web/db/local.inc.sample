@@ -1,0 +1,19 @@
+<?php
+/************************************************************************
+ * This is a sample file which has to be copied to
+ *
+ * local.inc.php
+ *
+ * and filled with the correct values for the db connection to use on the
+ * current deployment
+ *
+ * !!!! Don't check in a local.inc.php
+ *
+ ************************************************************************/
+
+define("DB_HOST",'mysql-e');
+define("DB_USER",'e132863rw');
+define("DB_PASS",'??????');
+define("DB_NAME",'e132863_stats');
+ 
+?>

@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteBase /
+RewriteRule ^(.*).xml$ download.php?pg=$1.xml [QSA,L,NC,PT]
+RewriteRule ^(.*).jar$ download.php?pg=$1.jar [QSA,L,NC,PT]
