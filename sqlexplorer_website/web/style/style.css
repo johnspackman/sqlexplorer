@@ -117,7 +117,19 @@ html, body {
 	margin-top: 5px;
 }
 
-
+.data table {
+	border: 1px solid black;
+	border-collapse:collapse;
+} 
+.data th {
+	border: 1px solid black; 
+	padding: 5px;
+	text-align: left;
+}
+.data td {
+	border: 1px solid black; 
+	padding: 5px;
+} 
 
 
 
