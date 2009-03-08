@@ -1,6 +1,8 @@
 3.5.0.?? - Heiko Hilbert
 ======================================================
 +. add preference to control sorting of column names in db structure view (feature #2663329, bug #1611426)
++. fixed problem that double click in file search results does not select found line in SQLEditor
+
 
 3.5.0.RC7 - Heiko Hilbert
 ======================================================

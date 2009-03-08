@@ -989,4 +989,21 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 	public void refreshToolbars() {
 		getEditorToolBar().refresh();
 	}
+
+	/**
+	 * propagate unknown adapter requests to the encapsulated text editor
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public Object getAdapter(Class adapter) {
+		Object result = super.getAdapter(adapter);
+		if(result == null)
+		{
+			result = textEditor.getAdapter(adapter);
+		}
+		return result;
+	}
+	
+	
 }
