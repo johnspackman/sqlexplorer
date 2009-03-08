@@ -29,6 +29,8 @@ public class ColumnNode extends AbstractNode {
     private boolean _isForeignKey = false;
 
     private boolean _isPrimaryKey = false;
+    
+    private int _idx;
 
     private String _labelDecoration = null;
 
@@ -36,8 +38,12 @@ public class ColumnNode extends AbstractNode {
 
    
     public ColumnNode(INode parent, String name, MetaDataSession session, TableNode parentTable, boolean showKeyLabels) {
+    	this(parent, name, session, parentTable,showKeyLabels, 0);
+    }
+    public ColumnNode(INode parent, String name, MetaDataSession session, TableNode parentTable, boolean showKeyLabels, int pIdx) {
     	super(parent, name, session, "column");
         _parentTable = parentTable;
+        _idx = pIdx;
         setImageKey("Images.ColumnNodeIcon");
 
         if (showKeyLabels) {
@@ -129,5 +135,9 @@ public class ColumnNode extends AbstractNode {
     public void setLabelDecoration(String text) {
 
         _labelDecoration = text;
+    }
+    
+    public int getIdx() {
+    	return _idx;
     }
 }

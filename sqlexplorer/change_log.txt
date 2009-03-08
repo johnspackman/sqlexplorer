@@ -1,3 +1,7 @@
+3.5.0.?? - Heiko Hilbert
+======================================================
++. add preference to control sorting of column names in db structure view (feature #2663329, bug #1611426)
+
 3.5.0.RC7 - Heiko Hilbert
 ======================================================
 +. fixed some minor problems in mssql plugin (Database Structure display)

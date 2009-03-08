@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer.dbstructure.nodes;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.squirrel_sql.fw.sql.ITableInfo;
@@ -43,34 +44,57 @@ public class ColumnFolderNode extends AbstractFolderNode {
      * Sort columns: PK - FK - Name..
      */
     public Comparator<INode> getComparator() {
+    	if(SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.SORT_COLUMNS_IN_TREE))
+    	{
+            return new Comparator<INode>() {
 
-        return new Comparator<INode>() {
+                public int compare(INode arg0, INode arg1) {
 
-            public int compare(INode arg0, INode arg1) {
+                    if (arg0 == null || arg1 == null) {
+                        return 0;
+                    }
+                    ColumnNode node1 = (ColumnNode) arg0;
+                    ColumnNode node2 = (ColumnNode) arg1;
 
-                if (arg0 == null || arg1 == null) {
-                    return 0;
+                    if (node1.isPrimaryKey() && !node2.isPrimaryKey()) {
+                        return -1;
+                    }
+                    if (!node1.isPrimaryKey() && node2.isPrimaryKey()) {
+                        return 1;
+                    }
+                    if (node1.isForeignKey() && !node2.isForeignKey()) {
+                        return -1;
+                    }
+                    if (!node1.isForeignKey() && node2.isForeignKey()) {
+                        return 1;
+                    }
+
+                    return node1.getName().compareTo(node2.getName());
                 }
-                ColumnNode node1 = (ColumnNode) arg0;
-                ColumnNode node2 = (ColumnNode) arg1;
 
-                if (node1.isPrimaryKey() && !node2.isPrimaryKey()) {
-                    return -1;
-                }
-                if (!node1.isPrimaryKey() && node2.isPrimaryKey()) {
-                    return 1;
-                }
-                if (node1.isForeignKey() && !node2.isForeignKey()) {
-                    return -1;
-                }
-                if (!node1.isForeignKey() && node2.isForeignKey()) {
-                    return 1;
+            };
+    		
+    	}
+    	else
+    	{
+            return new Comparator<INode>() {
+
+                public int compare(INode arg0, INode arg1) {
+
+                    if (arg0 == null || arg1 == null) {
+                        return 0;
+                    }
+                    ColumnNode node1 = (ColumnNode) arg0;
+                    ColumnNode node2 = (ColumnNode) arg1;
+
+                 
+
+                    return node1.getIdx() - node2.getIdx();
                 }
 
-                return node1.getName().compareTo(node2.getName());
-            }
-
-        };
+            };
+    		
+    	}
     }
 
     /**
@@ -90,8 +114,9 @@ public class ColumnFolderNode extends AbstractFolderNode {
 
         try {
             Iterator<String> it = ((TableNode) _parent).getColumnNames().iterator();
+            int idx = 0;
             while (it.hasNext()) {
-                addChildNode(new ColumnNode(this, (String) it.next(), _session, (TableNode) _parent, true));
+                addChildNode(new ColumnNode(this, (String) it.next(), _session, (TableNode) _parent, true, idx++));
             }
         } catch (Exception e) {
             SQLExplorerPlugin.error("Could not create child nodes for " + getName(), e);
