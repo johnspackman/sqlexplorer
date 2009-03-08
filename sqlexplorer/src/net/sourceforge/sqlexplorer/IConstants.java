@@ -137,6 +137,9 @@ public interface IConstants {
 
     // Sort columns in db structure tree
     String SORT_COLUMNS_IN_TREE = "DbStructure.SortColumns";
+
+    // Show session name in editor title
+    String SHOW_SESSION_IN_EDITOR_TITLE = "SQLEditor.ShowSessionNameInEditorTitle";
     
     // Debug logging level for queries
     String QUERY_DEBUG_LOG_LEVEL = "SQLEditor.QueryDebugLog";

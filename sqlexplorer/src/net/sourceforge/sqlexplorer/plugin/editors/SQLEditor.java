@@ -440,9 +440,26 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 			}
 		}
 
-		setPartName(input.getName());
+		updatePartName();
 	}
 
+	private void updatePartName()
+	{
+		Display.getDefault().syncExec(new Runnable() {
+		
+			public void run() {
+				String name = getEditorInput().getName();
+				if(session != null &&
+						SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.SHOW_SESSION_IN_EDITOR_TITLE))
+				{
+					name = name + " [" +session.toString()+"]";
+				}
+				setPartName(name);
+		
+			}
+		});
+		
+	}
 	/*
 	 * (non-JavaDoc)
 	 * 
@@ -827,6 +844,7 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 		if (session == this.session)
 			return;
 		
+		
 		// If we already have a session and we're changing to a different one, close the current one
 		if (getSession() != null && session != this.session)
 			this.session.close();
@@ -835,6 +853,8 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 			textEditor.onEditorSessionChanged(session);
 		if (toolBar != null)
 			toolBar.onEditorSessionChanged(session);
+
+		updatePartName();
 	}
 
 	/**

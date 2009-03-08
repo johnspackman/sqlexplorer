@@ -149,6 +149,7 @@ public class GeneralPreferencePage extends AbstractPreferencePage {
 		addField(new BooleanFieldEditor(IConstants.ENABLE_STRUCTURED_COMMENTS, Messages.getString("Preferences.SQLExplorer.EnableStructuredComments"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.SHOW_SCHEMA_ON_TABLES, Messages.getString("Preferences.SQLExplorer.ShowSchemasOnTables"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.SORT_COLUMNS_IN_TREE, Messages.getString("Preferences.DbStructure.SortColumns"), getFieldEditorParent()));
+		addField(new net.sourceforge.sqlexplorer.preferences.BooleanFieldEditor(IConstants.SHOW_SESSION_IN_EDITOR_TITLE, Messages.getString("Preferences.SQLEditor.ShowSessionInTitle"), getFieldEditorParent()));
 		
 		final String[][] DEBUG_LEVEL_VALUES = new String[][] {
 				{ Messages.getString("Preferences.SQLExplorer.DebugLevelOff"), IConstants.QUERY_DEBUG_OFF },
