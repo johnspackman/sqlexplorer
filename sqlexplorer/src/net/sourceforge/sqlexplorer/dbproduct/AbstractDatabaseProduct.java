@@ -2,7 +2,6 @@ package net.sourceforge.sqlexplorer.dbproduct;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -56,8 +55,12 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 				hasResults = cstmt.execute();
 				
 			} else {
-				PreparedStatement pstmt = connection.getConnection().prepareStatement(querySql.toString());
-				stmt = pstmt;
+				stmt = connection.getConnection().createStatement();
+				
+// #2687620				
+// There is a bug in SQLite PrepStatemet getUpdateCount which causes Exception when checking results.
+// On the other hand, we have no parameters to bind or reusing of prepared statements so it makes no difference to use a
+// normal or prepared statement here.
 				
 				// Note we only set maxrows if we know what the query type is (and that it's a SELECT)
 				//	This is important for MSSQL DDL statements which fail if maxrows is set, and makes
@@ -69,7 +72,7 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 						// Nothing
 					}
 				
-				hasResults = pstmt.execute();
+				hasResults = stmt.execute(querySql.toString());
 			}
 			
 			return new ExecutionResultImpl(this, stmt, hasResults, params, maxRows);
