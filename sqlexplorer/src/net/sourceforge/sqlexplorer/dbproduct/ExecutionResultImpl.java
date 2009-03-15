@@ -3,8 +3,8 @@
  */
 package net.sourceforge.sqlexplorer.dbproduct;
 
-import java.sql.ResultSet;
 import java.sql.CallableStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -54,6 +54,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 	private Iterator<NamedParameter> paramIter;
 	private int updateCount;
 	private ResultSet currentResultSet;
+	private boolean hasResults;
 
 	public ExecutionResultImpl(AbstractDatabaseProduct product, Statement stmt, boolean hasResults, LinkedList<NamedParameter> parameters, int maxRows) throws SQLException {
 		super();
@@ -61,8 +62,8 @@ public final class ExecutionResultImpl implements ExecutionResults {
 		this.stmt = stmt;
 		this.parameters = parameters;
 		this.maxRows = maxRows;
-		
-		state = State.PRIMARY_RESULTS;
+		this.hasResults = hasResults;
+		this.state = State.PRIMARY_RESULTS;
 	}
 
 	public DataSet nextDataSet() throws SQLException {
@@ -80,9 +81,9 @@ public final class ExecutionResultImpl implements ExecutionResults {
 		if (state == State.PRIMARY_RESULTS) 
 		{
 			state = State.SECONDARY_RESULTS;
-			currentResultSet = stmt.getResultSet();
-			if (currentResultSet != null)
+			if(this.hasResults)
 			{
+				currentResultSet = stmt.getResultSet();
 				return new DataSet(currentResultSet, null, maxRows);
 			}
 			int affectedRows = stmt.getUpdateCount();
@@ -168,13 +169,13 @@ public final class ExecutionResultImpl implements ExecutionResults {
 		}
 		if (numValues == 0)
 			return null;
-		Comparable[][] rows = new Comparable[numValues][2];
+		Comparable<?>[][] rows = new Comparable[numValues][2];
 		columnIndex = 1;
 		int rowIndex = 0;
 		for (ParamValues pv : params.values()) {
 			int valueIndex = 1;
 			for (Integer index : pv.columnIndexes) {
-				Comparable[] row = rows[rowIndex++];
+				Comparable<?>[] row = rows[rowIndex++];
 				row[0] = pv.param.getName();
 				if (pv.columnIndexes.size() > 1)
 					row[0] = (pv.param.getName() + '[' + valueIndex + ']');
