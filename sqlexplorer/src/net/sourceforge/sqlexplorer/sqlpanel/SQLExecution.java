@@ -243,7 +243,10 @@ public class SQLExecution extends AbstractSQLExecution {
 	                closeStatement();
 	                hasMessages = true;
 	            	if (stopOnError) {
-	        			errorDialog(Messages.getString("SQLResultsView.Error.Title"), e.getMessage());
+	            		if(SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.CONFIRM_BOOL_SHOW_DIALOG_ON_QUERY_ERROR))
+	            		{
+	            			errorDialog(Messages.getString("SQLResultsView.Error.Title"), e.getMessage());
+	            		}
 	        			return;
 	            	}
 	            	numErrors++;
