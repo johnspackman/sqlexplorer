@@ -159,15 +159,38 @@ public class DataSet implements ResultProvider {
      * @throws Exception if dataSet could not be created
      */
     public DataSet(String[] columnLabels, String sql, int[] relevantIndeces, Session session) throws SQLException, ExplorerException {
+    	this(columnLabels,sql,relevantIndeces,session,0);
+    }
+   
+    /**
+     * Create new dataset based on sql query.
+     * 
+     * @param columnLabels string[] of columnLabels, use null if the column name
+     *            can be used as label
+     * @param sql query string
+     * @param relevantIndeces int[] of all columns to add to the dataSet, use
+     *            null if all columns should be included.
+     * @param connection An open SQLConnection [mandatory]
+     * @throws Exception if dataSet could not be created
+     */
+    public DataSet(String[] columnLabels, String sql, int[] relevantIndeces, Session session, int maxRowCount) throws SQLException, ExplorerException {
     	SQLConnection connection = null;
     	Statement statement = null;
     	ResultSet resultSet = null;
     	try {
     		connection = session.grabConnection();
     		statement = connection.createStatement();
+    		if (maxRowCount > 0)
+    		{
+				try {
+	    			statement.setMaxRows(maxRowCount);
+				}catch(SQLException e) {
+					// Nothing
+				}
+    		}
     		statement.execute(sql);
     		resultSet = statement.getResultSet();
-    		initialize(columnLabels, resultSet, relevantIndeces, 0);
+    		initialize(columnLabels, resultSet, relevantIndeces, maxRowCount);
     	}finally {
             if (resultSet != null)
             	try {
