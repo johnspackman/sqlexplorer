@@ -47,9 +47,10 @@ public class MetaDataSession extends Session {
 	/**
 	 * Initialises the metadata, but only if the meta data has not already been collected
 	 */
-	private void initialise() throws SQLException {
-		if (getConnection() != null)
+	private synchronized void initialise() throws SQLException {
+		if (metaData != null)
 			return;
+		
 		
 		SQLConnection connection = null;
 		try {
