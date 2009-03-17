@@ -211,7 +211,8 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
 	public void refresh() {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				_treeViewer.refresh();
+				if (!_treeViewer.getTree().isDisposed())
+					_treeViewer.refresh();
 			}
 		});
 	}
