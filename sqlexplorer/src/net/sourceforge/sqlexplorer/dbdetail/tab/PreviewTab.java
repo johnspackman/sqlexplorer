@@ -65,7 +65,11 @@ public class PreviewTab extends AbstractDataSetTab {
             try {
             	connection = tableNode.getSession().grabConnection();
                 statement = connection.createStatement();
-                statement.setMaxRows(maxResults);
+				try {
+	    			statement.setMaxRows(maxResults);
+				}catch(SQLException e) {
+					// Nothing
+				}
                 statement.execute("select * from " + tableNode.getQualifiedName());
                 resultSet = statement.getResultSet();
                 

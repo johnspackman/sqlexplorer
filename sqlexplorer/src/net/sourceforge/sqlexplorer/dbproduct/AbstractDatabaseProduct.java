@@ -65,13 +65,13 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 				// Note we only set maxrows if we know what the query type is (and that it's a SELECT)
 				//	This is important for MSSQL DDL statements which fail if maxrows is set, and makes
 				//	no sense for non-select anyway.
-				if (query.getQueryType() == Query.QueryType.SELECT)
+				if (query.getQueryType() == Query.QueryType.SELECT) {
 					try {
 						stmt.setMaxRows(maxRows);
 					}catch(SQLException e) {
 						// Nothing
 					}
-				
+				}
 				hasResults = stmt.execute(querySql.toString());
 			}
 			
