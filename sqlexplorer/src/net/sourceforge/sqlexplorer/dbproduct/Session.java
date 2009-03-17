@@ -23,6 +23,7 @@ import java.sql.SQLException;
 
 import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.connections.ConnectionsView;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 /**
@@ -133,7 +134,7 @@ public class Session {
     	if (connection != null)
     		connectionInUse = true;
     	
-    	if (SQLExplorerPlugin.getDefault().getConnectionsView() != null)
+    	if (SQLExplorerPlugin.getDefault().getConnectionsView(false) != null)
     		SQLExplorerPlugin.getDefault().getConnectionsView().refresh();
     	return connection;
     }
@@ -184,7 +185,11 @@ public class Session {
     	}catch(SQLException e) {
     		SQLExplorerPlugin.error("Cannot release connection", e);
     	}
-		SQLExplorerPlugin.getDefault().getConnectionsView().refresh();
+		ConnectionsView connectionsView = SQLExplorerPlugin.getDefault().getConnectionsView(false);
+		if (connectionsView != null)
+		{
+			connectionsView.refresh();
+		}
     }
     
     /**
@@ -214,7 +219,11 @@ public class Session {
 		    	try {
 			    	user.releaseConnection(connection);
 		    		internalSetConnection(null);
-					SQLExplorerPlugin.getDefault().getConnectionsView().refresh();
+					ConnectionsView connectionsView = SQLExplorerPlugin.getDefault().getConnectionsView(false);
+					if (connectionsView != null)
+					{
+						connectionsView.refresh();
+					}
 		    	}catch(SQLException e) {
 		    		SQLExplorerPlugin.error("Cannot release connection", e);
 		    	}

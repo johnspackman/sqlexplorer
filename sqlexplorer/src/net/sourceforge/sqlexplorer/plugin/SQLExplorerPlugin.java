@@ -303,11 +303,14 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     }
 
 	public ConnectionsView getConnectionsView() {
+		return getConnectionsView(true);
+	}
+	public ConnectionsView getConnectionsView(boolean create) {
 		if (connectionsView == null) {
 			IWorkbenchPage page = getActivePage();
 			if (page != null) {
 		        connectionsView = (ConnectionsView)page.findView(ConnectionsView.class.getName());
-		        if (connectionsView == null)
+		        if (connectionsView == null && create)
 		        	try {
 		        		connectionsView = (ConnectionsView)page.showView(ConnectionsView.class.getName());
 		        	} catch(PartInitException e) {
