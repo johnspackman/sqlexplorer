@@ -211,6 +211,26 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
             if (name == null || name.equals(""))
                 return null;
             TreeSet st = (TreeSet) dictionary.getColumnListByTableName(name);
+            if(st == null) {
+            	// No table was found, perhaps this is an alias?
+            	String words[] = text.split("\\s");
+            	// start at word 1 since there shouldn't be any instances of this otherwise.
+            	for(int i = 1; i < words.length; i++) {
+            		if(words[i].equals(name)) {
+            			// name has been found as a word, look up previous word
+            			String potentialName = words[i-1].toLowerCase();
+            			if(potentialName.equals("as") && i > 1) {
+            				potentialName = words[i-2].toLowerCase();
+            			}
+            			// if it is not a keyword then check against columnlist by table name
+            			st = (TreeSet) dictionary.getColumnListByTableName(potentialName);
+            			if(st != null) {
+            				name = potentialName;
+            				break;
+            			}
+            		}
+            	}
+            }
             if (st != null) {
                 ArrayList list = (ArrayList) dictionary.getByTableName(name);
                 if (list == null)
