@@ -139,4 +139,14 @@
     <url>jdbc:sybase:Tds:&lt;host&gt;:&lt;port&gt;/&lt;DBNAME&gt;</url>
     <jars/>
   </driver>
-</drivers>
+  <driver id="-28">
+    <name>SQLite</name>
+    <url>jdbc:sqlite:&lt;full_db_path&gt;</url>
+    <jars/>
+  </driver>
+  <driver id="-29">
+    <name>Apache Derby - Network Server</name>
+    <url>jdbc:derby://&lt;host&gt;:&lt;port&gt;/&lt;dbname&gt;;create=true;</url>
+    <jars/>
+  </driver>
+  </drivers>
