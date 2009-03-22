@@ -111,7 +111,7 @@
    <extension point="org.eclipse.ui.viewActions">
       <viewContribution
             id="net.sourceforge.sqlexplorer.connections.actions.commit"
-            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
+            targetID="net.sourceforge.sqlexplorer.connections.ConnectionsView">
          <action
                class="net.sourceforge.sqlexplorer.connections.actions.CommitAction"
                enablesFor="1"
@@ -124,7 +124,7 @@
       </viewContribution>     
       <viewContribution
             id="net.sourceforge.sqlexplorer.connections.actions.rollback"
-            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
+            targetID="net.sourceforge.sqlexplorer.connections.ConnectionsView">
          <action
                class="net.sourceforge.sqlexplorer.connections.actions.RollbackAction"
                enablesFor="1"
@@ -137,7 +137,7 @@
       </viewContribution>
       <viewContribution
             id="net.sourceforge.sqlexplorer.connections.actions.closeAll"
-            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
+            targetID="net.sourceforge.sqlexplorer.connections.ConnectionsView">
          <action
                class="net.sourceforge.sqlexplorer.connections.actions.CloseAllConnectionsAction"
                disabledIcon="icons/removeall_dis.gif"
@@ -151,7 +151,7 @@
       </viewContribution>
       <viewContribution
             id="net.sourceforge.sqlexplorer.connections.actions.close"
-            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
+            targetID="net.sourceforge.sqlexplorer.connections.ConnectionsView">
          <action
                class="net.sourceforge.sqlexplorer.connections.actions.CloseConnectionAction"
                disabledIcon="icons/remove_dis.gif"
@@ -166,7 +166,7 @@
 
       <viewContribution
             id="net.sourceforge.sqlexplorer.connections.actions.NewEditor"
-            targetID="net.sourceforge.sqlexplorer.plugin.views.ConnectionsView">
+            targetID="net.sourceforge.sqlexplorer.connections.ConnectionsView">
          <action
                label="New SQL Editor"
                icon="icons/new_editor.gif"
