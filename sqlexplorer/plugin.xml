@@ -249,6 +249,12 @@
             name="Generate SELECT Statement"
             node-type="table,column"/>
       <action
+            class="net.sourceforge.sqlexplorer.dbstructure.actions.GenerateInsertSQLAction"
+            database-product-name="*"
+            id="sqlexplorer.dbstructure.actions.CreateInsertSQLAction"
+            name="Generate INSERT Statement"
+            node-type="table,column"/>
+      <action
             class="net.sourceforge.sqlexplorer.dbstructure.actions.CreateTableScriptAction"
             database-product-name="*"
             id="sqlexplorer.dbstructure.actions.CreateTableScriptAction"

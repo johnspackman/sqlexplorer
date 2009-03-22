@@ -4,6 +4,9 @@
 +. fixed problem that double click in file search results does not select found line in SQLEditor
 +. added preference to show session name in SQL editor title too (feature #2638982)
 +. fixed #2687620, general solution triggered from SQLite bug
++. fixed auto completion using table alias (Patch #2643772 by seekforth)
++. some internal changes (Patches #2637474,#2633721,#2633365,#2633298 by joco01)
++. new action Generate Insert Statement (Patch #2695812, part of feature #1590278 by a_lazar) 
 
 3.5.0.RC7 - Heiko Hilbert
 ======================================================
