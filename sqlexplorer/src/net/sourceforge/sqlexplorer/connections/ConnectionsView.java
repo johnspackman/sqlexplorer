@@ -38,6 +38,7 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.actions.OpenPasswordConnectDialogAction;
 
 import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -223,8 +224,12 @@ public class ConnectionsView extends ViewPart implements ConnectionListener {
         for (IContributionItem item : items) {
         	if (item instanceof ActionContributionItem) {
         		ActionContributionItem contrib = (ActionContributionItem)item;
-        		AbstractConnectionTreeAction action = (AbstractConnectionTreeAction)contrib.getAction();
-        		action.setEnabled(action.isAvailable());
+        		IAction contribAction = contrib.getAction();
+        		if(contribAction instanceof AbstractConnectionTreeAction)
+        		{
+	        		AbstractConnectionTreeAction action = (AbstractConnectionTreeAction)contribAction;
+	        		action.setEnabled(action.isAvailable());
+        		}
         	}
         }
 	}
