@@ -19,9 +19,6 @@
 
 package net.sourceforge.sqlexplorer.dbstructure.actions;
 
-import java.util.Iterator;
-import java.util.List;
-
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.ColumnNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
@@ -106,13 +103,9 @@ public class GenerateInsertSQLAction extends AbstractDBTreeContextAction {
         StringBuffer query2 = new StringBuffer(" values (");
         String sep = "";
 
-        List columnNames = node.getColumnNames();
-        Iterator it = columnNames.iterator();
-
-        while (it.hasNext()) {
+        for (String column : node.getColumnNames()) {
 
             query1.append(sep);
-            String column = (String) it.next();
             query1.append(column);
             
             query2.append(sep);
