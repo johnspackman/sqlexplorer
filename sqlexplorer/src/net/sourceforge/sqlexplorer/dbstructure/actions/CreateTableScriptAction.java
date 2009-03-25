@@ -18,6 +18,7 @@
 
 package net.sourceforge.sqlexplorer.dbstructure.actions;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -79,6 +80,7 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
         ITableInfo info = tableNode.getTableInfo();
 
         StringBuffer buf = new StringBuffer(4 * 1024);
+        StringBuffer temp = new StringBuffer(4*1024);
         String sep = System.getProperty("line.separator");
 
         try {
@@ -87,8 +89,29 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
             ArrayList<String> pks = new ArrayList<String>();
             PrimaryKeyInfo[] pksInfo = metaData.getPrimaryKey(info);
             for (PrimaryKeyInfo pkInfo : pksInfo)
-            	pks.add(pkInfo.getColumnName());
+            	pks.add(pkInfo.getColumnName());  
+        
+            //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            //ADDED
+            ResultSet fkSet = metaData.getImportedKeys(tableNode.getTableInfo());
+            String fk = null;
+            String fkparent = null;
+            String parentKey = null;
+            int i =0;
+			while(fkSet!=null && fkSet.next()) {
+				if(i>0) temp.append(",");
+				fkparent = fkSet.getString(3);
 
+				parentKey = fkSet.getString(4);
+				fk = fkSet.getString(8);
+				temp.append(" FOREIGN KEY ("+fk+") REFERENCES "+fkparent+"("+ parentKey+") ");
+				i++;
+			}
+			//close the result set
+			fkSet.close();		
+            //END
+			//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++        
+            
             TableColumnInfo[] columnsInfo = metaData.getColumnInfo(info);
             String tableName = _selectedNodes[0].getQualifiedName();
             buf.append("CREATE TABLE ");
@@ -103,6 +126,7 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
 //                String defaultValue = resultSet.getString(13);
                 boolean notNull = "NO".equalsIgnoreCase(col.isNullable()); 
                 String sLower = col.getColumnName().toLowerCase();
+                
                 buf.append(sep);
                 buf.append(col.getColumnName() + " ");
 
@@ -128,6 +152,8 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
                 if (pks.size() == 1 && pks.get(0).equals(col.getColumnName())) {
                     buf.append(" PRIMARY KEY");
                 }
+                
+
 
                 String defaultValue = col.getDefaultValue();
                 if (defaultValue != null && !defaultValue.equals("")) {
@@ -149,8 +175,12 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
                 if (notNull) {
                     buf.append(" not null");
                 }
+
                 buf.append(",");
+                         
             }
+            if(temp!=null)
+            	buf.append(temp);
             buf.deleteCharAt(buf.length() - 1);
             buf.append(")" + sep);
 
@@ -164,7 +194,7 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
             SQLExplorerPlugin.error("Error creating export script", e);
         } catch (PartInitException e) {
             SQLExplorerPlugin.error("Error creating export script", e);
-        }
+        } 
     }
 
 
