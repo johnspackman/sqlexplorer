@@ -97,15 +97,14 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
             String fk = null;
             String fkparent = null;
             String parentKey = null;
-            int i =0;
 			while(fkSet!=null && fkSet.next()) {
-				if(i>0) temp.append(",");
+				temp.append(sep);
 				fkparent = fkSet.getString(3);
 
 				parentKey = fkSet.getString(4);
 				fk = fkSet.getString(8);
-				temp.append(" FOREIGN KEY ("+fk+") REFERENCES "+fkparent+"("+ parentKey+") ");
-				i++;
+				temp.append("FOREIGN KEY ("+fk+") REFERENCES "+fkparent+"("+ parentKey+")");
+				temp.append(",");
 			}
 			//close the result set
 			fkSet.close();		
@@ -179,9 +178,10 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
                 buf.append(",");
                          
             }
-            if(temp!=null)
-            	buf.append(temp);
-            buf.deleteCharAt(buf.length() - 1);
+          	
+            buf.append(temp);
+
+          	buf.deleteCharAt(buf.length() - 1);
             buf.append(")" + sep);
 
             SQLEditorInput input = new SQLEditorInput("SQL Editor (" + SQLExplorerPlugin.getDefault().getEditorSerialNo() + ").sql");
