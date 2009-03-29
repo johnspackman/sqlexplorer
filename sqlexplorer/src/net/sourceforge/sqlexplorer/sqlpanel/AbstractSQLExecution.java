@@ -78,6 +78,8 @@ public abstract class AbstractSQLExecution extends Job {
 	protected Session _session;
 	
 	protected SQLConnection _connection;
+	
+	protected boolean reRun = false; // flag indicating the execution is re run, re use old result tab
 
     // Query tokenizer to get SQL statements from
 	private QueryParser queryParser;
@@ -126,7 +128,7 @@ public abstract class AbstractSQLExecution extends Job {
 			_connection = null;
 			_editor.getEditorToolBar().refresh();
 		}
-		
+		this.reRun = true;
 		return new Status(IStatus.OK, getClass().getName(), IStatus.OK, "OK", null);
 	}
 	
@@ -152,9 +154,10 @@ public abstract class AbstractSQLExecution extends Job {
 	 * @return
 	 */
 	protected CTabItem allocateResultsTab(Query query) {
-		CTabItem resultsTab = _editor.createResultsTab(this, query);
+		CTabItem resultsTab = _editor.createResultsTab(this, query, this.reRun);
 		if (resultsTab == null)
 			return null;
+		this.reRun = false;
 		boolean longCaptions = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.USE_LONG_CAPTIONS_ON_RESULTS);
 		String caption = resultsTab.getText();
 		if (longCaptions) {

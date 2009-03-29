@@ -695,22 +695,30 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 	 * Allocates a new tab for an AbstractSQLExecution; the tab and it's contents
 	 * are completely undefined
 	 * @param sqlExec
+	 * @param query
+	 * @param pReUse if true try to reuse the tab already created for the given execution
 	 * @return
 	 */
-	public CTabItem createResultsTab(AbstractSQLExecution sqlExec, Query query) {
+	public CTabItem createResultsTab(AbstractSQLExecution sqlExec, Query query, boolean pReUse) {
 		if (tabFolder.isDisposed())
 			return null;
 
 		AbstractSQLExecution execution = sqlExec;
 		if(sqlExec.getQueryParser().numberOfQueries() > 1)
 		{
+			// if there are more then one queries in this execution
+			// split it to allow re run on the single query
 			execution = new SQLExecution(
 					this,
 					new AlreadyParsedQueryParser(query, sqlExec.getQueryParser().getContext()),
 					getLimitResults());
 		}
 		// check if tab exists
-		CTabItem tabItem = getResultsTab(execution);
+		CTabItem tabItem = null;
+		if(pReUse)
+		{
+			tabItem = getResultsTab(execution);
+		}
 		if(tabItem == null)
 		{
 			// Create the new tab, make it second to last (IE keep the messages tab
