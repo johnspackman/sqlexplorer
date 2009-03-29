@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -42,7 +43,7 @@ public abstract class AbstractNode implements INode {
 
     private static final Log _logger = LogFactory.getLog(AbstractNode.class);
 
-    protected ArrayList<INode> _children = new ArrayList<INode>();
+    protected List<INode> _children = new ArrayList<INode>();
 
     protected boolean _childrenLoaded = false;
 
