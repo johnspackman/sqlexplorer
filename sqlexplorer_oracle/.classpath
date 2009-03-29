@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="/sqlexplorer/lib/dom4j.jar" sourcepath="C:/os/src/dom4j/dom4j-1.6.1/src/java"/>
 	<classpathentry kind="lib" path="lib/xdb.jar"/>
@@ -9,5 +8,6 @@
 	<classpathentry kind="lib" path="lib/xmlparserv2.jar"/>
 	<classpathentry kind="lib" path="lib/xsu12.jar"/>
 	<classpathentry kind="lib" path="lib/ojdbc14.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
