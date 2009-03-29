@@ -116,6 +116,7 @@ public interface IConstants {
     
     String LOG_SUCCESS_MESSAGES = "SQLEditor.LogSuccess Messages";
     String LOG_SQL_HISTORY = "SQLEditor.LogSQLHistory";
+    String LOG_SQL_WARNINGS = "SQLEditor.LogSQLWarning";
 
     // retrieve binary data as hex converted string
     String RETRIEVE_BLOB_AS_HEX = "DataSetResult.RetrieveBlobAsHex";

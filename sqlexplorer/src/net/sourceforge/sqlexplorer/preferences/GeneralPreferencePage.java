@@ -144,6 +144,7 @@ public class GeneralPreferencePage extends AbstractPreferencePage {
 		addField(new BooleanFieldEditor(IConstants.TREAT_NEW_AS_SCRATCH, Messages.getString("Preferences.SQLExplorer.TreatNewAsScratch"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.STOP_ON_ERROR, Messages.getString("Preferences.SQLExplorer.StopOnError"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.LOG_SUCCESS_MESSAGES, Messages.getString("Preferences.SQLExplorer.LogSuccessMessages"), getFieldEditorParent()));
+		addField(new BooleanFieldEditor(IConstants.LOG_SQL_WARNINGS, Messages.getString("Preferences.SQLExplorer.LogSqlWarnings"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.LOG_SQL_HISTORY, Messages.getString("Preferences.SQLExplorer.LogSQLHistory"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.REQUIRE_SAVE_ON_CLOSE_EDITOR, Messages.getString("Preferences.SQLExplorer.RequireSaveOnClose"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.ENABLE_STRUCTURED_COMMENTS, Messages.getString("Preferences.SQLExplorer.EnableStructuredComments"), getFieldEditorParent()));

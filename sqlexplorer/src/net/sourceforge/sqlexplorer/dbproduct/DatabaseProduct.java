@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.parsers.Query;
@@ -91,6 +92,14 @@ public interface DatabaseProduct {
 		 * @throws SQLException
 		 */
 		public void close() throws SQLException;
+		
+
+		/**
+		 * returns a list of all warning messages
+		 * @return
+		 */
+		public List<String> getWarnings();
+		
 	}
 	
 	/**

@@ -231,6 +231,7 @@ public class SQLExecution extends AbstractSQLExecution {
 	                    displayResults(dataSet);
 	            	}
 	            	overallUpdateCount += results.getUpdateCount();
+            		showWarnings(results, querySQL);
 	            	
 	            	if (!checkedForMessages)
 	            		checkForMessages(query);
@@ -291,6 +292,27 @@ public class SQLExecution extends AbstractSQLExecution {
             });
     }
     
+    private void showWarnings(DatabaseProduct.ExecutionResults results, String querySql)
+    {
+		if(!SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.LOG_SQL_WARNINGS))
+		{
+			return;
+		}
+    	boolean showQuery = true;
+        for(String msg : results.getWarnings())
+        {
+        	if(showQuery)
+        	{
+        		addMessage(new Message(Message.Status.STATUS, -1, 0, querySql, msg));
+        		showQuery = false;
+        	}
+        	else
+        	{
+        		addMessage(new Message(Message.Status.STATUS, -1, 0, "", msg));
+        	}
+        }
+    	
+    }
     /**
      * Cancel sql execution and close execution tab.
      */

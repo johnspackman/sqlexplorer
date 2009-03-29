@@ -6,10 +6,12 @@ package net.sourceforge.sqlexplorer.dbproduct;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeMap;
 
 import net.sourceforge.sqlexplorer.Messages;
@@ -66,6 +68,25 @@ public final class ExecutionResultImpl implements ExecutionResults {
 		this.state = State.PRIMARY_RESULTS;
 	}
 
+	public List<String> getWarnings()
+	{
+		List<String> result = new ArrayList<String>();
+		try {
+			SQLWarning warning = stmt.getWarnings();
+			while(warning != null)
+			{
+				if(warning.getMessage().trim().length() > 0)
+				{
+					result.add(warning.getMessage());
+				}
+				warning = warning.getNextWarning();
+				
+			}
+		} catch (SQLException e) {
+			// ignore it
+		}
+		return result;
+	}
 	public DataSet nextDataSet() throws SQLException {
 		// Close the current one
 		if (currentResultSet != null) {
