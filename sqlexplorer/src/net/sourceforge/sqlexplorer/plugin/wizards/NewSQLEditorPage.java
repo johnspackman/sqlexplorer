@@ -88,7 +88,7 @@ public class NewSQLEditorPage extends WizardNewFileCreationPage {
 			return;
 
 		// get all the view and editor parts
-		List parts = new ArrayList();
+		List<IWorkbenchPart> parts = new ArrayList<IWorkbenchPart>();
 		IWorkbenchPartReference refs[] = page.getViewReferences();
 		for (int i = 0; i < refs.length; i++) {
 			IWorkbenchPart part = refs[i].getPart(false);
@@ -102,7 +102,7 @@ public class NewSQLEditorPage extends WizardNewFileCreationPage {
 		}
 	
 		final ISelection selection = new StructuredSelection(resource);
-		Iterator it = parts.iterator();
+		Iterator<IWorkbenchPart> it = parts.iterator();
 		while (it.hasNext()) {
 			IWorkbenchPart part = (IWorkbenchPart) it.next();
 		

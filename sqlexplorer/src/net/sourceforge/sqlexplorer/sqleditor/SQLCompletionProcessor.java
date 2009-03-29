@@ -24,11 +24,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.TreeSet;
+import java.util.List;
+import java.util.Set;
 
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
-import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableFolderNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
@@ -118,11 +119,9 @@ class ExtendedCompletionProposal implements ICompletionProposal {
     }
 }
 
-class ICompletionProposalComparator implements Comparator {
+class ICompletionProposalComparator implements Comparator<ICompletionProposal> {
 
-    public int compare(Object o1, Object o2) {
-        ICompletionProposal i1 = (ICompletionProposal) o1;
-        ICompletionProposal i2 = (ICompletionProposal) o2;
+    public int compare(ICompletionProposal i1, ICompletionProposal i2) {
         String s1 = i1.getDisplayString();
         String s2 = i2.getDisplayString();
         return Collator.getInstance().compare(s1, s2);
@@ -210,7 +209,7 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
                 name = name.substring(otherDot + 1);
             if (name == null || name.equals(""))
                 return null;
-            TreeSet st = (TreeSet) dictionary.getColumnListByTableName(name);
+            Set<String> st = dictionary.getColumnListByTableName(name);
             if(st == null) {
             	// No table was found, perhaps this is an alias?
             	String words[] = text.split("\\s");
@@ -223,7 +222,7 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
             				potentialName = words[i-2].toLowerCase();
             			}
             			// if it is not a keyword then check against columnlist by table name
-            			st = (TreeSet) dictionary.getColumnListByTableName(potentialName);
+            			st = dictionary.getColumnListByTableName(potentialName);
             			if(st != null) {
             				name = potentialName;
             				break;
@@ -232,7 +231,7 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
             	}
             }
             if (st != null) {
-                ArrayList list = (ArrayList) dictionary.getByTableName(name);
+                List<INode> list = dictionary.getByTableName(name);
                 if (list == null)
                     return null;
                 TableNode nd = null;
@@ -256,7 +255,7 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
             INode node = (INode) dictionary.getByCatalogSchemaName(name);
             if (node != null) {
                 Object children[] = (Object[]) node.getChildNodes();
-                ArrayList propList = new ArrayList();
+                List<ICompletionProposal> propList = new ArrayList<ICompletionProposal>();
                 if (children != null) {
                     for (int i = 0; i < children.length; i++) {
                         String childName = children[i].toString().toLowerCase();
@@ -296,9 +295,9 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
 
             String[] proposalsString = dictionary.matchTablePrefix(string.toLowerCase());
 
-            ArrayList propList = new ArrayList();
+            List<ICompletionProposal> propList = new ArrayList<ICompletionProposal>();
             for (int i = 0; i < proposalsString.length; i++) {
-                ArrayList ls = dictionary.getTableObjectList(proposalsString[i]);
+                List<INode> ls = dictionary.getTableObjectList(proposalsString[i]);
                 for (int j = 0; j < ls.size(); j++) {
 
                     TableNode tbNode = (TableNode) ls.get(j);
@@ -335,10 +334,10 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
             String lastPart = string.substring(dotIndex + 1);
             if (lastPart == null || firstPart == null || lastPart.equals("") || firstPart.equals(""))
                 return null;
-            TreeSet st = (TreeSet) dictionary.getColumnListByTableName(firstPart);
+            Set<String> st = dictionary.getColumnListByTableName(firstPart);
             if (st != null) {
-                Iterator iter = st.iterator();
-                ArrayList propList = new ArrayList();
+                Iterator<String> iter = st.iterator();
+                List<ICompletionProposal> propList = new ArrayList<ICompletionProposal>();
                 while (iter.hasNext()) {
                     String colName = (String) iter.next();
                     int length2 = lastPart.length();
@@ -357,9 +356,9 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
             INode node = (INode) dictionary.getByCatalogSchemaName(firstPart);
             if (node != null) {
                 String[] proposalsString = dictionary.matchTablePrefix(lastPart.toLowerCase());
-                ArrayList propList = new ArrayList();
+                List<ICompletionProposal> propList = new ArrayList<ICompletionProposal>();
                 for (int i = 0; i < proposalsString.length; i++) {
-                    ArrayList ls = dictionary.getTableObjectList(proposalsString[i]);
+                    List<INode> ls = dictionary.getTableObjectList(proposalsString[i]);
                     for (int j = 0; j < ls.size(); j++) {
                         TableNode tbNode = (TableNode) ls.get(j);
                         Image tmpImage = null;

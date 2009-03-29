@@ -27,6 +27,7 @@ import net.sourceforge.sqlexplorer.IConstants;
 
 import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IPredicateRule;
+import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.rules.MultiLineRule;
@@ -95,7 +96,7 @@ public class SQLPartitionScanner extends RuleBasedPartitionScanner {
 		IToken multiLineComment= new Token(IConstants.SQL_COLOR_MULTILINE_COMMENT);
 		IToken singleLineComment= new Token(IConstants.SQL_COLOR_SINGLE_LINE_COMMENT);
 
-		List rules= new ArrayList();
+		List<IRule> rules= new ArrayList<IRule>();
 
 		// Add rule for single line comments.
 		rules.add(new EndOfLineRule("--", singleLineComment)); //$NON-NLS-1$

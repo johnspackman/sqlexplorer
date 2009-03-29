@@ -18,7 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.plugin.editors;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
@@ -210,6 +210,7 @@ class MouseClickListener implements KeyListener, MouseListener,
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private IRegion getCurrentTextRegion(ISourceViewer viewer) {
 
 		if (viewer == null)
@@ -235,12 +236,12 @@ class MouseClickListener implements KeyListener, MouseListener,
 			if (obj == null)
 				return null;
 			else {
-				if (!(obj instanceof ArrayList))
+				if (!(obj instanceof List))
 					return null;
-				ArrayList ls = (ArrayList) obj;
+				List<Object> ls = (List<Object>) obj;
 				if (ls.isEmpty())
 					return null;
-				Object node = ((ArrayList) obj).get(0);
+				Object node = ls.get(0);
 				if (node instanceof TableNode)
 					activeTableNode = (INode) node;
 				else

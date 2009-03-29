@@ -97,7 +97,7 @@ public final class DatabaseProductFactory {
         Exception ex = null;
         try {
         	// Locate the method
-	        Class clazz = Class.forName(className);
+	        Class<?> clazz = Class.forName(className);
 	        Method method = clazz.getMethod(GET_PRODUCT_INSTANCE, new Class[0]);
 	        
 	        // Call the method; it's static and has no parameters so both args are null (1st arg is "this") 

@@ -61,10 +61,10 @@ public class IndexesTab extends AbstractDataSetTab {
             TableNode tableNode = (TableNode) node;
 
             List<IndexInfo> indexes = node.getSession().getMetaData().getIndexInfo(tableNode.getTableInfo());
-            Comparable[][] dataRows = new Comparable[indexes.size()][];
+            Comparable<?>[][] dataRows = new Comparable[indexes.size()][];
             int index = 0;
             for (IndexInfo col : indexes) {
-            	Comparable[] row = new Comparable[COLUMN_LABELS.length];
+            	Comparable<?>[] row = new Comparable[COLUMN_LABELS.length];
             	dataRows[index++] = row;
 
             	int i = 0;

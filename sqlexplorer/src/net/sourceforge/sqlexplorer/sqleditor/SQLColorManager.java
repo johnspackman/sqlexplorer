@@ -34,19 +34,19 @@ import org.eclipse.swt.widgets.Display;
  */
 public class SQLColorManager implements IColorManager, IColorManagerExtension {
 	
-	protected Map fKeyTable= new HashMap(10);
-	protected Map fDisplayTable= new HashMap(2);
+	protected Map<String,RGB> fKeyTable= new HashMap<String, RGB>(10);
+	protected Map<Display,Map<RGB,Color>> fDisplayTable= new HashMap<Display, Map<RGB,Color>>(2);
 	
 	
 	public SQLColorManager() {
 	}
 	
 	void dispose(Display display) {		
-		Map colorTable= (Map) fDisplayTable.get(display);
+		Map<RGB,Color> colorTable= fDisplayTable.get(display);
 		if (colorTable != null) {
-			Iterator e= colorTable.values().iterator();
+			Iterator<Color> e= colorTable.values().iterator();
 			while (e.hasNext())
-				((Color) e.next()).dispose();
+				e.next().dispose();
 		}
 	}
 	
@@ -59,9 +59,9 @@ public class SQLColorManager implements IColorManager, IColorManagerExtension {
 			return null;
 		
 		final Display display= Display.getCurrent();
-		Map colorTable= (Map) fDisplayTable.get(display);
+		Map<RGB,Color> colorTable= fDisplayTable.get(display);
 		if (colorTable == null) {
-			colorTable= new HashMap(10);
+			colorTable= new HashMap<RGB, Color>(10);
 			fDisplayTable.put(display, colorTable);
 			display.disposeExec(new Runnable() {
 				public void run() {

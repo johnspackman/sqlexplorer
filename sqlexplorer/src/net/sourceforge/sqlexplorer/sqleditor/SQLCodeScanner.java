@@ -796,6 +796,7 @@ public class SQLCodeScanner extends AbstractSQLScanner {
 	/*
 	 * @see AbstractJavaScanner#createRules()
 	 */
+	@Override
 	protected synchronized List<IRule> createRules() {
 				
 		List<IRule> rules= new ArrayList<IRule>();		
@@ -824,7 +825,7 @@ public class SQLCodeScanner extends AbstractSQLScanner {
 		token= getToken(IConstants.SQL_COLOR_TABLE);
 		
 		if(dictionary!=null){
-			Iterator it=dictionary.getTableNames();
+			Iterator<String> it=dictionary.getTableNames();
 			while(it.hasNext()){
 				wordRule.addWord(it.next().toString(),token);
 			}
@@ -841,6 +842,8 @@ public class SQLCodeScanner extends AbstractSQLScanner {
 		setDefaultReturnToken(getToken(IConstants.SQL_COLOR_DEFAULT));
 		return rules;
 	}
+	
+	@Override
 	protected String[] getTokenProperties() {
 		return fgTokenProperties;
 	}
@@ -848,6 +851,7 @@ public class SQLCodeScanner extends AbstractSQLScanner {
 	/*
 	 * @see RuleBasedScanner#setRules(IRule[])
 	 */
+	@Override
 	public void setRules(IRule[] rules) {
 		int i;
 		for (i= 0; i < rules.length; i++)
@@ -860,9 +864,13 @@ public class SQLCodeScanner extends AbstractSQLScanner {
 		
 		super.setRules(rules);	
 	}
+	
+	@Override
 	public boolean affectsBehavior(PropertyChangeEvent event) {
 		return super.affectsBehavior(event);
 	}
+	
+	@Override
 	public void adaptToPreferenceChange(PropertyChangeEvent event) {
 		super.adaptToPreferenceChange(event);
 	}

@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -37,7 +37,7 @@ public class MyURLClassLoader extends URLClassLoader
 	private static final StringManager s_stringMgr =
 		StringManagerFactory.getStringManager(MyURLClassLoader.class);
 
-	private Map _classes = new HashMap();
+	private Map<String,Class<?>> _classes = new HashMap<String, Class<?>>();
 
 	public MyURLClassLoader(ClassLoader parent, String fileName) throws IOException
 	{
@@ -54,9 +54,9 @@ public class MyURLClassLoader extends URLClassLoader
 		super(urls, parent);
 	}
 
-	public Class[] getAssignableClasses(Class type, ILogger logger)
+	public Class<?>[] getAssignableClasses(Class<?> type, ILogger logger)
 	{
-		List classes = new ArrayList();
+		List<Class<?>> classes = new ArrayList<Class<?>>();
 		URL[] urls = getURLs();
 		for (int i = 0; i < urls.length; ++i)
 		{
@@ -76,11 +76,11 @@ public class MyURLClassLoader extends URLClassLoader
 									"MyURLClassLoader.errorLoadingFile", args);
 					logger.error(msg, ex);
 				}
-				for (Iterator it = new EnumerationIterator(zipFile.entries());
-						it.hasNext();)
+				for (Enumeration<? extends ZipEntry> it = zipFile.entries();
+						it.hasMoreElements();)
 				{
-					Class cls = null;
-					String entryName = ((ZipEntry) it.next()).getName();
+					Class<?> cls = null;
+					String entryName = it.nextElement().getName();
 					String className =
 						Utilities.changeFileNameToClassName(entryName);
 					if (className != null)
@@ -107,13 +107,13 @@ public class MyURLClassLoader extends URLClassLoader
 				}
 			}
 		}
-		return (Class[]) classes.toArray(new Class[classes.size()]);
+		return (Class<?>[]) classes.toArray(new Class[classes.size()]);
 	}
 
-	protected synchronized Class findClass(String className)
+	protected synchronized Class<?> findClass(String className)
 		throws ClassNotFoundException
 	{
-		Class cls = (Class) _classes.get(className);
+		Class<?> cls = _classes.get(className);
 		if (cls == null)
 		{
 			cls = super.findClass(className);
@@ -122,7 +122,7 @@ public class MyURLClassLoader extends URLClassLoader
 		return cls;
 	}
 
-	protected void classHasBeenLoaded(Class cls)
+	protected void classHasBeenLoaded(Class<?> cls)
 	{
 		// Empty
 	}

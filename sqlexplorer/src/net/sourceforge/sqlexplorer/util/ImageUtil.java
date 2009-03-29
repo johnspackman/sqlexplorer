@@ -20,6 +20,7 @@ package net.sourceforge.sqlexplorer.util;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -29,9 +30,9 @@ import org.eclipse.swt.graphics.Image;
 
 public class ImageUtil {
 
-    private static HashMap _imageCount = new HashMap();
+    private static Map<String,Integer> _imageCount = new HashMap<String, Integer>();
 
-    private static HashMap _images = new HashMap();
+    private static Map<String,Image> _images = new HashMap<String, Image>();
 
 
     /**

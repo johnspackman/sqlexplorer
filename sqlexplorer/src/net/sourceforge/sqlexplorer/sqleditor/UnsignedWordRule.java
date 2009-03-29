@@ -19,21 +19,23 @@ package net.sourceforge.sqlexplorer.sqleditor;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
+import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.TableNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.rules.Token;
-import org.eclipse.jface.util.Assert;
 
 public class UnsignedWordRule implements IRule {
 
@@ -52,7 +54,7 @@ public class UnsignedWordRule implements IRule {
     protected int fColumn = UNDEFINED;
 
     /** The table of predefined words and token for this rule */
-    public Map fWords = new HashMap();
+    public Map<String,IToken> fWords = new HashMap<String, IToken>();
 
     private StringBuffer fBuffer = new StringBuffer();
 
@@ -121,21 +123,21 @@ public class UnsignedWordRule implements IRule {
 
                     if ((token == fTableToken) && (dictionary != null)) {
 
-                        ArrayList list = (ArrayList) dictionary.getByTableName(tokenName);
+                        List<INode> list = dictionary.getByTableName(tokenName);
                         if (list != null) {
                             for (int j = 0; j < list.size(); j++) {
 
                                 TableNode nd = (TableNode) list.get(j);
-                                ArrayList ls = null;
+                                List<String> ls = null;
                                 try {
-                                    ls = (ArrayList) nd.getColumnNames();
+                                    ls = nd.getColumnNames();
                                 } catch (Throwable e) {
                                     SQLExplorerPlugin.error("Error getting columns names", e);
                                 }
                                 if (ls != null) {
-                                    TreeSet colTree = (TreeSet) dictionary.getColumnListByTableName(tokenName);
+                                	Set<String> colTree = dictionary.getColumnListByTableName(tokenName);
                                     if (colTree == null && j == 0) {
-                                        colTree = new TreeSet();
+                                        colTree = new TreeSet<String>();
                                         dictionary.putColumnsByTableName(tokenName, colTree);
                                         for (int i = 0; i < ls.size(); i++) {
                                             String lo = ((String) ls.get(i));

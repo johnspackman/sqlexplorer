@@ -23,6 +23,7 @@ package net.sourceforge.sqlexplorer.sqleditor;
 import java.util.List;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.rules.IRule;
 
 
 /**
@@ -42,6 +43,7 @@ public final class SingleTokenSQLScanner extends AbstractSQLScanner{
 	/*
 	 * @see AbstractJavaScanner#getTokenProperties()
 	 */
+	@Override
 	protected String[] getTokenProperties() {
 		return fProperty;
 	}
@@ -49,7 +51,8 @@ public final class SingleTokenSQLScanner extends AbstractSQLScanner{
 	/*
 	 * @see AbstractJavaScanner#createRules()
 	 */
-	protected List createRules() {
+	@Override
+	protected List<IRule> createRules() {
 		setDefaultReturnToken(getToken(fProperty[0]));
 		return null;
 	}

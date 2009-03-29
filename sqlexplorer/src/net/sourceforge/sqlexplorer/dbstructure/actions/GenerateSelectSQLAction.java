@@ -94,8 +94,8 @@ public class GenerateSelectSQLAction extends AbstractDBTreeContextAction {
         StringBuffer query = new StringBuffer("select ");
         String sep = "";
 
-        List columnNames = node.getColumnNames();
-        Iterator it = columnNames.iterator();
+        List<String> columnNames = node.getColumnNames();
+        Iterator<String> it = columnNames.iterator();
 
         while (it.hasNext()) {
 

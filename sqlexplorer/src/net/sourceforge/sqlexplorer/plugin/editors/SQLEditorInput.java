@@ -91,6 +91,7 @@ public class SQLEditorInput implements IStorageEditorInput, IPersistableElement
 				return false;
 			}
 
+			@SuppressWarnings("unchecked")
 			public Object getAdapter(Class adapter)
 			{
 				return null;
@@ -126,6 +127,7 @@ public class SQLEditorInput implements IStorageEditorInput, IPersistableElement
 			getName();
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter)
 	{
 		return null;

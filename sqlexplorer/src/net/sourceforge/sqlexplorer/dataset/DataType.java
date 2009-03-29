@@ -23,6 +23,6 @@ package net.sourceforge.sqlexplorer.dataset;
  * 
  * @author John Spackman
  */
-public interface DataType extends Comparable {
+public interface DataType extends Comparable<Object> {
 
 }

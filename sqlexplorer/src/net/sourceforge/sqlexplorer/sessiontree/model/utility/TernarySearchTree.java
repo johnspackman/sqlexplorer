@@ -13,7 +13,7 @@ package net.sourceforge.sqlexplorer.sessiontree.model.utility;
 /** Implementation of ternary search tree. A Ternary Search Tree is a data structure that behaves 
 *   in a manner that is very similar to a HashMap.
 */
-class TernarySearchTree {
+class TernarySearchTree<T> {
 
 	private TSTNode rootNode;
 	private int defaultNumReturnValues = -1;
@@ -23,7 +23,7 @@ class TernarySearchTree {
 	*   @param key A string that indexes the object to be stored.
 	*   @param value The object to be stored in the tree.
 	*/
-	public void put(String key, Object value) {
+	public void put(String key, T value) {
 		getOrCreateNode(key).data = value;
 	}
 	
@@ -32,10 +32,11 @@ class TernarySearchTree {
 	* @param       key A String index.
 	* @return      Object The object retrieved from the TernarySearchTree.
 	*/
-	public Object get(String key) {
+	@SuppressWarnings("unchecked")
+	public T get(String key) {
 		TSTNode node = getNode(key);
 		if(node==null) return null;
-		return node.data;
+		return (T)node.data;
 	}
 
 	/** Removes value indexed by key. Also removes all nodes that are rendered unnecessary by the removal of this data.
@@ -482,7 +483,7 @@ class TernarySearchTree {
 	
 	/** An inner class of TernarySearchTree that represents a node in the tree.
 	*/
-	protected class TSTNode {
+	protected static class TSTNode {
 		protected static final int PARENT = 0, LOKID = 1, EQKID = 2, HIKID = 3; // index values for accessing relatives array
 		protected char splitchar;
 		protected TSTNode[] relatives = new TSTNode[4];

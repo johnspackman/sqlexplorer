@@ -58,8 +58,8 @@ public class SQLExplorerPluginPerspective implements IPerspectiveFactory {
         // in the case of this plugin
 
         // Grab the list of all available views defined in the constants class
-        List views = SqlexplorerViewConstants.getInstance().getFullViewList();
-        Iterator iterator = views.iterator();
+        List<String> views = SqlexplorerViewConstants.getInstance().getFullViewList();
+        Iterator<String> iterator = views.iterator();
 
         // Iterate through those views and add them to the Show Views menu.
         while (iterator.hasNext())

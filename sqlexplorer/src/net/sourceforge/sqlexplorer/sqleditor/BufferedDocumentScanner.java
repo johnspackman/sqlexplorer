@@ -19,10 +19,10 @@ package net.sourceforge.sqlexplorer.sqleditor;
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.ICharacterScanner;
-import org.eclipse.jface.util.Assert;
 
 /**
  * A buffered document scanner. The buffer always contains a section 

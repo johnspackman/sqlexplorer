@@ -39,7 +39,7 @@ public class SQLDriverClassLoader extends MyURLClassLoader
 		super(parent, url);
 	}
 
-	public Class[] getDriverClasses(ILogger logger)
+	public Class<?>[] getDriverClasses(ILogger logger)
 	{
 		return getAssignableClasses(Driver.class, logger);
 	}

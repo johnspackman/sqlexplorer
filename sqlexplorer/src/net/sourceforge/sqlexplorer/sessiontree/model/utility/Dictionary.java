@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import net.sourceforge.sqlexplorer.Messages;
@@ -48,7 +50,7 @@ public class Dictionary {
 
     }
 
-    private static TernarySearchTree keywordsTree = new TernarySearchTree();
+    private static TernarySearchTree<String> keywordsTree = new TernarySearchTree<String>();
     static {
         String[] str = SQLCodeScanner.getFgKeywords();
         for (int i = 0; i < str.length; i++)
@@ -56,45 +58,45 @@ public class Dictionary {
 
     }
 
-    private TernarySearchTree tables = new TernarySearchTree();
+    private TernarySearchTree<List<INode>> tables = new TernarySearchTree<List<INode>>();
 
-    private TernarySearchTree catalogSchemaTree = new TernarySearchTree();
+    private TernarySearchTree<INode> catalogSchemaTree = new TernarySearchTree<INode>();
 
-    private TernarySearchTree externalObjectTree = new TernarySearchTree();
+    private TernarySearchTree<List<INode>> externalObjectTree = new TernarySearchTree<List<INode>>();
 
-    private HashMap realTables = new HashMap();
+    private Map<String,String> realTables = new HashMap<String, String>();
 
-    private HashMap realCatalogSchemas = new HashMap();
+    private Map<String,String> realCatalogSchemas = new HashMap<String, String>();
 
-    private HashMap realExternalObjects = new HashMap();
+    private Map<String,String> realExternalObjects = new HashMap<String, String>();
 
-    private HashMap col_map = new HashMap();
+    private Map<String,Set<String>> col_map = new HashMap<String, Set<String>>();
 
     private static int ROOT_WORK_UNIT = 1000;
 
 
-    public void putTableName(String key, Object value) {
+    public void putTableName(String key, List<INode> value) {
 
         tables.put(key.toLowerCase(), value);
         realTables.put(key.toLowerCase(), key);
     }
 
 
-    public void putCatalogSchemaName(String key, Object value) {
+    public void putCatalogSchemaName(String key, INode value) {
 
         catalogSchemaTree.put(key.toLowerCase(), value);
         realCatalogSchemas.put(key.toLowerCase(), key);
     }
 
 
-    public void putExternalObjectName(String key, Object value) {
+    public void putExternalObjectName(String key, List<INode> value) {
 
         externalObjectTree.put(key.toLowerCase(), value);
         realExternalObjects.put(key.toLowerCase(), key);
     }
 
 
-    public Object getByTableName(String key) {
+    public List<INode> getByTableName(String key) {
 
         return tables.get(key);
     }
@@ -112,39 +114,39 @@ public class Dictionary {
     }
 
 
-    public void putColumnsByTableName(String key, Object value) {
+    public void putColumnsByTableName(String key, Set<String> value) {
 
         col_map.put(key.toLowerCase(), value);
     }
 
 
-    public Object getColumnListByTableName(String key) {
+    public Set<String> getColumnListByTableName(String key) {
 
         return col_map.get(key);
     }
 
 
-    public Iterator getTableNames() {
+    public Iterator<String> getTableNames() {
 
         return realTables.keySet().iterator();
     }
 
 
-    public Iterator getCatalogSchemaNames() {
+    public Iterator<String> getCatalogSchemaNames() {
 
         return realCatalogSchemas.keySet().iterator();
     }
 
 
-    public Iterator getExternalObjectNames() {
+    public Iterator<String> getExternalObjectNames() {
 
         return realExternalObjects.keySet().iterator();
     }
 
 
-    public ArrayList getTableObjectList(String tableName) {
+    public List<INode> getTableObjectList(String tableName) {
 
-        return (ArrayList) tables.get(tableName.toLowerCase());
+        return (List<INode>) tables.get(tableName.toLowerCase());
     }
 
 
@@ -376,9 +378,9 @@ public class Dictionary {
                         }
 
                         // add table name
-                        ArrayList tableDetails = (ArrayList) getByTableName(tableNode.getName());
+                        List<INode> tableDetails = getByTableName(tableNode.getName());
                         if (tableDetails == null) {
-                            tableDetails = new ArrayList();
+                            tableDetails = new ArrayList<INode>();
                             putTableName(tableNode.getName(), tableDetails);
                         }
                         tableDetails.add(tableNode);
@@ -386,11 +388,11 @@ public class Dictionary {
                         // add column names
                         if (tableNode instanceof TableNode) {
 
-                            TreeSet columnNames = new TreeSet();
-                            List columns = ((TableNode) tableNode).getColumnNames();
+                            Set<String> columnNames = new TreeSet<String>();
+                            List<String> columns = ((TableNode) tableNode).getColumnNames();
                             if (columns != null) {
 
-                                Iterator it = columns.iterator();
+                                Iterator<String> it = columns.iterator();
                                 while (it.hasNext()) {
                                     columnNames.add(it.next());
                                 }

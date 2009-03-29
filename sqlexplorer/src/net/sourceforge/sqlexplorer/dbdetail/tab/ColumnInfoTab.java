@@ -61,10 +61,10 @@ public class ColumnInfoTab extends AbstractDataSetTab {
             TableNode tableNode = (TableNode) node;
             
             TableColumnInfo[] cols = node.getSession().getMetaData().getColumnInfo(tableNode.getTableInfo());
-            Comparable[][] dataRows = new Comparable[cols.length][];
+            Comparable<?>[][] dataRows = new Comparable[cols.length][];
             int index = 0;
             for (TableColumnInfo col : cols) {
-            	Comparable[] row = new Comparable[COLUMN_LABELS.length];
+            	Comparable<?>[] row = new Comparable[COLUMN_LABELS.length];
             	dataRows[index++] = row;
 
             	int i = 0;

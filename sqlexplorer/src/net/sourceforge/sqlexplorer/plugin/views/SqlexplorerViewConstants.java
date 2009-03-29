@@ -45,10 +45,10 @@ public final class SqlexplorerViewConstants {
     
     
     /** Collection of the default views which this plugin offers */
-    private List defaultViewList = null;
+    private List<String> defaultViewList = null;
 
     /** Collection of all the views which this plugin offers */
-    private List fullViewList = null;
+    private List<String> fullViewList = null;
 
 
     /**
@@ -67,7 +67,7 @@ public final class SqlexplorerViewConstants {
      * @return List - Collection of view ids used by default.
      */
     private void setupDefaultViewList() {
-        defaultViewList = new ArrayList(7);
+        defaultViewList = new ArrayList<String>(7);
         defaultViewList.add(SQLEXPLORER_CONNECTIONS);
         defaultViewList.add(SQLEXPLORER_DBSTRUCTURE);
         defaultViewList.add(SQLEXPLORER_DBDETAIL);
@@ -81,7 +81,7 @@ public final class SqlexplorerViewConstants {
      * @return List - Collection of view ids used by default.
      */
     private void setupFullViewList() {
-        fullViewList = new ArrayList(getDefaultViewList());
+        fullViewList = new ArrayList<String>(getDefaultViewList());
     }
 
 
@@ -104,7 +104,7 @@ public final class SqlexplorerViewConstants {
      * 
      * @return List
      */
-    public List getDefaultViewList() {
+    public List<String> getDefaultViewList() {
         return defaultViewList;
     }
 
@@ -114,7 +114,7 @@ public final class SqlexplorerViewConstants {
      * 
      * @return List
      */
-    public List getFullViewList() {
+    public List<String> getFullViewList() {
         return fullViewList;
     }
 

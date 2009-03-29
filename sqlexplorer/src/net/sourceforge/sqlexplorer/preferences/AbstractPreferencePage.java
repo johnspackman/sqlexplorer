@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
@@ -135,7 +136,7 @@ public abstract class AbstractPreferencePage extends FieldEditorPreferencePage i
 	}
 
 	// List of Accessors
-	private LinkedList accessors = new LinkedList();
+	private List<Accessor> accessors = new LinkedList<Accessor>();
 	
 	// Common construction
 	{
@@ -185,7 +186,7 @@ public abstract class AbstractPreferencePage extends FieldEditorPreferencePage i
 	 */
 	protected void performDefaults() {
 		super.performDefaults();
-		for (Iterator iter = accessors.iterator(); iter.hasNext();) {
+		for (Iterator<Accessor> iter = accessors.iterator(); iter.hasNext();) {
 			Accessor accessor = (Accessor)iter.next();
 			accessor.loadDefaults();
 		}
@@ -196,7 +197,7 @@ public abstract class AbstractPreferencePage extends FieldEditorPreferencePage i
 	 */
 	public boolean performOk() {
 		super.performOk();
-		for (Iterator iter = accessors.iterator(); iter.hasNext();) {
+		for (Iterator<Accessor> iter = accessors.iterator(); iter.hasNext();) {
 			Accessor accessor = (Accessor)iter.next();
 			accessor.store();
 		}

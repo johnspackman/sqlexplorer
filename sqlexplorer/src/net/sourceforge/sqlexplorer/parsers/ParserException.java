@@ -25,6 +25,11 @@ package net.sourceforge.sqlexplorer.parsers;
  */
 public class ParserException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private int lineNo;
 	private int charNo;
 

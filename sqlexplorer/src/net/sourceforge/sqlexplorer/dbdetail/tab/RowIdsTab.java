@@ -56,10 +56,10 @@ public class RowIdsTab extends AbstractDataSetTab {
             TableNode tableNode = (TableNode) node;
             
             BestRowIdentifier[] rowIds = node.getSession().getMetaData().getBestRowIdentifier(tableNode.getTableInfo());
-            Comparable[][] data = new Comparable[rowIds.length][];
+            Comparable<?>[][] data = new Comparable[rowIds.length][];
             int index = 0;
             for (BestRowIdentifier rowId : rowIds) {
-            	Comparable[] row = new Comparable[COLUMN_LABELS.length];
+            	Comparable<?>[] row = new Comparable[COLUMN_LABELS.length];
             	data[index++] = row;
             	
             	int i = 0;
