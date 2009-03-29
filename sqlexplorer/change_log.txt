@@ -8,6 +8,7 @@
 +. some internal changes (Patches #2637474,#2633721,#2633365,#2633298 by joco01)
 +. new action Generate Insert Statement (Patch #2695812, part of feature #1590278 by a_lazar) 
 +. fixed #1200935, missing foreign key in create table script (Patch #2708377 by sishi) 
++. fixed #2709713, added new preference 'Log SQL Info Messages' to check for SQLWarnings which displays raise info or print messages from stored routines
 
 3.5.0.RC7 - Heiko Hilbert
 ======================================================
