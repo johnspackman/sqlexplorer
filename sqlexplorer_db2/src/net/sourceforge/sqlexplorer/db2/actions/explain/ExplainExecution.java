@@ -20,7 +20,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableLayout;
-import org.eclipse.jface.viewers.TableTreeViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
@@ -30,8 +30,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 
 public class ExplainExecution extends AbstractSQLExecution {
 
@@ -107,15 +107,15 @@ public class ExplainExecution extends AbstractSQLExecution {
                     Composite pp = new Composite(composite, SWT.NULL);
                     pp.setLayout(new FillLayout());
                     pp.setLayoutData(new GridData(GridData.FILL_BOTH));
-                    TableTreeViewer tv = new TableTreeViewer(pp, SWT.BORDER | SWT.FULL_SELECTION);
-                    Table table = tv.getTableTree().getTable();
+                    TreeViewer tv = new TreeViewer(pp, SWT.BORDER | SWT.FULL_SELECTION);
+                    Tree table = tv.getTree();
                     table.setLinesVisible(true);
                     table.setHeaderVisible(true);
-                    TableColumn tc = new TableColumn(table, SWT.NULL);
+                    TreeColumn tc = new TreeColumn(table, SWT.NULL);
                     tc.setText("");
-                    tc = new TableColumn(table, SWT.NULL);
+                    tc = new TreeColumn(table, SWT.NULL);
                     tc.setText("Cost");
-                    tc = new TableColumn(table, SWT.NULL);
+                    tc = new TreeColumn(table, SWT.NULL);
                     tc.setText("Cardinality");
                     TableLayout tableLayout = new TableLayout();
                     tableLayout.addColumnData(new ColumnWeightData(6, 150, true));
@@ -274,7 +274,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 	                return;
 	            }
 	            
-	            HashMap mp = new HashMap();
+	            HashMap<Integer,ExplainNode> mp = new HashMap<Integer, ExplainNode>();
 	            ExplainNode baseNode = new ExplainNode(null);
 	            mp.put(new Integer(-1), baseNode);
 	            int lastId = -1;
