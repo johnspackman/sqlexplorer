@@ -38,12 +38,12 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.TableTreeViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.actions.ActionGroup;
 
 public class ExplainPlanActionGroup extends ActionGroup {
 	
-    private TableTreeViewer _tableView;
+    private TreeViewer _tableView;
 
     private ExplainNode _node;
     
@@ -60,7 +60,7 @@ public class ExplainPlanActionGroup extends ActionGroup {
      * @param table Table that displays the context menu
      * @param cursor TableCursor that displays the context menu
      */
-    public ExplainPlanActionGroup(TableTreeViewer tableView, ExplainNode node) {
+    public ExplainPlanActionGroup(TreeViewer tableView, ExplainNode node) {
         _tableView = tableView;
         _node = node;
     }

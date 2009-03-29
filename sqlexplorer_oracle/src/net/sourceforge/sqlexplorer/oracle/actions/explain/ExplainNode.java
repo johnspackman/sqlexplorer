@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.oracle.actions.explain;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ExplainNode {
 
@@ -28,7 +29,7 @@ public class ExplainNode {
     
     int level;
 
-    ArrayList ls = new ArrayList();
+    List<ExplainNode> ls = new ArrayList<ExplainNode>();
 
     String object_type, operation, options, object_owner, object_name, optimizer;
 

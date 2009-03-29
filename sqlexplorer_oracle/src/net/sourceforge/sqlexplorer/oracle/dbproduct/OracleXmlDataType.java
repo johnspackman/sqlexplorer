@@ -30,7 +30,7 @@ import net.sourceforge.sqlexplorer.dataset.XmlDataType;
  */
 public class OracleXmlDataType implements XmlDataType {
 
-	private OPAQUE opaque;
+//	private OPAQUE opaque;
 
 	public OracleXmlDataType(OPAQUE opaque) {
 		super();

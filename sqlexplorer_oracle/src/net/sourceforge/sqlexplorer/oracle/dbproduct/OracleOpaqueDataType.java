@@ -31,11 +31,11 @@ import oracle.sql.OPAQUE;
  */
 public class OracleOpaqueDataType implements LargeTextDataType {
 	
-	private OPAQUE opaque;
+//	private OPAQUE opaque;
 	
 	public OracleOpaqueDataType(OPAQUE opaque) {
 		super();
-		this.opaque = opaque;
+//		this.opaque = opaque;
 	}
 
 	/* (non-JavaDoc)

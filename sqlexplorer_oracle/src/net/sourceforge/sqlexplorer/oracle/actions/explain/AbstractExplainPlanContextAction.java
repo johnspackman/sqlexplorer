@@ -27,11 +27,11 @@
 package net.sourceforge.sqlexplorer.oracle.actions.explain;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.viewers.TableTreeViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 
 public abstract class AbstractExplainPlanContextAction extends Action {
 	
-    protected TableTreeViewer _tableView;
+    protected TreeViewer _tableView;
     
     protected ExplainNode _node;
 
@@ -39,7 +39,7 @@ public abstract class AbstractExplainPlanContextAction extends Action {
      * Store table for use in the actions.
      * @param table
      */
-    public final void setTableView(TableTreeViewer tableView) {
+    public final void setTableView(TreeViewer tableView) {
         _tableView = tableView;        
     }
 

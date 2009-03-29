@@ -41,7 +41,7 @@ public class OracleDataSet extends DataSet {
 	 * @see net.sourceforge.sqlexplorer.dataset.DataSet#loadCellValue(int, int, java.sql.ResultSet)
 	 */
 	@Override
-	protected Comparable loadCellValue(int columnIndex, int dataType, ResultSet rs) throws SQLException {
+	protected Comparable<?> loadCellValue(int columnIndex, int dataType, ResultSet rs) throws SQLException {
 		if (dataType == OracleTypes.OPAQUE) {
 			OPAQUE opaque = ((OracleResultSet)rs).getOPAQUE(columnIndex);
 			if (rs.wasNull())
