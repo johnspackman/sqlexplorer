@@ -479,4 +479,8 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 	public String toString() {
 		return getDescription();
 	}
+
+	public boolean hasCredentials() {
+		return ! this.alias.hasNoUserName();
+	}
 }

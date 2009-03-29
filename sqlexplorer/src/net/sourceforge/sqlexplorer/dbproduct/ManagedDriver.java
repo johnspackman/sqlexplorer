@@ -188,11 +188,13 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 	 */
 	public SQLConnection getConnection(User user) throws SQLException {
 		Properties props = new Properties();
-		if (user.getUserName() != null)
-			props.put("user", user.getUserName());
-		if (user.getPassword() != null)
-			props.put("password", user.getPassword());
-
+		if(user.hasCredentials())
+		{
+			if (user.getUserName() != null)
+				props.put("user", user.getUserName());
+			if (user.getPassword() != null)
+				props.put("password", user.getPassword());
+		}
 		if (!isDriverClassLoaded())
 			try {
 				registerSQLDriver();
