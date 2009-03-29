@@ -30,6 +30,7 @@ import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.BufferedRuleBasedScanner;
 import org.eclipse.jface.text.rules.IRule;
+import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
@@ -40,7 +41,7 @@ public abstract class AbstractSQLScanner extends BufferedRuleBasedScanner {
 	private IColorManager fColorManager;
 	private IPreferenceStore fPreferenceStore;
 	
-	private Map fTokenMap= new HashMap();
+	private Map<String,IToken> fTokenMap= new HashMap<String, IToken>();
 	private String[] fPropertyNamesColor;
 	private String[] fPropertyNamesStyle;
 	
@@ -54,7 +55,7 @@ public abstract class AbstractSQLScanner extends BufferedRuleBasedScanner {
 	/**
 	 * Creates the list of rules controlling this scanner.
 	 */
-	abstract protected List createRules();
+	abstract protected List<IRule> createRules();
 		
 	
 	/**
@@ -100,7 +101,7 @@ public abstract class AbstractSQLScanner extends BufferedRuleBasedScanner {
 	}
 		
 	private void initializeRules() {
-		List rules= createRules();
+		List<IRule> rules= createRules();
 		if (rules != null) {
 			IRule[] result= new IRule[rules.size()];
 			rules.toArray(result);

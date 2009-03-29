@@ -796,9 +796,9 @@ public class SQLCodeScanner extends AbstractSQLScanner {
 	/*
 	 * @see AbstractJavaScanner#createRules()
 	 */
-	protected synchronized List createRules() {
+	protected synchronized List<IRule> createRules() {
 				
-		List rules= new ArrayList();		
+		List<IRule> rules= new ArrayList<IRule>();		
 		
 		// Add rule for character constants.
 		Token token= getToken(IConstants.SQL_COLOR_STRING);
