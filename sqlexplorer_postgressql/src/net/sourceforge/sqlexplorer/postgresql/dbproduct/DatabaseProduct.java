@@ -58,7 +58,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 	public Driver getDriver(ManagedDriver driver) throws ClassNotFoundException {
 		try {
 	        ClassLoader loader = new SQLDriverClassLoader(getClass().getClassLoader(), driver);
-	        Class driverCls = loader.loadClass(driver.getDriverClassName());
+	        Class<?> driverCls = loader.loadClass(driver.getDriverClassName());
 	        return (Driver)driverCls.newInstance();
 		} catch(UnsupportedClassVersionError e) {
 			throw new ClassNotFoundException(e.getMessage(), e);
@@ -72,7 +72,7 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 	}
 
 	public Collection<Message> getErrorMessages(SQLConnection connection, SQLException e, int lineNoOffset) throws SQLException {
-		LinkedList list = new LinkedList();
+		Collection<Message> list = new LinkedList<Message>();
 		list.add(new Message(Message.Status.FAILURE, lineNoOffset + 1, 0, e.getMessage()));
 		return list;
 	}
