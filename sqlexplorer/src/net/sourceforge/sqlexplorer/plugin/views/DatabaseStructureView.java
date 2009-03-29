@@ -18,8 +18,8 @@
  */
 package net.sourceforge.sqlexplorer.plugin.views;
 
-import java.util.ArrayList;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.IConstants;
@@ -32,6 +32,7 @@ import net.sourceforge.sqlexplorer.dbstructure.DBTreeActionGroup;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeContentProvider;
 import net.sourceforge.sqlexplorer.dbstructure.DBTreeLabelProvider;
 import net.sourceforge.sqlexplorer.dbstructure.actions.FilterStructureAction;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.ColumnNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
@@ -83,6 +84,22 @@ import org.eclipse.ui.part.ViewPart;
  */
 public class DatabaseStructureView extends ViewPart {
 	
+	private static class RootNode extends AbstractNode
+	{
+		private DatabaseNode node;
+		public RootNode(DatabaseNode pNode)
+		{
+			super(pNode.getName());
+			this.node = pNode;
+		}
+		@Override
+		public void loadChildren() {
+			_children = new ArrayList<INode>();
+			_children.add(this.node);
+			
+		}
+		
+	}
 	/*
 	 * Contains state data for each tab
 	 */
@@ -260,9 +277,11 @@ public class DatabaseStructureView extends ViewPart {
         // add content and label provider
         treeViewer.setContentProvider(new DBTreeContentProvider());
         treeViewer.setLabelProvider(new DBTreeLabelProvider());
-
+        treeViewer.setAutoExpandLevel(2);
+        
+        
         // set input session
-        treeViewer.setInput(rootNode);
+        treeViewer.setInput(new RootNode(rootNode));
 
         // add selection change listener, so we can update detail view as
         // required.
