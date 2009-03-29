@@ -8,25 +8,25 @@
             database-product-name="MySQL*"
             id="net.sourceforge.sqlexplorer.mysql.processTab"
             name="Process List"
-            node-type="catalog"/>
+            node-type="database"/>
       <detailtab
             class="net.sourceforge.sqlexplorer.mysql.tabs.StatusTab"
             database-product-name="MySQL*"
             id="net.sourceforge.sqlexplorer.mysql.statusTab"
             name="Database Status"
-            node-type="catalog"/>    
+            node-type="database"/>    
       <detailtab
             class="net.sourceforge.sqlexplorer.mysql.tabs.VariablesTab"
             database-product-name="MySQL*"
             id="net.sourceforge.sqlexplorer.mysql.variablesTab"
             name="Variables"
-            node-type="catalog"/>             
+            node-type="database"/>             
       <detailtab
             class="net.sourceforge.sqlexplorer.mysql.tabs.LogsTab"
             database-product-name="MySQL*"
             id="net.sourceforge.sqlexplorer.mysql.logsTab"
             name="Logs"
-            node-type="catalog"/>   
+            node-type="database"/>   
       <detailtab
             class="net.sourceforge.sqlexplorer.mysql.tabs.TableStatusTab"
             database-product-name="MySQL*"
