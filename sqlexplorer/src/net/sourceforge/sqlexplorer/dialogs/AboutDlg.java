@@ -261,14 +261,21 @@ class CreditsItem {
         String separator = System.getProperty("line.separator"); //$NON-NLS-1$
 
         final String credits =    
-            "Developers (versions 3.5.0.RC6):" + separator +
+            "Developers (version 3.5.0.RC8):" + separator +
+            " - Heiko Hilbert" + separator + 
+            " - a_lazar" + separator + 
+            " - joco01" + separator + 
+            " - seekforth" + separator + 
+            " - sishi" + separator + 
+            separator +              
+            "Developers (version 3.5.0.RC6):" + separator +
             " - John Spackman (Zenesis Limited - www.zenesis.com)" + separator + 
             " - Heiko Hilbert" + separator + 
             separator +              
-            "Developers (versions 3.5.0):" + separator +
+            "Developers (version 3.5.0):" + separator +
             " - John Spackman (Zenesis Limited - www.zenesis.com)" + separator + 
             separator +              
-            "Developers (versions 3.0.0):" + separator +
+            "Developers (version 3.0.0):" + separator +
             " - Davy Vanherbergen" + separator + 
             separator +              
             "Developers (version 2.2.5 (never released)):" + separator +
