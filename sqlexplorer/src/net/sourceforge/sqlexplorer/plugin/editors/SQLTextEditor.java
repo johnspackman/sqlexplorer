@@ -85,30 +85,13 @@ public class SQLTextEditor extends TextEditor {
 		this.editor = editor;
 		mcl = new MouseClickListener(editor);
 		store = SQLExplorerPlugin.getDefault().getPreferenceStore();
-		setPreferenceStore(SQLExplorerPlugin.getDefault().getPreferenceStore());
 	}
 
 	public SQLEditor getEditor()
 	{
 		return this.editor;
 	}
-	@Override
-	protected boolean isLineNumberRulerVisible() {
-		return true;
-	}
-	@Override
-	protected boolean isOverviewRulerVisible() {
-		return true;
-	}
-	@Override
-	protected boolean isPrefQuickDiffAlwaysOn() {
-		return true;
-	}
-	@Override
-	public boolean isChangeInformationShowing() {
-		return true;
-	}
-	
+
 	@Override
 	public IProgressMonitor getProgressMonitor() {
 		return super.getProgressMonitor();
