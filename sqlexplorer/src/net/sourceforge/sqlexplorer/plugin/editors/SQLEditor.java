@@ -898,44 +898,107 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 		textEditor.sqlTextViewer.insertText(pText);
 	}
 	/**
+	 * compatibility method for old calls
+	 * 
+	 * @return
+	 */
+	public String getSQLToBeExecuted() {
+		return getSQLToBeExecuted(false);
+	}
+	/**
 	 * Returns the text to be executed; this is the entire text if there is no
 	 * selection, else just the selected text
 	 * 
 	 * @return
 	 */
-	public String getSQLToBeExecuted() {
+	public String getSQLToBeExecuted(boolean executeCurrentChunk) {
 
 		String sql = textEditor.sqlTextViewer.getTextWidget().getSelectionText();
 		if (sql == null || sql.trim().length() == 0)
-			sql = textEditor.sqlTextViewer.getTextWidget().getText();
+		{
+			
+			if (executeCurrentChunk)
+			{
+				// try to find the best match (squirrel/toad behavior)
+				StyledText text = textEditor.sqlTextViewer.getTextWidget();
+				int position = text.getCaretOffset();
+				int lineNo = text.getLineAtOffset(position);
+				while(lineNo >= 0 && text.getLine(lineNo).length() != 0)
+				{
+					lineNo--;
+				}
+				lineNo++;
+				int startIndex = text.getOffsetAtLine(lineNo);
+				int maxLines = text.getLineCount();
+				while(lineNo < maxLines && text.getLine(lineNo).length() != 0)
+				{
+					lineNo++;
+				}
+				int endIndex = Math.min(lineNo == maxLines ? text.getCharCount() - 1 : text.getOffsetAtLine(lineNo),text.getCharCount() - 1); 
+				sql = text.getText();
+				sql = text.getText(startIndex, endIndex);
+			}
+			else
+			{
+				sql = textEditor.sqlTextViewer.getTextWidget().getText();
+				
+			}
+		}
 
-		// Normalise this to have standard \n in strings.  \r confuses Oracle and
-		//	isn't normally needed internally anyway
-    	StringBuffer sb = new StringBuffer(sql);
-    	for (int i = 0; i < sb.length(); i++) {
-    		if (sb.charAt(i) == '\r') {
-    			sb.deleteCharAt(i);
-    			i--;
-    		}
-    	}
-    	sql = sb.toString();
-
-		return sql != null ? sql : "";
+		return sql != null ? normalize(sql) : "";
 	}
 
+	/**
+	 * @param sql
+	 * @return
+	 */
+	private String normalize(String sql)
+	{
+		// Normalise this to have standard \n in strings.  \r confuses Oracle and
+		//	isn't normally needed internally anyway
+		StringBuffer sb = new StringBuffer(sql);
+		for (int i = 0; i < sb.length(); i++) {
+			if (sb.charAt(i) == '\r') {
+				sb.deleteCharAt(i);
+				i--;
+			}
+		}
+		sql = sb.toString();
+		return sql;
+	}
+
+	/**
+	 * compatibility method
+	 * @return
+	 */
+	public int getSQLLineNumber() {
+		return getSQLLineNumber(false);
+	}
 	/**
 	 * returns the line number that the SQL starts on
 	 * @return
 	 */
-	public int getSQLLineNumber() {
+	public int getSQLLineNumber(boolean executeCurrentChunk) {
 		String sql = textEditor.sqlTextViewer.getTextWidget().getSelectionText();
-		if (sql == null || sql.trim().length() == 0)
-			return 1;
-		Point pt = textEditor.sqlTextViewer.getTextWidget().getSelection();
-		if (pt == null)
-			return 1;
+		int offset = 0;
+		if (sql == null || sql.trim().length() == 0)		
+		{	if(executeCurrentChunk)
+			{
+				offset = textEditor.sqlTextViewer.getTextWidget().getCaretOffset();
+			}
+			else
+			{
+				return 1;
+			}
+		}
+		else
+		{
+			Point pt = textEditor.sqlTextViewer.getTextWidget().getSelection();
+			if (pt == null)
+				return 1;
+			offset = pt.x;
+		}
 		StyledText text = (StyledText) textEditor.getAdapter(org.eclipse.swt.widgets.Control.class);
-		int offset = pt.x;
 		int lineNo = text.getLineAtOffset(offset);
 		return lineNo + 1;
 	}

@@ -315,4 +315,36 @@
             name="Export to disk"/>
 
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            id="net.sourceforge.sqlexplorer"
+            name="SQL Explorer">
+      </category>
+      <command
+            categoryId="net.sourceforge.sqlexplorer"
+            description="Executes the SQL in the sql editor"
+            id="net.sourceforge.sqlexplorer.executeSQL"
+            name="Execute SQL">
+      </command>
+      <command
+            categoryId="net.sourceforge.sqlexplorer"
+            description="Executes the current SQL in the sql editor"
+            id="net.sourceforge.sqlexplorer.executeCurrentSQL"
+            name="Execute current SQL">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="net.sourceforge.sqlexplorer.executeSQL"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+ENTER">
+      </key>
+      <key
+            commandId="net.sourceforge.sqlexplorer.executeCurrentSQL"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M3+ENTER">
+      </key>
+   </extension>
 </plugin>

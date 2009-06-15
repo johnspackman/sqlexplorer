@@ -1,3 +1,7 @@
+3.5.0.??? - Heiko Hilbert
+======================================================
++. new execute current sql action (CTRL+ALT+ENTER) and changeable key binding (patch #2725105 by joco01)
+
 3.5.0.RC8 - Heiko Hilbert
 ======================================================
 +. added preference to control sorting of column names in db structure view (feature #2663329, bug #1611426)

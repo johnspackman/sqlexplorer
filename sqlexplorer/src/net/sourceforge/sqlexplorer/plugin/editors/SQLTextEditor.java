@@ -23,10 +23,16 @@ import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.sqleditor.SQLTextViewer;
+import net.sourceforge.sqlexplorer.sqleditor.actions.ExecCurrentSQLAction;
 import net.sourceforge.sqlexplorer.sqleditor.actions.ExecSQLAction;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.bindings.Binding;
+import org.eclipse.jface.bindings.TriggerSequence;
+import org.eclipse.jface.bindings.keys.KeyBinding;
+import org.eclipse.jface.bindings.keys.KeySequence;
+import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.JFaceResources;
@@ -48,6 +54,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 
 /**
@@ -67,6 +74,42 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
  */
 public class SQLTextEditor extends TextEditor {
 
+	private static class KeyBind
+	{
+		KeyStroke stroke = null;
+		String bindingId;
+		
+		public KeyBind(String pId)
+		{
+			this.bindingId = pId;
+		}
+		
+		private void findBinding()
+		{
+			IBindingService bindingService = (IBindingService) PlatformUI.getWorkbench().getService(IBindingService.class);
+	
+			TriggerSequence sequence = bindingService.getBestActiveBindingFor(this.bindingId);
+			Binding binding = bindingService.getPerfectMatch(sequence);
+			if (binding instanceof KeyBinding)
+			{
+				KeySequence keySequence = ((KeyBinding)binding).getKeySequence();
+				KeyStroke[] keyStrokes = keySequence.getKeyStrokes();
+				if (keyStrokes.length > 0)
+				{
+					this.stroke = keyStrokes[0];
+				}
+			}
+		}
+		
+		public KeyStroke getStroke()
+		{
+			if(this.stroke == null)
+			{
+				findBinding();
+			}
+			return this.stroke;
+		}
+	}
 	private SQLEditor editor;
 
 	private MouseClickListener mcl;
@@ -142,6 +185,7 @@ public class SQLTextEditor extends TextEditor {
 	            JFaceResources.getFontRegistry().put(fData[0].toString(), fData);
 	            text.setFont(JFaceResources.getFontRegistry().get(fData[0].toString()));
 	        }
+
 		}
 	}
 
@@ -193,18 +237,33 @@ public class SQLTextEditor extends TextEditor {
 		div2.setBackground(editor.getSite().getShell().getDisplay()
 				.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
 
-		final SQLEditor thisEditor = editor;
+		
 		sqlTextViewer.getTextWidget().addVerifyKeyListener(
 				new VerifyKeyListener() {
 
-					private ExecSQLAction _execSQLAction = new ExecSQLAction(thisEditor);
-
+					private Action _execSQLAction = new ExecSQLAction(SQLTextEditor.this.editor);
+					private Action _execCurrentSQLAction = new ExecCurrentSQLAction(SQLTextEditor.this.editor);
+					private KeyBind executeSqlKey = new KeyBind(ExecSQLAction.COMMAND_ID);
+					private KeyBind executeCurrentSqlKey = new KeyBind(ExecCurrentSQLAction.COMMAND_ID);
+					
 					public void verifyKey(VerifyEvent event) {
-
-						if (event.stateMask == SWT.CTRL && event.keyCode == 13) {
+						KeyStroke instance = KeyStroke.getInstance(event.stateMask, event.keyCode);
+						if (instance.equals(executeSqlKey.getStroke()))
+						{
 							event.doit = false;
 							_execSQLAction.run();
 						}
+						else if (instance.equals(executeCurrentSqlKey.getStroke()))
+						{
+							event.doit = false;
+							_execCurrentSQLAction.run();
+						}
+						else if (executeSqlKey.getStroke() == null && event.stateMask == SWT.CTRL && event.keyCode == 13) {
+
+							event.doit = false;
+							_execSQLAction.run();
+						}
+						
 					}
 				});
 

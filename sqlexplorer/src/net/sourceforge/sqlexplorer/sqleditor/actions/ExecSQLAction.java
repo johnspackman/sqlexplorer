@@ -41,9 +41,10 @@ import org.eclipse.jface.resource.ImageDescriptor;
  *
  */
 public class ExecSQLAction extends AbstractEditorAction {
+	public static final String COMMAND_ID = "net.sourceforge.sqlexplorer.executeSQL";
 
     private ImageDescriptor img = ImageUtil.getDescriptor("Images.ExecSQLIcon");
-
+    
     public ExecSQLAction(SQLEditor editor) {
 		super(editor);
 	}
@@ -59,7 +60,7 @@ public class ExecSQLAction extends AbstractEditorAction {
     public String getToolTipText() {
         return Messages.getString("SQLEditor.Actions.Execute.ToolTip");
     }
-
+    
     public void run() {
         try {
         	// Find out how much to restrict results by
@@ -113,12 +114,16 @@ public class ExecSQLAction extends AbstractEditorAction {
         }
     }
 
+    protected QueryParser getQueryParser(Session session)
+    {
+    	return  session.getDatabaseProduct().getQueryParser(_editor.getSQLToBeExecuted(false), _editor.getSQLLineNumber(false));
+    }
     protected void run(int maxRows) {
         Session session = getSession();
         if (session == null)
             return;
 
-        QueryParser qt = session.getDatabaseProduct().getQueryParser(_editor.getSQLToBeExecuted(), _editor.getSQLLineNumber());
+        QueryParser qt = getQueryParser(session);
         try {
             qt.parse();
         }catch(final ParserException e) {
