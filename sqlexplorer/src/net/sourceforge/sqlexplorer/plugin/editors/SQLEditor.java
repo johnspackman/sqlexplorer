@@ -923,20 +923,22 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 				StyledText text = textEditor.sqlTextViewer.getTextWidget();
 				int position = text.getCaretOffset();
 				int lineNo = text.getLineAtOffset(position);
-				while(lineNo >= 0 && text.getLine(lineNo).length() != 0)
+				while(lineNo >= 0 && text.getContent().getLine(lineNo).length() != 0)
 				{
 					lineNo--;
 				}
 				lineNo++;
-				int startIndex = text.getOffsetAtLine(lineNo);
 				int maxLines = text.getLineCount();
-				while(lineNo < maxLines && text.getLine(lineNo).length() != 0)
+				if(lineNo < maxLines)
 				{
-					lineNo++;
+					int startIndex = text.getOffsetAtLine(lineNo);
+					while(lineNo < maxLines && text.getContent().getLine(lineNo).length() != 0)
+					{
+						lineNo++;
+					}
+					int endIndex = lineNo == maxLines ? text.getCharCount() - 1 : text.getOffsetAtLine(lineNo); 
+					sql = text.getText(startIndex, endIndex);
 				}
-				int endIndex = Math.min(lineNo == maxLines ? text.getCharCount() - 1 : text.getOffsetAtLine(lineNo),text.getCharCount() - 1); 
-				sql = text.getText();
-				sql = text.getText(startIndex, endIndex);
 			}
 			else
 			{
