@@ -1,6 +1,7 @@
 3.5.0.??? - Heiko Hilbert
 ======================================================
 +. new execute current sql action (CTRL+ALT+ENTER) and changeable key binding (patch #2725105 by joco01)
++. fixed #2827324, rounded float values in MSSql
 
 3.5.0.RC8 - Heiko Hilbert
 ======================================================

@@ -299,8 +299,13 @@ public class DataSet implements ResultProvider {
         	int precision = metadata.getPrecision(columnIndex);
         	int scale = metadata.getScale(columnIndex);
         	if (precision < 1 || scale > precision )
+        	{
             	return new FormattedColumn(targetIndex, metadata.getColumnName(columnIndex), true, null);//new DecimalFormat("#.#"));
-        	
+        	}
+        	if (scale == 0 && (type == Types.DOUBLE || type == Types.FLOAT || type == Types.REAL ))
+        	{
+            	return new FormattedColumn(targetIndex, metadata.getColumnName(columnIndex), true, null);//new DecimalFormat("#.#"));        		
+        	}
     		/*
     		 * NOTE: Scale can be negative (although possibly limited to Oracle), but we cope with 
     		 * this by specifing # after the decimal place precision-1 times; eg a precision of 10 
