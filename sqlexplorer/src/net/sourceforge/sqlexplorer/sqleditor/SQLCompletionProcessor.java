@@ -162,6 +162,16 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
         }
     }
 
+    private String getLastNamePart(String pName)
+    {
+        int dotPos = pName.lastIndexOf("."); //$NON-NLS-1$
+        if (dotPos < 0)
+        {
+        	return pName;
+        }
+        return pName.substring(dotPos + 1);
+    	
+    }
 
     /**
      * @see org.eclipse.jface.text.contentassist.IContentAssistProcessor#computeCompletionProposals(org.eclipse.jface.text.ITextViewer,
@@ -204,10 +214,8 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
             String name = string.substring(0, length - 1);
             if (name == null)
                 return null;
-            int otherDot = name.lastIndexOf(".");
-            if (otherDot != -1)
-                name = name.substring(otherDot + 1);
-            if (name == null || name.equals(""))
+            name = getLastNamePart(name);
+            if (name.equals(""))
                 return null;
             Set<String> st = dictionary.getColumnListByTableName(name);
             if(st == null) {
@@ -221,6 +229,7 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
             			if(potentialName.equals("as") && i > 1) {
             				potentialName = words[i-2].toLowerCase();
             			}
+            			potentialName = getLastNamePart(potentialName);
             			// if it is not a keyword then check against columnlist by table name
             			st = dictionary.getColumnListByTableName(potentialName);
             			if(st != null) {
@@ -259,7 +268,7 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
                 if (children != null) {
                     for (int i = 0; i < children.length; i++) {
                         String childName = children[i].toString().toLowerCase();
-                        if (childName.equals("table") || childName.equals("view")) {
+                        if (childName.startsWith("table") || childName.startsWith("view")) {
                             Object[] tables = (Object[]) ((INode) children[i]).getChildNodes();
                             if (tables != null) {
                                 for (int j = 0; j < tables.length; j++) {
