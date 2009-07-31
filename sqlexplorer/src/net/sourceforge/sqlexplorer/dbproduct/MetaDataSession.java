@@ -57,14 +57,27 @@ public class MetaDataSession extends Session {
 			connection = grabConnection();
 			metaData = connection.getSQLMetaData();
 			if (metaData.supportsCatalogs())
-				catalogs = metaData.getCatalogs();
+			{
+				try
+				{
+					catalogs = metaData.getCatalogs();
+				}
+				catch(Throwable ex)
+				{
+					SQLExplorerPlugin.error("Error reading catalogs", ex);
+					String catalog = connection.getCatalog();
+					if(catalog != null)
+					{
+						catalogs = new String[]{catalog};
+					}
+				}
+			}
 			databaseProductName = metaData.getDatabaseProductName();
 			dbModel = new DatabaseModel(this);
 		}finally {
 			if (connection != null)
 				releaseConnection(connection);
 		}
-
 		_assistanceEnabled = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.SQL_ASSIST);
         if (_assistanceEnabled) {
             // schedule job to load dictionary for this session

@@ -244,7 +244,7 @@ public class DatabaseNode extends AbstractNode {
 
             if (_supportsCatalogs) {
 
-                final String[] catalogs = metadata.getCatalogs();
+                String[] catalogs = _session.getCatalogs();
                 if (catalogs == null || catalogs.length == 0) {
                 	if (_supportsSchemas)
                 		_supportsCatalogs = false;
