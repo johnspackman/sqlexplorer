@@ -126,6 +126,7 @@ public class DDLTab extends AbstractSourceTab {
             
         } catch (Exception e) {
             SQLExplorerPlugin.error("Error creating export script", e);
+        	return "Error reading data: " + e.getMessage();
         } finally {
         	if (rs != null)
         		try {
