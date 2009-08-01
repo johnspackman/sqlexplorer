@@ -18,12 +18,16 @@
  */
 package net.sourceforge.sqlexplorer.dbproduct;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Driver;
 import java.util.HashMap;
 
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.util.TextUtil;
+
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Platform;
 
 /**
  * Accessor class for obtaining a platform-specific instance of DatabaseProduct.
@@ -38,25 +42,14 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
  *
  */
 public final class DatabaseProductFactory {
-
-	// Name of the accessor function that returns a platform-specific singleton
-	//	instance of DatabaseProduct
-	private static final String GET_PRODUCT_INSTANCE = "getProductInstance";
 	
 	// We guarantee to always be able to provide an instance; this is the one we
 	//	provide if none has been implemented for the given database platform
-	private static DefaultDatabaseProduct s_defaultProduct;
+	private static DefaultDatabaseProduct s_defaultProduct = new DefaultDatabaseProduct();
 	
 	private static HashMap<String, DatabaseProduct> instances = new HashMap<String, DatabaseProduct>();
 	
-	public static Driver loadDriver(ManagedDriver driver) throws ClassNotFoundException {
-        if (driver.getDriverClassName() == null)
-        	return null;
-		DatabaseProduct product = getInstance(driver);
-		if (product == null)
-			throw new ClassNotFoundException(driver.getDriverClassName());
-		return product.getDriver(driver);
-	}
+	
 	
 	/**
 	 * Returns an instance of DatabaseProduct for the platform at the connection
@@ -64,59 +57,77 @@ public final class DatabaseProductFactory {
 	 * @param node the connected node
 	 * @return a DatabaseProduct for the platform, never returns null
 	 */
-	public static DatabaseProduct getInstance(ManagedDriver driver) {
-		DatabaseProduct product = getProductInternal(driver);
+	public static DatabaseProduct getInstance(Alias pAlias) {
+		DatabaseProduct product = instances.get(pAlias.getUrl());
 		if (product != null)
 			return product;
-        
-        if (s_defaultProduct == null)
-        	s_defaultProduct = new DefaultDatabaseProduct();
-
         return s_defaultProduct;
 	}
 
-	private static DatabaseProduct getProductInternal(ManagedDriver driver) {
-		// This gets us, eg, "oracle" or "mssql"
-        //String productName = node.getRoot().getDatabaseProductName().toLowerCase().trim();
-		String str = driver.getUrl();
-		String[] strs = (str != null) ? str.split(":") : null;
-		String productName = (strs != null && strs.length > 1) ? strs[1] : null;
-        DatabaseProduct result = productName != null ? instances.get(productName) : null;
-        if (result != null)
-        	return result;
-        
-        // Insert the database name just before our package name, eg so we get
-        //	net.sourceforge.sqlexplorer.database-platform-name.dbproduct.DatabaseProduct
-        StringBuffer sb = new StringBuffer(DatabaseProduct.class.getName());
-        int pos = sb.lastIndexOf(".");
-        pos = sb.lastIndexOf(".", pos - 1);
-        sb.insert(pos, '.' + productName);
-        String className = sb.toString();
-        
-        // Use reflection to find it
-        Exception ex = null;
-        try {
-        	// Locate the method
-	        Class<?> clazz = Class.forName(className);
-	        Method method = clazz.getMethod(GET_PRODUCT_INSTANCE, new Class[0]);
-	        
-	        // Call the method; it's static and has no parameters so both args are null (1st arg is "this") 
-	        result = (DatabaseProduct) method.invoke(null, (Object[])null);
-	        instances.put(productName, result);
-	        return result;
-        } catch(IllegalAccessException e) {
-        	ex = e;
-        } catch(InvocationTargetException e) {
-        	ex = e;
-        } catch(ClassNotFoundException e) {
-        	ex = null;
-        } catch(NoSuchMethodException e) {
-        	ex = e;
-        }
-        if (ex != null)
-        	SQLExplorerPlugin.error("Could not instantiate DatabasePlatform", ex);
+	public static DatabaseProduct registerProduct(String pUrl, String pDatabaseProductName) {
+		DatabaseProduct result = instances.get(pUrl);
+		if(result != null)
+		{
+			return result;
+		}
+        // load extension nodes
+        String databaseProductName = pDatabaseProductName.toLowerCase().trim();
 
-        return null;
+        IExtensionRegistry registry = Platform.getExtensionRegistry();
+        IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "databaseProduct");
+        IExtension[] extensions = point.getExtensions();
+
+        for (int i = 0; i < extensions.length; i++) {
+
+            IExtension e = extensions[i];
+            
+            IConfigurationElement[] ces = e.getConfigurationElements();
+
+            for (int j = 0; j < ces.length; j++) {
+                try {
+
+                    boolean isValidProduct = false;
+                    String[] validProducts = ces[j].getAttribute("database-product-name").split(",");
+
+                    // include only nodes valid for this database
+                    for (int k = 0; k < validProducts.length; k++) {
+
+                        String product = validProducts[k].toLowerCase().trim();
+
+                        if (product.length() == 0) {
+                            continue;
+                        }
+
+                        if (product.equals("*")) {
+                            isValidProduct = true;
+                            break;
+                        }
+
+                        String regex = TextUtil.replaceChar(product, '*', ".*");
+                        if (databaseProductName.matches(regex)) {
+                            isValidProduct = true;
+                            break;
+                        }
+
+                    }
+
+                    if (!isValidProduct) {
+                        continue;
+                    }
+
+                    result = (DatabaseProduct) ces[j].createExecutableExtension("class");
+
+                } catch (Throwable ex) {
+                    SQLExplorerPlugin.error("Could not determine databse product", ex);
+                }
+            }
+        }
+        if(result == null)
+        {
+        	return s_defaultProduct;
+        }
+        instances.put(pUrl, result);
+        return result;
 	}
 	
 }

@@ -18,54 +18,36 @@
  */
 package net.sourceforge.sqlexplorer.oracle.dbproduct;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.net.MalformedURLException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-
-import oracle.jdbc.driver.OracleTypes;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dbproduct.AbstractDatabaseProduct;
-import net.sourceforge.sqlexplorer.dbproduct.ManagedDriver;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.parsers.NamedParameter;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
-import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
-import net.sourceforge.squirrel_sql.fw.sql.SQLDriverClassLoader;
+import oracle.jdbc.driver.OracleTypes;
 
 /**
  * Implementation for Oracle
  * @author John Spackman
  *
  */
-public class DatabaseProduct extends AbstractDatabaseProduct {
-	
-	private static DatabaseProduct s_instance = null;
+public class OracleDatabaseProduct extends AbstractDatabaseProduct {
 	
 	private LinkedList<String> warnings;
 
-	/**
-	 * Returns a singleton instance.  NOTE: This method is accessed by reflection
-	 * from DatabaseProductFactory; its method signature must not change unless the 
-	 * parent DatabaseProduct class also changes.
-	 * @return
-	 */
-	public static DatabaseProduct getProductInstance() {
-		if (s_instance == null)
-			s_instance = new DatabaseProduct();
-		return s_instance;
-	}
 	
 	/* (non-Javadoc)
 	 * @see net.sourceforge.sqlexplorer.dbproduct.AbstractDatabaseProduct#describeConnection(java.sql.Connection)
@@ -93,24 +75,6 @@ public class DatabaseProduct extends AbstractDatabaseProduct {
 					stmt.close();
 				} catch(SQLException e) {
 				}
-		}
-	}
-
-	/* (non-JavaDoc)
-	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#getDriver(net.sourceforge.squirrel_sql.fw.sql.ManagedDriver)
-	 */
-	public Driver getDriver(ManagedDriver driver) throws ClassNotFoundException {
-		try {
-	        ClassLoader loader = new SQLDriverClassLoader(getClass().getClassLoader(), driver);
-	        Class<?> driverCls = loader.loadClass(driver.getDriverClassName());
-//	        loader.loadClass("oracle.xml.parser.v2.XMLParseException");
-	        return (Driver)driverCls.newInstance();
-		} catch(MalformedURLException e) {
-			throw new ClassNotFoundException(e.getMessage(), e);
-		} catch(InstantiationException e) {
-			throw new ClassNotFoundException(e.getMessage(), e);
-		} catch(IllegalAccessException e) {
-			throw new ClassNotFoundException(e.getMessage(), e);
 		}
 	}
 

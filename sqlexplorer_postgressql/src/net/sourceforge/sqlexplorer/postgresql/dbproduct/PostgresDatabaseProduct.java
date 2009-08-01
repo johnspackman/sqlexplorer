@@ -18,56 +18,76 @@
  */
 package net.sourceforge.sqlexplorer.postgresql.dbproduct;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.net.MalformedURLException;
-import java.sql.Driver;
-import java.sql.SQLException;
+
 import net.sourceforge.sqlexplorer.dbproduct.AbstractDatabaseProduct;
-import net.sourceforge.sqlexplorer.dbproduct.ManagedDriver;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
-import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
-import net.sourceforge.squirrel_sql.fw.sql.SQLDriverClassLoader;
 
 /**
  * Implementation for Oracle
  * @author John Spackman
  *
  */
-public class DatabaseProduct extends AbstractDatabaseProduct {
+public class PostgresDatabaseProduct extends AbstractDatabaseProduct {
 	
-	private static DatabaseProduct s_instance = null;
-	
-	/**
-	 * Returns a singleton instance.  NOTE: This method is accessed by reflection
-	 * from DatabaseProductFactory; its method signature must not change unless the 
-	 * parent DatabaseProduct class also changes.
-	 * @return
-	 */
-	public static DatabaseProduct getProductInstance() {
-		if (s_instance == null)
-			s_instance = new DatabaseProduct();
-		return s_instance;
+	@Override
+	public String describeConnection(Connection connection) throws SQLException {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			stmt = connection.prepareStatement("SELECT pg_backend_pid() as SID");
+			rs = stmt.executeQuery();
+			rs.next();
+			return "SID: " + rs.getString("SID");
+		}catch (SQLException e) {
+			SQLExplorerPlugin.error(e);
+			return super.describeConnection(connection);
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch(SQLException e) {
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch(SQLException e) {
+				}
+		}
 	}
 
-	/* (non-JavaDoc)
-	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#getDriver(net.sourceforge.squirrel_sql.fw.sql.ManagedDriver)
-	 */
-	public Driver getDriver(ManagedDriver driver) throws ClassNotFoundException {
+	@Override
+	public String getCurrentCatalog(Connection connection) throws SQLException {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
 		try {
-	        ClassLoader loader = new SQLDriverClassLoader(getClass().getClassLoader(), driver);
-	        Class<?> driverCls = loader.loadClass(driver.getDriverClassName());
-	        return (Driver)driverCls.newInstance();
-		} catch(UnsupportedClassVersionError e) {
-			throw new ClassNotFoundException(e.getMessage(), e);
-		} catch(MalformedURLException e) {
-			throw new ClassNotFoundException(e.getMessage(), e);
-		} catch(InstantiationException e) {
-			throw new ClassNotFoundException(e.getMessage(), e);
-		} catch(IllegalAccessException e) {
-			throw new ClassNotFoundException(e.getMessage(), e);
+			stmt = connection.prepareStatement("SELECT current_database() as DB");
+			rs = stmt.executeQuery();
+			rs.next();
+			return rs.getString("DB");
+		}catch (SQLException e) {
+			SQLExplorerPlugin.error(e);
+			return super.describeConnection(connection);
+		} finally {
+			if (rs != null)
+				try {
+					rs.close();
+				} catch(SQLException e) {
+				}
+			if (stmt != null)
+				try {
+					stmt.close();
+				} catch(SQLException e) {
+				}
 		}
 	}
 

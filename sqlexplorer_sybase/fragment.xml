@@ -50,5 +50,12 @@
             name="Show Procedure Source Action"
             node-type="procedure"/>
    </extension>
+   <extension
+         point="net.sourceforge.sqlexplorer.databaseProduct">
+      <databaseProduct
+            class="net.sourceforge.sqlexplorer.sybase.dbproduct.SybaseDatabaseProduct"
+            database-product-name="Adaptive Server*">
+      </databaseProduct>
+   </extension>
 
 </fragment>

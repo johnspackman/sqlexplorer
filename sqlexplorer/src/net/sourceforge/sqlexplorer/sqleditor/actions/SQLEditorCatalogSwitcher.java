@@ -5,17 +5,22 @@ import java.sql.SQLException;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
+import net.sourceforge.sqlexplorer.dbproduct.Session;
+import net.sourceforge.sqlexplorer.dbproduct.SessionListener;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SwitchableSessionEditor;
 
 import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 
 
 public class SQLEditorCatalogSwitcher extends ControlContribution {
@@ -24,6 +29,8 @@ public class SQLEditorCatalogSwitcher extends ControlContribution {
     private SwitchableSessionEditor _editor;
     
     private Combo _catalogCombo;
+
+	private SessionListener sessionListener;
 
     
     /**
@@ -85,12 +92,47 @@ public class SQLEditorCatalogSwitcher extends ControlContribution {
             } catch(SQLException e) {
             	SQLExplorerPlugin.error(e);
             }
+            _catalogCombo.addDisposeListener(new DisposeListener() {
+			
+				public void widgetDisposed(DisposeEvent e) {
+					_editor.getSession().removeSessionListener(sessionListener);
+				}
+			
+			});
+            this.sessionListener = new SessionListener() {
+			
+				public void sessionChanged(int type, Session session) {
+					updateCatalog(session.getCatalog());
+				}
+			
+			};
+            _editor.getSession().addSessionListener(this.sessionListener);
         }
         
         return _catalogCombo;
     }
 
-    private MetaDataSession getMetaDataSession() {
+    private void updateCatalog(final String catalog) {
+    	if(catalog == null)
+    	{
+    		return;
+    	}
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+		        for (int i = 0; i < _catalogCombo.getItemCount(); i++) {
+		            if(catalog.equals(_catalogCombo.getItem(i)))
+		            {
+		            	_catalogCombo.select(i);
+		            	break;
+		            }
+		        }
+			}
+		});
+    	
+		
+	}
+
+	private MetaDataSession getMetaDataSession() {
     	return _editor.getSession().getUser().getMetaDataSession();
     }
     

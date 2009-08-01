@@ -52,7 +52,7 @@ public class BatchJob extends Job {
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		monitor.beginTask(Messages.getString("BatchJob.ExecutingScripts"), files.size());
-		DatabaseProduct product = user.getAlias().getDriver().getDatabaseProduct();
+		DatabaseProduct product = user.getAlias().getDatabaseProduct();
 		SQLConnection connection = null;
 		try {
 			if (session == null)

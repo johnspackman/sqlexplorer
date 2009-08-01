@@ -96,5 +96,12 @@
             name="Rename Table Context Action"
             node-type="table"/>
    </extension>
+   <extension
+         point="net.sourceforge.sqlexplorer.databaseProduct">
+      <databaseProduct
+            class="net.sourceforge.sqlexplorer.mysql.dbproduct.MySqlDatabaseProduct"
+            database-product-name="MySQL*">
+      </databaseProduct>
+   </extension>
 
 </fragment>

@@ -421,4 +421,8 @@ public class Alias {
 			users.clear();
 		}
 	}
+
+	public DatabaseProduct getDatabaseProduct() {
+		return DatabaseProductFactory.getInstance(this);
+	}
 }

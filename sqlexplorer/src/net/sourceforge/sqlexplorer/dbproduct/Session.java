@@ -18,7 +18,9 @@
  */
 package net.sourceforge.sqlexplorer.dbproduct;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.sql.SQLException;
 
 import net.sourceforge.sqlexplorer.ExplorerException;
@@ -43,6 +45,8 @@ public class Session {
     // User definition we connect as (will be null after we've been closed)
     private User user;
 
+    private List<SessionListener> listeners = new ArrayList<SessionListener>();
+    
     // Connection to the database
     private SQLConnection connection;
     
@@ -95,8 +99,14 @@ public class Session {
     	connection = newConnection;
 		if (connection != null) {
 			connection.setSession(this);
-			if (lastCatalog != null)
+			if (lastCatalog == null)
+			{
+				lastCatalog = getDatabaseProduct().getCurrentCatalog(connection.getConnection());
+			}
+			else
+			{
 				connection.setCatalog(lastCatalog);
+			}
 	    	connection.setAutoCommit(autoCommit);
 	    	connection.setCommitOnClose(commitOnClose);
 		}
@@ -165,6 +175,19 @@ public class Session {
     	}
 
     	connectionInUse = false;
+    	try {
+    		if(lastCatalog != null)
+    		{
+    			String newCatalog = getDatabaseProduct().getCurrentCatalog(connection.getConnection());
+    			if(!lastCatalog.equals(newCatalog))
+    			{
+    				lastCatalog = newCatalog;
+    				triggerSessionChanged(SessionListener.CATALOG_CHANGED);
+    			}
+    		}
+    	}catch(SQLException e) {
+    		SQLExplorerPlugin.error("Error in getCatalog", e);
+    	}
     	
     	try {
     		// Update the connection to the auto-commit and commit-on-close status
@@ -366,6 +389,11 @@ public class Session {
 				}
 	    	});
     }
+    
+    public String getCatalog()
+    {
+    	return lastCatalog;
+    }
 
 	public User getUser() {
 		return user;
@@ -386,7 +414,7 @@ public class Session {
     public DatabaseProduct getDatabaseProduct() {
     	if (getUser() == null)
     		return null;
-    	return getUser().getAlias().getDriver().getDatabaseProduct();
+    	return getUser().getAlias().getDatabaseProduct();
     }
 
 	/**
@@ -401,5 +429,29 @@ public class Session {
 	 */
 	public void setKeepConnection(boolean keepConnection) {
 		this.keepConnection = keepConnection;
+	}
+	
+	public void addSessionListener(SessionListener pListener)
+	{
+		this.listeners.add(pListener);
+	}
+	public boolean removeSessionListener(SessionListener pListener)
+	{
+		return this.listeners.remove(pListener);
+	}
+	
+	protected void triggerSessionChanged(int pType)
+	{
+		for(SessionListener listener : this.listeners)
+		{
+			try
+			{
+				listener.sessionChanged(pType, this);
+			}
+			catch(Throwable ex)
+			{
+				SQLExplorerPlugin.error("Error calling session listener", ex);
+			}
+		}
 	}
 }

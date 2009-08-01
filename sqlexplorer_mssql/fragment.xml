@@ -142,5 +142,12 @@
             name="Start Job on Step"
             node-type="JobNodeStep"/>
    </extension>
+   <extension
+         point="net.sourceforge.sqlexplorer.databaseProduct">
+      <databaseProduct
+            class="net.sourceforge.sqlexplorer.mssql.dbproduct.MsSqlDatabaseProduct"
+            database-product-name="Microsoft SQL Server*">
+      </databaseProduct>
+   </extension>
 
 </fragment>

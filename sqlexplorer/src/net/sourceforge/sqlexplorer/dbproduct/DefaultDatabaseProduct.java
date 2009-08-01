@@ -18,8 +18,6 @@
  */
 package net.sourceforge.sqlexplorer.dbproduct;
 
-import java.net.MalformedURLException;
-import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -30,28 +28,8 @@ import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
-import net.sourceforge.squirrel_sql.fw.sql.SQLDriverClassLoader;
 
 public class DefaultDatabaseProduct extends AbstractDatabaseProduct {
-
-	/* (non-JavaDoc)
-	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#getDriver(net.sourceforge.squirrel_sql.fw.sql.ManagedDriver)
-	 */
-	public Driver getDriver(ManagedDriver driver) throws ClassNotFoundException {
-		try {
-	        ClassLoader loader = new SQLDriverClassLoader(getClass().getClassLoader(), driver);
-	        Class<?> driverCls = loader.loadClass(driver.getDriverClassName());
-	        return (Driver)driverCls.newInstance();
-		} catch(UnsupportedClassVersionError e) {
-			throw new ClassNotFoundException(e.getMessage(), e);
-		} catch(MalformedURLException e) {
-			throw new ClassNotFoundException(e.getMessage(), e);
-		} catch(InstantiationException e) {
-			throw new ClassNotFoundException(e.getMessage(), e);
-		} catch(IllegalAccessException e) {
-			throw new ClassNotFoundException(e.getMessage(), e);
-		}
-	}
 
 	public Collection<Message> getErrorMessages(SQLConnection connection, SQLException e, int lineNoOffset) throws SQLException {
 		List<Message> list = new LinkedList<Message>();

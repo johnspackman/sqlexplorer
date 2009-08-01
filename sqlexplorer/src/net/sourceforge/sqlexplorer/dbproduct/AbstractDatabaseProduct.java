@@ -95,6 +95,12 @@ public abstract class AbstractDatabaseProduct implements DatabaseProduct {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct#describeConnection(java.sql.Connection)
+	 */
+	public String getCurrentCatalog(Connection connection) throws SQLException {
+		return connection.getCatalog();
+	}
 	/**
 	 * Scans the StringBuffer looking for named parameters (in the form ":paramname"), and 
 	 * looking up the parameter in map.  It returns a list of those parameters; note that

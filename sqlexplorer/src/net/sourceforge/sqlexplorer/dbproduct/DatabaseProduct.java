@@ -19,7 +19,6 @@
 package net.sourceforge.sqlexplorer.dbproduct;
 
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +27,6 @@ import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
-import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 
 /**
  * A DatabaseProduct is the base class for representing a given database
@@ -122,16 +120,13 @@ public interface DatabaseProduct {
 	public String describeConnection(Connection connection) throws SQLException; 
 	
 	/**
-	 * Loads a driver for use with SQLExplorer.  Note that because of Classloader issues
-	 * when dealing with multiple plugins, it is essential that the plugin for the database 
-	 * loads the .jar contains the database-specific Driver; if this is not done then ONLY 
-	 * the standard JDBC classes can be used, and any platform specific classes will result
-	 * in a ClassNotFound exception.
-	 * @param driver
+	 * Called to the name of the current selected catalog within the connection
+	 * 
+	 * @param connection
 	 * @return
-	 * @throws ClassNotFoundException
+	 * @throws SQLException
 	 */
-	public Driver getDriver(ManagedDriver driver) throws ClassNotFoundException;
+	public String getCurrentCatalog(Connection connection) throws SQLException;
 	
 	/**
 	 * Returns a tokenizer capable of splitting queries up into segments to be executed

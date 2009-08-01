@@ -173,5 +173,12 @@
             id="net.sourceforge.sqlexplorer.oracle.explain.generatemetauml"
             name="Generate MetaUML"/>
    </extension>
+   <extension
+         point="net.sourceforge.sqlexplorer.databaseProduct">
+      <databaseProduct
+            class="net.sourceforge.sqlexplorer.oracle.dbproduct.OracleDatabaseProduct"
+            database-product-name="Oracle*">
+      </databaseProduct>
+   </extension>
 
 </fragment>

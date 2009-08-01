@@ -1,6 +1,7 @@
 package net.sourceforge.sqlexplorer.dbproduct;
 
 import java.beans.PropertyChangeListener;
+import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
@@ -17,6 +18,7 @@ import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
 import net.sourceforge.squirrel_sql.fw.persist.ValidationException;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
+import net.sourceforge.squirrel_sql.fw.sql.SQLDriverClassLoader;
 import net.sourceforge.squirrel_sql.fw.util.beanwrapper.StringWrapper;
 
 /**
@@ -168,7 +170,19 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 		if (driverClassName == null || driverClassName.length() == 0)
 			return;
 		unregisterSQLDriver();
-		jdbcDriver = DatabaseProductFactory.loadDriver(this);
+		try {
+	        ClassLoader loader = new SQLDriverClassLoader(getClass().getClassLoader(), this);
+	        Class<?> driverCls = loader.loadClass(getDriverClassName());
+	        jdbcDriver = (Driver)driverCls.newInstance();
+		} catch(UnsupportedClassVersionError e) {
+			throw new ClassNotFoundException(e.getMessage(), e);
+		} catch(MalformedURLException e) {
+			throw new ClassNotFoundException(e.getMessage(), e);
+		} catch(InstantiationException e) {
+			throw new ClassNotFoundException(e.getMessage(), e);
+		} catch(IllegalAccessException e) {
+			throw new ClassNotFoundException(e.getMessage(), e);
+		}
 	}
 
 	/**
@@ -212,8 +226,8 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 		}
 		if (jdbcConn == null)
 			throw new SQLCannotConnectException(user);
-
-		return new SQLConnection(user, jdbcConn, this, getDatabaseProduct().describeConnection(jdbcConn));
+		DatabaseProduct product = DatabaseProductFactory.registerProduct(user.getAlias().getUrl(), jdbcConn.getMetaData().getDatabaseProductName());
+		return new SQLConnection(user, jdbcConn, this, product.describeConnection(jdbcConn));
 	}
 
 	public boolean isDriverClassLoaded() {
@@ -269,11 +283,11 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 	public void setDriverClassName(String driverClassName) {
 		this.driverClassName = driverClassName;
 	}
-
+/*
 	public DatabaseProduct getDatabaseProduct() {
 		return DatabaseProductFactory.getInstance(this);
 	}
-
+*/
 	public int compareTo(ManagedDriver that) {
 		return name.compareTo(that.name);
 	}
