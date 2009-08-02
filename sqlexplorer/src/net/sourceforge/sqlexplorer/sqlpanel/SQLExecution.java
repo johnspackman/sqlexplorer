@@ -20,6 +20,7 @@ package net.sourceforge.sqlexplorer.sqlpanel;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
@@ -36,6 +37,10 @@ import net.sourceforge.sqlexplorer.sqleditor.results.GenericAction;
 import net.sourceforge.sqlexplorer.sqleditor.results.GenericActionGroup;
 import net.sourceforge.sqlexplorer.sqleditor.results.ResultsTableAction;
 import net.sourceforge.sqlexplorer.sqleditor.results.actions.ReRunAction;
+import net.sourceforge.sqlexplorer.sqleditor.results.export.ExportAction;
+import net.sourceforge.sqlexplorer.sqleditor.results.export.ExporterCSV;
+import net.sourceforge.sqlexplorer.sqleditor.results.export.ExporterHTML;
+import net.sourceforge.sqlexplorer.sqleditor.results.export.ExporterXLS;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IMenuListener;
@@ -125,6 +130,10 @@ public class SQLExecution extends AbstractSQLExecution {
 	                table.getMenuManager().addMenuListener(new IMenuListener() {
 	                    public void menuAboutToShow(IMenuManager manager) {
 	                        actionGroup.fillContextMenu(manager);
+	                        manager.add(new Separator());
+	                        manager.add(new ExportAction(new ExporterCSV(),table));
+	                        manager.add(new ExportAction(new ExporterHTML(),table));
+	                        manager.add(new ExportAction(new ExporterXLS(),table));
 	                        manager.add(new Separator());
 	                        manager.add(new ReRunAction(tabItem));
 	                    }

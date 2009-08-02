@@ -224,4 +224,15 @@ public class TextUtil {
     	return ret;
     }
     
+    /**
+     * quote the given String using double quotes, replace all double quotes
+     * within the given String by doubleing them.
+     * 
+     * @param input
+     * @return
+     */
+    public static String quote(String input)
+    {
+		return '"' +input.replaceAll("\"", "\"\"") + '"';
+    }
 }

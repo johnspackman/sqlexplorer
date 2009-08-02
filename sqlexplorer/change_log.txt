@@ -6,6 +6,7 @@
 +. fixed bug #2830545, fill db structure view for current database
 +. extended database(catalog) support for MySql,Sybase, MS-Sql
 +. added New to File menu, moved preferences menu item down
++. re-added export to HTML and XLS action
 
 3.5.0.RC8 - Heiko Hilbert
 ======================================================

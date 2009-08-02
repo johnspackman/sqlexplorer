@@ -19,14 +19,13 @@
 package net.sourceforge.sqlexplorer.sqleditor.results.export;
 
 import java.io.File;
-import java.io.PrintStream;
 
 import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.sqleditor.results.CellRangeRow;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
+import net.sourceforge.sqlexplorer.sqleditor.results.AbstractResultsTable;
 import net.sourceforge.sqlexplorer.sqleditor.results.ResultProvider;
 import net.sourceforge.sqlexplorer.sqleditor.results.ResultsTableAction;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
-import net.sourceforge.sqlexplorer.util.TextUtil;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -45,6 +44,16 @@ public class ExportAction extends ResultsTableAction {
     
     private Shell shell;
 
+	private Exporter exporter;
+
+	private ExportOptions exportOptions;
+
+    public ExportAction(Exporter exporter, AbstractResultsTable resultTable)
+    {
+    	this.exporter = exporter;
+    	this.exportOptions = ExportOptions.Current;
+    	setResultsTable(resultTable);
+    }
     @Override
 	public void initialise(Shell shell) {
 		super.initialise(shell);
@@ -55,7 +64,7 @@ public class ExportAction extends ResultsTableAction {
      * Return the text that will be displayed in the context popup menu for this action. 
      */
     public String getText() {
-        return Messages.getString("DataSetTable.Actions.Export.CSV");
+        return Messages.getString("DataSetTable.Actions.Export",exporter.getFormatName());
     }
 
     /**
@@ -70,7 +79,7 @@ public class ExportAction extends ResultsTableAction {
      */
     public void run() 
     {
-    	final ExportDlg	dlg = new ExportDlg(shell);
+    	final ExportDlg	dlg = new ExportDlg(shell, exporter, exportOptions);
     	if (dlg.open() != Window.OK)
     		return;
 
@@ -93,71 +102,16 @@ public class ExportAction extends ResultsTableAction {
                     }
                     
                     file.createNewFile();
-                    PrintStream writer = new PrintStream(file, dlg.getCharacterSet()); 
-                    
-                    // get column header and separator preferences
-                    String columnSeparator = dlg.getDelimiter(); 
-                    boolean includeColumnNames = dlg.includeHeaders();
-                    boolean rtrim = dlg.trimSpaces();
-                    boolean quote = dlg.quoteText();
-                    String nullValue = dlg.getNullValue();
-                                       
+
                     // check if there is somethign in our table                    
                     ResultProvider data = getResultsTable().getResultProvider();
                     
-                    int columnCount = data.getNumberOfColumns();
-                    // export column names if we need to 
-                    if (includeColumnNames) 
-                    {
-                        
-                        for (int i = 0; i < columnCount; i++) 
-                        {
-                            if (i != 0)
-                            {
-                            	writer.print(columnSeparator);
-                            }
-                            writer.print(data.getColumn(i).getCaption());
-                        }
-                        writer.println();
-                    }
-
-                    // export column data
-                    for (CellRangeRow row : data.getRows()) 
-                    {
-                                           
-                        for (int j = 0; j < columnCount; j++) 
-                        {
-                        	Object o = row.getCellValue(j);
-                        	String t = o == null ? nullValue : o.toString();
-                        	if (rtrim)
-                        	{
-                        		t = TextUtil.rtrim(t);
-                        	}
-                        	if (quote && o instanceof String) 
-                        	{
-                        		writer.print("\"");
-                        		writer.print(t.replaceAll("\"", "\"\""));
-                        		writer.print("\"");
-                        	} 
-                        	else
-                        	{
-                        		writer.print(t);
-                        	}
-                        	/* don't append separator _after_ last column */
-                        	if (j < columnCount - 1)
-                        	{
-                        		writer.print(columnSeparator);
-                        	}
-                        }
-                        writer.println();
-                    }
-
-                    writer.close();
-
+                    exporter.export(data, exportOptions, file);
 
                 } 
                 catch (final Exception e) 
                 {
+                	SQLExplorerPlugin.error(e);
                     shell.getDisplay().asyncExec(new Runnable() 
                     {
 

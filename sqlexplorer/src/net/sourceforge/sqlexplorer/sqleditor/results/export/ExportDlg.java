@@ -3,7 +3,6 @@ package net.sourceforge.sqlexplorer.sqleditor.results.export;
 import java.nio.charset.Charset;
 import java.util.SortedMap;
 
-import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
@@ -60,21 +59,11 @@ public class ExportDlg extends TitleAreaDialog {
 
 	private Text uiFile;
 
-	private String charset;
-
-	private String delim;
-
-	private String nullValue;
-
-	private boolean incHeaders;
-
-	private boolean quoteText;
-
-	private boolean rtrim;
-
 	private String file;
 
-	private ExporterCSV exporter = new ExporterCSV();
+	private Exporter exporter;
+
+	private ExportOptions options;
 
 	private static final String[] DELIMS = { ";", "|", "\\t [TAB]", "," }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
@@ -83,16 +72,20 @@ public class ExportDlg extends TitleAreaDialog {
 	 * 
 	 * @param parentShell
 	 *            Parent's shell.
+	 * @param exportOptions 
 	 */
-	public ExportDlg(Shell parentShell) {
+	public ExportDlg(Shell parentShell, Exporter exporter, ExportOptions exportOptions ) {
 		super(parentShell);
+		this.exporter = exporter;
+		this.options = exportOptions;
 	}
 
 	protected Control createContents(Composite parent) {
 		Control contents = super.createContents(parent);
-		setTitle(Messages.getString("ExportDlg.Title"));
-		getShell().setText(Messages.getString("ExportDlg.Title"));
-		setMessage(Messages.getString("ExportDlg.TitleMessage"));
+		String title = Messages.getString("ExportDlg.Title",exporter.getFormatName());
+		setTitle(title);
+		getShell().setText(title);
+		setMessage(Messages.getString("ExportDlg.TitleMessage", exporter.getFormatName()));
 		setTitleImage(ResourceManager.getPluginImage(SQLExplorerPlugin.getDefault(), "icons/ExportDataLarge.png"));
 		return contents;
 	}
@@ -102,59 +95,80 @@ public class ExportDlg extends TitleAreaDialog {
 		comp.setLayout(new FillLayout(SWT.VERTICAL));
 		comp.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
 
-		String columnSeparator = SQLExplorerPlugin.getDefault().getPreferenceStore().getString(IConstants.CLIP_EXPORT_SEPARATOR);
-		boolean hdr = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.CLIP_EXPORT_COLUMNS);
-
 		Label l = null;
+		int flags = this.exporter.getFlags();
 
-		Group fmtGroup = new Group(comp, SWT.SHADOW_ETCHED_IN);
-		fmtGroup.setText(Messages.getString("ExportDlg.Format"));
-		fmtGroup.setLayout(new GridLayout(2, false));
-		int i = 0, def = 0;
-
-		l = new Label(fmtGroup, SWT.NONE);
-		l.setText(Messages.getString("ExportDlg.CharacterSet"));
-		uiCharset = new Combo(fmtGroup, SWT.READ_ONLY);
-		SortedMap<String,Charset> m = Charset.availableCharsets();
-		for (Charset cs : m.values()) 
-		{
-			uiCharset.add(cs.displayName());
-			if (cs.displayName().toLowerCase().equals("utf-8")) //$NON-NLS-1$
-				def = i;
-			i++;
+		if ((flags & Exporter.FMT_CHARSET) != 0 || (flags & Exporter.FMT_DELIM) != 0 || (flags & Exporter.FMT_NULL) != 0) {
+	
+			Group fmtGroup = new Group(comp, SWT.SHADOW_ETCHED_IN);
+			fmtGroup.setText(Messages.getString("ExportDlg.Format"));
+			fmtGroup.setLayout(new GridLayout(2, false));
+			int i = 0, def = 0;
+	
+			if ((flags & Exporter.FMT_CHARSET) != 0) {
+				if(this.options.characterSet == null)
+				{
+					this.options.characterSet = "utf-8"; //$NON-NLS-1$
+				}
+				l = new Label(fmtGroup, SWT.NONE);
+				l.setText(Messages.getString("ExportDlg.CharacterSet"));
+				uiCharset = new Combo(fmtGroup, SWT.READ_ONLY);
+				SortedMap<String,Charset> m = Charset.availableCharsets();
+				for (Charset cs : m.values()) 
+				{
+					uiCharset.add(cs.displayName());
+					if (cs.displayName().toLowerCase().equals(this.options.characterSet.toLowerCase())) 
+						def = i;
+					i++;
+				}
+				uiCharset.select(def);
+			}	
+			
+			if ((flags & Exporter.FMT_DELIM) != 0) {
+				l = new Label(fmtGroup, SWT.NONE);
+				l.setText(Messages.getString("ExportDlg.Delimiter"));
+				uiDelim = new Combo(fmtGroup, SWT.NONE);
+				for (i = 0, def = 0; i < DELIMS.length; i++) {
+					uiDelim.add(DELIMS[i]);
+					if (DELIMS[i].toLowerCase().equals(this.options.columnSeparator))
+						def = i;
+				}
+				uiDelim.select(def);
+			}			
+			
+			if ((flags & Exporter.FMT_NULL) != 0) {
+				l = new Label(fmtGroup, SWT.NONE);
+				l.setText(Messages.getString("ExportDlg.NullValue"));
+				uiNullValue = new Text(fmtGroup, SWT.SINGLE | SWT.BORDER | SWT.FILL);
+				uiNullValue.setText(this.options.nullValue);
+				uiNullValue.setLayoutData(new GridData(50, SWT.DEFAULT));
+			}
 		}
-		uiCharset.select(def);
-
-		l = new Label(fmtGroup, SWT.NONE);
-		l.setText(Messages.getString("ExportDlg.Delimiter"));
-		uiDelim = new Combo(fmtGroup, SWT.NONE);
-		for (i = 0, def = 0; i < DELIMS.length; i++) {
-			uiDelim.add(DELIMS[i]);
-			if (DELIMS[i].toLowerCase().equals(columnSeparator))
-				def = i;
-		}
-		uiDelim.select(def);
 		
-		l = new Label(fmtGroup, SWT.NONE);
-		l.setText(Messages.getString("ExportDlg.NullValue"));
-		uiNullValue = new Text(fmtGroup, SWT.SINGLE | SWT.BORDER | SWT.FILL);
-		uiNullValue.setText(Messages.getString("ExportDlg.Null"));
-		uiNullValue.setLayoutData(new GridData(50, SWT.DEFAULT));
+		if ((flags & Exporter.OPT_HDR) != 0 || (flags & Exporter.OPT_QUOTE) != 0
+				|| (flags & Exporter.OPT_RTRIM) != 0) {
+			Group optionsGroup = new Group(comp, SWT.SHADOW_ETCHED_IN);
+			optionsGroup.setText(Messages.getString("ExportDlg.Options"));
+			optionsGroup.setLayout(new GridLayout(1, true));
+	
+			if ((flags & Exporter.OPT_HDR) != 0) {
+				uiIncHeaders = new Button(optionsGroup, SWT.CHECK);
+				uiIncHeaders.setText(Messages.getString("ExportDlg.Headers"));
+				uiIncHeaders.setSelection(this.options.includeColumnNames);
+			}	
 
-		Group optionsGroup = new Group(comp, SWT.SHADOW_ETCHED_IN);
-		optionsGroup.setText(Messages.getString("ExportDlg.Options"));
-		optionsGroup.setLayout(new GridLayout(1, true));
+			if ((flags & Exporter.OPT_QUOTE) != 0) {
+				uiQuoteText = new Button(optionsGroup, SWT.CHECK);
+				uiQuoteText.setText(Messages.getString("ExportDlg.QuoteTextValues"));
+				uiQuoteText.setSelection(this.options.quote);
+			}	
 
-		uiIncHeaders = new Button(optionsGroup, SWT.CHECK);
-		uiIncHeaders.setText(Messages.getString("ExportDlg.Headers"));
-		uiIncHeaders.setSelection(hdr);
-
-		uiQuoteText = new Button(optionsGroup, SWT.CHECK);
-		uiQuoteText.setText(Messages.getString("ExportDlg.QuoteTextValues"));
-
-		uiRtrim = new Button(optionsGroup, SWT.CHECK);
-		uiRtrim.setText(Messages.getString("ExportDlg.RightTrimValues"));
-
+			if ((flags & Exporter.OPT_RTRIM) != 0) {
+				uiRtrim = new Button(optionsGroup, SWT.CHECK);
+				uiRtrim.setText(Messages.getString("ExportDlg.RightTrimValues"));
+				uiRtrim.setSelection(this.options.rtrim);
+			}
+		}
 		Group fileGroup = new Group(comp, SWT.SHADOW_ETCHED_IN);
 		fileGroup.setText(Messages.getString("ExportDlg.Destination"));
 		fileGroup.setLayout(new GridLayout(2, false));
@@ -225,67 +239,14 @@ public class ExportDlg extends TitleAreaDialog {
 	}
 
 	protected void okPressed() {
-		charset = uiCharset != null ? uiCharset.getText() : null;
-		delim = uiDelim != null ? uiDelim.getText() : null;
-		incHeaders = uiIncHeaders != null && uiIncHeaders.getSelection();
-		quoteText = uiQuoteText != null && uiQuoteText.getSelection();
-		rtrim = uiRtrim != null && uiRtrim.getSelection();
+		this.options.characterSet = uiCharset != null ? uiCharset.getText() : null;
+		this.options.columnSeparator = uiDelim != null ? uiDelim.getText() : null;
+		this.options.includeColumnNames = uiIncHeaders != null && uiIncHeaders.getSelection();
+		this.options.quote = uiQuoteText != null && uiQuoteText.getSelection();
+		this.options.rtrim = uiRtrim != null && uiRtrim.getSelection();
 		file = uiFile != null ? uiFile.getText() : null;
-		nullValue = uiNullValue != null ? uiNullValue.getText() : null;
+		this.options.nullValue = uiNullValue != null ? uiNullValue.getText() : null;
 		super.okPressed();
-	}
-
-	/**
-	 * Return chosen character set. The underlying list is obtained from
-	 * Character set, i.e. it's valid.
-	 * 
-	 * @return Character set or <tt>null</tt> if not requested.
-	 */
-	public String getCharacterSet() {
-		return charset;
-	}
-
-	/**
-	 * Return chosen delimiter.
-	 * 
-	 * @return Delimiter or <tt>null</tt> if not requested.
-	 */
-	public String getDelimiter() {
-		if (delim == null)
-			return null;
-		if (delim.toLowerCase().startsWith("\\t")) //$NON-NLS-1$
-			return "\t"; //$NON-NLS-1$
-		return delim;
-	}
-
-	/**
-	 * Return whether to include column headers.
-	 * 
-	 * @return Whether to include column headers or <tt>false</tt> if not
-	 *         requested.
-	 */
-	public boolean includeHeaders() {
-		return incHeaders;
-	}
-
-	/**
-	 * Return whether to quote text values.
-	 * 
-	 * @return Whether to quote text values or <tt>false</tt> if not
-	 *         requested.
-	 */
-	public boolean quoteText() {
-		return quoteText;
-	}
-
-	/**
-	 * Return whether to right-trim spaces.
-	 * 
-	 * @return Whether to right-trim spaces or <tt>false</tt> if not
-	 *         requested.
-	 */
-	public boolean trimSpaces() {
-		return rtrim;
 	}
 
 	/**
@@ -295,13 +256,5 @@ public class ExportDlg extends TitleAreaDialog {
 	 */
 	public String getFilename() {
 		return file;
-	}
-	
-	/**
-	 * Return chosen null value replacement string.
-	 * @return String or <tt>null</tt> if not requested.
-	 */
-	public String getNullValue() {
-		return nullValue;
 	}
 }

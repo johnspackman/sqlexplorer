@@ -9,24 +9,24 @@ import net.sourceforge.sqlexplorer.sqleditor.results.ResultProvider;
 import net.sourceforge.sqlexplorer.util.TextUtil;
 
 /**
- * Handles export to CSV
- * @author John Spackman
+ * XLS (HTML) Export
+ * @author Heiko
  *
  */
-public class ExporterCSV implements Exporter {
+public class ExporterXLS implements Exporter {
 
-	private static final String[] FILTER = { "*.csv", "*.txt" };
+	private static final String[] FILTER = { "*.xls"};
 	
 	public String[] getFileFilter() {
 		return FILTER;
 	}
 
 	public String getFormatName() {
-		return Messages.getString("ExportDlg.CSV");
+		return Messages.getString("ExportDlg.XLS");
 	}
 
 	public int getFlags() {
-		return FMT_CHARSET | FMT_DELIM | FMT_NULL | OPT_HDR | OPT_QUOTE | OPT_RTRIM;
+		return FMT_CHARSET | FMT_NULL | OPT_HDR | OPT_RTRIM;
 	}
 
 	public void export(ResultProvider data, ExportOptions options, File file) throws Exception
@@ -34,58 +34,56 @@ public class ExporterCSV implements Exporter {
         PrintStream writer = new PrintStream(file, options.characterSet); 
         
         // get column header and separator preferences
-        String columnSeparator = options.columnSeparator; 
         boolean includeColumnNames = options.includeColumnNames;
         boolean rtrim = options.rtrim;
         boolean quote = options.quote;
         String nullValue = options.nullValue;
                                    
         int columnCount = data.getNumberOfColumns();
-        // export column names if we need to 
-        if (includeColumnNames) 
-        {
-            
+        
+        writer.println("<table>");
+        
+        // export column names
+        if (includeColumnNames) {
+        	writer.print("<tr>");
             for (int i = 0; i < columnCount; i++) 
             {
-                if (i != 0)
-                {
-                	writer.print(columnSeparator);
-                }
+            	writer.print("<th>");
                 writer.print(data.getColumn(i).getCaption());
+                writer.print("</th>");
+                
             }
-            writer.println();
+        	writer.println("</tr>");
         }
-
         // export column data
         for (CellRangeRow row : data.getRows()) 
         {
-                               
+        	writer.print("<tr>");
+                                   
             for (int j = 0; j < columnCount; j++) 
             {
             	Object o = row.getCellValue(j);
-            	String t = o == null ? nullValue : o.toString();
+                String t = o == null ? nullValue : o.toString();
             	if (rtrim)
             	{
             		t = TextUtil.rtrim(t);
             	}
+
+            	writer.print("<td>");
             	if (quote && o instanceof String) 
             	{
-            		writer.print(TextUtil.quote(t));
-            	} 
-            	else
-            	{
-            		writer.print(t);
+            		t = TextUtil.quote(t);
             	}
-            	/* don't append separator _after_ last column */
-            	if (j < columnCount - 1)
-            	{
-            		writer.print(columnSeparator);
-            	}
+            	writer.print(TextUtil.htmlEscape(t));
+                writer.print("</td>");
             }
-            writer.println();
+        	writer.println("</tr>");
         }
+
+        writer.println("</table>");
 
         writer.close();
 		
 	}
+	
 }

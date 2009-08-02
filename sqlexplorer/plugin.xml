@@ -275,46 +275,22 @@
             class="net.sourceforge.sqlexplorer.sqleditor.results.actions.CopyTableAction"
             id="net.sourceforge.sqlexplorer.sqleditor.results.actions.CopyTableAction"
             name="Copy Table Action"/>            
-   </extension>
-   <extension
-         id="dataSetTableContextAction"
-         point="net.sourceforge.sqlexplorer.dataSetTableContextAction">
       <action
             class="net.sourceforge.sqlexplorer.sqleditor.results.actions.CopyCellAction"
             id="net.sourceforge.sqlexplorer.sqleditor.results.actions.CopyCellAction"
             name="Copy Cell Action"/>
-   </extension>
-   <extension
-         id="dataSetTableContextAction"
-         point="net.sourceforge.sqlexplorer.dataSetTableContextAction">
       <action
             class="net.sourceforge.sqlexplorer.sqleditor.results.actions.CopyColumnAction"
             id="net.sourceforge.sqlexplorer.sqleditor.results.actions.CopyColumnAction"
             name="Copy Column"/>
-   </extension>
-   <extension
-         id="dataSetTableContextAction"
-         point="net.sourceforge.sqlexplorer.dataSetTableContextAction">
       <action
             class="net.sourceforge.sqlexplorer.sqleditor.results.actions.CopyColumnNameAction"
             id="net.sourceforge.sqlexplorer.sqleditor.results.actions.CopyColumnNameAction"
             name="Copy Column Name Action"/>            
-   </extension>
-   <extension
-         point="net.sourceforge.sqlexplorer.dataSetTableContextAction">
       <action
             class="net.sourceforge.sqlexplorer.sqleditor.results.actions.CopyRowAction"
             id="net.sourceforge.sqlexplorer.sqleditor.results.actions.CopyRowAction"
             name="Copy Row"/>
-   </extension>
-   <extension
-         id="dataSetTableContextAction"
-         point="net.sourceforge.sqlexplorer.dataSetTableContextAction">
-      <action
-            class="net.sourceforge.sqlexplorer.sqleditor.results.export.ExportAction"
-            id="net.sourceforge.sqlexplorer.sqleditor.results.actions.ExportAction"
-            name="Export to disk"/>
-
    </extension>
    <extension
          point="org.eclipse.ui.commands">
