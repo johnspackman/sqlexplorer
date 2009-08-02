@@ -505,6 +505,28 @@ public class CreateDriverDlg extends TitleAreaDialog {
 
         left.setLayout(gridLayout);
 
+        newBtn = new Button(left, SWT.NULL);
+        newBtn.setText(Messages.getString("DriverDialog.New"));
+        newBtn.addSelectionListener(new SelectionAdapter() {
+
+            public void widgetSelected(SelectionEvent event) {
+                FileDialog dlg = new FileDialog(tabFolder.getShell(), SWT.OPEN);
+                dlg.setFilterExtensions(new String[] {"*.jar;*.zip"});
+                String str = dlg.open();
+                if (str != null) {
+                    File obj = new File(str);
+                    defaultModel.add(obj);
+                    extraClassPathList.refresh();
+                    StructuredSelection sel = new StructuredSelection(obj);
+                    extraClassPathList.setSelection(sel);
+                }
+            }
+        });
+        data = new GridData();
+        data.grabExcessHorizontalSpace = true;
+        data.horizontalAlignment = GridData.FILL;
+        newBtn.setLayoutData(data);
+
         _extraClasspathListDriversBtn = new Button(left, SWT.NULL);
         _extraClasspathListDriversBtn.setText(Messages.getString("DriverDialog.ListDrivers"));
         _extraClasspathListDriversBtn.addSelectionListener(new SelectionAdapter() {
@@ -551,28 +573,6 @@ public class CreateDriverDlg extends TitleAreaDialog {
         data.grabExcessHorizontalSpace = true;
         data.horizontalAlignment = GridData.FILL;
         _extraClasspathDownBtn.setLayoutData(data);
-
-        newBtn = new Button(left, SWT.NULL);
-        newBtn.setText(Messages.getString("DriverDialog.New"));
-        newBtn.addSelectionListener(new SelectionAdapter() {
-
-            public void widgetSelected(SelectionEvent event) {
-                FileDialog dlg = new FileDialog(tabFolder.getShell(), SWT.OPEN);
-                dlg.setFilterExtensions(new String[] {"*.jar;*.zip"});
-                String str = dlg.open();
-                if (str != null) {
-                    File obj = new File(str);
-                    defaultModel.add(obj);
-                    extraClassPathList.refresh();
-                    StructuredSelection sel = new StructuredSelection(obj);
-                    extraClassPathList.setSelection(sel);
-                }
-            }
-        });
-        data = new GridData();
-        data.grabExcessHorizontalSpace = true;
-        data.horizontalAlignment = GridData.FILL;
-        newBtn.setLayoutData(data);
 
         _extraClasspathDeleteBtn = new Button(left, SWT.NULL);
         _extraClasspathDeleteBtn.setText(Messages.getString("DriverDialog.Delete"));
