@@ -156,18 +156,18 @@ public class CreateDriverDlg extends TitleAreaDialog {
     protected void okPressed() {
         String name = nameField.getText().trim();
         String driverClassName = (String) combo.getText();
-        driverClassName = (driverClassName != null ? driverClassName.trim() : "");
+        driverClassName = (driverClassName != null ? driverClassName.trim() : ""); //$NON-NLS-1$
         String url = exampleUrlField.getText().trim();
-        if (name.equals("")) {
-            MessageDialog.openError(this.getShell(), Messages.getString("Error..."), Messages.getString("DriverDialog.ErrNameEmpty")); //$NON-NLS-2$
+        if (name.equals("")) { //$NON-NLS-1$
+            MessageDialog.openError(this.getShell(), Messages.getString("Error..."), Messages.getString("DriverDialog.ErrNameEmpty"));  //$NON-NLS-1$//$NON-NLS-2$
             return;
         }
-        if (driverClassName.equals("")) {
-            MessageDialog.openError(this.getShell(), Messages.getString("Error..."), Messages.getString("DriverDialog.ErrDriverClassEmpty")); //$NON-NLS-2$
+        if (driverClassName.equals("")) { //$NON-NLS-1$
+            MessageDialog.openError(this.getShell(), Messages.getString("Error..."), Messages.getString("DriverDialog.ErrDriverClassEmpty"));  //$NON-NLS-1$//$NON-NLS-2$
             return;
         }
-        if (url.equals("")) {
-            MessageDialog.openError(this.getShell(), Messages.getString("Error..."), Messages.getString("DriverDialog.ErrURLEmpty")); //$NON-NLS-2$
+        if (url.equals("")) { //$NON-NLS-1$
+            MessageDialog.openError(this.getShell(), Messages.getString("Error..."), Messages.getString("DriverDialog.ErrURLEmpty"));  //$NON-NLS-1$//$NON-NLS-2$
             return;
         }
 
@@ -407,7 +407,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         left.setLayout(gridLayout);
 
         _javaClasspathListDriversBtn = new Button(left, SWT.NULL);
-        _javaClasspathListDriversBtn.setText(Messages.getString("DriverDialog.ListDrivers"));
+        _javaClasspathListDriversBtn.setText(Messages.getString("DriverDialog.ListDrivers")); //$NON-NLS-1$
         _javaClasspathListDriversBtn.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent event) {
@@ -506,12 +506,12 @@ public class CreateDriverDlg extends TitleAreaDialog {
         left.setLayout(gridLayout);
 
         newBtn = new Button(left, SWT.NULL);
-        newBtn.setText(Messages.getString("DriverDialog.New"));
+        newBtn.setText(Messages.getString("DriverDialog.New")); //$NON-NLS-1$
         newBtn.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent event) {
                 FileDialog dlg = new FileDialog(tabFolder.getShell(), SWT.OPEN);
-                dlg.setFilterExtensions(new String[] {"*.jar;*.zip"});
+                dlg.setFilterExtensions(new String[] {"*.jar;*.zip"}); //$NON-NLS-1$
                 String str = dlg.open();
                 if (str != null) {
                     File obj = new File(str);
@@ -528,7 +528,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         newBtn.setLayoutData(data);
 
         _extraClasspathListDriversBtn = new Button(left, SWT.NULL);
-        _extraClasspathListDriversBtn.setText(Messages.getString("DriverDialog.ListDrivers"));
+        _extraClasspathListDriversBtn.setText(Messages.getString("DriverDialog.ListDrivers")); //$NON-NLS-1$
         _extraClasspathListDriversBtn.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent event) {
@@ -559,7 +559,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         _extraClasspathListDriversBtn.setLayoutData(data);
 
         _extraClasspathUpBtn = new Button(left, SWT.NULL);
-        _extraClasspathUpBtn.setText(Messages.getString("DriverDialog.Up"));
+        _extraClasspathUpBtn.setText(Messages.getString("DriverDialog.Up")); //$NON-NLS-1$
         _extraClasspathUpBtn.setEnabled(false);
         data = new GridData();
         data.grabExcessHorizontalSpace = true;
@@ -567,7 +567,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         _extraClasspathUpBtn.setLayoutData(data);
 
         _extraClasspathDownBtn = new Button(left, SWT.NULL);
-        _extraClasspathDownBtn.setText(Messages.getString("DriverDialog.Down"));
+        _extraClasspathDownBtn.setText(Messages.getString("DriverDialog.Down")); //$NON-NLS-1$
         _extraClasspathDownBtn.setEnabled(false);
         data = new GridData();
         data.grabExcessHorizontalSpace = true;
@@ -575,7 +575,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         _extraClasspathDownBtn.setLayoutData(data);
 
         _extraClasspathDeleteBtn = new Button(left, SWT.NULL);
-        _extraClasspathDeleteBtn.setText(Messages.getString("DriverDialog.Delete"));
+        _extraClasspathDeleteBtn.setText(Messages.getString("DriverDialog.Delete")); //$NON-NLS-1$
         _extraClasspathDeleteBtn.setEnabled(false);
         _extraClasspathDeleteBtn.addSelectionListener(new SelectionAdapter() {
 
@@ -687,7 +687,7 @@ class ClassPathListModel extends DefaultFileListBoxModel {
      */
     private void load() {
         removeAllElements();
-        String cp = System.getProperty("java.class.path");
+        String cp = System.getProperty("java.class.path"); //$NON-NLS-1$
         StringTokenizer strtok = new StringTokenizer(cp, File.pathSeparator);
         while (strtok.hasMoreTokens()) {
             addFile(new File(strtok.nextToken()));

@@ -122,7 +122,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
             setMessage(Messages.getString("AliasDialog.Copy.SubTitle")); //$NON-NLS-1$						
         }
 
-        Image image = ImageUtil.getImage("Images.WizardLogo");
+        Image image = ImageUtil.getImage("Images.WizardLogo"); //$NON-NLS-1$
         if (image != null) {
             setTitleImage(image);
         }
@@ -130,10 +130,10 @@ public class CreateAliasDlg extends TitleAreaDialog {
 
             public void widgetDisposed(DisposeEvent e) {
 
-                ImageUtil.disposeImage("Images.WizardLogo");
+                ImageUtil.disposeImage("Images.WizardLogo"); //$NON-NLS-1$
             }
         });
-        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, SQLExplorerPlugin.HELP_PLUGIN_ID + ".connection_view");
+        PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, SQLExplorerPlugin.HELP_PLUGIN_ID + ".connection_view"); //$NON-NLS-1$
         
         return contents;
     }
@@ -348,7 +348,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
 				if (!checked)
 				{					
 					logonAtStartupButton.setSelection(false);
-					passwordField.setText("");
+					passwordField.setText(""); //$NON-NLS-1$
 				}
 			}
 		});
@@ -383,8 +383,8 @@ public class CreateAliasDlg extends TitleAreaDialog {
         		passwordField.setEnabled((!checked) && autoLogonButton.getSelection());
         		if(checked)
         		{
-        			userField.setText("");
-        			passwordField.setText("");
+        			userField.setText(""); //$NON-NLS-1$
+        			passwordField.setText(""); //$NON-NLS-1$
         			autoLogonButton.setSelection(true);
         			logonAtStartupButton.setEnabled(true);
         		}
@@ -487,9 +487,9 @@ public class CreateAliasDlg extends TitleAreaDialog {
 	            	alias.setDefaultUser(new User(userField.getText().trim(), passwordField.getText().trim()));
             }
             alias.setName(this.nameField.getText().trim());
-            alias.setSchemaFilterExpression("");
-            alias.setNameFilterExpression("");
-            alias.setFolderFilterExpression("");
+            alias.setSchemaFilterExpression(""); //$NON-NLS-1$
+            alias.setNameFilterExpression(""); //$NON-NLS-1$
+            alias.setFolderFilterExpression(""); //$NON-NLS-1$
             alias.setConnectAtStartup(logonAtStartupButton.getSelection());
             alias.setAutoLogon(autoLogonButton.getSelection());
             
