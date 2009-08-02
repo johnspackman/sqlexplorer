@@ -1,5 +1,6 @@
 package net.sourceforge.sqlexplorer.rcp;
 
+import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -8,6 +9,7 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ContributionItemFactory;
+import org.eclipse.ui.actions.NewWizardMenu;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 
@@ -21,6 +23,8 @@ public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor
 {
 	    
     private IContributionItem _viewList;
+	private NewWizardMenu newWizardMenu;
+	private IWorkbenchWindow window;
     
     
     /**
@@ -28,6 +32,7 @@ public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor
      */
     public SQLExplorerActionBarAdvisor(IActionBarConfigurer configurer) {
 		super(configurer);
+		window = configurer.getWindowConfigurer().getWindow();		
 	}
 
     
@@ -71,15 +76,28 @@ public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor
                
         // create file menu
         menuBar.add(fileMenu);
-        fileMenu.add(getAction(ActionFactory.PREFERENCES.getId()));
-        fileMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-        fileMenu.add(new Separator(IWorkbenchActionConstants.FILE_START));
+        fileMenu.add(new GroupMarker(IWorkbenchActionConstants.FILE_START));
+        
+        // create the New submenu, using the same id for it as the New action
+        String newText = "New";
+        String newId = ActionFactory.NEW.getId();
+        MenuManager newMenu = new MenuManager(newText, newId); 
+        newMenu.add(new Separator(newId));
+        this.newWizardMenu = new NewWizardMenu(getWindow());
+        newMenu.add(this.newWizardMenu);
+        newMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));            
+        fileMenu.add(newMenu);
+    
+        fileMenu.add(new GroupMarker(IWorkbenchActionConstants.NEW_EXT));
+        fileMenu.add(new Separator());
         fileMenu.add(getAction(ActionFactory.SAVE.getId()));
         fileMenu.add(getAction(ActionFactory.SAVE_AS.getId()));
         fileMenu.add(getAction(ActionFactory.SAVE_ALL.getId()));
-        fileMenu.add(new Separator(IWorkbenchActionConstants.FILE_END));
-        fileMenu.add(getAction(ActionFactory.QUIT.getId()));        
         fileMenu.add(new Separator());
+        fileMenu.add(getAction(ActionFactory.PREFERENCES.getId()));
+        fileMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        fileMenu.add(getAction(ActionFactory.QUIT.getId()));        
+        fileMenu.add(new GroupMarker(IWorkbenchActionConstants.FILE_END));
         
         // create edit menu
         menuBar.add(editMenu);
@@ -102,6 +120,11 @@ public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor
 		helpMenu.add(getAction(ActionFactory.HELP_CONTENTS.getId()));
 		helpMenu.add(new Separator(IWorkbenchActionConstants.HELP_END));
 
+	}
+
+
+	private IWorkbenchWindow getWindow() {
+		return window;
 	}
 
 }
