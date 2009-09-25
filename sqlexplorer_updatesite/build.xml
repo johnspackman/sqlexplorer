@@ -16,7 +16,7 @@
 	<property file="${user.home}/build.properties" />
 
 	<!-- my defaults -->
-	<property name="eclipse" value="/apps/java/eclipse-3.4/eclipse.exe" />
+	<property name="eclipse" value="/apps/java/eclipse-3.5.1/eclipse.exe" />
 	<property name="updatesite" value="." />
 		
 	
@@ -50,6 +50,26 @@
 	<!-- =============================================================== -->
 
 	<target name="p2" depends="display.properties">
+		<mkdir dir="repo"/>
+		<exec executable="${eclipse}">
+			<arg line=" -application org.eclipse.equinox.p2.publisher.UpdateSitePublisher"/>
+			<arg line=" -metadataRepository file:/${basedir}/repo" />
+			<arg line=" -artifactRepository file:/${basedir}/repo" />
+			<arg line=" -source ${updatesite}"/>
+			<arg line=" -metadataRepositoryName &quot;${Name} Updates&quot;" />
+			<arg line=" -artifactRepositoryName &quot;${Name} Updates&quot;" />
+			<arg line=" -publishArtifacts" />
+		</exec>
+		<copy file="repo/content.xml" toFile="content.xml">
+			<filterchain>
+				<tokenfilter>
+				    <replaceregex pattern="file:/.*/site.xml" replace="net.sourceforge.sqlexplorer.category" flags="gi"/>
+				</tokenfilter>
+			</filterchain>
+		</copy>
+		<copy file="repo/artifacts.xml" toFile="artifacts.xml"/>
+		<delete dir="repo"/>
+		<!--
 		<delete file="artifacts.xml"/>
 		<delete file="content.xml"/>
 		<exec executable="${eclipse}">
@@ -61,6 +81,7 @@
 			<arg line=" -reusePack200Files" />
 			<arg line=" -vmargs -Xmx256m" />
 		</exec>
+		-->
 	</target>
 
 </project>
