@@ -300,13 +300,13 @@
       </category>
       <command
             categoryId="net.sourceforge.sqlexplorer"
-            description="Executes the SQL in the sql editor"
+            description="Executes the selected SQL or complete text in the SQL-Editor"
             id="net.sourceforge.sqlexplorer.executeSQL"
             name="Execute SQL">
       </command>
       <command
             categoryId="net.sourceforge.sqlexplorer"
-            description="Executes the current SQL in the sql editor"
+            description="Executes the SQL separated by empty lines in the SQL-Editor"
             id="net.sourceforge.sqlexplorer.executeCurrentSQL"
             name="Execute current SQL">
       </command>
