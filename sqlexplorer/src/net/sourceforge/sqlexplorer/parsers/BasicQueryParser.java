@@ -140,7 +140,11 @@ public class BasicQueryParser extends AbstractQueryParser {
 					}
 				}
 			}catch(StructuredCommentException e) {
-				
+				e.printStackTrace();
+			}
+			catch(Throwable e)
+			{
+				e.printStackTrace();				
 			}
 			
 			// Do the structured comments and then reset the tokenizer
