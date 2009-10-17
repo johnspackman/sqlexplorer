@@ -55,9 +55,12 @@ public class TableFolderNode extends AbstractFolderNode {
     	// Nasty temporary hack for Oracle - BIN$ tables are recycle bin tables, and not only does the JDBC driver
     	//	cause a SQLException when getting meta data on them, it leaks cursors when it does it!
     	LinkedList<ITableInfo> list = new LinkedList<ITableInfo>();
-    	for (ITableInfo info : tables)
-    		if (!info.getSimpleName().startsWith("BIN$"))
-    			list.add(info);
+    	if(tables != null)
+    	{
+	    	for (ITableInfo info : tables)
+	    		if (!info.getSimpleName().startsWith("BIN$"))
+	    			list.add(info);
+    	}
         _allTables = list.toArray(new ITableInfo[0]);
         _origName = name;
     }
