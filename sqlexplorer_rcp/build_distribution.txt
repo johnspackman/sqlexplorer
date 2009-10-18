@@ -1,0 +1,27 @@
+Build update site:
+
+- go to sqlexplorer_updatesite
+- delete all files from features and plugins directories
+- go to sqlexplorer_feature
+- set new version in feature.xml (force it to plugins?)
+- go to sqlexplorer_updatesite
+- open site.xml
+- set new version for sqlexplorer feature
+- run 'Build All' from site.xml 
+- run build.xml p2 to update artifacts.xml and content.xml (path to eclipse 3.5 executable must be configured)
+- sftp files to update site
+
+Build standalone distribution:
+
+- go to sqlexplorer_rcp
+- set new version in plugin.xml
+- delete all files from /dist/exported
+- set new version in sqlexplorer_rcp_feature/feature.xml and export it to dist/exported
+- run build_dist.xml dist to build rcp zip
+- sftp zip files to uploads
+- login to shell
+- go to uploads
+- run build.sh [version number]
+- check dist
+- run dist.sh to copy to project web
+
