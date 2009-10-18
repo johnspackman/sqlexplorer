@@ -1,12 +1,22 @@
 package net.sourceforge.sqlexplorer.sqleditor.results.export;
 
 import java.io.File;
-import java.io.PrintStream;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.sqleditor.results.CellRangeRow;
 import net.sourceforge.sqlexplorer.sqleditor.results.ResultProvider;
 import net.sourceforge.sqlexplorer.util.TextUtil;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
 /**
  * XLS (HTML) Export
@@ -26,63 +36,66 @@ public class ExporterXLS implements Exporter {
 	}
 
 	public int getFlags() {
-		return FMT_CHARSET | FMT_NULL | OPT_HDR | OPT_RTRIM;
+		return OPT_HDR | OPT_RTRIM;
 	}
 
 	public void export(ResultProvider data, ExportOptions options, File file) throws Exception
 	{
-        PrintStream writer = new PrintStream(file, options.characterSet); 
-        
         // get column header and separator preferences
         boolean includeColumnNames = options.includeColumnNames;
         boolean rtrim = options.rtrim;
-        boolean quote = options.quote;
-        String nullValue = options.nullValue;
                                    
         int columnCount = data.getNumberOfColumns();
-        
-        writer.println("<table>");
-        
-        // export column names
+
+		Workbook wb = new HSSFWorkbook();
+		CreationHelper createHelper = wb.getCreationHelper();
+		CellStyle dateStyle = wb.createCellStyle();
+		String pattern = ((SimpleDateFormat)SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.MEDIUM,SimpleDateFormat.MEDIUM)).toPattern();
+		dateStyle.setDataFormat(createHelper.createDataFormat().getFormat(pattern));
+		
+		Sheet sheet = wb.createSheet("sheet1");
+		
+		short rowNum = 0;
+
         if (includeColumnNames) {
-        	writer.print("<tr>");
-            for (int i = 0; i < columnCount; i++) 
+    		Row row = sheet.createRow(rowNum++);
+            for (short i = 0; i < columnCount; i++) 
             {
-            	writer.print("<th>");
-                writer.print(data.getColumn(i).getCaption());
-                writer.print("</th>");
-                
+        		row.createCell(i).setCellValue(data.getColumn(i).getCaption());
             }
-        	writer.println("</tr>");
         }
+        
         // export column data
         for (CellRangeRow row : data.getRows()) 
         {
-        	writer.print("<tr>");
-                                   
+    		Row nextRow = sheet.createRow(rowNum++);
             for (int j = 0; j < columnCount; j++) 
             {
             	Object o = row.getCellValue(j);
-                String t = o == null ? nullValue : o.toString();
-            	if (rtrim)
+            	if(o != null)
             	{
-            		t = TextUtil.rtrim(t);
+            		Cell cell = nextRow.createCell(j);
+	            	if(o instanceof Date)
+	            	{
+	            		cell.setCellValue((Date)o);
+	            		cell.setCellStyle(dateStyle);
+	            	}
+	            	else if(o instanceof Number)
+	            	{
+	            		cell.setCellValue(((Number)o).doubleValue());
+	            	}
+	            	else
+	            	{
+	            		cell.setCellValue(rtrim ? TextUtil.rtrim(o.toString()) : o.toString());
+	            	}
             	}
-
-            	writer.print("<td>");
-            	if (quote && o instanceof String) 
-            	{
-            		t = TextUtil.quote(t);
-            	}
-            	writer.print(TextUtil.htmlEscape(t));
-                writer.print("</td>");
             }
-        	writer.println("</tr>");
         }
 
-        writer.println("</table>");
-
-        writer.close();
+        // Write the output to a file
+        FileOutputStream fileOut = new FileOutputStream(file);
+        wb.write(fileOut);
+        fileOut.close();
 		
 	}
 	

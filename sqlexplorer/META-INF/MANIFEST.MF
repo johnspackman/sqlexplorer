@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SQLExplorer Plugin
 Bundle-SymbolicName: net.sourceforge.sqlexplorer; singleton:=true
-Bundle-Version: 3.5.0.v20090419_RC8
+Bundle-Version: 3.5.1.v20091018
 Bundle-Activator: net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin
 Bundle-Vendor: SQL Explorer Project (eclipsesql.sourceforge.net)
 Bundle-Localization: plugin
@@ -16,20 +16,14 @@ Require-Bundle: org.eclipse.ui;bundle-version="3.2.0",
 Eclipse-LazyStart: true
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: sqlexplorer.jar,
- lib/commons-logging.jar,
  lib/log4j.jar,
  lib/rowset.jar,
  lib/dom4j.jar,
  lib/fw.jar,
- lib/hibernate3.2.4.sp1.jar
-Export-Package: META-INF,
- com.sun.rowset,
- com.sun.rowset.internal;x-internal:=true,
- com.sun.rowset.providers,
- javax.sql.rowset,
- javax.sql.rowset.serial,
- javax.sql.rowset.spi,
- net.sourceforge.sqlexplorer,
+ lib/hibernate3.2.4.sp1.jar,
+ lib/poi-3.5-FINAL-20090928.jar,
+ lib/commons-logging.jar
+Export-Package: net.sourceforge.sqlexplorer,
  net.sourceforge.sqlexplorer.connections,
  net.sourceforge.sqlexplorer.connections.actions,
  net.sourceforge.sqlexplorer.dataset,
@@ -82,42 +76,5 @@ Export-Package: META-INF,
  net.sourceforge.squirrel_sql.fw.util.beanwrapper,
  net.sourceforge.squirrel_sql.fw.util.log,
  net.sourceforge.squirrel_sql.fw.xml,
- org.apache.commons.logging,
- org.apache.commons.logging.impl,
- org.apache.log4j,
- org.apache.log4j.chainsaw,
- org.apache.log4j.config,
- org.apache.log4j.helpers,
- org.apache.log4j.jdbc,
- org.apache.log4j.jmx,
- org.apache.log4j.lf5,
- org.apache.log4j.lf5.config,
- org.apache.log4j.lf5.util,
- org.apache.log4j.lf5.viewer,
- org.apache.log4j.lf5.viewer.categoryexplorer,
- org.apache.log4j.lf5.viewer.configure,
- org.apache.log4j.lf5.viewer.images,
- org.apache.log4j.net,
- org.apache.log4j.nt,
- org.apache.log4j.or,
- org.apache.log4j.or.jms,
- org.apache.log4j.or.sax,
- org.apache.log4j.spi,
- org.apache.log4j.varia,
- org.apache.log4j.xml,
- org.dom4j,
- org.dom4j.bean,
- org.dom4j.datatype,
- org.dom4j.dom,
- org.dom4j.dtd,
- org.dom4j.io,
- org.dom4j.jaxb,
- org.dom4j.rule,
- org.dom4j.rule.pattern,
- org.dom4j.swing,
- org.dom4j.tree,
- org.dom4j.util,
- org.dom4j.xpath,
- org.dom4j.xpp,
  org.eclipse.jface.preference
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

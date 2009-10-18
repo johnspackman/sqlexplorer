@@ -1,4 +1,4 @@
-3.5.0.??? - Heiko Hilbert
+3.5.1 - Heiko Hilbert
 ======================================================
 +. new execute current sql action (CTRL+ALT+ENTER) and changeable key binding (patch #2725105 by joco01)
 +. fixed bug #2827324, rounded float values in MS-Sql
