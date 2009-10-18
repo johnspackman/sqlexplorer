@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.sqlexplorer.rcp"
       label="SQL-Explorer RCP Platform Feature"
-      version="3.5.0.v20090419_RC8"
+      version="3.5.1.v20091018"
       provider-name="SQL Explorer Project (eclipsesql.sourceforge.net)">
 
    <description url="http://eclipsesql.sourceforge.net">
