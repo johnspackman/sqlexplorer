@@ -41,6 +41,7 @@ mkdir -p "dist/$JRE_DIR"
 # copy plugin zip
 echo "build plugin"
 cp plugin.zip "dist/$PLUGIN_DIR/sqlexplorer_plugin-$1.zip"
+cp release.txt "dist/$PLUGIN_DIR"
 
 # build aix
 DELTA=aix.motif.ppc

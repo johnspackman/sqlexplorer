@@ -1,0 +1,9 @@
+The main changes since RC8 are:
+* New 'Execute Current SQL' action (CTRL+ALT+ENTER) and changeable key binding (patch #2725105 by joco01)
+* Fixed bug #2827324, rounded float values in MS-Sql
+* Added feature #2827391, problem with auto completion
+* fixed bug #2830545, fill db structure view for current database
+* Extended database(catalog) support for MySql,Sybase, MS-Sql
+* Changed 'File' menu for standalone SE: Added 'New', moved 'Preferences' menu item down
+* Re-added export to HTML and XLS action; XLS is now 'real' Excel format build with POI
+

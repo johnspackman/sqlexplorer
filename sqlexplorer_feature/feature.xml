@@ -8,7 +8,14 @@
 
    <description url="http://eclipsesql.sourceforge.net">
       SQL Explorer is a thin SQL client for querying and exploring
-JDBC Compliant databases.
+JDBC Compliant databases. Changes in 3.5.1:
++. new execute current sql action (CTRL+ALT+ENTER) and changeable key binding (patch #2725105 by joco01)
++. fixed bug #2827324, rounded float values in MS-Sql
++. feature #2827391, problem with auto completion
++. fixed bug #2830545, fill db structure view for current database
++. extended database(catalog) support for MySql,Sybase, MS-Sql
++. added New to File menu, moved preferences menu item down
++. re-added export to HTML and XLS action
    </description>
 
    <copyright url="http://sourceforge.net/projects/eclipsesql">

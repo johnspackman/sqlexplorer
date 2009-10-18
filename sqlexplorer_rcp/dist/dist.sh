@@ -1,3 +1,3 @@
-mv updates/* /home/groups/e/ec/eclipsesql/htdocs/updates
-mv dist/* /home/frs/project/e/ec/eclipsesql/
+cp -rp updates/* /home/groups/e/ec/eclipsesql/htdocs/updates
+cp -rp dist/* /home/frs/project/e/ec/eclipsesql/
 

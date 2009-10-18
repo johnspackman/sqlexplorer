@@ -261,6 +261,10 @@ class CreditsItem {
         String separator = System.getProperty("line.separator"); //$NON-NLS-1$
 
         final String credits =    
+            "Developers (version 3.5.1):" + separator +
+            " - Heiko Hilbert" + separator + 
+            " - joco01" + separator + 
+            separator +              
             "Developers (version 3.5.0.RC8):" + separator +
             " - Heiko Hilbert" + separator + 
             " - a_lazar" + separator + 

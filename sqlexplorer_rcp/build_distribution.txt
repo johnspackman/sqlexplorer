@@ -1,3 +1,9 @@
+Update Release Info:
+
+- edit sqlexplorer/change_log.txt
+- edit net.sourceforge.sqlexplorer.dialogs.AboutDialog
+- edit sqlexplorer_feature/feature.xml Informations
+
 Build update site:
 
 - go to sqlexplorer_updatesite
