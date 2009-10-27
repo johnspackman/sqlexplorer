@@ -460,6 +460,7 @@ public class DataSet implements ResultProvider {
 	            return new Double(resultSet.getDouble(columnIndex));
 	
 	        case Types.DATE:
+	            return resultSet.getDate(columnIndex);
 	        case Types.TIMESTAMP:                    
 	            return resultSet.getTimestamp(columnIndex);
 	            
