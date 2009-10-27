@@ -189,6 +189,7 @@ public class SQLExecution extends AbstractSQLExecution {
         try {
         	long overallUpdateCount = 0;
             long overallStartTime = System.currentTimeMillis();
+        	boolean stripComments = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.STRIP_COMMENTS);
         	for (Query query : getQueryParser()) {
             	if (monitor.isCanceled())
             		break;
@@ -198,10 +199,14 @@ public class SQLExecution extends AbstractSQLExecution {
             	// Get the next bit of SQL to run and store it as "current"
             	if (query == null)
             		break;
+            	if(stripComments)
+            	{
+            		query.stripComments();
+            	}
             	String querySQL = query.getQuerySql().toString();
-            	if (querySQL == null)
+            	if (querySQL == null || querySQL.length() == 0)
             		continue;
-            	
+
             	// Initialise
 	            setProgressMessage(Messages.getString("SQLResultsView.Executing"));
                 final long startTime = System.currentTimeMillis();

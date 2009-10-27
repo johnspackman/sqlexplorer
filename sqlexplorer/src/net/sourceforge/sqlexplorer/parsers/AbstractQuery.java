@@ -21,17 +21,85 @@ package net.sourceforge.sqlexplorer.parsers;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
+import net.sourceforge.sqlexplorer.parsers.Tokenizer.TokenType;
+
 public abstract class AbstractQuery implements Query {
 
+	private static String stripComments(CharSequence pQuery) throws ParserException
+	{
+		if(pQuery == null)
+		{
+			return null;
+		}
+		StringBuffer query = new StringBuffer(pQuery);
+		Tokenizer tokenizer = new Tokenizer(query);
+		StringBuilder result = new StringBuilder();
+		Token token = null;
+		int start = 0;
+		int end = 0;
+		while ((token = tokenizer.nextToken()) != null) {
+			if(TokenType.ML_COMMENT == token.getTokenType() || TokenType.EOL_COMMENT == token.getTokenType())
+			{
+				if(end > start)
+				{
+					result.append(query.substring(start, end));
+				}
+				start = token.getEnd();
+				continue;
+			}
+			end = token.getEnd();
+		}
+		if(end > start)
+		{
+			result.append(query.substring(start, end));
+		}
+		return result.toString().trim();
+	}
+	
 	// Named parameters in scope
 	private HashMap<String, NamedParameter> parameters;
+	private CharSequence querySql;
+	private int lineNo;
 	
+	public AbstractQuery(CharSequence querySql, int lineNo) {
+		this.querySql = querySql;
+		this.lineNo = lineNo;
+	}
+
 	/*package*/ void setParameters(HashMap<String, NamedParameter> parameters) {
 		this.parameters = parameters;
 	}
 
 	public Map<String, NamedParameter> getNamedParameters() {
 		return parameters;
+	}
+
+	/* (non-JavaDoc)
+	 * @see net.sourceforge.sqlexplorer.tokenizer.IQuery#getLineNo()
+	 */
+	public int getLineNo() {
+		return lineNo;
+	}
+
+	/* (non-JavaDoc)
+	 * @see net.sourceforge.sqlexplorer.tokenizer.IQuery#getQuerySql()
+	 */
+	public CharSequence getQuerySql() {
+		return querySql;
+	}
+
+	public void stripComments() throws ParserException
+	{
+		this.querySql = stripComments(this.querySql);
+	}
+
+	/* (non-JavaDoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return Integer.toString(lineNo) + ": " + querySql.toString();
 	}
 	
 }

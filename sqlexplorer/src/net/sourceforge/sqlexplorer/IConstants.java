@@ -129,6 +129,9 @@ public interface IConstants {
     
     // Whether structured comments are enabled in SQL queries
     String ENABLE_STRUCTURED_COMMENTS = "SQLEditor.EnableStructuredComments";
+
+    // Whether comments should be stripped
+    String STRIP_COMMENTS = "SQLEditor.StripComments";
     
     // Treat new SQL editors as scratch file (becomes not dirty)
     String TREAT_NEW_AS_SCRATCH = "SQLEditor.TreatNewAsScratch";

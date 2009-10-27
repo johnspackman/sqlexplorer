@@ -2,6 +2,7 @@
 ======================================================
 +. use getDate for DATE sql type, needed for Teradata, no problems detected with MySql/msSql/Postgres
    see https://sourceforge.net/projects/eclipsesql/forums/forum/450663/topic/3435783
++. added option to strip comments before executing SQL
    
 3.5.1 - Heiko Hilbert
 ======================================================

@@ -31,9 +31,7 @@ public class BasicQuery extends AbstractQuery {
 	private QueryType queryType;
 	
 	public BasicQuery(CharSequence querySql, int lineNo) {
-		super();
-		this.querySql = querySql;
-		this.lineNo = lineNo;
+		super(querySql, lineNo);
 		queryType = QueryType.UNKNOWN;
 		String lower = querySql.toString().toLowerCase().trim();
 		if (lower.startsWith("select") && !lower.contains("into")) {
@@ -46,20 +44,6 @@ public class BasicQuery extends AbstractQuery {
 	 */
 	public QueryType getQueryType() {
 		return queryType;
-	}
-
-	/* (non-JavaDoc)
-	 * @see net.sourceforge.sqlexplorer.tokenizer.IQuery#getQuerySql()
-	 */
-	public CharSequence getQuerySql() {
-		return querySql;
-	}
-
-	/* (non-JavaDoc)
-	 * @see net.sourceforge.sqlexplorer.tokenizer.IQuery#getLineNo()
-	 */
-	public int getLineNo() {
-		return lineNo;
 	}
 
 	/* (non-JavaDoc)

@@ -54,4 +54,10 @@ public interface Query {
 	 * @return
 	 */
 	public Map<String, NamedParameter> getNamedParameters();
+	
+	/**
+	 * strip comments from the contained query SQL
+	 * @throws ParserException
+	 */
+	public void stripComments() throws ParserException;
 }
