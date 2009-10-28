@@ -23,7 +23,7 @@ Build standalone distribution:
 - set new version in plugin.xml
 - delete all files from /dist/exported
 - set new version in sqlexplorer_rcp_feature/feature.xml and export it to dist/exported
-- run build_dist.xml dist to build rcp zip
+- run build.xml dist to build rcp zip
 - sftp zip files to uploads
 - login to shell
 - go to uploads

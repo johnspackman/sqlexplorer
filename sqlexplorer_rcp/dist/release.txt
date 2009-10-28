@@ -1,4 +1,5 @@
-The main changes since RC8 are:
+Release Notes SQl Explorer 3.5.1
+The main changes since 3.5.0 RC8 are:
 * New 'Execute Current SQL' action (CTRL+ALT+ENTER) and changeable key binding (patch #2725105 by joco01)
 * Fixed bug #2827324, rounded float values in MS-Sql
 * Added feature #2827391, problem with auto completion
@@ -7,3 +8,16 @@ The main changes since RC8 are:
 * Changed 'File' menu for standalone SE: Added 'New', moved 'Preferences' menu item down
 * Re-added export to HTML and XLS action; XLS is now 'real' Excel format build with POI
 
+Changes in SR1:
+* use getDate for DATE sql type, needed for Teradata, no problems detected with MySql/msSql/Postgres
+      see https://sourceforge.net/projects/eclipsesql/forums/forum/450663/topic/3435783
+* added option to strip comments before executing SQL
+      see https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3423052
+ 
+Starting with SR1 we will provide zip's only for the plugin. The standalone distributions
+can be updated using the update site (http://eclipsesql.sourceforge.net) integrated Update Manager.
+- open menu: Help/Software Updates/Find and Install...
+- choose: Serach for updates of the ....
+- click Finish
+- complete the Update Wizzard
+    

@@ -2,13 +2,13 @@
 <feature
       id="net.sourceforge.sqlexplorer"
       label="Eclipse SQL Explorer"
-      version="3.5.1.v20091024"
+      version="3.5.1.v20091028_SR1"
       provider-name="SQL Explorer Project (eclipsesql.sourceforge.net)"
       plugin="net.sourceforge.sqlexplorer">
 
    <description url="http://eclipsesql.sourceforge.net">
-      SQL Explorer is a thin SQL client for querying and exploring
-JDBC Compliant databases. Changes in 3.5.1:
+      SQL Explorer is a thin SQL client for querying and exploring JDBC Compliant databases. 
+Changes in 3.5.1:
 +. new execute current sql action (CTRL+ALT+ENTER) and changeable key binding (patch #2725105 by joco01)
 +. fixed bug #2827324, rounded float values in MS-Sql
 +. feature #2827391, problem with auto completion
@@ -16,6 +16,12 @@ JDBC Compliant databases. Changes in 3.5.1:
 +. extended database(catalog) support for MySql,Sybase, MS-Sql
 +. added New to File menu, moved preferences menu item down
 +. re-added export to HTML and XLS action
+
+SR1:
++. use getDate for DATE sql type, needed for Teradata, no problems detected with MySql/msSql/Postgres
+      see https://sourceforge.net/projects/eclipsesql/forums/forum/450663/topic/3435783
++. added option to strip comments before executing SQL
+      see https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3423052
    </description>
 
    <copyright url="http://sourceforge.net/projects/eclipsesql">
@@ -67,7 +73,7 @@ USA
          id="net.sourceforge.sqlexplorer"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20091024"/>
+         version="3.5.1.v20091028_SR1"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.db2"
