@@ -1,6 +1,7 @@
 package net.sourceforge.sqlexplorer.sqleditor.results;
 
 import net.sourceforge.sqlexplorer.Messages;
+
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -149,7 +150,7 @@ public class TableResultsTable extends AbstractResultsTable {
 	
 	@Override
 	protected void createResultsTable(Composite parent) {
-        tableViewer = new TableViewer(parent, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI | SWT.VIRTUAL);
+        tableViewer = new TableViewer(parent, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI | SWT.VIRTUAL | SWT.FULL_SELECTION);
         Table table = tableViewer.getTable();
         
         int numColumns = getResultProvider().getNumberOfColumns();
