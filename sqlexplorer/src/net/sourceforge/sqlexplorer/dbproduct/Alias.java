@@ -147,6 +147,12 @@ public class Alias {
 			}
 		}
 	}
+
+	//helper function
+	private String checkNull(String pString)
+	{
+		return pString == null ? "" : pString;
+	}
 	
 	/**
 	 * Describes this alias in XML; the result can be passed to the Alias(Element) constructor
@@ -157,13 +163,13 @@ public class Alias {
 		DefaultElement root = new DefaultElement(ALIAS);
 		root.addAttribute(AUTO_LOGON, Boolean.toString(autoLogon));
 		root.addAttribute(CONNECT_AT_STARTUP, Boolean.toString(connectAtStartup));
-		root.addAttribute(DRIVER_ID, driverId);
+		root.addAttribute(DRIVER_ID, checkNull(driverId));
 		root.addAttribute(HAS_NO_USER_NAME, Boolean.toString(hasNoUserName));
-		root.addElement(NAME).setText(name);
-		root.addElement(URL).setText(url);
-		root.addElement(FOLDER_FILTER_EXPRESSION).setText(folderFilterExpression);
-		root.addElement(NAME_FILTER_EXPRESSION).setText(nameFilterExpression);
-		root.addElement(SCHEMA_FILTER_EXPRESSION).setText(schemaFilterExpression);
+		root.addElement(NAME).setText(checkNull(name));
+		root.addElement(URL).setText(checkNull(url));
+		root.addElement(FOLDER_FILTER_EXPRESSION).setText(checkNull(folderFilterExpression));
+		root.addElement(NAME_FILTER_EXPRESSION).setText(checkNull(nameFilterExpression));
+		root.addElement(SCHEMA_FILTER_EXPRESSION).setText(checkNull(schemaFilterExpression));
 		Element usersElem = root.addElement(USERS);
 		for (User user : users.values())
 			usersElem.add(user.describeAsXml());
