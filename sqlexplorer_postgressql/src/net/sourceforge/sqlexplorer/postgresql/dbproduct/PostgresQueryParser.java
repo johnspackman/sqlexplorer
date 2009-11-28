@@ -101,6 +101,30 @@ public class PostgresQueryParser extends AbstractSyntaxQueryParser {
 			if (type == TokenType.PUNCTUATION) {
 				String value = token.toString();
 
+				if (value.equals("\\"))
+				{
+					// ignore special psql Commands starting with \
+					if (start != token && lastToken != null)
+					{
+						addQuery(lastToken());
+					}
+					start = null;
+					lastToken = null;
+					int curLineNo = token.getLineNo();
+					while((token = nextToken()) != null)
+					{
+						// ignore the line
+						if(curLineNo != token.getLineNo())
+						{
+							break;
+						}
+					}
+					if(token != null)
+					{
+						ungetToken();
+					}
+					continue;
+				}
 				if (value.equals("$")) {
 					boolean found = false;
 					int revertLevel = 0;
