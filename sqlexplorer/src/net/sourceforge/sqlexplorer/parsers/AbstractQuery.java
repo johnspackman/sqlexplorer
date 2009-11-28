@@ -26,7 +26,7 @@ import net.sourceforge.sqlexplorer.parsers.Tokenizer.TokenType;
 
 public abstract class AbstractQuery implements Query {
 
-	private static String stripComments(CharSequence pQuery) throws ParserException
+	protected CharSequence stripComments(CharSequence pQuery) throws ParserException
 	{
 		if(pQuery == null)
 		{

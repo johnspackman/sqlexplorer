@@ -58,4 +58,11 @@ public class AnnotatedQuery extends AbstractQuery {
 		this.queryType = queryType;
 	}
 
+	@Override
+	protected CharSequence stripComments(CharSequence pQuery) throws ParserException
+	{
+		StringBuffer stripped = new StringBuffer(super.stripComments(pQuery));
+		return new BackedCharSequence(stripped, 0,stripped.length());
+	}
+
 }
