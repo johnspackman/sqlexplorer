@@ -118,7 +118,7 @@ public final class DatabaseProductFactory {
                     result = (DatabaseProduct) ces[j].createExecutableExtension("class");
 
                 } catch (Throwable ex) {
-                    SQLExplorerPlugin.error("Could not determine databse product", ex);
+                    SQLExplorerPlugin.error("Could not determine database product", ex);
                 }
             }
         }
