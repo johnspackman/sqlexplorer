@@ -2,14 +2,16 @@
 <feature
       id="net.sourceforge.sqlexplorer"
       label="Eclipse SQL Explorer"
-      version="3.5.1.v20091028_SR1"
+      version="3.5.1.v20091129_SR2"
       provider-name="SQL Explorer Project (eclipsesql.sourceforge.net)"
       plugin="net.sourceforge.sqlexplorer">
 
    <description url="http://eclipsesql.sourceforge.net">
-      SQL Explorer is a thin SQL client for querying and exploring JDBC Compliant databases. 
+      SQL Explorer is a thin SQL client for querying and exploring
+JDBC Compliant databases. 
 Changes in 3.5.1:
-+. new execute current sql action (CTRL+ALT+ENTER) and changeable key binding (patch #2725105 by joco01)
++. new execute current sql action (CTRL+ALT+ENTER) and changeable
+key binding (patch #2725105 by joco01)
 +. fixed bug #2827324, rounded float values in MS-Sql
 +. feature #2827391, problem with auto completion
 +. fixed bug #2830545, fill db structure view for current database
@@ -18,10 +20,18 @@ Changes in 3.5.1:
 +. re-added export to HTML and XLS action
 
 SR1:
-+. use getDate for DATE sql type, needed for Teradata, no problems detected with MySql/msSql/Postgres
-      see https://sourceforge.net/projects/eclipsesql/forums/forum/450663/topic/3435783
++. use getDate for DATE sql type, needed for Teradata, no problems
+detected with MySql/msSql/Postgres
+see https://sourceforge.net/projects/eclipsesql/forums/forum/450663/topic/3435783
 +. added option to strip comments before executing SQL
-      see https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3423052
+see https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3423052
+
+SR2:
++. added patch from patl9 fixing problems with alias saving, http://sourceforge.net/tracker/?func=detail&amp;atid=725495&amp;aid=2891491&amp;group_id=132863
++. select complete row in result set table
++. fixed ClasCastException for PostgreSQL and Oracle if strip comments is enabled
++. added check for lines starting with \ in PostgreSQL
++. added batch execution results
    </description>
 
    <copyright url="http://sourceforge.net/projects/eclipsesql">
@@ -73,7 +83,7 @@ USA
          id="net.sourceforge.sqlexplorer"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20091028_SR1"/>
+         version="3.5.1.v20091129_SR2"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.db2"
@@ -103,7 +113,7 @@ USA
          id="net.sourceforge.sqlexplorer.postgresql"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20091024"
+         version="3.5.1.v20091129_SR2"
          fragment="true"
          unpack="false"/>
 

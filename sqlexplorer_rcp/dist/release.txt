@@ -14,6 +14,14 @@ Changes in SR1:
 * added option to strip comments before executing SQL
       see https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3423052
  
+Changes in SR2:
+* added patch from patl9 fixing problems with alias saving, 
+      see http://sourceforge.net/tracker/?func=detail&atid=725495&aid=2891491&group_id=132863
+* select complete row in result set table
+* fixed ClasCastException for PostgreSQL and Oracle if strip comments is enabled
+* added check for lines starting with \ in PostgreSQL
+* added batch execution results
+ 
 Starting with SR1 we will provide zip's only for the plugin. The standalone distributions
 can be updated using the update site (http://eclipsesql.sourceforge.net) integrated Update Manager.
 - open menu: Help/Software Updates/Find and Install...

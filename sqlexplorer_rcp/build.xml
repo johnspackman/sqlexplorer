@@ -50,13 +50,6 @@
 	<!-- =============================================================== -->
 
 	<target name="dist" depends="display.properties, zip.plugin">
-		<zip destfile="dist/xml.zip">
-			<fileset dir="${updatesite.project}">
-				<include name="site.xml"/>
-				<include name="artifacts.xml"/>
-				<include name="content.xml"/>
-			</fileset>
-		</zip>
 		<zip destfile="dist/rcp.zip">
 			<fileset dir="dist/exported">
 				<include name="**/*.sqlexplorer*"/>
@@ -71,6 +64,13 @@
 			</fileset>
 			<fileset dir="${se.project}">
 				<include name="change_log.txt"/>
+			</fileset>
+		</zip>
+		<zip destfile="dist/xml.zip">
+			<fileset dir="${updatesite.project}">
+				<include name="site.xml"/>
+				<include name="artifacts.xml"/>
+				<include name="content.xml"/>
 			</fileset>
 		</zip>
 	</target>

@@ -1,19 +1,19 @@
-3.5.1.SR2 - Heiko Hilbert
+3.5.1.SR2 (29.11.2009) - Heiko Hilbert
 ======================================================
 +. added patch from patl9 fixing problems with alias saving, http://sourceforge.net/tracker/?func=detail&atid=725495&aid=2891491&group_id=132863
 +. select complete row in result set table
 +. fixed ClasCastException for PostgreSQL and Oracle if strip comments is enabled
 +. added check for lines starting with \ in PostgreSQL
-t. added batch execution results
++. added batch execution results
 
-3.5.1.SR1 - Heiko Hilbert
+3.5.1.SR1 (28.10.2009) - Heiko Hilbert
 ======================================================
 +. use getDate for DATE sql type, needed for Teradata, no problems detected with MySql/msSql/Postgres
       see https://sourceforge.net/projects/eclipsesql/forums/forum/450663/topic/3435783
 +. added option to strip comments before executing SQL
       see https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3423052
       
-3.5.1 - Heiko Hilbert
+3.5.1 (18.10.2009) - Heiko Hilbert
 ======================================================
 +. new execute current sql action (CTRL+ALT+ENTER) and changeable key binding (patch #2725105 by joco01)
 +. fixed bug #2827324, rounded float values in MS-Sql
@@ -23,7 +23,7 @@ t. added batch execution results
 +. added New to File menu, moved preferences menu item down
 +. re-added export to HTML and XLS action
 
-3.5.0.RC8 - Heiko Hilbert
+3.5.0.RC8 (19.04.2009) - Heiko Hilbert
 ======================================================
 +. added preference to control sorting of column names in db structure view (feature #2663329, bug #1611426)
 +. fixed problem that double click in file search results does not select found line in SQLEditor
@@ -38,7 +38,7 @@ t. added batch execution results
 +. added apache derby plugin (Patch #1612294)
 +. internal cleanup for, removed deprecated sources
 
-3.5.0.RC7 - Heiko Hilbert
+3.5.0.RC7 (25.02.2009) - Heiko Hilbert
 ======================================================
 +. fixed some minor problems in mssql plugin (Database Structure display)
 +. show detail error in database detail view, if there is one
@@ -50,14 +50,14 @@ t. added batch execution results
 +. added new Results preference page, moved result related preferences from general to this page, added date format preferences
    (Fix for #2610124)
 
-3.5.0.RC6/P6 - Heiko Hilbert
+3.5.0.RC6/P6 (26.01.2009) - Heiko Hilbert
 ======================================================
 +. fixed refresh problems in structure view and database details
 +. second fix for Bug #2532963 encoding exception when loading SQLHistory with special chars (german letters Ä or Ö)
 +. refixed #2153849 Editor font preference not stored
 +. some updates to mysql plugin
 
-3.5.0.RC6/P5 - Heiko Hilbert
+3.5.0.RC6/P5 (18.01.2009) - Heiko Hilbert
 ======================================================
 +. fixed problem with result tab tool tip
 +. fixed charset problem for saved sql history
@@ -65,11 +65,11 @@ t. added batch execution results
 +. fixed parser problem with dollar quoted strings in postgresql plugin
 +. added source tab and function folder to mysql plugin
 
-3.5.0.RC6/P4 - Heiko Hilbert
+3.5.0.RC6/P4 (11.01.2009) - Heiko Hilbert
 ======================================================
 +. fixed problem with PreparedStatement.setQueryTimeout not implemented in postgreSQL drivers
 
-3.5.0.RC6/P3 - Heiko Hilbert, Austin Morgan
+3.5.0.RC6/P3 (04.12.2008) - Heiko Hilbert, Austin Morgan
 ======================================================
 +. make last inserted message visible in results message tab
 +. fixed ConcurrentModificationException on closing all connections while shutting down eclipse
@@ -84,19 +84,19 @@ t. added batch execution results
 +. show Database Structure View when 'View Database Structure' is invoked
 +. added Re-Run action to results tables
 
-3.5.0.RC6/P2 - John Spackman (Zenesis Ltd), Heiko Hilbert
+3.5.0.RC6/P2 (15.10.2008) - John Spackman (Zenesis Ltd), Heiko Hilbert
 ======================================================
 +. fixed Bug #2153183: Export to csv is broken
 +. fixed Bug #2153849: Editor font preference not stored
 
-3.5.0.RC6/P1 - John Spackman (Zenesis Ltd), Heiko Hilbert
+3.5.0.RC6/P1 (06.10.2008) - John Spackman (Zenesis Ltd), Heiko Hilbert
 ======================================================
 +. fixed problem with getDatabaseMajorVersion() not implemented
 +. fixed loading problem with content assist enabled
 +. fixed problem with auto deserialization in MySql driver
 +. fixed NPE in BatchJob
 
-3.5.0.RC6 - John Spackman (Zenesis Ltd), Heiko Hilbert
+3.5.0.RC6 (24.09.2008) - John Spackman (Zenesis Ltd), Heiko Hilbert
 ======================================================
 +. show none select queries in success log too
 +. position cursor to the beginning of a failed query in case of a SQL execution error
@@ -118,7 +118,7 @@ t. added batch execution results
 +. added new structured comment: ${set xxx}
 +. fixed update site installation
 
-3.5.0.RC5 - John Spackman, Zenesis Ltd
+3.5.0.RC5 (08.11.2007) - John Spackman, Zenesis Ltd
 ======================================
 +. Fixed problem with creating Oracle triggers
 +. Fixed problem with closing running queries
