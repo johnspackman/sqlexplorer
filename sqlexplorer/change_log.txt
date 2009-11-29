@@ -4,6 +4,7 @@
 +. select complete row in result set table
 +. fixed ClasCastException for PostgreSQL and Oracle if strip comments is enabled
 +. added check for lines starting with \ in PostgreSQL
+t. added batch execution results
 
 3.5.1.SR1 - Heiko Hilbert
 ======================================================
