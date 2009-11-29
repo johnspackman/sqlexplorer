@@ -87,6 +87,10 @@
       		category="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage" 
       		name="Results" 
       		id="net.sourceforge.sqlexplorer.preferences.ResultsPreferencePage"/>
+      <page class="net.sourceforge.sqlexplorer.preferences.BatchResultsPreferencePage" 
+      		category="net.sourceforge.sqlexplorer.preferences.GeneralPreferencePage" 
+      		name="Batch-Results" 
+      		id="net.sourceforge.sqlexplorer.preferences.BatchResultsPreferencePage"/>
    </extension>
    <extension
          id="editors"
@@ -306,6 +310,12 @@
       </command>
       <command
             categoryId="net.sourceforge.sqlexplorer"
+            description="Executes the selected SQL or complete text in the SQL-Editor as Batch"
+            id="net.sourceforge.sqlexplorer.executeBatchSQL"
+            name="Execute SQL-Batch">
+      </command>
+      <command
+            categoryId="net.sourceforge.sqlexplorer"
             description="Executes the SQL separated by empty lines in the SQL-Editor"
             id="net.sourceforge.sqlexplorer.executeCurrentSQL"
             name="Execute current SQL">
@@ -317,6 +327,11 @@
             commandId="net.sourceforge.sqlexplorer.executeSQL"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+ENTER">
+      </key>
+      <key
+            commandId="net.sourceforge.sqlexplorer.executeBatchSQL"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M3+e">
       </key>
       <key
             commandId="net.sourceforge.sqlexplorer.executeCurrentSQL"

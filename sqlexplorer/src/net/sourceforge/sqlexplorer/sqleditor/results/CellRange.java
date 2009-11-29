@@ -16,6 +16,9 @@ public interface CellRange {
 	 */
 	public static class Column {
 		
+		// max display size
+		int displaySize;
+		
 		// Column index
 		private int columnIndex;
 		
@@ -30,9 +33,10 @@ public interface CellRange {
 		 * @param caption
 		 * @param rightJustify
 		 */
-		public Column(int colIndex, String caption, boolean rightJustify) {
+		public Column(int colIndex, int displaySize, String caption, boolean rightJustify) {
 			super();
 			this.columnIndex = colIndex;
+			this.displaySize = displaySize;
 			this.caption = caption;
 			this.rightJustify = rightJustify;
 		}
@@ -83,6 +87,11 @@ public interface CellRange {
             // No formatting, default output 
             return value.toString();
 		}
+
+		public int getDisplaySize()
+		{
+			return displaySize;
+		}
 	}
 	
 	/**
@@ -106,4 +115,5 @@ public interface CellRange {
 	 * @return The rows
 	 */
 	public CellRangeRow[] getRows();
+	
 }

@@ -59,6 +59,12 @@ public interface IConstants {
 
     String FONT = "SQLEditor.Font.V2";
 
+    String BATCH_RESULT_FONT = "BatchResult.FONT";
+    String BATCH_RESULT_MAX_DISPLAY_WIDTH = "BatchResult.MaxDisplayWidth";
+    String BATCH_RESULT_APPEND_QUERY = "BatchResult.AppendQuery";
+    String BATCH_RESULT_APPEND_ROWS_AFFECTED = "BatchResult.AppendRowsAffected";
+    String BATCH_RESULT_APPEND_EXEC_TIME = "BatchResult.AppendExecTime";
+    
     String HISTORY_AUTOSAVE_AFTER = "SQLHistory.AutoSaveAfterXXStatements";
 
     String INTERACTIVE_QUERY_TIMEOUT = "InteractiveConnection.QueryTimeOutSeconds";

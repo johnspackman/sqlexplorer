@@ -207,9 +207,9 @@ public class SQLExecution extends AbstractSQLExecution {
             	if (querySQL == null || querySQL.length() == 0)
             		continue;
 
-            	// Initialise
-	            setProgressMessage(Messages.getString("SQLResultsView.Executing"));
-                final long startTime = System.currentTimeMillis();
+            	startQuery(querySQL);
+
+            	long startTime = System.currentTimeMillis();
                 
                 // Run it
 	            DatabaseProduct.ExecutionResults results = null;
@@ -220,20 +220,16 @@ public class SQLExecution extends AbstractSQLExecution {
 	            	}catch(RuntimeException e) {
 	            		throw new SQLException(e.getMessage());
 	            	}
-                    final long endTime = System.currentTimeMillis();
 	            	DataSet dataSet;
 	            	boolean checkedForMessages = false;
+            		showWarnings(results, querySQL);
 	            	while ((dataSet = results.nextDataSet()) != null) {
 
 	                    // update sql result
 	            		dataSet.setQuery(query);
-	            		dataSet.setExecutionTime(endTime - startTime);
+	            		dataSet.setExecutionTime(System.currentTimeMillis() - startTime);
+	                    startTime = System.currentTimeMillis();
 	
-	                    // Save successfull query
-	            		if(getQueryParser().getContext().isOn(ExecutionContext.LOG_SQL))
-	            		{
-	            			SQLExplorerPlugin.getDefault().getSQLHistory().addSQL(querySQL, _session);
-	            		}
 
 	                    if (monitor.isCanceled())
 	                        return;
@@ -242,10 +238,11 @@ public class SQLExecution extends AbstractSQLExecution {
 	                    checkedForMessages = true;
 	                    
 	                    // show results..
+	            		showWarnings(results, querySQL);
 	                    displayResults(dataSet);
 	            	}
-	            	overallUpdateCount += results.getUpdateCount();
             		showWarnings(results, querySQL);
+	            	overallUpdateCount += results.getUpdateCount();
 	            	
 	            	if (!checkedForMessages)
 	            		checkForMessages(query);
@@ -282,8 +279,7 @@ public class SQLExecution extends AbstractSQLExecution {
                 long overallTime = System.currentTimeMillis() - overallStartTime;
                 String message = Messages.getString("SQLEditor.Overall.Prefix") + " " + 
     				Long.toString(overallTime) + " " + Messages.getString("SQLEditor.Update.Postfix");
-            
-            	addMessage(new Message(Message.Status.STATUS, -1, 0, "", message));
+                logOverallExecution(message);
             }
         } catch (Exception e) {
             closeStatement();
@@ -306,7 +302,32 @@ public class SQLExecution extends AbstractSQLExecution {
             });
     }
     
-    private void showWarnings(DatabaseProduct.ExecutionResults results, String querySql)
+
+    protected void logHistory(String querySQL) {
+        // Save successfull query
+		if(getQueryParser().getContext().isOn(ExecutionContext.LOG_SQL))
+		{
+			SQLExplorerPlugin.getDefault().getSQLHistory().addSQL(querySQL, _session);
+		}
+		
+	}
+
+
+	protected void logOverallExecution(String message) {
+
+    	addMessage(new Message(Message.Status.STATUS, -1, 0, "", message));
+		
+	}
+
+
+	protected void startQuery(String querySQL) {
+    	// Initialise
+        setProgressMessage(Messages.getString("SQLResultsView.Executing"));
+		logHistory(querySQL);
+	}
+
+
+	private void showWarnings(DatabaseProduct.ExecutionResults results, String querySql)
     {
 		if(!SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.LOG_SQL_WARNINGS))
 		{

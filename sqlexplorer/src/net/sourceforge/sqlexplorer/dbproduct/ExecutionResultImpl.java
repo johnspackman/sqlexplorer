@@ -88,6 +88,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 		return result;
 	}
 	public DataSet nextDataSet() throws SQLException {
+		stmt.clearWarnings();
 		// Close the current one
 		if (currentResultSet != null) {
 			currentResultSet.close();

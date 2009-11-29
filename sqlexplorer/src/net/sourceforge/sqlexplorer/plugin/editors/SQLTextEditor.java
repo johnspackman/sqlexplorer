@@ -25,6 +25,7 @@ import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.sqleditor.SQLTextViewer;
 import net.sourceforge.sqlexplorer.sqleditor.actions.ExecCurrentSQLAction;
 import net.sourceforge.sqlexplorer.sqleditor.actions.ExecSQLAction;
+import net.sourceforge.sqlexplorer.sqleditor.actions.ExecSQLBatchAction;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
@@ -242,8 +243,10 @@ public class SQLTextEditor extends TextEditor {
 				new VerifyKeyListener() {
 
 					private Action _execSQLAction = new ExecSQLAction(SQLTextEditor.this.editor);
+					private Action _execSQLBatchAction = new ExecSQLBatchAction(SQLTextEditor.this.editor);
 					private Action _execCurrentSQLAction = new ExecCurrentSQLAction(SQLTextEditor.this.editor);
 					private KeyBind executeSqlKey = new KeyBind(ExecSQLAction.COMMAND_ID);
+					private KeyBind executeSqlBatchKey = new KeyBind(ExecSQLBatchAction.COMMAND_ID);
 					private KeyBind executeCurrentSqlKey = new KeyBind(ExecCurrentSQLAction.COMMAND_ID);
 					
 					public void verifyKey(VerifyEvent event) {
@@ -252,6 +255,11 @@ public class SQLTextEditor extends TextEditor {
 						{
 							event.doit = false;
 							_execSQLAction.run();
+						}
+						else if (instance.equals(executeSqlBatchKey.getStroke()))
+						{
+							event.doit = false;
+							_execSQLBatchAction.run();
 						}
 						else if (instance.equals(executeCurrentSqlKey.getStroke()))
 						{
@@ -269,7 +277,6 @@ public class SQLTextEditor extends TextEditor {
 
 		sqlTextViewer.getTextWidget().addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
-
 				SQLTextEditor.this.editor.getEditorSite().getPage().activate(
 						SQLTextEditor.this.editor.getEditorSite().getPart());
 			}

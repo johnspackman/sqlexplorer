@@ -736,7 +736,24 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
         
 		return tabItem;
 	}
+
+	public CTabItem createResultsTab(AbstractSQLExecution execution)
+	{
+		// check if tab exists
+		CTabItem tabItem = new CTabItem(tabFolder, SWT.CLOSE, tabFolder.getItems().length - 1);
+		tabItem.setText(Integer.toString(tabFolder.getItems().length - 1));
+		
+		tabFolder.setSelection(tabItem);
+		
+		// Make sure we can track the execution
+		tabItem.setData(execution);
 	
+		// Make sure we're visible
+	    getSite().getPage().bringToTop(this);
+	    
+		return tabItem;
+	}
+
 	public boolean isClosed() {
 		return tabFolder.isDisposed();
 	}
@@ -923,6 +940,10 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 				StyledText text = textEditor.sqlTextViewer.getTextWidget();
 				int position = text.getCaretOffset();
 				int lineNo = text.getLineAtOffset(position);
+				if(lineNo > 0 && text.getOffsetAtLine(lineNo) == position && text.getContent().getLine(lineNo).trim().length() == 0)
+				{
+					lineNo--;
+				}
 				while(lineNo >= 0 && text.getContent().getLine(lineNo).length() != 0)
 				{
 					lineNo--;
@@ -932,12 +953,15 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 				if(lineNo < maxLines)
 				{
 					int startIndex = text.getOffsetAtLine(lineNo);
-					while(lineNo < maxLines && text.getContent().getLine(lineNo).length() != 0)
+					while(lineNo < maxLines && text.getContent().getLine(lineNo).trim().length() != 0)
 					{
 						lineNo++;
 					}
 					int endIndex = lineNo == maxLines ? text.getCharCount() - 1 : text.getOffsetAtLine(lineNo); 
-					sql = text.getText(startIndex, endIndex);
+					if(startIndex < endIndex)
+					{
+						sql = text.getText(startIndex, endIndex);
+					}
 				}
 			}
 			else

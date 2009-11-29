@@ -78,6 +78,7 @@ public class SQLEditorToolBar {
         _defaultToolBarMgr = new ToolBarManager(SWT.FLAT);
 
         actions.add(new ExecSQLAction(_editor));
+        actions.add(new ExecSQLBatchAction(_editor));
         actions.add(new CommitAction(_editor));
         actions.add(new RollbackAction(_editor));
         actions.add(new OpenFileAction(_editor));

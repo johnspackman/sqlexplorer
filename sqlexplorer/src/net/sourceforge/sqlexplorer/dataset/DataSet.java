@@ -65,8 +65,8 @@ public class DataSet implements ResultProvider {
 	public static class FormattedColumn extends Column {
 		private Format format;
 
-		public FormattedColumn(int colIndex, String caption, boolean rightJustify, Format format) {
-			super(colIndex, caption, rightJustify);
+		public FormattedColumn(int colIndex, int displaySize, String caption, boolean rightJustify, Format format) {
+			super(colIndex, displaySize, caption, rightJustify);
 			this.format = format;
 		}
 
@@ -300,11 +300,11 @@ public class DataSet implements ResultProvider {
         	int scale = metadata.getScale(columnIndex);
         	if (precision < 1 || scale > precision )
         	{
-            	return new FormattedColumn(targetIndex, metadata.getColumnName(columnIndex), true, null);//new DecimalFormat("#.#"));
+            	return new FormattedColumn(targetIndex, metadata.getColumnDisplaySize(columnIndex), metadata.getColumnName(columnIndex), true, null);//new DecimalFormat("#.#"));
         	}
         	if (scale == 0 && (type == Types.DOUBLE || type == Types.FLOAT || type == Types.REAL ))
         	{
-            	return new FormattedColumn(targetIndex, metadata.getColumnName(columnIndex), true, null);//new DecimalFormat("#.#"));        		
+            	return new FormattedColumn(targetIndex, metadata.getColumnDisplaySize(columnIndex), metadata.getColumnName(columnIndex), true, null);//new DecimalFormat("#.#"));        		
         	}
     		/*
     		 * NOTE: Scale can be negative (although possibly limited to Oracle), but we cope with 
@@ -323,14 +323,17 @@ public class DataSet implements ResultProvider {
         	else if (scale < 0)
         		sb.insert(1, '.');
         	
-        	return new FormattedColumn(targetIndex, metadata.getColumnName(columnIndex), true, new DecimalFormat(sb.toString()));
+        	return new FormattedColumn(targetIndex, metadata.getColumnDisplaySize(columnIndex), metadata.getColumnName(columnIndex), true, new DecimalFormat(sb.toString()));
     	}
     	
     	if (type == Types.DATE || type == Types.TIMESTAMP || type == Types.TIME) {
-    		return new FormattedColumn(columnIndex - 1, metadata.getColumnName(columnIndex), false, getDateFormat(type));
+    		return new FormattedColumn(columnIndex - 1, metadata.getColumnDisplaySize(columnIndex), metadata.getColumnName(columnIndex), false, getDateFormat(type));
     	}
-
-    	return new Column(targetIndex, metadata.getColumnName(columnIndex), false);
+    	if(type == Types.INTEGER || type == Types.BIGINT || type == Types.SMALLINT || type == Types.TINYINT)
+    	{
+        	return new Column(targetIndex, metadata.getColumnDisplaySize(columnIndex), metadata.getColumnName(columnIndex), true);    		
+    	}
+    	return new Column(targetIndex, metadata.getColumnDisplaySize(columnIndex), metadata.getColumnName(columnIndex), false);
     }
     
     /**
@@ -341,7 +344,7 @@ public class DataSet implements ResultProvider {
     private Column[] convertColumnLabels(String[] columnLabels) {
     	Column[] result = new Column[columnLabels.length];
     	for (int i = 0; i < columnLabels.length; i++)
-    		result[i] = new Column(i, columnLabels[i], false);
+    		result[i] = new Column(i,columnLabels[i] == null ? 0 : columnLabels[i].length(), columnLabels[i], false);
     	return result;
     }
 
