@@ -957,7 +957,7 @@ public class SQLEditor extends EditorPart implements SwitchableSessionEditor {
 					{
 						lineNo++;
 					}
-					int endIndex = lineNo == maxLines ? text.getCharCount() - 1 : text.getOffsetAtLine(lineNo); 
+					int endIndex = Math.min(text.getCharCount() - 1, text.getOffsetAtLine(lineNo)); 
 					if(startIndex < endIndex)
 					{
 						sql = text.getText(startIndex, endIndex);

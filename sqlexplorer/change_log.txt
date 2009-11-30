@@ -1,3 +1,7 @@
+3.5.1.SR3 (??.??.2009) - Heiko Hilbert
+======================================================
++. fixed IndexOutOfBoundsException in execute SQL chunk
+
 3.5.1.SR2 (29.11.2009) - Heiko Hilbert
 ======================================================
 +. added patch from patl9 fixing problems with alias saving, http://sourceforge.net/tracker/?func=detail&atid=725495&aid=2891491&group_id=132863
