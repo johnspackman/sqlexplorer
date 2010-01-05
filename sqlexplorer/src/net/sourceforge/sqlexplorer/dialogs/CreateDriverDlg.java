@@ -71,7 +71,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
 
     private ManagedDriver driver;
 
-    private static final int SIZING_TEXT_FIELD_WIDTH = 250;
+	private static final int SIZING_TEXT_FIELD_WIDTH = 250;
 
     Button _extraClasspathDeleteBtn;
 
@@ -104,7 +104,19 @@ public class CreateDriverDlg extends TitleAreaDialog {
 
     public CreateDriverDlg(Shell parentShell, Type type, ManagedDriver driver) {
         super(parentShell);
-        this.driver = driver;
+        
+        if (type == Type.COPY) {
+        	this.driver = new ManagedDriver(SQLExplorerPlugin.getDefault().getDriverModel().createUniqueId());
+
+        	this.driver.setName("Copy of " + driver.getName());
+        	this.driver.setDriverClassName(driver.getDriverClassName());
+        	this.driver.setUrl(driver.getUrl());
+        	for (String jar : driver.getJars())
+        		this.driver.getJars().add(jar);
+        } 
+        else 
+        	this.driver = driver;
+        	
         this.type = type;
     }
 
@@ -152,6 +164,13 @@ public class CreateDriverDlg extends TitleAreaDialog {
         return contents;
     }
 
+    /**
+     * returns the edited driver. This is Helpful for using Type.COPY and Type.CREATE
+     * @return the edited driver
+     */
+    public ManagedDriver getDriver() {
+		return driver;
+	}
 
     protected void okPressed() {
         String name = nameField.getText().trim();
@@ -171,8 +190,9 @@ public class CreateDriverDlg extends TitleAreaDialog {
             return;
         }
 
-        if (driver == null)
+        if (driver == null) // Type.CREATE
         	driver = new ManagedDriver(SQLExplorerPlugin.getDefault().getDriverModel().createUniqueId());
+        
         driver.setName(name);
         driver.setJars(defaultModel.getFileNames());
         driver.setDriverClassName(driverClassName);
@@ -205,7 +225,6 @@ public class CreateDriverDlg extends TitleAreaDialog {
         super.createButtonsForButtonBar(parent);
         validate();
     }
-
 
     protected Control createDialogArea(Composite parent) {
         // top level composite
@@ -261,7 +280,6 @@ public class CreateDriverDlg extends TitleAreaDialog {
             public void keyPressed(org.eclipse.swt.events.KeyEvent e) {
                 CreateDriverDlg.this.validate();
             };
-
 
             public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
                 CreateDriverDlg.this.validate();

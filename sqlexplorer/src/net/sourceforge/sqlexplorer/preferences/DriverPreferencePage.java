@@ -21,7 +21,6 @@ package net.sourceforge.sqlexplorer.preferences;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 
 import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.IConstants;
@@ -32,6 +31,7 @@ import net.sourceforge.sqlexplorer.dialogs.CreateDriverDlg;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -190,10 +190,13 @@ public class DriverPreferencePage extends PreferencePage implements IWorkbenchPr
 
             public void widgetSelected(SelectionEvent e) {
                 CreateDriverDlg dlg = new CreateDriverDlg(getShell(), CreateDriverDlg.Type.CREATE, null);
-                dlg.open();
 
-                _tableViewer.refresh();
-                selectFirst();
+                int retCode = dlg.open();
+                if (retCode == IDialogConstants.OK_ID) {
+                	_tableViewer.refresh();
+                	// select the new driver
+                    select(dlg.getDriver()); 
+                }
             }
         });
 
@@ -222,8 +225,12 @@ public class DriverPreferencePage extends PreferencePage implements IWorkbenchPr
                 ManagedDriver dv = (ManagedDriver) sel.getFirstElement();
                 if (dv != null) {
                     CreateDriverDlg dlg = new CreateDriverDlg(getShell(), CreateDriverDlg.Type.COPY, dv);
-                    dlg.open();
-                    _tableViewer.refresh();
+                    int retCode = dlg.open();
+                    if (retCode == IDialogConstants.OK_ID) {
+                    	_tableViewer.refresh();
+                    	// select the new driver
+                        select(dlg.getDriver()); 
+                    }
                 }
             }
         });
@@ -332,19 +339,33 @@ public class DriverPreferencePage extends PreferencePage implements IWorkbenchPr
         ManagedDriver dv = (ManagedDriver) sel.getFirstElement();
         if (dv != null) {
             CreateDriverDlg dlg = new CreateDriverDlg(getShell(), CreateDriverDlg.Type.MODIFY, dv);
-            dlg.open();
-            _tableViewer.refresh();
-            selectFirst();
+            int retCode = dlg.open();
+            
+            if (retCode == IDialogConstants.OK_ID) {
+            	_tableViewer.refresh();
+            	select(dv);
+            	//ASHINGER selectFirst();
+            }
         }
     }
 
-
-    void selectFirst() {
-    	Iterator<ManagedDriver> iter = _driverModel.getDrivers().iterator();
-        if (iter.hasNext()) {
-            StructuredSelection sel = new StructuredSelection(iter.next());
+    void select(ManagedDriver managedDriver) {
+    	if (_driverModel.getDrivers().contains(managedDriver)) {
+    		StructuredSelection sel = new StructuredSelection(managedDriver);
             _tableViewer.setSelection(sel);
-        }
+    	}
+    }
+    
+    void selectFirst() {
+    	// we have to select the first item in the view (Table) and not the first in the model 
+    	if (_tableViewer.getTable().getItemCount() > 0) {
+    		_tableViewer.getTable().select(0);
+    	}
+//    	Iterator<ManagedDriver> iter = _driverModel.getDrivers().iterator();
+//        if (iter.hasNext()) {
+//            StructuredSelection sel = new StructuredSelection(iter.next());
+//            _tableViewer.setSelection(sel);
+//        }
     }
 
 
