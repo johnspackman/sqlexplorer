@@ -279,7 +279,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
      * Global log method.
      * @param t
      */
-    public static void error(Exception e) {
+    public static void error(Throwable e) {
     	error(e.getMessage(), e);
     }
 

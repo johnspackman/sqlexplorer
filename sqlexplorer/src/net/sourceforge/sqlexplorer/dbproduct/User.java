@@ -332,7 +332,7 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 		allocated.remove(connection);
 		try {
 			connection.close();
-		} catch(SQLException e) {
+		} catch(Throwable e) {
 			// Nothing
 		}
 	}
@@ -346,7 +346,7 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 	public synchronized boolean releaseFromPool(SQLConnection connection) {
 		try {
 			connection.close();
-		}catch(SQLException e) {
+		}catch(Throwable e) {
 			SQLExplorerPlugin.error(e);
 		}
 		if (unused.remove(connection)) {

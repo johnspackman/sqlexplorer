@@ -303,7 +303,7 @@ public class Session {
     		user.disposeConnection(connection);
         	try {
         		internalSetConnection(null);
-        	}catch(SQLException e) {
+        	}catch(Throwable e) {
         		SQLExplorerPlugin.error(e);
         	}
     	}
@@ -312,12 +312,12 @@ public class Session {
         if (connection != null) {
         	try {
         		user.releaseConnection(connection);
-        	}catch(SQLException e) {
+        	}catch(Throwable e) {
         		SQLExplorerPlugin.error(e);
         	}
         	try {
         		internalSetConnection(null);
-        	}catch(SQLException e) {
+        	}catch(Throwable e) {
         		SQLExplorerPlugin.error(e);
         	}
         }
@@ -337,13 +337,13 @@ public class Session {
         	try {
             	if (!connection.getAutoCommit())
             		connection.rollback();
-        	}catch(SQLException e) {
+        	}catch(Throwable e) {
         		SQLExplorerPlugin.error(e);
         	}
         	try {
         		user.disposeConnection(connection);
         		internalSetConnection(null);
-        	}catch(SQLException e) {
+        	}catch(Throwable e) {
         		SQLExplorerPlugin.error(e);
         	}
         }
