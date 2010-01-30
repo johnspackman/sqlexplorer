@@ -23,17 +23,9 @@ import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sessiontree.model.utility.Dictionary;
 import net.sourceforge.sqlexplorer.sqleditor.SQLTextViewer;
-import net.sourceforge.sqlexplorer.sqleditor.actions.ExecCurrentSQLAction;
-import net.sourceforge.sqlexplorer.sqleditor.actions.ExecSQLAction;
-import net.sourceforge.sqlexplorer.sqleditor.actions.ExecSQLBatchAction;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.bindings.Binding;
-import org.eclipse.jface.bindings.TriggerSequence;
-import org.eclipse.jface.bindings.keys.KeyBinding;
-import org.eclipse.jface.bindings.keys.KeySequence;
-import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.JFaceResources;
@@ -43,10 +35,8 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -55,7 +45,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
-import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 
 /**
@@ -74,43 +63,8 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
  * 
  */
 public class SQLTextEditor extends TextEditor {
-
-	private static class KeyBind
-	{
-		KeyStroke stroke = null;
-		String bindingId;
-		
-		public KeyBind(String pId)
-		{
-			this.bindingId = pId;
-		}
-		
-		private void findBinding()
-		{
-			IBindingService bindingService = (IBindingService) PlatformUI.getWorkbench().getService(IBindingService.class);
+	private static final String CONTEXT_ID = "net.sourceforge.sqlexplorer.sqlEditorScope";
 	
-			TriggerSequence sequence = bindingService.getBestActiveBindingFor(this.bindingId);
-			Binding binding = bindingService.getPerfectMatch(sequence);
-			if (binding instanceof KeyBinding)
-			{
-				KeySequence keySequence = ((KeyBinding)binding).getKeySequence();
-				KeyStroke[] keyStrokes = keySequence.getKeyStrokes();
-				if (keyStrokes.length > 0)
-				{
-					this.stroke = keyStrokes[0];
-				}
-			}
-		}
-		
-		public KeyStroke getStroke()
-		{
-			if(this.stroke == null)
-			{
-				findBinding();
-			}
-			return this.stroke;
-		}
-	}
 	private SQLEditor editor;
 
 	private MouseClickListener mcl;
@@ -168,6 +122,11 @@ public class SQLTextEditor extends TextEditor {
 
 	}
 
+	@Override
+	protected void initializeKeyBindingScopes() {
+		setKeyBindingScopes(new String[]{CONTEXT_ID});
+	}
+
 	public void createPartControl(Composite parent) {
 
 		super.createPartControl(parent);
@@ -175,6 +134,7 @@ public class SQLTextEditor extends TextEditor {
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(
 				getSourceViewer().getTextWidget(),
 				SQLExplorerPlugin.PLUGIN_ID + ".SQLEditor");
+
 
 		Object adapter = getAdapter(org.eclipse.swt.widgets.Control.class);
 		if (adapter instanceof StyledText) {
@@ -192,10 +152,10 @@ public class SQLTextEditor extends TextEditor {
 
 	protected ISourceViewer createSourceViewer(final Composite parent,
 			IVerticalRuler ruler, int style) {
-
+		
 		parent.setLayout(new FillLayout());
 		final Composite myParent = new Composite(parent, SWT.NONE);
-
+		
 		GridLayout layout = new GridLayout();
 		layout.marginHeight = layout.marginWidth = layout.horizontalSpacing = layout.verticalSpacing = 0;
 		myParent.setLayout(layout);
@@ -237,43 +197,6 @@ public class SQLTextEditor extends TextEditor {
 		div2.setLayoutData(lgid);
 		div2.setBackground(editor.getSite().getShell().getDisplay()
 				.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
-
-		
-		sqlTextViewer.getTextWidget().addVerifyKeyListener(
-				new VerifyKeyListener() {
-
-					private Action _execSQLAction = new ExecSQLAction(SQLTextEditor.this.editor);
-					private Action _execSQLBatchAction = new ExecSQLBatchAction(SQLTextEditor.this.editor);
-					private Action _execCurrentSQLAction = new ExecCurrentSQLAction(SQLTextEditor.this.editor);
-					private KeyBind executeSqlKey = new KeyBind(ExecSQLAction.COMMAND_ID);
-					private KeyBind executeSqlBatchKey = new KeyBind(ExecSQLBatchAction.COMMAND_ID);
-					private KeyBind executeCurrentSqlKey = new KeyBind(ExecCurrentSQLAction.COMMAND_ID);
-					
-					public void verifyKey(VerifyEvent event) {
-						KeyStroke instance = KeyStroke.getInstance(event.stateMask, event.keyCode);
-						if (instance.equals(executeSqlKey.getStroke()))
-						{
-							event.doit = false;
-							_execSQLAction.run();
-						}
-						else if (instance.equals(executeSqlBatchKey.getStroke()))
-						{
-							event.doit = false;
-							_execSQLBatchAction.run();
-						}
-						else if (instance.equals(executeCurrentSqlKey.getStroke()))
-						{
-							event.doit = false;
-							_execCurrentSQLAction.run();
-						}
-						else if (executeSqlKey.getStroke() == null && event.stateMask == SWT.CTRL && event.keyCode == 13) {
-
-							event.doit = false;
-							_execSQLAction.run();
-						}
-						
-					}
-				});
 
 		sqlTextViewer.getTextWidget().addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {

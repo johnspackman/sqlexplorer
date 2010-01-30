@@ -100,6 +100,36 @@ public class ImageUtil {
 
     }
 
+    /**
+     * Create an image descriptor for the given image property in the
+     * text.properties file.
+     * 
+     * @param propertyName
+     * @return
+     */
+    public static ImageDescriptor getDescriptorByKey(String pKey) {
+
+        try {
+
+            // get image path
+            String path = pKey;
+
+            if (path == null || path.trim().length() == 0) {
+                SQLExplorerPlugin.error("Missing image path for " + pKey, null);
+                return null;
+            }
+
+            // create image
+            URL url = URLUtil.getResourceURL(path);
+            return ImageDescriptor.createFromURL(url);
+
+        } catch (Exception e) {
+            SQLExplorerPlugin.error("Couldn't create image for " + pKey, e);
+            return null;
+        }
+
+    }
+
 
     public static ImageDescriptor getFragmentDescriptor(String fragmentId, String path) {
         

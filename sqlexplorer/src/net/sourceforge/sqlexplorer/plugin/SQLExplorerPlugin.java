@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchSite;
@@ -294,6 +295,18 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         } catch (MissingResourceException e) {
             return key;
         }
+    }
+    public static String getString(String key) {
+    	String resolved = Platform.getResourceString(getDefault().getBundle(), "%" + key); 
+    	return resolved;
+
+/*        
+        try {
+            return bundle.getString(key);
+        } catch (MissingResourceException e) {
+            return key;
+        }
+*/        
     }
     
     private IWorkbenchPage getActivePage() {

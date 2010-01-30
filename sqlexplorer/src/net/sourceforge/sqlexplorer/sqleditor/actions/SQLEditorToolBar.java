@@ -78,6 +78,7 @@ public class SQLEditorToolBar {
         _defaultToolBarMgr = new ToolBarManager(SWT.FLAT);
 
         actions.add(new ExecSQLAction(_editor));
+        actions.add(new ExecSQLChunkAction(_editor));
         actions.add(new ExecSQLBatchAction(_editor));
         actions.add(new CommitAction(_editor));
         actions.add(new RollbackAction(_editor));
@@ -107,7 +108,7 @@ public class SQLEditorToolBar {
         _catalogToolBarMgr = new ToolBarManager(SWT.FLAT);
 
         // add all toolbars to parent coolbar
-        _coolBarMgr.add(new ToolBarContributionItem(_defaultToolBarMgr));
+        _coolBarMgr.add(new ToolBarContributionItem(_defaultToolBarMgr, "net.sourceforge.sqlexplorer.toolbar"));
         _coolBarMgr.add(new ToolBarContributionItem(_extensionToolBarMgr));
         _coolBarMgr.add(new ToolBarContributionItem(_sessionToolBarMgr));
         _coolBarMgr.add(new ToolBarContributionItem(_catalogToolBarMgr));

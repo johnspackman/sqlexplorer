@@ -299,44 +299,87 @@
    <extension
          point="org.eclipse.ui.commands">
       <category
-            id="net.sourceforge.sqlexplorer"
-            name="SQL Explorer">
+            id="net.sourceforge.sqlexplorer.commands"
+            name="SQLEditor commands">
       </category>
       <command
-            categoryId="net.sourceforge.sqlexplorer"
-            description="Executes the selected SQL or complete text in the SQL-Editor"
+            categoryId="net.sourceforge.sqlexplorer.commands"
+            defaultHandler="net.sourceforge.sqlexplorer.sqleditor.handlers.ExecSQLHandler"
+            description="%net.sourceforge.sqlexplorer.executeSQL.tooltip"
             id="net.sourceforge.sqlexplorer.executeSQL"
-            name="Execute SQL">
+            name="%net.sourceforge.sqlexplorer.executeSQL.text">
       </command>
       <command
-            categoryId="net.sourceforge.sqlexplorer"
-            description="Executes the selected SQL or complete text in the SQL-Editor as Batch"
-            id="net.sourceforge.sqlexplorer.executeBatchSQL"
-            name="Execute SQL-Batch">
+            categoryId="net.sourceforge.sqlexplorer.commands"
+            defaultHandler="net.sourceforge.sqlexplorer.sqleditor.handlers.ExecSQLBatchHandler"
+            description="%net.sourceforge.sqlexplorer.executeSQLBatch.tooltip"
+            id="net.sourceforge.sqlexplorer.executeSQLBatch"
+            name="%net.sourceforge.sqlexplorer.executeSQLBatch.text">
       </command>
       <command
-            categoryId="net.sourceforge.sqlexplorer"
-            description="Executes the SQL separated by empty lines in the SQL-Editor"
-            id="net.sourceforge.sqlexplorer.executeCurrentSQL"
-            name="Execute current SQL">
+            categoryId="net.sourceforge.sqlexplorer.commands"
+            defaultHandler="net.sourceforge.sqlexplorer.sqleditor.handlers.ExecSQLChunkHandler"
+            description="%net.sourceforge.sqlexplorer.executeSQLChunk.tooltip"
+            id="net.sourceforge.sqlexplorer.executeSQLChunk"
+            name="%net.sourceforge.sqlexplorer.executeSQLChunk.text">
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
       <key
             commandId="net.sourceforge.sqlexplorer.executeSQL"
+            contextId="net.sourceforge.sqlexplorer.sqlEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+ENTER">
       </key>
       <key
-            commandId="net.sourceforge.sqlexplorer.executeBatchSQL"
+            commandId="net.sourceforge.sqlexplorer.executeSQLBatch"
+            contextId="net.sourceforge.sqlexplorer.sqlEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-            sequence="M1+M3+e">
+            sequence="M1+M3+E">
       </key>
       <key
-            commandId="net.sourceforge.sqlexplorer.executeCurrentSQL"
+            commandId="net.sourceforge.sqlexplorer.executeSQLChunk"
+            contextId="net.sourceforge.sqlexplorer.sqlEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M3+ENTER">
       </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            description="SQLEditor scope"
+            id="net.sourceforge.sqlexplorer.sqlEditorScope"
+            name="SQLEditor scope"
+            parentId="org.eclipse.ui.textEditorScope">
+      </context>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:#TextEditorContext?after=additions">
+         <separator
+               name="net.sourceforge.sqlexplorer.execs"
+               visible="true">
+         </separator>
+         <command
+               commandId="net.sourceforge.sqlexplorer.executeSQL"
+               icon="%net.sourceforge.sqlexplorer.executeSQL.icon"
+               id="net.sourceforge.sqlexplorer.executeSQL.item"
+               tooltip="%net.sourceforge.sqlexplorer.executeSQL.tooltip">
+         </command>
+         <command
+               commandId="net.sourceforge.sqlexplorer.executeSQLChunk"
+               icon="%net.sourceforge.sqlexplorer.executeSQLChunk.icon"
+               id="net.sourceforge.sqlexplorer.executeSQLchunk.item"
+               tooltip="%net.sourceforge.sqlexplorer.executeSQLChunk.tooltip">
+         </command>
+         <command
+               commandId="net.sourceforge.sqlexplorer.executeSQLBatch"
+               icon="%net.sourceforge.sqlexplorer.executeSQLBatch.icon"
+               id="net.sourceforge.sqlexplorer.executeSQLBatch.item"
+               tooltip="%net.sourceforge.sqlexplorer.executeSQLBatch.tooltip">
+         </command>
+      </menuContribution>
    </extension>
 </plugin>

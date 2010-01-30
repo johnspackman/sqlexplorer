@@ -19,87 +19,17 @@
 
 package net.sourceforge.sqlexplorer.sqleditor.actions;
 
-import net.sourceforge.sqlexplorer.IConstants;
-import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.dbproduct.Session;
-import net.sourceforge.sqlexplorer.parsers.ParserException;
-import net.sourceforge.sqlexplorer.parsers.QueryParser;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
-import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
-import net.sourceforge.sqlexplorer.sqlpanel.SQLBatchExecution;
-import net.sourceforge.sqlexplorer.util.ImageUtil;
-
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
+import net.sourceforge.sqlexplorer.sqleditor.handlers.ExecSQLBatchHandler;
 
 /**
  * Executes SQL in response to clicking the toolbar or the key mapping
  * @modified Heiko Hilbert
  *
  */
-public class ExecSQLBatchAction extends AbstractEditorAction {
-	public static final String COMMAND_ID = "net.sourceforge.sqlexplorer.executeBatchSQL";
+public class ExecSQLBatchAction extends CommandAction {
 
-    private ImageDescriptor img = ImageUtil.getDescriptor("Images.ExecSQLBatchIcon");
-    
-    public ExecSQLBatchAction(SQLEditor editor) {
-		super(editor);
+	public ExecSQLBatchAction(SQLEditor editor) {
+		super(editor, ExecSQLBatchHandler.COMMAND_ID);
 	}
-
-	public ImageDescriptor getImageDescriptor() {
-        return img;
-    }
-
-    public String getText() {
-        return Messages.getString("SQLEditor.Actions.ExecuteBatch");
-    }
-
-    public String getToolTipText() {
-        return Messages.getString("SQLEditor.Actions.ExecuteBatch.ToolTip");
-    }
-    
-    public void run() {
-        try {
-        	executeSql();
-
-        } catch (final Exception e) {
-            _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
-
-                public void run() {
-                    MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("SQLResultsView.Error.Title"), e.getClass().getCanonicalName() + ": " + e.getMessage());
-                }
-            });
-        }
-    }
-
-    protected QueryParser getQueryParser(Session session)
-    {
-    	return  session.getDatabaseProduct().getQueryParser(_editor.getSQLToBeExecuted(false), _editor.getSQLLineNumber(false));
-    }
-    protected void executeSql() {
-        Session session = getSession();
-        if (session == null)
-            return;
-
-        QueryParser qt = getQueryParser(session);
-        try {
-            qt.parse();
-        }catch(final ParserException e) {
-            _editor.getSite().getShell().getDisplay().asyncExec(new Runnable() {
-                public void run() {
-                    MessageDialog.openError(_editor.getSite().getShell(), Messages.getString("SQLResultsView.Error.Title"), e.getMessage());
-                }
-            });
-        }
-        
-        if (qt.iterator().hasNext()) {
-        	boolean clearResults = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.CLEAR_RESULTS_ON_EXECUTE);
-        	if (clearResults)
-        		_editor.clearResults();
-        	AbstractSQLExecution job = new SQLBatchExecution(_editor, qt);
-        	job.schedule();
-        }
-    }
-    
 }
