@@ -21,6 +21,12 @@ Changes in SR2:
 * fixed ClasCastException for PostgreSQL and Oracle if strip comments is enabled
 * added check for lines starting with \ in PostgreSQL
 * added batch execution results
+
+Changes in SR3:
+* fixed IndexOutOfBoundsException in execute SQL chunk
+* added Patch #2924692 by ashinger, fixed some problems in JDBC driver preferences
+* used commands for SQL actions, new context menu entries and editor tool bar buttons
+* cleanup deprecations for preferences
  
 Starting with SR1 we will provide zip's only for the plugin. The standalone distributions
 can be updated using the update site (http://eclipsesql.sourceforge.net) integrated Update Manager.

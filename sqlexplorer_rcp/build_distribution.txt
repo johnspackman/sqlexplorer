@@ -2,7 +2,8 @@ Update Release Info:
 
 - edit sqlexplorer/change_log.txt
 - edit net.sourceforge.sqlexplorer.dialogs.AboutDialog
-- edit sqlexplorer_feature/feature.xml witn new version and change log informations and synchronize versions
+- set version for sqlexporer plugin
+- edit sqlexplorer_feature/feature.xml with new version and change log informations and synchronize versions
 
 Build update site:
 
@@ -18,13 +19,23 @@ Build standalone distribution:
 
 - go to sqlexplorer_rcp
 - set new version in plugin.xml
-- edit release.txt
+- edit dist/release.txt
 - delete all files from /dist/exported
 - set new version in sqlexplorer_rcp_feature/feature.xml and export it to dist/exported
-- run build.xml dist to build rcp zip
+- run build_rcp.xml dist to build rcp zip
 
-Deploy files
-- sftp zip files from dist to uploads
+SR Deploy:
+- sftp plugin.zip/xml.zip from dist to uploads (/home/groups/e/ec/eclipsesql/uploads/)
+- login to shell
+- go to uploads
+- run build_sr.sh [version number] [SR-number]
+- check dist
+- run dist.sh to copy to project web
+- login to sf admin page
+- add release info to files
+ 
+Complete Deploy:
+- sftp all zip files from dist to uploads (/home/groups/e/ec/eclipsesql/uploads/)
 - login to shell
 - go to uploads
 - run build.sh [version number]

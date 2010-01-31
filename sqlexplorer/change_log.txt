@@ -1,4 +1,4 @@
-3.5.1.SR3 (??.??.2010) - Heiko Hilbert
+3.5.1.SR3 (31.01.2010) - Heiko Hilbert
 ======================================================
 +. fixed IndexOutOfBoundsException in execute SQL chunk
 +. Patch #2924692 by ashinger, fixed some problems in JDBC driver preferences
