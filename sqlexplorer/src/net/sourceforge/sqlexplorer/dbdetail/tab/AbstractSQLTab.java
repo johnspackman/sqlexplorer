@@ -21,7 +21,7 @@ public abstract class AbstractSQLTab extends AbstractDataSetTab {
     public final DataSet getDataSet() throws Exception {
         
         DataSet dataSet = null;
-        int timeOut = SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(IConstants.INTERACTIVE_QUERY_TIMEOUT);
+        int timeOut = SQLExplorerPlugin.getIntPref(IConstants.INTERACTIVE_QUERY_TIMEOUT);
         
         SQLConnection connection = null;
         ResultSet rs = null;

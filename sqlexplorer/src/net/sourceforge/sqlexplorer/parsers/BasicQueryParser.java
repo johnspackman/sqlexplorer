@@ -25,8 +25,7 @@ import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.parsers.Tokenizer.Token;
 import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentException;
 import net.sourceforge.sqlexplorer.parsers.scp.StructuredCommentParser;
-
-import org.eclipse.core.runtime.Preferences;
+import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
 /**
  * This parser is based on scanning the SQL text looking for separators (eg ";", "go", or 
@@ -99,17 +98,17 @@ public class BasicQueryParser extends AbstractQueryParser {
      * Constructor
      * @param sql
      */
-	public BasicQueryParser(CharSequence sql, Preferences prefs, int pLineNo) {
+	public BasicQueryParser(CharSequence sql, int pLineNo) {
 		this(sql);
-	    setCmdSeparator(prefs.getString(IConstants.SQL_QRY_DELIMITER));
-	    setAltSeparator(prefs.getString(IConstants.SQL_ALT_QRY_DELIMITER));
-	    setSlComment(prefs.getString(IConstants.SQL_SL_COMMENT));
-	    setMlCommentStart(prefs.getString(IConstants.SQL_ML_COMMENT_START));
-	    setMlCommentEnd(prefs.getString(IConstants.SQL_ML_COMMENT_END));
-	    setQuoteEscapes(prefs.getString(IConstants.SQL_QUOTE_ESCAPE_CHAR));
-	    enableStructuredComments = prefs.getBoolean(IConstants.ENABLE_STRUCTURED_COMMENTS);
+	    setCmdSeparator(SQLExplorerPlugin.getStringPref(IConstants.SQL_QRY_DELIMITER));
+	    setAltSeparator(SQLExplorerPlugin.getStringPref(IConstants.SQL_ALT_QRY_DELIMITER));
+	    setSlComment(SQLExplorerPlugin.getStringPref(IConstants.SQL_SL_COMMENT));
+	    setMlCommentStart(SQLExplorerPlugin.getStringPref(IConstants.SQL_ML_COMMENT_START));
+	    setMlCommentEnd(SQLExplorerPlugin.getStringPref(IConstants.SQL_ML_COMMENT_END));
+	    setQuoteEscapes(getPref(IConstants.SQL_QUOTE_ESCAPE_CHAR));
+	    enableStructuredComments = SQLExplorerPlugin.getBooleanPref(IConstants.ENABLE_STRUCTURED_COMMENTS);
 	    
-	    String str = getPref(prefs, IConstants.SQL_QUOTE_ESCAPE_CHAR);
+	    String str = getPref(IConstants.SQL_QUOTE_ESCAPE_CHAR);
 	    if (str != null) {
 	    	str = str.trim();
 	    	if (str.length() > 0)
@@ -393,8 +392,8 @@ public class BasicQueryParser extends AbstractQueryParser {
 	 * @param id
 	 * @return
 	 */
-	private String getPref(Preferences prefs, String id) {
-		String str = prefs.getString(id);
+	private String getPref(String id) {
+		String str = SQLExplorerPlugin.getStringPref(id);
 		if (str == null)
 			return null;
 		str = str.trim();

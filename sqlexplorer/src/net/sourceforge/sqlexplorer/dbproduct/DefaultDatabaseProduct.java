@@ -26,7 +26,6 @@ import java.util.List;
 import net.sourceforge.sqlexplorer.parsers.BasicQueryParser;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
-import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
 
 public class DefaultDatabaseProduct extends AbstractDatabaseProduct {
@@ -56,7 +55,7 @@ public class DefaultDatabaseProduct extends AbstractDatabaseProduct {
 	}
 
 	public QueryParser getQueryParser(String sql, int initialLineNo) {
-		return new BasicQueryParser(sql, SQLExplorerPlugin.getDefault().getPluginPreferences(),initialLineNo);
+		return new BasicQueryParser(sql, initialLineNo);
 	}
 
 	public Collection<Message> getErrorMessages(SQLConnection connection, Query query) throws SQLException {

@@ -50,7 +50,7 @@ public class CloseAllConnectionsAction extends AbstractConnectionTreeAction impl
      * @see org.eclipse.jface.action.IAction#run()
      */
     public void run() {
-    	boolean confirm = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.CONFIRM_BOOL_CLOSE_ALL_CONNECTIONS);
+    	boolean confirm = SQLExplorerPlugin.getBooleanPref(IConstants.CONFIRM_BOOL_CLOSE_ALL_CONNECTIONS);
     	if (confirm) {
 	    	MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoQuestion(getView().getSite().getShell(), 
 	    			Messages.getString("ConnectionsView.Actions.CloseAll.Confirm.Title"), 
@@ -59,7 +59,7 @@ public class CloseAllConnectionsAction extends AbstractConnectionTreeAction impl
 	    			false, null, null);
 	    	
 	    	if (dialog.getToggleState() && dialog.getReturnCode() == IDialogConstants.YES_ID)
-	    		SQLExplorerPlugin.getDefault().getPluginPreferences().setValue(IConstants.CONFIRM_BOOL_CLOSE_ALL_CONNECTIONS, false);
+	    		SQLExplorerPlugin.setPref(IConstants.CONFIRM_BOOL_CLOSE_ALL_CONNECTIONS, false);
 	    	if (dialog.getReturnCode() != IDialogConstants.YES_ID)
 	    		return;
     	}

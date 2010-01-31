@@ -85,8 +85,8 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 		this.password = password;
 		
 		// Get default autocommit behaviour
-		autoCommit = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.AUTO_COMMIT);
-		commitOnClose = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.COMMIT_ON_CLOSE);
+		autoCommit = SQLExplorerPlugin.getBooleanPref(IConstants.AUTO_COMMIT);
+		commitOnClose = SQLExplorerPlugin.getBooleanPref(IConstants.COMMIT_ON_CLOSE);
 	}
 	
 	/**
@@ -304,7 +304,7 @@ public class User implements Comparable<User>, SessionEstablishedListener {
         }
         
 		boolean forPool = allocated.remove(connection);
-        boolean commitOnClose = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.COMMIT_ON_CLOSE);
+        boolean commitOnClose = SQLExplorerPlugin.getBooleanPref(IConstants.COMMIT_ON_CLOSE);
         
         if (!connection.getAutoCommit()) {
 	        if (commitOnClose)

@@ -39,6 +39,7 @@ import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.PartInitException;
@@ -133,7 +134,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         if (_defaultConnectionsStarted)
             return;
 
-        boolean openEditor = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.AUTO_OPEN_EDITOR);
+        boolean openEditor = SQLExplorerPlugin.getBooleanPref(IConstants.AUTO_OPEN_EDITOR);
         
         // Get the database structure view - NOTE: we don't use SQLExplorerPlugin.getDatabaseView()
         //	because it may not have an active page yet
@@ -237,6 +238,22 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
         return plugin;
     }
 
+    public static String getStringPref(String pKey)
+    {
+    	return Platform.getPreferencesService().getString(PLUGIN_ID, pKey, null, null);
+    }
+    public static boolean getBooleanPref(String pKey)
+    {
+    	return Platform.getPreferencesService().getBoolean(PLUGIN_ID, pKey, false, null);
+    }
+    public static int getIntPref(String pKey)
+    {
+    	return Platform.getPreferencesService().getInt(PLUGIN_ID, pKey, 0, null);
+    }
+    public static void setPref(String pKey, boolean pValue)
+    {
+    	new InstanceScope().getNode(PLUGIN_ID).putBoolean(pKey, pValue);
+    }
     /**
      * Returns the confirmation state of the given preference id
      * @param preferenceId
@@ -244,7 +261,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
      */
 	public static Confirm getConfirm(String preferenceId) {
     	try {
-    		return IConstants.Confirm.valueOf(getDefault().getPluginPreferences().getString(preferenceId));
+    		return IConstants.Confirm.valueOf(getStringPref(preferenceId));
     	} catch(IllegalArgumentException e) {
     		// Nothing
     	}

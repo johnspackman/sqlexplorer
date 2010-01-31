@@ -48,7 +48,7 @@ public class CopyStatementAction extends AbstractHistoryContextAction {
                 return;
             }
 
-            String queryDelimiter = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(
+            String queryDelimiter = SQLExplorerPlugin.getStringPref(
                     IConstants.SQL_QRY_DELIMITER);
             StringBuffer copiedText = new StringBuffer();
 

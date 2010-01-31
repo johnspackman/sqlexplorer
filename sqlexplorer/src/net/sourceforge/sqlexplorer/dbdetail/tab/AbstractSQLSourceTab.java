@@ -33,7 +33,7 @@ public abstract class AbstractSQLSourceTab extends AbstractSourceTab {
         Statement stmt = null;
         PreparedStatement pStmt = null;
         
-        int timeOut = SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(IConstants.INTERACTIVE_QUERY_TIMEOUT);
+        int timeOut = SQLExplorerPlugin.getIntPref(IConstants.INTERACTIVE_QUERY_TIMEOUT);
         
         try {
             connection = getNode().getSession().grabConnection();

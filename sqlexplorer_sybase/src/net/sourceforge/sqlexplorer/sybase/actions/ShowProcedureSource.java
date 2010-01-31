@@ -16,7 +16,6 @@ import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
 import net.sourceforge.sqlexplorer.sybase.nodes.ProcedureNode;
 import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
-import org.eclipse.core.runtime.Preferences;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 
@@ -39,10 +38,9 @@ public class ShowProcedureSource extends AbstractDBTreeContextAction {
         	 
         	 ProcedureNode procNode;
     		 StringBuffer script = new StringBuffer("");
-    		 Preferences prefs = SQLExplorerPlugin.getDefault().getPluginPreferences();
     		 
-             String queryDelimiter = prefs.getString(IConstants.SQL_QRY_DELIMITER);
-             String altQueryDelimiter = prefs.getString(IConstants.SQL_ALT_QRY_DELIMITER);
+             String queryDelimiter = SQLExplorerPlugin.getStringPref(IConstants.SQL_QRY_DELIMITER);
+             String altQueryDelimiter = SQLExplorerPlugin.getStringPref(IConstants.SQL_ALT_QRY_DELIMITER);
 
     		 // If there is an alternative delimeter set, I prefer the alt, 
     		 // because 'go' is the more usual delimeter in the sybase world.

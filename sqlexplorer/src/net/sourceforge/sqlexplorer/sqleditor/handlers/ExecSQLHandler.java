@@ -66,8 +66,8 @@ public class ExecSQLHandler extends AbstractHandler implements IHandler {
             throw new Exception(Messages.getString("SQLEditor.LimitRows.Error"));
 
         
-        boolean confirmWarnLargeMaxrows = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.CONFIRM_BOOL_WARN_LARGE_MAXROWS);
-        int warnLimit = SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(IConstants.WARN_LIMIT);
+        boolean confirmWarnLargeMaxrows = SQLExplorerPlugin.getBooleanPref(IConstants.CONFIRM_BOOL_WARN_LARGE_MAXROWS);
+        int warnLimit = SQLExplorerPlugin.getIntPref(IConstants.WARN_LIMIT);
 
         // Confirm with the user if they've left it too large
         if (confirmWarnLargeMaxrows && (maxresults == 0 || maxresults > warnLimit)) {
@@ -82,7 +82,7 @@ public class ExecSQLHandler extends AbstractHandler implements IHandler {
                             false, null, null);
                     if (dlg.getReturnCode() == IDialogConstants.OK_ID) {
                     	if (dlg.getToggleState())
-                    		SQLExplorerPlugin.getDefault().getPluginPreferences().setValue(IConstants.CONFIRM_BOOL_WARN_LARGE_MAXROWS, false);
+                    		SQLExplorerPlugin.setPref(IConstants.CONFIRM_BOOL_WARN_LARGE_MAXROWS, false);
                         execute(pEditor, maxresults);
                     }
                 }

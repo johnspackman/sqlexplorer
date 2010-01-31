@@ -43,7 +43,7 @@ public class CloseConnectionAction extends AbstractConnectionTreeAction implemen
     }
 
     public void run() {
-    	boolean confirm = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.CONFIRM_BOOL_CLOSE_CONNECTION);
+    	boolean confirm = SQLExplorerPlugin.getBooleanPref(IConstants.CONFIRM_BOOL_CLOSE_CONNECTION);
 		for (SQLConnection connection : getView().getSelectedConnections(false)) {
 			Session session = connection.getSession();
 			if (session != null && !session.isConnectionInUse()) {
@@ -55,7 +55,7 @@ public class CloseConnectionAction extends AbstractConnectionTreeAction implemen
 			    			false, null, null);
 
 			    	if (dialog.getToggleState() && dialog.getReturnCode() == IDialogConstants.YES_ID)
-			    		SQLExplorerPlugin.getDefault().getPluginPreferences().setValue(IConstants.CONFIRM_BOOL_CLOSE_CONNECTION, false);
+			    		SQLExplorerPlugin.setPref(IConstants.CONFIRM_BOOL_CLOSE_CONNECTION, false);
 			    	if (dialog.getReturnCode() != IDialogConstants.YES_ID)
 			    		return;
 		    	}

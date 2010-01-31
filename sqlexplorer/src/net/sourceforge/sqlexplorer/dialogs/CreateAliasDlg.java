@@ -196,7 +196,7 @@ public class CreateAliasDlg extends TitleAreaDialog {
         gd_driver.widthHint = SIZING_TEXT_FIELD_WIDTH;
         cboDriver.setLayoutData(gd_driver);
 
-        String defaultDriverName = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DEFAULT_DRIVER);
+        String defaultDriverName = SQLExplorerPlugin.getStringPref(IConstants.DEFAULT_DRIVER);
         ManagedDriver defaultDriver = null;
         int defaultDriverIndex = 0;
         populateCombo();

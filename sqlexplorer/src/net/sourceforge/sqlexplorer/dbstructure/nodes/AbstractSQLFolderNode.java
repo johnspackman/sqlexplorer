@@ -27,7 +27,7 @@ public abstract class AbstractSQLFolderNode extends AbstractFolderNode {
         ResultSet rs = null;
         Statement stmt = null;
         PreparedStatement pStmt = null;
-        int timeOut = SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(IConstants.INTERACTIVE_QUERY_TIMEOUT);
+        int timeOut = SQLExplorerPlugin.getIntPref(IConstants.INTERACTIVE_QUERY_TIMEOUT);
         
         try {
         	connection = getSession().grabConnection();

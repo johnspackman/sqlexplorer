@@ -297,7 +297,7 @@ public class SQLExecution extends AbstractSQLExecution {
         	    			false, null, null);
         	    	
         	    	if (dialog.getToggleState() && dialog.getReturnCode() == IDialogConstants.OK_ID)
-        	    		SQLExplorerPlugin.getDefault().getPluginPreferences().setValue(IConstants.CONFIRM_BOOL_SHOW_DIALOG_ON_QUERY_ERROR, false);
+        	    		SQLExplorerPlugin.setPref(IConstants.CONFIRM_BOOL_SHOW_DIALOG_ON_QUERY_ERROR, false);
                 }
             });
     }

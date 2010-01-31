@@ -83,7 +83,7 @@ public class CreateTableScriptAction extends AbstractDBTreeContextAction {
         	connection = session.grabConnection();
 
             StringBuffer script = new StringBuffer();
-            String queryDelimiter = SQLExplorerPlugin.getDefault().getPluginPreferences().getString(
+            String queryDelimiter = SQLExplorerPlugin.getStringPref(
                     IConstants.SQL_QRY_DELIMITER);
 
             stmt = connection.createStatement();

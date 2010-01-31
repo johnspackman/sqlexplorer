@@ -53,7 +53,7 @@ public class PreviewTab extends AbstractDataSetTab {
         if (node instanceof TableNode) {
             TableNode tableNode = (TableNode) node;
 
-            int maxResults = SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(IConstants.PRE_ROW_COUNT);
+            int maxResults = SQLExplorerPlugin.getIntPref(IConstants.PRE_ROW_COUNT);
             if (maxResults == 0) {
                 maxResults = 50;
             }

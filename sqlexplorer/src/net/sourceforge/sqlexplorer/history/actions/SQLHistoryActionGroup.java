@@ -8,7 +8,6 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.actions.ActionGroup;
 
 public class SQLHistoryActionGroup extends ActionGroup {
@@ -68,33 +67,6 @@ public class SQLHistoryActionGroup extends ActionGroup {
 
     }
 
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ui.actions.ActionGroup#fillActionBars(org.eclipse.ui.IActionBars)
-     */
-    public void fillActionBars(IActionBars actionBars) {
-
-        if (true) {
-            return;
-        }
-
-        // find our target node..
-        IStructuredSelection selection = (IStructuredSelection) _tableViewer.getSelection();
-
-        // check if we have a valid selection
-        if (selection == null) {
-            return;
-        }
-
-        actionBars.getToolBarManager().add(_openInEditorAction);
-        actionBars.getToolBarManager().add(_appendToEditorAction);
-        actionBars.getToolBarManager().add(_removeFromHistoryAction);
-        actionBars.getToolBarManager().add(_clearHistoryAction);
-        actionBars.getToolBarManager().add(new Separator());
-        actionBars.getToolBarManager().add(_copyAction);
-    }
 
 
     /**

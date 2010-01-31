@@ -66,7 +66,7 @@ public class SQLHistory {
 
     private static final String TIME_HINT_MARKER = "#TH#";
 
-    private int _autoSaveAfterCount = SQLExplorerPlugin.getDefault().getPluginPreferences().getInt(IConstants.HISTORY_AUTOSAVE_AFTER);
+    private int _autoSaveAfterCount = SQLExplorerPlugin.getIntPref(IConstants.HISTORY_AUTOSAVE_AFTER);
     
     private int _queriesAdded = 0;
     

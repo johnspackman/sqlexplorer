@@ -557,7 +557,7 @@ public class DataSet implements ResultProvider {
 
 	private DateFormat getDateFormat(int pType) {
 		if (formatDates == null)
-		    formatDates = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.DATASETRESULT_FORMAT_DATES);
+		    formatDates = SQLExplorerPlugin.getBooleanPref(IConstants.DATASETRESULT_FORMAT_DATES);
 		if (!formatDates)
 			return null;
 		
@@ -567,21 +567,21 @@ public class DataSet implements ResultProvider {
 			case Types.DATE:
 				if (dateFormat == null)
 					dateFormat = new SimpleDateFormat(
-			            SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_FORMAT));
+			            SQLExplorerPlugin.getStringPref(IConstants.DATASETRESULT_DATE_FORMAT));
 				result = dateFormat;
 				break;
 				
 			case Types.TIME:
 				if (timeFormat == null)
 					timeFormat = new SimpleDateFormat(
-			            SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_TIME_FORMAT));
+			            SQLExplorerPlugin.getStringPref(IConstants.DATASETRESULT_TIME_FORMAT));
 				result = timeFormat;
 				break;
 				
 			case Types.TIMESTAMP:
 				if (dateTimeFormat == null)
 					dateTimeFormat = new SimpleDateFormat(
-			            SQLExplorerPlugin.getDefault().getPluginPreferences().getString(IConstants.DATASETRESULT_DATE_TIME_FORMAT));
+			            SQLExplorerPlugin.getStringPref(IConstants.DATASETRESULT_DATE_TIME_FORMAT));
 				result = dateTimeFormat;
 				break;
 				

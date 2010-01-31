@@ -73,8 +73,7 @@ public class SQLTextEditor extends TextEditor {
 
 	/* package */SQLTextViewer sqlTextViewer;
 
-	private boolean _enableContentAssist = SQLExplorerPlugin.getDefault()
-			.getPluginPreferences().getBoolean(IConstants.SQL_ASSIST);
+	private boolean _enableContentAssist = SQLExplorerPlugin.getBooleanPref(IConstants.SQL_ASSIST);
 
 	private IPreferenceStore store;
 
@@ -139,7 +138,7 @@ public class SQLTextEditor extends TextEditor {
 		Object adapter = getAdapter(org.eclipse.swt.widgets.Control.class);
 		if (adapter instanceof StyledText) {
 			StyledText text = (StyledText) adapter;
-			text.setWordWrap(SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.WORD_WRAP));
+			text.setWordWrap(SQLExplorerPlugin.getBooleanPref(IConstants.WORD_WRAP));
 			
 	        FontData[] fData = PreferenceConverter.getFontDataArray(store, IConstants.FONT);
 	        if (fData.length > 0) {

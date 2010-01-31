@@ -78,7 +78,7 @@ public class MetaDataSession extends Session {
 			if (connection != null)
 				releaseConnection(connection);
 		}
-		_assistanceEnabled = SQLExplorerPlugin.getDefault().getPluginPreferences().getBoolean(IConstants.SQL_ASSIST);
+		_assistanceEnabled = SQLExplorerPlugin.getBooleanPref(IConstants.SQL_ASSIST);
         if (_assistanceEnabled) {
             // schedule job to load dictionary for this session
         	dictionary = new Dictionary();
