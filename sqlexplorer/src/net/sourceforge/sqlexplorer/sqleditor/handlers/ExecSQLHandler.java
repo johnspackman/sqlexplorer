@@ -33,7 +33,6 @@ public class ExecSQLHandler extends AbstractHandler implements IHandler {
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.commands.AbstractHandler#execute(org.eclipse.core.commands.ExecutionEvent)
 	 */
-	@Override
 	public Object execute(ExecutionEvent pEvent) throws ExecutionException {
 		final IEditorPart editor = HandlerUtil.getActiveEditor(pEvent);
 		if(editor instanceof SQLEditor)
