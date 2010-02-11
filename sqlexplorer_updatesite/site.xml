@@ -3,7 +3,7 @@
    <description>
       SQL Explorer SourceForge Site
    </description>
-   <feature url="features/net.sourceforge.sqlexplorer_3.5.1.v20100131_SR3.jar" id="net.sourceforge.sqlexplorer" version="3.5.1.v20100131_SR3">
+   <feature url="features/net.sourceforge.sqlexplorer_3.5.1.v20100211_SR3b.jar" id="net.sourceforge.sqlexplorer" version="3.5.1.v20100211_SR3b">
       <category name="SQLExplorer"/>
    </feature>
    <category-def name="SQLExplorer" label="SQL Explorer">
