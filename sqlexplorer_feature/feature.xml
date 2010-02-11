@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.sqlexplorer"
       label="Eclipse SQL Explorer"
-      version="3.5.1.v20100131_SR3"
+      version="3.5.1.v20100211_SR3b"
       provider-name="SQL Explorer Project (eclipsesql.sourceforge.net)"
       plugin="net.sourceforge.sqlexplorer">
 
@@ -18,12 +18,14 @@ key binding (patch #2725105 by joco01)
 +. extended database(catalog) support for MySql,Sybase, MS-Sql
 +. added New to File menu, moved preferences menu item down
 +. re-added export to HTML and XLS action
+
 SR1:
 +. use getDate for DATE sql type, needed for Teradata, no problems
 detected with MySql/msSql/Postgres
 see https://sourceforge.net/projects/eclipsesql/forums/forum/450663/topic/3435783
 +. added option to strip comments before executing SQL
 see https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3423052
+
 SR2:
 +. added patch from patl9 fixing problems with alias saving,
 http://sourceforge.net/tracker/?func=detail&amp;atid=725495&amp;aid=2891491&amp;group_id=132863
@@ -32,11 +34,17 @@ http://sourceforge.net/tracker/?func=detail&amp;atid=725495&amp;aid=2891491&amp;
 comments is enabled
 +. added check for lines starting with \ in PostgreSQL
 +. added batch execution results
+
 SR3:
 +. fixed IndexOutOfBoundsException in execute SQL chunk
-+. Patch #2924692 by ashinger, fixed some problems in JDBC driver preferences
-+. used commands for SQL actions, new context menu entries and editor tool bar buttons
++. Patch #2924692 by ashinger, fixed some problems in JDBC driver
+preferences
++. used commands for SQL actions, new context menu entries and
+editor tool bar buttons
 +. cleanup deprecations for preferences
+
+SR3b: 
++. fixed Bug #2948449 NoSuchMethodeError, see https://sourceforge.net/tracker/index.php?func=detail&amp;aid=2948449&amp;group_id=132863&amp;atid=725495
    </description>
 
    <copyright url="http://sourceforge.net/projects/eclipsesql">
@@ -88,13 +96,13 @@ USA
          id="net.sourceforge.sqlexplorer"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20100131_SR3"/>
+         version="3.5.1.v20100211_SR3b"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.db2"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20091024"
+         version="3.5.1.v20100211_SR3b"
          fragment="true"
          unpack="false"/>
 
@@ -102,7 +110,7 @@ USA
          id="net.sourceforge.sqlexplorer.oracle"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20091024"
+         version="3.5.1.v20100211_SR3b"
          fragment="true"
          unpack="false"/>
 
@@ -110,7 +118,7 @@ USA
          id="net.sourceforge.sqlexplorer.mysql"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20100131_SR3"
+         version="3.5.1.v20100211_SR3b"
          fragment="true"
          unpack="false"/>
 
@@ -118,7 +126,7 @@ USA
          id="net.sourceforge.sqlexplorer.postgresql"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20091129_SR2"
+         version="3.5.1.v20100211_SR3b"
          fragment="true"
          unpack="false"/>
 
@@ -126,13 +134,13 @@ USA
          id="net.sourceforge.sqlexplorer.help"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20091024"/>
+         version="3.5.1.v20100211_SR3b"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.dbase"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20091024"
+         version="3.5.1.v20100211_SR3b"
          fragment="true"
          unpack="false"/>
 
@@ -140,7 +148,7 @@ USA
          id="net.sourceforge.sqlexplorer.mssql"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20091024"
+         version="3.5.1.v20100211_SR3b"
          fragment="true"
          unpack="false"/>
 
@@ -148,7 +156,7 @@ USA
          id="net.sourceforge.sqlexplorer.sybase"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20100131_SR3"
+         version="3.5.1.v20100211_SR3b"
          fragment="true"
          unpack="false"/>
 
@@ -156,7 +164,7 @@ USA
          id="net.sourceforge.sqlexplorer.derby"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20091024"
+         version="3.5.1.v20100211_SR3b"
          fragment="true"
          unpack="false"/>
 

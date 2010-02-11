@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Microsoft SQL Server extensions to SQL Explorer
 Bundle-SymbolicName: net.sourceforge.sqlexplorer.mssql;singleton:=true
-Bundle-Version: 3.5.1.v20091024
+Bundle-Version: 3.5.1.v20100211_SR3b
 Bundle-Vendor: Austin Morgan
 Fragment-Host: net.sourceforge.sqlexplorer;bundle-version="3.5.0"
 Export-Package: net.sourceforge.sqlexplorer.mssql,

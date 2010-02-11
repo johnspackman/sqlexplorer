@@ -3,7 +3,7 @@ package net.sourceforge.sqlexplorer.plugin;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 /**
- * Singleton to get current IPreferenceStore. Use to set a dummy impülementation for
+ * Singleton to get current IPreferenceStore. Use to set a dummy implementation for
  * tests.
  * 
  * @author Heiko
