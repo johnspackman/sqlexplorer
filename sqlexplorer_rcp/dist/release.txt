@@ -27,6 +27,9 @@ Changes in SR3:
 * added Patch #2924692 by ashinger, fixed some problems in JDBC driver preferences
 * used commands for SQL actions, new context menu entries and editor tool bar buttons
 * cleanup deprecations for preferences
+
+Changes in SR3:
+* fixed Bug #2948449 NoSuchMethodeError, see https://sourceforge.net/tracker/index.php?func=detail&aid=2948449&group_id=132863&atid=725495
  
 Starting with SR1 we will provide zip's only for the plugin. The standalone distributions
 can be updated using the update site (http://eclipsesql.sourceforge.net) integrated Update Manager.
