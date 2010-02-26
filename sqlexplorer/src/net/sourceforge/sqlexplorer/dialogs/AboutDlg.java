@@ -265,7 +265,7 @@ class CreditsItem {
             " - Heiko Hilbert" + separator + 
             " - joco01" + separator + 
             " - pat19" + separator +
-            " - André Shulze" + separator +
+            " - André Schulze" + separator +
             separator +              
             "Developers (version 3.5.0.RC8):" + separator +
             " - Heiko Hilbert" + separator + 

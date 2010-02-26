@@ -51,8 +51,8 @@ class ExtendedCompletionProposal implements ICompletionProposal {
     TableNode tn;
 
 
-    public ExtendedCompletionProposal(String proposalsString, int i, int j, int k, Image tmpImage, String str, TableNode tb) {
-        compProposal = new CompletionProposal(proposalsString, i, j, k, tmpImage, str, null, null);
+   public ExtendedCompletionProposal(String proposalsString, int replacementOffset, int replacementLength, int cursorPosition, Image image, String displayString, TableNode tb) {
+        compProposal = new CompletionProposal(proposalsString, replacementOffset, replacementLength, cursorPosition, image, displayString, null, null);
         this.tn = tb;
     }
 
@@ -172,6 +172,15 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
         return pName.substring(dotPos + 1);
     	
     }
+    
+    private String getObjectNameWithoutSchema(String objectName, String schemaName)
+    {
+    	
+    	if (objectName.toLowerCase().startsWith(schemaName.toLowerCase() + '.')) //$NON-NLS-1$
+    		return objectName.substring(schemaName.length() + 1);
+    	else
+    		return objectName;    	
+    }
 
     /**
      * @see org.eclipse.jface.text.contentassist.IContentAssistProcessor#computeCompletionProposals(org.eclipse.jface.text.ITextViewer,
@@ -226,7 +235,7 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
             		if(words[i].equals(name)) {
             			// name has been found as a word, look up previous word
             			String potentialName = words[i-1].toLowerCase();
-            			if(potentialName.equals("as") && i > 1) {
+            			if (potentialName.equals("as") && i > 1) {
             				potentialName = words[i-2].toLowerCase();
             			}
             			potentialName = getLastNamePart(potentialName);
@@ -268,7 +277,8 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
                 if (children != null) {
                     for (int i = 0; i < children.length; i++) {
                         String childName = children[i].toString().toLowerCase();
-                        if (childName.startsWith("table") || childName.startsWith("view")) {
+                        if (childName.startsWith("table") || childName.startsWith("view") || 
+                        	childName.equals("system table") || childName.equals("system view")) {
                             Object[] tables = (Object[]) ((INode) children[i]).getChildNodes();
                             if (tables != null) {
                                 for (int j = 0; j < tables.length; j++) {
@@ -279,8 +289,14 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
                                             tmpImage = tableImage;
                                         else if (((TableNode) tables[j]).isView())
                                             tmpImage = viewImage;
-                                        propList.add(new ExtendedCompletionProposal(tableName, documentOffset, 0, tableName.length(), tmpImage,
-                                                tableName, (TableNode) tables[j]));
+
+                                        // ashinger 
+                                        // Insert Table/Viewname without schema, if the schema and a dot are the content before the caret
+                                        // and the schema is part of the tablename
+                                        String shortName = getObjectNameWithoutSchema(tableName, name);
+                                        
+                                        propList.add(new ExtendedCompletionProposal(shortName, documentOffset, 0, shortName.length(), tmpImage,
+                                        		tableName, (TableNode) tables[j]));
                                     }
         
                                 }
@@ -319,7 +335,8 @@ public class SQLCompletionProcessor implements IContentAssistProcessor {
                     ICompletionProposal cmp = new ExtendedCompletionProposal(proposalsString[i], documentOffset - length, length,
                             proposalsString[i].length(), tmpImage, proposalsString[i], tbNode);
                     propList.add(cmp);
-
+					// ashinger to prevent multiple entries
+                    break;
                 }
             }
             String[] proposalsString2 = dictionary.matchCatalogSchemaPrefix(string.toLowerCase());
