@@ -25,7 +25,7 @@ Build standalone distribution:
 - run build_rcp.xml dist to build rcp zip
 
 SR Deploy:
-- sftp plugin.zip/xml.zip from dist to uploads (/home/groups/e/ec/eclipsesql/uploads/)
+- sftp plugin.zip/xml.zip/release.txt from dist to uploads (/home/groups/e/ec/eclipsesql/uploads/)
 - login to shell
 - go to uploads
 - run build_sr.sh [version number] [SR-number]
@@ -35,7 +35,7 @@ SR Deploy:
 - add release info to files
  
 Complete Deploy:
-- sftp all zip files from dist to uploads (/home/groups/e/ec/eclipsesql/uploads/)
+- sftp all zip files/release.txt from dist to uploads (/home/groups/e/ec/eclipsesql/uploads/)
 - login to shell
 - go to uploads
 - run build.sh [version number]
