@@ -461,14 +461,16 @@ public class DataSet implements ResultProvider {
 	        	if (precision > 16 || precision < 1)
 	        		return resultSet.getBigDecimal(columnIndex);
 	            return new Double(resultSet.getDouble(columnIndex));
-	
+
 	        case Types.DATE:
-	            return resultSet.getDate(columnIndex);
+	            return resultSet.getTimestamp(columnIndex); // DATE sometimes includes time info, DB-specific (EG on Oracle it does)
+	            
 	        case Types.TIMESTAMP:                    
 	            return resultSet.getTimestamp(columnIndex);
 	            
 	        case Types.TIME:
 	            return resultSet.getTime(columnIndex);
+	            
 	        case Types.LONGVARBINARY:
 	        	InputStream is = resultSet.getBinaryStream(columnIndex);
 	        	if(is == null)
