@@ -463,7 +463,16 @@ public class DataSet implements ResultProvider {
 	            return new Double(resultSet.getDouble(columnIndex));
 
 	        case Types.DATE:
-	            return resultSet.getTimestamp(columnIndex); // DATE sometimes includes time info, DB-specific (EG on Oracle it does)
+	        	try
+	        	{
+	        		// DATE sometimes includes time info, DB-specific (EG on Oracle it does)
+	        		return resultSet.getTimestamp(columnIndex); 
+	        	}
+	        	catch(Throwable e)
+	        	{
+	        		// teradata does not support getTimestamp on DATE values
+	        		return resultSet.getDate(columnIndex);
+	        	}
 	            
 	        case Types.TIMESTAMP:                    
 	            return resultSet.getTimestamp(columnIndex);
