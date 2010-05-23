@@ -367,19 +367,49 @@
                icon="%net.sourceforge.sqlexplorer.executeSQL.icon"
                id="net.sourceforge.sqlexplorer.executeSQL.item"
                tooltip="%net.sourceforge.sqlexplorer.executeSQL.tooltip">
+               <visibleWhen
+                     checkEnabled="false">
+                     <reference
+                           definitionId="net.sourceforge.sqlexplorer.editorActive">
+                     </reference>
+               </visibleWhen>
          </command>
          <command
                commandId="net.sourceforge.sqlexplorer.executeSQLChunk"
                icon="%net.sourceforge.sqlexplorer.executeSQLChunk.icon"
                id="net.sourceforge.sqlexplorer.executeSQLchunk.item"
                tooltip="%net.sourceforge.sqlexplorer.executeSQLChunk.tooltip">
+               <visibleWhen
+                     checkEnabled="false">
+                     <reference
+                           definitionId="net.sourceforge.sqlexplorer.editorActive">
+                     </reference>
+               </visibleWhen>
          </command>
          <command
                commandId="net.sourceforge.sqlexplorer.executeSQLBatch"
                icon="%net.sourceforge.sqlexplorer.executeSQLBatch.icon"
                id="net.sourceforge.sqlexplorer.executeSQLBatch.item"
                tooltip="%net.sourceforge.sqlexplorer.executeSQLBatch.tooltip">
+               <visibleWhen
+                     checkEnabled="false">
+                     <reference
+                           definitionId="net.sourceforge.sqlexplorer.editorActive">
+                     </reference>
+               </visibleWhen>
          </command>
       </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="net.sourceforge.sqlexplorer.editorActive">
+             <with
+                   variable="activeEditorId">
+                   <equals
+                         value="net.sourceforge.sqlexplorer.plugin.editors.SQLEditor">
+                   </equals>
+             </with>
+      </definition>
    </extension>
 </plugin>

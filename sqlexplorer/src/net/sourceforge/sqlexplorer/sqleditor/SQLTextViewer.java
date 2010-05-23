@@ -135,13 +135,13 @@ public class SQLTextViewer extends SourceViewer {
             fInformationPresenter.install(this);
 
 
-        this.setAnnotationHover(new IAnnotationHover() {
-
-            public String getHoverInfo(ISourceViewer sourceViewer, int lineNumber) {
-
-                return "hover info";
-            }
-        });
+//        this.setAnnotationHover(new IAnnotationHover() {
+//
+//            public String getHoverInfo(ISourceViewer sourceViewer, int lineNumber) {
+//
+//                return "hover info";
+//            }
+//        });
         setHoverControlCreator(new IInformationControlCreator() {
 
             public IInformationControl createInformationControl(Shell parent) {
