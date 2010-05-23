@@ -262,7 +262,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 	public static Confirm getConfirm(String preferenceId) {
     	try {
     		return IConstants.Confirm.valueOf(getStringPref(preferenceId));
-    	} catch(IllegalArgumentException e) {
+    	} catch(Throwable e) {
     		// Nothing
     	}
     	return IConstants.Confirm.ASK;

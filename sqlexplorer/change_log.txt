@@ -1,5 +1,6 @@
 3.5.? (??.??.2010) - Heiko Hilbert, André Schulze
 ======================================================
+- fixed Save As Bug, https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3697805
 - some bugfixes in SQLCompletionProcessor.java
   - Insert Table/Viewname without schema, if the schema and a dot are the content before the caret and the schema is part of the tablename.
   - Show system tables and system views in the content assistant
