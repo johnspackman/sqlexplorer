@@ -7,6 +7,7 @@
 +. feature #2957965, add context menu to db detail tables, see http://sourceforge.net/tracker/?func=detail&atid=725498&aid=2957965&group_id=132863
 +. fixed Save As Bug, https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3697805
 +. fixed menu contributions
++. fixed Index out of Bounds exception on calling Execute SQL-Chunk with statement ending at end of file
 
 3.5.1.SR3b (11.02.2010) - Heiko Hilbert
 ======================================================
