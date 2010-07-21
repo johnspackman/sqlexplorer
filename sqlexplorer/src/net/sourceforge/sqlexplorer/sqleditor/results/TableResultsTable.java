@@ -12,7 +12,6 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -220,53 +219,28 @@ public class TableResultsTable extends AbstractResultsTable {
 
         // refresh tab on F5, copy cell on CTRL-C, etc
         table.addKeyListener(this);
-                        
+
+        // fill table to get correct pack results
+        fillTable(table);
+
         // Pack the columns to best-fit size
         table.pack();
-//        for (TableColumn column : table.getColumns())
-//        {
-//            column.pack(); 
-//        }
-        adjustColumnWidth(table);
+        for (TableColumn column : table.getColumns())
+        {
+            column.pack(); 
+        }
 	}
 	
-	private void adjustColumnWidth(Table table)
+	private void fillTable(Table table)
 	{
-        GC gc = new GC(table);
-        gc.setFont(table.getFont());
-//        int charWidth = gc.getFontMetrics().getAverageCharWidth();
-        int charWidth = gc.getCharWidth('X');
-        gc.dispose();
-        
-        int sizes[] = new int[table.getColumnCount()];
-        int minSizes[] = new int[table.getColumnCount()];
         int columnCount = table.getColumnCount();
-    	for(int i = 0; i < columnCount; i++)
-    	{
-    		sizes[i] = table.getColumn(i).getText().length();
-    		minSizes[i] = sizes[i];
-    	}
         for(TableItem item : table.getItems())
         {
         	for(int i = 0; i < columnCount; i++)
         	{
-        		sizes[i] = Math.min(80, Math.max(sizes[i], item.getText(i).length()));
+        		item.getText(i);
         	}
         }
-    	for(int i = 0; i < columnCount; i++)
-    	{
-    		int size = Math.max(sizes[i],minSizes[i]);
-    		if(size < 20)
-    		{
-    			size ++;
-    		}
-//    		if(size < 10)
-//    		{
-//    			size++;
-//    		}
-    		table.getColumn(i).setWidth(size * charWidth);
-    	}
-		
 	}
 	protected TableColumn createColumn(ResultProvider.Column columnDef) {
         TableColumn column = new TableColumn(getTableViewer().getTable(), SWT.LEFT);           
