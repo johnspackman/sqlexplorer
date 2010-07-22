@@ -9,6 +9,7 @@
 +. fixed menu contributions
 +. fixed Index out of Bounds exception on calling Execute SQL-Chunk with statement ending at end of file
 +. fixed default column width for result tables
++. fixed NPE in catalog switcher
 
 3.5.1.SR3b (11.02.2010) - Heiko Hilbert
 ======================================================

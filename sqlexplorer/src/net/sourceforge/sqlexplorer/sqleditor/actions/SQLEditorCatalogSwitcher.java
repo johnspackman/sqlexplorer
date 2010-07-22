@@ -95,7 +95,10 @@ public class SQLEditorCatalogSwitcher extends ControlContribution {
             _catalogCombo.addDisposeListener(new DisposeListener() {
 			
 				public void widgetDisposed(DisposeEvent e) {
-					_editor.getSession().removeSessionListener(sessionListener);
+					if(_editor.getSession() != null)
+					{
+						_editor.getSession().removeSessionListener(sessionListener);
+					}
 				}
 			
 			});
