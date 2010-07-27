@@ -447,10 +447,16 @@ public class DataSet implements ResultProvider {
 	        case Types.INTEGER:
 	        case Types.SMALLINT:
 	        case Types.TINYINT:
-	            return new Long(resultSet.getInt(columnIndex));
-	
 	        case Types.BIGINT:
-	            return new Long(resultSet.getLong(columnIndex));
+	        	try
+	        	{
+	        		return new Long(resultSet.getLong(columnIndex));
+	        	}
+	        	catch(Throwable e)
+	        	{
+	        		// if the db type is unsigned long, it cann not be read as getLong
+	        		// try to read as BigDecimal
+	        	}
 		            
 	        case Types.DECIMAL:
 	        case Types.NUMERIC:
