@@ -55,7 +55,7 @@ public class ExporterXLS implements Exporter {
 		
 		Sheet sheet = wb.createSheet("sheet1");
 		
-		short rowNum = 0;
+		int rowNum = 0;
 
         if (includeColumnNames) {
     		Row row = sheet.createRow(rowNum++);
