@@ -169,7 +169,7 @@ class AboutItem {
         final Color imageBackgroundColor = new Color(parent.getDisplay(), 255, 255, 255);
         final Color fontColor = new Color(parent.getDisplay(), 102, 118, 145);
         
-        final String version = Messages.getString("AboutDialog.About.versionPrefix") + SQLExplorerPlugin.getDefault().getVersion() + "RC6";        
+        final String version = Messages.getString("AboutDialog.About.versionPrefix") + SQLExplorerPlugin.getDefault().getVersion();        
         imgComposite.addPaintListener(new PaintListener() {
 
             public void paintControl(PaintEvent event) {
@@ -177,7 +177,7 @@ class AboutItem {
                 gc.drawImage(logoImage, 0, 0);
                 gc.setBackground(imageBackgroundColor);
                 gc.setForeground(fontColor);
-                gc.drawText(version, 290, 75);
+                gc.drawText(version, 140, 80);
             }
         });
 
