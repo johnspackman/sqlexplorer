@@ -32,7 +32,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 
 /**
  * Export table contents to a CSV file.
@@ -42,8 +41,6 @@ public class ExportAction extends ResultsTableAction {
 
     private static final ImageDescriptor _image = ImageUtil.getDescriptor("Images.ExportIcon");
     
-    private Shell shell;
-
 	private Exporter exporter;
 
 	private ExportOptions exportOptions;
@@ -54,11 +51,6 @@ public class ExportAction extends ResultsTableAction {
     	this.exportOptions = ExportOptions.Current;
     	setResultsTable(resultTable);
     }
-    @Override
-	public void initialise(Shell shell) {
-		super.initialise(shell);
-		this.shell = shell;
-	}
 
 	/**
      * Return the text that will be displayed in the context popup menu for this action. 
@@ -79,7 +71,7 @@ public class ExportAction extends ResultsTableAction {
      */
     public void run() 
     {
-    	final ExportDlg	dlg = new ExportDlg(shell, exporter, exportOptions);
+    	final ExportDlg	dlg = new ExportDlg(Display.getCurrent().getActiveShell(), exporter, exportOptions);
     	if (dlg.open() != Window.OK)
     		return;
 
@@ -112,11 +104,11 @@ public class ExportAction extends ResultsTableAction {
                 catch (final Exception e) 
                 {
                 	SQLExplorerPlugin.error(e);
-                    shell.getDisplay().asyncExec(new Runnable() 
+                	Display.getCurrent().asyncExec(new Runnable() 
                     {
 
                         public void run() {
-                            MessageDialog.openError(shell, Messages.getString("SQLResultsView.Error.Export.Title"), e.getMessage());
+                            MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.getString("SQLResultsView.Error.Export.Title"), e.getMessage());
                         }
                     });
                 }
