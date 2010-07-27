@@ -222,7 +222,7 @@ public class SQLExecution extends AbstractSQLExecution {
 	            	}
 	            	DataSet dataSet;
 	            	boolean checkedForMessages = false;
-            		showWarnings(results, querySQL);
+//            		showWarnings(results, querySQL);
 	            	while ((dataSet = results.nextDataSet()) != null) {
 
 	                    // update sql result
@@ -241,11 +241,13 @@ public class SQLExecution extends AbstractSQLExecution {
 	            		showWarnings(results, querySQL);
 	                    displayResults(dataSet);
 	            	}
-            		showWarnings(results, querySQL);
 	            	overallUpdateCount += results.getUpdateCount();
 	            	
 	            	if (!checkedForMessages)
+	            	{
+	            		showWarnings(results, querySQL);
 	            		checkForMessages(query);
+	            	}
 		            debugLogQuery(query, null);
 	
 	            } catch(final SQLException e) {
@@ -338,12 +340,12 @@ public class SQLExecution extends AbstractSQLExecution {
         {
         	if(showQuery)
         	{
-        		addMessage(new Message(Message.Status.STATUS, -1, 0, querySql, msg));
+        		addMessage(new Message(Message.Status.STATUS, -1, 0, querySql, "Warning: " + msg));
         		showQuery = false;
         	}
         	else
         	{
-        		addMessage(new Message(Message.Status.STATUS, -1, 0, "", msg));
+        		addMessage(new Message(Message.Status.STATUS, -1, 0, "", "Warning: " + msg));
         	}
         }
     	

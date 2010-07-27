@@ -85,6 +85,11 @@ public final class ExecutionResultImpl implements ExecutionResults {
 		} catch (SQLException e) {
 			// ignore it
 		}
+		try {
+			stmt.clearWarnings();
+		} catch (SQLException e) {
+			// ignore it;
+		}
 		return result;
 	}
 	public DataSet nextDataSet() throws SQLException {
