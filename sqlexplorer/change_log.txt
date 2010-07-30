@@ -14,6 +14,7 @@
 +. show warnings only once
 +. fixed: XLS export fails with more than 32767 rows
 +. fixed About Dialog: https://sourceforge.net/tracker/?func=detail&aid=3029327&group_id=132863&atid=725495
++. made jar locations in SQLDrivers.xml relative to workspace or eclipse home directory
 
 
 3.5.1.SR3b (11.02.2010) - Heiko Hilbert

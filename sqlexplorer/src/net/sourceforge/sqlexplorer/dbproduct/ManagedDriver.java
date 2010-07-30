@@ -9,17 +9,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import org.dom4j.Element;
-import org.dom4j.tree.DefaultElement;
-
 import net.sourceforge.sqlexplorer.ExplorerException;
 import net.sourceforge.sqlexplorer.SQLCannotConnectException;
-import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.squirrel_sql.fw.id.IIdentifier;
 import net.sourceforge.squirrel_sql.fw.persist.ValidationException;
 import net.sourceforge.squirrel_sql.fw.sql.ISQLDriver;
 import net.sourceforge.squirrel_sql.fw.sql.SQLDriverClassLoader;
 import net.sourceforge.squirrel_sql.fw.util.beanwrapper.StringWrapper;
+
+import org.dom4j.Element;
+import org.dom4j.tree.DefaultElement;
+import org.eclipse.core.runtime.Platform;
 
 /**
  * Manages a JDBC Driver
@@ -139,7 +139,7 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 			for (Element jarElem : list) {
 				String jar = jarElem.getTextTrim();
 				if (jar != null)
-					jars.add(jar);
+					jars.add(stripLocation(jar));
 			}
 	}
 	
@@ -157,7 +157,7 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 		root.addElement(DriverManager.URL).setText(url);
 		Element jarsElem = root.addElement(DriverManager.JARS);
 		for (String jar : jars)
-			jarsElem.addElement(DriverManager.JAR).setText(jar);
+			jarsElem.addElement(DriverManager.JAR).setText(addLocation(jar));
 		return root;
 	}
 
@@ -290,5 +290,20 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 */
 	public int compareTo(ManagedDriver that) {
 		return name.compareTo(that.name);
+	}
+	
+	private String stripLocation(String pName)
+	{
+		return pName
+			.replace("${workspace_loc}", Platform.getInstanceLocation().getURL().getPath())
+			.replace("${eclipse_home}", Platform.getInstallLocation().getURL().getPath())
+			;
+	}
+	private String addLocation(String pName)
+	{
+		return pName
+			.replace(Platform.getInstanceLocation().getURL().getPath(),"${workspace_loc}")
+			.replace(Platform.getInstallLocation().getURL().getPath(),"${eclipse_home}")
+			;
 	}
 }
