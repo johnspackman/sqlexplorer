@@ -309,7 +309,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         data = new GridData(GridData.FILL_VERTICAL | GridData.FILL_HORIZONTAL);
         data.horizontalSpan = 3;
         data.verticalSpan = 4;
-        data.heightHint = 200;
+//        data.heightHint = 200;
         centralComposite.setLayoutData(data);
         centralComposite.setLayout(new FillLayout());
 
@@ -412,7 +412,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         data = new GridData();
         data.horizontalSpan = 1;
         data.grabExcessVerticalSpace = true;
-        data.widthHint = 120;
+//        data.widthHint = 120;
         data.horizontalAlignment = GridData.FILL;
         data.verticalAlignment = GridData.FILL;
 
@@ -434,7 +434,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
                 if (file != null) {
                     try {
 
-                        MyURLClassLoader cl = new MyURLClassLoader(file.toURL());
+                        MyURLClassLoader cl = new MyURLClassLoader(file.toURI().toURL());
                         Class<?>[] classes = cl.getAssignableClasses(Driver.class);
                         for (int i = 0; i < classes.length; ++i) {
                             combo.add(classes[i].getName());
@@ -511,7 +511,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
         data = new GridData();
         data.horizontalSpan = 1;
         data.grabExcessVerticalSpace = true;
-        data.widthHint = 120;
+//        data.widthHint = 120;
         data.horizontalAlignment = GridData.FILL;
         data.verticalAlignment = GridData.FILL;
 
@@ -554,7 +554,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
                 File file = (File) ((IStructuredSelection) extraClassPathList.getSelection()).getFirstElement();
                 if (file != null) {
                     try {
-                        MyURLClassLoader cl = new MyURLClassLoader(file.toURL());
+                        MyURLClassLoader cl = new MyURLClassLoader(file.toURI().toURL());
                         Class<?>[] classes = cl.getAssignableClasses(Driver.class);
 
                         for (int i = 0; i < classes.length; ++i) {
