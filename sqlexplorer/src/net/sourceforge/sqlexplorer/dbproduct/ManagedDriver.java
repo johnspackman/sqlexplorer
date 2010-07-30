@@ -20,6 +20,7 @@ import net.sourceforge.squirrel_sql.fw.util.beanwrapper.StringWrapper;
 import org.dom4j.Element;
 import org.dom4j.tree.DefaultElement;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.osgi.service.datalocation.Location;
 
 /**
  * Manages a JDBC Driver
@@ -292,18 +293,31 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 		return name.compareTo(that.name);
 	}
 	
+	private String getPath(Location pLocation)
+	{
+		String path = pLocation.getURL().getPath();
+		// on win platforms we get /c:/xx and we need c:/xx on linux the path is ok
+		int pos = path.indexOf(':');
+		if( pos > 0 && pos < 5)
+		{
+			path = path.substring(1);
+		}
+		return path;
+	}
 	private String stripLocation(String pName)
 	{
+		getPath(Platform.getInstanceLocation());
 		return pName
-			.replace("${workspace_loc}", Platform.getInstanceLocation().getURL().getPath())
-			.replace("${eclipse_home}", Platform.getInstallLocation().getURL().getPath())
+			.replace("${workspace_loc}", getPath(Platform.getInstanceLocation()))
+			.replace("${eclipse_home}", getPath(Platform.getInstallLocation()))
 			;
 	}
 	private String addLocation(String pName)
 	{
 		return pName
-			.replace(Platform.getInstanceLocation().getURL().getPath(),"${workspace_loc}")
-			.replace(Platform.getInstallLocation().getURL().getPath(),"${eclipse_home}")
+			.replace('\\', '/')
+			.replace(getPath(Platform.getInstanceLocation()),"${workspace_loc}")
+			.replace(getPath(Platform.getInstallLocation()),"${eclipse_home}")
 			;
 	}
 }
