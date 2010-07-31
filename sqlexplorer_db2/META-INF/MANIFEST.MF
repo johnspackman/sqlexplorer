@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DB2 extension for SQL Explorer
 Bundle-SymbolicName: net.sourceforge.sqlexplorer.db2;singleton:=true
-Bundle-Version: 3.5.1.v20100211_SR3b
+Bundle-Version: 3.5.1.v20100730_SR4
 Fragment-Host: net.sourceforge.sqlexplorer;bundle-version="3.5.0"
 Bundle-Localization: plugin
 Bundle-ClassPath: .,

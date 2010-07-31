@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.sqlexplorer"
       label="Eclipse SQL Explorer"
-      version="3.5.1.v20100211_SR3b"
+      version="3.5.1.v20100730_SR4"
       provider-name="SQL Explorer Project (eclipsesql.sourceforge.net)"
       plugin="net.sourceforge.sqlexplorer">
 
@@ -96,13 +96,13 @@ USA
          id="net.sourceforge.sqlexplorer"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20100211_SR3b"/>
+         version="3.5.1.v20100730_SR4"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.db2"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20100211_SR3b"
+         version="3.5.1.v20100730_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -110,7 +110,7 @@ USA
          id="net.sourceforge.sqlexplorer.oracle"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20100211_SR3b"
+         version="3.5.1.v20100730_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -118,7 +118,7 @@ USA
          id="net.sourceforge.sqlexplorer.mysql"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20100211_SR3b"
+         version="3.5.1.v20100730_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -126,7 +126,7 @@ USA
          id="net.sourceforge.sqlexplorer.postgresql"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20100211_SR3b"
+         version="3.5.1.v20100730_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -134,13 +134,13 @@ USA
          id="net.sourceforge.sqlexplorer.help"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20100211_SR3b"/>
+         version="3.5.1.v20100730_SR4"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.dbase"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20100211_SR3b"
+         version="3.5.1.v20100730_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -148,7 +148,7 @@ USA
          id="net.sourceforge.sqlexplorer.mssql"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20100211_SR3b"
+         version="3.5.1.v20100730_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -156,7 +156,7 @@ USA
          id="net.sourceforge.sqlexplorer.sybase"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20100211_SR3b"
+         version="3.5.1.v20100730_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -164,7 +164,7 @@ USA
          id="net.sourceforge.sqlexplorer.derby"
          download-size="0"
          install-size="0"
-         version="3.5.1.v20100211_SR3b"
+         version="3.5.1.v20100730_SR4"
          fragment="true"
          unpack="false"/>
 

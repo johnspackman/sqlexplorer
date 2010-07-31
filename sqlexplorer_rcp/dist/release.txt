@@ -28,8 +28,25 @@ Changes in SR3:
 * used commands for SQL actions, new context menu entries and editor tool bar buttons
 * cleanup deprecations for preferences
 
-Changes in SR3:
+Changes in SR3b:
 * fixed Bug #2948449 NoSuchMethodeError, see https://sourceforge.net/tracker/index.php?func=detail&aid=2948449&group_id=132863&atid=725495
+
+Changes in SR4:
+* some bugfixes in SQLCompletionProcessor.java
+  - Insert Table/Viewname without schema, if the schema and a dot are the content before the caret and the schema is part of the tablename.
+  - Show system tables and system views in the content assistant
+  - Prevent multiple entries
+* feature #2957965, add context menu to db detail tables, see http://sourceforge.net/tracker/?func=detail&atid=725498&aid=2957965&group_id=132863
+* fixed Save As Bug, https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3697805
+* fixed: menu contributions for SQL-Commands would be displayed in other editors
+* fixed: Index out of Bounds exception on calling Execute SQL-Chunk with statement ending at end of file
+* fixed default column width for result tables
+* fixed NPE in catalog switcher
+* fixed: out of range error when retrieving unsigned columns
+* show warnings only once
+* fixed: XLS export fails with more than 32767 rows
+* fixed About Dialog: https://sourceforge.net/tracker/?func=detail&aid=3029327&group_id=132863&atid=725495
+* made jar locations in SQLDrivers.xml relative to workspace or eclipse home directory
  
 Starting with SR1 we will provide zip's only for the plugin. The standalone distributions
 can be updated using the update site (http://eclipsesql.sourceforge.net) integrated Update Manager.
