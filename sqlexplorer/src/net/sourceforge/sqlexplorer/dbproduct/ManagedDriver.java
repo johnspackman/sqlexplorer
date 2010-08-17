@@ -19,8 +19,6 @@ import net.sourceforge.squirrel_sql.fw.util.beanwrapper.StringWrapper;
 
 import org.dom4j.Element;
 import org.dom4j.tree.DefaultElement;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.osgi.service.datalocation.Location;
 
 /**
  * Manages a JDBC Driver
@@ -29,8 +27,6 @@ import org.eclipse.osgi.service.datalocation.Location;
  */
 public class ManagedDriver implements Comparable<ManagedDriver> {
 	
-	private static final String ECLIPSE_HOME = "${eclipse_home}";
-	private static final String WORKSPACE_LOC = "${workspace_loc}";
 	public class SQLDriver implements ISQLDriver {
 
 		public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -142,7 +138,7 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 			for (Element jarElem : list) {
 				String jar = jarElem.getTextTrim();
 				if (jar != null)
-					jars.add(expandLocations(jar));
+					jars.add(Locations.expand(jar));
 			}
 	}
 	
@@ -160,7 +156,7 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 		root.addElement(DriverManager.URL).setText(url);
 		Element jarsElem = root.addElement(DriverManager.JARS);
 		for (String jar : jars)
-			jarsElem.addElement(DriverManager.JAR).setText(addLocations(jar));
+			jarsElem.addElement(DriverManager.JAR).setText(Locations.insert(jar));
 		return root;
 	}
 
@@ -223,7 +219,7 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 		
 		Connection jdbcConn = null;
 		try {
-			jdbcConn = jdbcDriver.connect(expandLocations(user.getAlias().getUrl()), props);
+			jdbcConn = jdbcDriver.connect(Locations.expandWorkspace(user.getAlias().getUrl()), props);
 		} catch(SQLException e) {
 			throw new SQLCannotConnectException(user, e);
 		}
@@ -295,35 +291,4 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 		return name.compareTo(that.name);
 	}
 	
-	private String getPath(Location pLocation)
-	{
-		String path = pLocation.getURL().getPath();
-		// on win platforms we get /c:/xx and we need c:/xx on linux the path is ok
-		int pos = path.indexOf(':');
-		if( pos > 0 && pos < 5)
-		{
-			path = path.substring(1);
-		}
-		return path;
-	}
-	private String stripWorkspace(String pName)
-	{
-		return pName
-			.replace(WORKSPACE_LOC, getPath(Platform.getInstanceLocation()))
-			;
-	}
-	private String expandLocations(String pName)
-	{
-		return stripWorkspace(pName)
-			.replace(ECLIPSE_HOME, getPath(Platform.getInstallLocation()))
-			;
-	}
-	private String addLocations(String pName)
-	{
-		return pName
-			.replace('\\', '/')
-			.replace(getPath(Platform.getInstanceLocation()),WORKSPACE_LOC)
-			.replace(getPath(Platform.getInstallLocation()),ECLIPSE_HOME)
-			;
-	}
 }
