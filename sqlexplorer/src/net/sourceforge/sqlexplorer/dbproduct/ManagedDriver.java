@@ -29,6 +29,8 @@ import org.eclipse.osgi.service.datalocation.Location;
  */
 public class ManagedDriver implements Comparable<ManagedDriver> {
 	
+	private static final String ECLIPSE_HOME = "${eclipse_home}";
+	private static final String WORKSPACE_LOC = "${workspace_loc}";
 	public class SQLDriver implements ISQLDriver {
 
 		public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -140,7 +142,7 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 			for (Element jarElem : list) {
 				String jar = jarElem.getTextTrim();
 				if (jar != null)
-					jars.add(stripLocation(jar));
+					jars.add(expandLocations(jar));
 			}
 	}
 	
@@ -158,7 +160,7 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 		root.addElement(DriverManager.URL).setText(url);
 		Element jarsElem = root.addElement(DriverManager.JARS);
 		for (String jar : jars)
-			jarsElem.addElement(DriverManager.JAR).setText(addLocation(jar));
+			jarsElem.addElement(DriverManager.JAR).setText(addLocations(jar));
 		return root;
 	}
 
@@ -221,7 +223,7 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 		
 		Connection jdbcConn = null;
 		try {
-			jdbcConn = jdbcDriver.connect(user.getAlias().getUrl(), props);
+			jdbcConn = jdbcDriver.connect(expandLocations(user.getAlias().getUrl()), props);
 		} catch(SQLException e) {
 			throw new SQLCannotConnectException(user, e);
 		}
@@ -304,20 +306,24 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 		}
 		return path;
 	}
-	private String stripLocation(String pName)
+	private String stripWorkspace(String pName)
 	{
-		getPath(Platform.getInstanceLocation());
 		return pName
-			.replace("${workspace_loc}", getPath(Platform.getInstanceLocation()))
-			.replace("${eclipse_home}", getPath(Platform.getInstallLocation()))
+			.replace(WORKSPACE_LOC, getPath(Platform.getInstanceLocation()))
 			;
 	}
-	private String addLocation(String pName)
+	private String expandLocations(String pName)
+	{
+		return stripWorkspace(pName)
+			.replace(ECLIPSE_HOME, getPath(Platform.getInstallLocation()))
+			;
+	}
+	private String addLocations(String pName)
 	{
 		return pName
 			.replace('\\', '/')
-			.replace(getPath(Platform.getInstanceLocation()),"${workspace_loc}")
-			.replace(getPath(Platform.getInstallLocation()),"${eclipse_home}")
+			.replace(getPath(Platform.getInstanceLocation()),WORKSPACE_LOC)
+			.replace(getPath(Platform.getInstallLocation()),ECLIPSE_HOME)
 			;
 	}
 }

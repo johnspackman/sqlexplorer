@@ -1,6 +1,7 @@
 3.5.? (??.??.2010) - Heiko Hilbert
 ======================================================
-+. fixed result set colum labels
++. fixed: result set colum labels sometimes ignored alias names (select some_col as label, ...)
++. added: replace ${workspace_loc} in jdbc driver URLs
 
 3.5.1.SR4 (30.07.2010) - Heiko Hilbert, André Schulze
 ======================================================
