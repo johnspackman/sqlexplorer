@@ -77,7 +77,7 @@ public class SQLExplorerPluginPerspective implements IPerspectiveFactory {
         layout.setEditorAreaVisible(true);
         String editorArea = layout.getEditorArea();       
 
-        IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.15f, editorArea);
+        IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.3f, editorArea);
         topLeft.addView(SqlexplorerViewConstants.SQLEXPLORER_CONNECTIONS);
         topLeft.addView("org.eclipse.ui.navigator.ProjectExplorer");
 
