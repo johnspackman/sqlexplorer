@@ -120,6 +120,9 @@ public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor
 		helpMenu.add(getAction(ActionFactory.HELP_CONTENTS.getId()));
 		helpMenu.add(new Separator(IWorkbenchActionConstants.HELP_END));
 
+		// create invisible window menu
+        MenuManager winMenu = new MenuManager("&Window", IWorkbenchActionConstants.M_WINDOW);
+		menuBar.add(winMenu);
 	}
 
 
