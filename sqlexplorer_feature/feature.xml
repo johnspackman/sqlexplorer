@@ -18,23 +18,19 @@ key binding (patch #2725105 by joco01)
 +. extended database(catalog) support for MySql,Sybase, MS-Sql
 +. added New to File menu, moved preferences menu item down
 +. re-added export to HTML and XLS action
-
 SR1:
 +. use getDate for DATE sql type, needed for Teradata, no problems
 detected with MySql/msSql/Postgres
 see https://sourceforge.net/projects/eclipsesql/forums/forum/450663/topic/3435783
 +. added option to strip comments before executing SQL
 see https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3423052
-
 SR2:
-+. added patch from patl9 fixing problems with alias saving,
-http://sourceforge.net/tracker/?func=detail&amp;atid=725495&amp;aid=2891491&amp;group_id=132863
++. added patch from patl9 fixing problems with alias saving
 +. select complete row in result set table
 +. fixed ClasCastException for PostgreSQL and Oracle if strip
 comments is enabled
 +. added check for lines starting with \ in PostgreSQL
 +. added batch execution results
-
 SR3:
 +. fixed IndexOutOfBoundsException in execute SQL chunk
 +. Patch #2924692 by ashinger, fixed some problems in JDBC driver
@@ -42,9 +38,8 @@ preferences
 +. used commands for SQL actions, new context menu entries and
 editor tool bar buttons
 +. cleanup deprecations for preferences
-
 SR3b: 
-+. fixed Bug #2948449 NoSuchMethodeError, see https://sourceforge.net/tracker/index.php?func=detail&amp;aid=2948449&amp;group_id=132863&amp;atid=725495
++. fixed Bug #2948449 NoSuchMethodeError
    </description>
 
    <copyright url="http://sourceforge.net/projects/eclipsesql">
