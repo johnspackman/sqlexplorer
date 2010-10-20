@@ -248,7 +248,7 @@ public abstract class AbstractNode implements INode {
     /**
      * @return SessionTreeNode for this node.
      */
-    public final MetaDataSession getSession() {
+    public MetaDataSession getSession() {
         return _session;
     }
 
