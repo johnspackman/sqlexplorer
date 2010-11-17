@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?pde version="3.4"?>
+<?pde version="3.5"?>
 
-<product name="SQL Explorer" id="net.sourceforge.sqlexplorer.rcp.product" application="net.sourceforge.sqlexplorer.rcp.application" useFeatures="true">
-
+<product name="SQL Explorer" uid="net.sourceforge.sqlexplorer.rcp.product" id="net.sourceforge.sqlexplorer.rcp.product" application="net.sourceforge.sqlexplorer.rcp.application" version="3.6.0" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
       <linux>/sqlexplorer_rcp/config.ini</linux>
@@ -17,7 +16,8 @@
 
    <windowImages i16="icons/logo16.gif" i32="icons/logo32.gif"/>
 
-
+   <splash
+      location="net.sourceforge.sqlexplorer" />
    <launcher name="sqlexplorer">
       <linux icon="/sqlexplorer_rcp/icons/logo48.xpm"/>
       <macosx icon="/sqlexplorer_rcp/icons/logo256.icns"/>
@@ -28,7 +28,6 @@
       </win>
    </launcher>
 
-
    <vm>
    </vm>
 
@@ -36,8 +35,9 @@
    </plugins>
 
    <features>
-      <feature id="net.sourceforge.sqlexplorer" version="3.5.0.v20090419_RC8"/>
-      <feature id="net.sourceforge.sqlexplorer.rcp" version="3.5.0.v20090419_RC8"/>
+      <feature id="net.sourceforge.sqlexplorer" version="3.5.1.v20100730_SR4"/>
+      <feature id="net.sourceforge.sqlexplorer.rcp" version="3.6.0.v20100907"/>
    </features>
+
 
 </product>
