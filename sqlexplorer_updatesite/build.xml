@@ -8,7 +8,7 @@
 	<!-- project info -->
 	<property name="Name" value="SQLExplorer" />
 	<property name="name" value="sqlexplorer" />
-	<property name="year" value="2009" />
+	<property name="year" value="2010" />
 
 	<!-- first match sets the property -->
 	<property file="build.properties" />
@@ -16,8 +16,8 @@
 	<property file="${user.home}/build.properties" />
 
 	<!-- my defaults -->
-	<property name="eclipse" value="/apps/java/eclipse-3.5.1/eclipse.exe" />
-	<property name="updatesite" value="." />
+	<property name="eclipse" value="/Users/heiko/Apps/eclipse_se_3.6.1/eclipse" />
+	<property name="updatesite" value="${basedir}" />
 		
 	
 	<!-- =============================================================== -->

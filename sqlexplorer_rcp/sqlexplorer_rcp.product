@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="SQL Explorer" uid="net.sourceforge.sqlexplorer.rcp.product" id="net.sourceforge.sqlexplorer.rcp.product" application="net.sourceforge.sqlexplorer.rcp.application" version="3.6.0" useFeatures="true" includeLaunchers="true">
+<product name="SQL Explorer" uid="net.sourceforge.sqlexplorer.rcp.product" id="net.sourceforge.sqlexplorer.rcp.product" application="net.sourceforge.sqlexplorer.rcp.application" version="3.6.1" useFeatures="true" includeLaunchers="true">
 
-   <configIni use="default">
+   <configIni use="existing">
       <linux>/sqlexplorer_rcp/config.ini</linux>
       <macosx>/sqlexplorer_rcp/config.ini</macosx>
       <solaris>/sqlexplorer_rcp/config.ini</solaris>
@@ -35,8 +35,8 @@
    </plugins>
 
    <features>
-      <feature id="net.sourceforge.sqlexplorer" version="3.5.1.v20100730_SR4"/>
-      <feature id="net.sourceforge.sqlexplorer.rcp" version="3.6.0.v20100907"/>
+      <feature id="net.sourceforge.sqlexplorer.rcp" version="3.6.1.v20101117"/>
+      <feature id="net.sourceforge.sqlexplorer" version="3.6.1.v20101117"/>
    </features>
 
 

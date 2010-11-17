@@ -45,3 +45,15 @@ Finalize
 - add news in Develope/News
 - commit all changes
 - tag all projects with the new version
+
+Rebuild RCP for new eclipse version:
+- install new eclipse IDE and delta pack
+- create new Target platform using this installation directory
+- check sqlexplorer_rcp_feature/feature.xml to contain all required/changed plugins and set new version
+- set new version in sqlexplorer_feature/feature.xml (and contained plugins)
+- update sqlexplorer_rcp/sqlexplorer_rcp.product to new feature versions
+- try to run this product from IDE
+- export product for your current platform and check that it starts without errors
+- cleanup/create sqlexplorer_rcp/exported
+- export product for 'all' platforms to directory sqlexplorer_rcp/exported, Root Directory: SQLExplorer
+- use build_rcp.xml/zip.rcp to build distribution zip/tgz

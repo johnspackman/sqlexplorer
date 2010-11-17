@@ -1,6 +1,6 @@
-3.5.? (??.??.2010) - Heiko Hilbert
+3.6.1 (17.11.2010) - Heiko Hilbert
 ======================================================
-+. fixed: result set colum labels sometimes ignored alias names (select some_col as label, ...)
++. fixed: result set column labels sometimes ignored alias names (select some_col as label, ...)
 +. added: replace ${workspace_loc} in jdbc driver URLs
 +. fixed list drivers bug with file names containing spaces etc.
    https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3947666
