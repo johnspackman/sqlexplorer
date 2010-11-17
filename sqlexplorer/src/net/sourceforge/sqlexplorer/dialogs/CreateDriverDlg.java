@@ -20,8 +20,6 @@ package net.sourceforge.sqlexplorer.dialogs;
  */
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.sql.Driver;
 import java.util.StringTokenizer;
 
@@ -439,10 +437,7 @@ public class CreateDriverDlg extends TitleAreaDialog {
                         for (int i = 0; i < classes.length; ++i) {
                             combo.add(classes[i].getName());
                         }
-                    } catch (MalformedURLException ex) {
-                        ex.printStackTrace();
-
-                    } catch (IOException ex) {
+                    } catch (Exception ex) {
                         ex.printStackTrace();
 
                     }

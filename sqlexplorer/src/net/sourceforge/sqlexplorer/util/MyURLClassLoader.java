@@ -38,7 +38,7 @@ public class MyURLClassLoader extends URLClassLoader {
 
 
     public MyURLClassLoader(String fileName) throws IOException {
-        this(new File(fileName).toURL());
+        this(new File(fileName).toURI().toURL());
     }
 
 
@@ -52,12 +52,12 @@ public class MyURLClassLoader extends URLClassLoader {
     }
 
 
-    public Class<?>[] getAssignableClasses(Class<?> type) throws IOException {
+    public Class<?>[] getAssignableClasses(Class<?> type) throws Exception {
         List<Class<?>> classes = new ArrayList<Class<?>>();
         URL[] urls = getURLs();
         for (int i = 0; i < urls.length; ++i) {
             URL url = urls[i];
-            File file = new File(url.getFile());
+            File file = new File(url.toURI().getPath());
             if (!file.isDirectory() && file.exists() && file.canRead()) {
                 ZipFile zipFile = null;
                 try {
