@@ -222,7 +222,7 @@ public class SQLExecution extends AbstractSQLExecution {
 	            	}
 	            	DataSet dataSet;
 	            	boolean checkedForMessages = false;
-//            		showWarnings(results, querySQL);
+            		showWarnings(results, querySQL); // needed for sybase/mssql print statements
 	            	while ((dataSet = results.nextDataSet()) != null) {
 
 	                    // update sql result
