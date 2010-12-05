@@ -1,3 +1,8 @@
+3.6.1.SR1 (??.??.2010) - Heiko Hilbert
+======================================================
++. in formix plugin
++. check for print statements (sybase/mssql)
+
 3.6.1 (17.11.2010) - Heiko Hilbert
 ======================================================
 +. fixed: result set column labels sometimes ignored alias names (select some_col as label, ...)
