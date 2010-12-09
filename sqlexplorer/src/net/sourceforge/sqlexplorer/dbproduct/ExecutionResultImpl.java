@@ -72,12 +72,18 @@ public final class ExecutionResultImpl implements ExecutionResults {
 	{
 		List<String> result = new ArrayList<String>();
 		try {
-			SQLWarning warning = stmt.getWarnings();
+			SQLWarning warning = (currentResultSet == null) ? stmt.getWarnings() : currentResultSet.getWarnings();
 			while(warning != null)
 			{
 				if(warning.getMessage().trim().length() > 0)
 				{
-					result.add(warning.getMessage());
+					String msg = warning.getLocalizedMessage();
+					if(! (warning.getSQLState() == null && warning.getErrorCode() == 0))
+					{
+						// no simple text message from Sybase/MsSql, add codes
+						msg = "Warning("+warning.getSQLState()+"/"+warning.getErrorCode()+"): "+msg;
+					}
+					result.add(msg);
 				}
 				warning = warning.getNextWarning();
 				
@@ -86,20 +92,37 @@ public final class ExecutionResultImpl implements ExecutionResults {
 			// ignore it
 		}
 		try {
-			stmt.clearWarnings();
+			if(currentResultSet == null)
+			{
+				stmt.clearWarnings();
+			}
+			else
+			{
+				currentResultSet.clearWarnings();
+			}
 		} catch (SQLException e) {
 			// ignore it;
 		}
 		return result;
 	}
+	
+	private DataSet createDataSet(ResultSet resultSet) throws SQLException
+	{
+		DataSet result = new DataSet(resultSet, null, maxRows);
+		return result;
+	}
+	private DataSet createDataSet(int updateCount) throws SQLException
+	{
+		DataSet result = new DataSet(updateCount);
+		return result;
+	}
 	public DataSet nextDataSet() throws SQLException {
-		stmt.clearWarnings();
 		// Close the current one
 		if (currentResultSet != null) {
 			currentResultSet.close();
 			currentResultSet = null;
 		}
-
+		
 		// Anything more to do?
 		if (state == State.CLOSED)
 			return null;
@@ -111,20 +134,22 @@ public final class ExecutionResultImpl implements ExecutionResults {
 			if(this.hasResults)
 			{
 				currentResultSet = stmt.getResultSet();
-				return new DataSet(currentResultSet, null, maxRows);
-			}
-			int affectedRows = stmt.getUpdateCount();
-			if(affectedRows < 0)
-			{
-				state = State.PARAMETER_RESULTS;
+				return createDataSet(currentResultSet);
 			}
 			else
 			{
-				this.updateCount += affectedRows;
-				return new DataSet(updateCount);
+				int affectedRows = stmt.getUpdateCount();
+				if(affectedRows < 0)
+				{
+					state = State.PARAMETER_RESULTS;
+				}
+				else
+				{
+					this.updateCount += affectedRows;
+					return createDataSet(updateCount);
+				}
 			}
 		}
-		
 		// While we have more secondary results (i.e. those that come directly from Statement but after the first getResults())
 		while (state == State.SECONDARY_RESULTS) 
 		{
@@ -133,7 +158,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 				currentResultSet = stmt.getResultSet();
 				if (currentResultSet != null)
 				{
-					return new DataSet(currentResultSet, null, maxRows);
+					return createDataSet(currentResultSet);
 				}
 			} else {
 				int affectedRows = stmt.getUpdateCount();
@@ -144,7 +169,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 				else
 				{
 					this.updateCount += affectedRows;
-					return new DataSet(updateCount);
+					return createDataSet(updateCount);
 				}
 				
 			}
@@ -153,7 +178,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 		// Got one? Then exit
 		if (currentResultSet != null) {
 			this.updateCount += stmt.getUpdateCount();
-			return new DataSet(currentResultSet, null, maxRows);
+			return createDataSet(currentResultSet);
 		}
 		
 		// Look for output parameters which return resultsets
@@ -169,7 +194,11 @@ public final class ExecutionResultImpl implements ExecutionResults {
 					currentResultSet = product.getResultSet(stmt, param, paramColumnIndex);
 				paramColumnIndex++;
 				if (currentResultSet != null)
-					return new DataSet(Messages.getString("DataSet.Cursor") + ' ' + param.getName(), currentResultSet, null, maxRows);
+				{
+					DataSet result = new DataSet(Messages.getString("DataSet.Cursor") + ' ' + param.getName(), currentResultSet, null, maxRows);
+					return result;
+				}
+				
 			}
 		}
 
@@ -212,10 +241,11 @@ public final class ExecutionResultImpl implements ExecutionResults {
 				valueIndex++;
 			}
 		}
-		return new DataSet(Messages.getString("DataSet.Parameters"), new String[] { 
+		DataSet result = new DataSet(Messages.getString("DataSet.Parameters"), new String[] { 
 				Messages.getString("SQLExecution.ParameterName"),
 				Messages.getString("SQLExecution.ParameterValue")
 			}, rows);
+		return result;
 	}
 	
 	public void close() throws SQLException {
@@ -225,7 +255,15 @@ public final class ExecutionResultImpl implements ExecutionResults {
 			// Nothing
 		}
 		if (currentResultSet != null)
-			currentResultSet.close();
+		{
+			try
+			{
+				currentResultSet.close();
+			}
+			catch(SQLException ignored)
+			{
+			}
+		}
 	}
 
 	public int getUpdateCount() throws SQLException {

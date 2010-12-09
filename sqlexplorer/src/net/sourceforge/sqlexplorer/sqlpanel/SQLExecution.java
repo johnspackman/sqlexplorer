@@ -20,6 +20,7 @@ package net.sourceforge.sqlexplorer.sqlpanel;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
@@ -221,9 +222,9 @@ public class SQLExecution extends AbstractSQLExecution {
 	            		throw new SQLException(e.getMessage());
 	            	}
 	            	DataSet dataSet;
-	            	boolean checkedForMessages = false;
-            		showWarnings(results, querySQL); // needed for sybase/mssql print statements
-	            	while ((dataSet = results.nextDataSet()) != null) {
+	            	boolean warningsChecked = false;
+	            	while ((dataSet = results.nextDataSet()) != null) 
+	            	{
 
 	                    // update sql result
 	            		dataSet.setQuery(query);
@@ -234,20 +235,21 @@ public class SQLExecution extends AbstractSQLExecution {
 	                    if (monitor.isCanceled())
 	                        return;
 
+	            		showWarnings(results.getWarnings(), querySQL);
+	            		warningsChecked = true;
 	                    checkForMessages(query);
-	                    checkedForMessages = true;
 	                    
 	                    // show results..
-	            		showWarnings(results, querySQL);
 	                    displayResults(dataSet);
+	            	}
+	            	
+	            	if (!warningsChecked)
+	            	{
+	            		showWarnings(results.getWarnings(), querySQL);
+	                    checkForMessages(query);	            		
 	            	}
 	            	overallUpdateCount += results.getUpdateCount();
 	            	
-	            	if (!checkedForMessages)
-	            	{
-	            		showWarnings(results, querySQL);
-	            		checkForMessages(query);
-	            	}
 		            debugLogQuery(query, null);
 	
 	            } catch(final SQLException e) {
@@ -329,23 +331,23 @@ public class SQLExecution extends AbstractSQLExecution {
 	}
 
 
-	private void showWarnings(DatabaseProduct.ExecutionResults results, String querySql)
+	private void showWarnings(List<String> warnings, String querySql)
     {
 		if(!SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.LOG_SQL_WARNINGS))
 		{
 			return;
 		}
     	boolean showQuery = true;
-        for(String msg : results.getWarnings())
+        for(String msg : warnings)
         {
         	if(showQuery)
         	{
-        		addMessage(new Message(Message.Status.STATUS, -1, 0, querySql, "Warning: " + msg));
+        		addMessage(new Message(Message.Status.STATUS, -1, 0, querySql, msg));
         		showQuery = false;
         	}
         	else
         	{
-        		addMessage(new Message(Message.Status.STATUS, -1, 0, "", "Warning: " + msg));
+        		addMessage(new Message(Message.Status.STATUS, -1, 0, "",msg));
         	}
         }
     	

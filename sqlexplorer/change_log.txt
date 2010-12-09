@@ -1,6 +1,6 @@
 3.6.1.SR1 (??.??.2010) - Heiko Hilbert
 ======================================================
-+. in formix plugin
++. informix plugin
 +. check for print statements (sybase/mssql)
 
 3.6.1 (17.11.2010) - Heiko Hilbert
