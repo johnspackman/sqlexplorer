@@ -48,7 +48,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 	}
 	
 	private State state = State.PRIMARY_RESULTS;
-	private AbstractDatabaseProduct product;
+	private DatabaseProduct product;
 	private Statement stmt;
 	private LinkedList<NamedParameter> parameters;
 	private int maxRows;
@@ -58,7 +58,7 @@ public final class ExecutionResultImpl implements ExecutionResults {
 	private ResultSet currentResultSet;
 	private boolean hasResults;
 
-	public ExecutionResultImpl(AbstractDatabaseProduct product, Statement stmt, boolean hasResults, LinkedList<NamedParameter> parameters, int maxRows) throws SQLException {
+	public ExecutionResultImpl(DatabaseProduct product, Statement stmt, boolean hasResults, LinkedList<NamedParameter> parameters, int maxRows) throws SQLException {
 		super();
 		this.product = product;
 		this.stmt = stmt;

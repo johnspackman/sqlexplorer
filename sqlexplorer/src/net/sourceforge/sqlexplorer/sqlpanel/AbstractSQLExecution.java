@@ -108,8 +108,16 @@ public abstract class AbstractSQLExecution extends Job {
 			_editor.getEditorToolBar().refresh();
 
 			// Make sure the user hasn't tried to terminate us and then run the SQL
-			if (!monitor.isCanceled() && _connection != null) {
+			if (monitor.isCanceled())
+			{
+				return Status.CANCEL_STATUS;
+			}
+			if (_connection != null) {
 				doExecution(monitor);
+				if (monitor.isCanceled())
+				{
+					return Status.CANCEL_STATUS;
+				}
 				checkForMessages(null);
 			}
 

@@ -10,6 +10,7 @@ import java.util.List;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct;
+import net.sourceforge.sqlexplorer.dbproduct.Execution;
 import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dbproduct.User;
@@ -37,6 +38,7 @@ public class BatchJob extends Job {
 	private Session session;
 	
 	private List<File> files;
+	private Execution execution;
 
 	public BatchJob(FileListEditor editor, User user, List<File> files) {
 		this(editor, Messages.getString("BatchJob.Title"), user, files);
@@ -53,6 +55,7 @@ public class BatchJob extends Job {
 	protected IStatus run(IProgressMonitor monitor) {
 		monitor.beginTask(Messages.getString("BatchJob.ExecutingScripts"), files.size());
 		DatabaseProduct product = user.getAlias().getDatabaseProduct();
+		this.execution = new Execution(product);
 		SQLConnection connection = null;
 		try {
 			if (session == null)
@@ -62,7 +65,9 @@ public class BatchJob extends Job {
 			int index = 0;
 			for (File file : files) {
 				if (monitor.isCanceled())
-					break;
+				{
+					return Status.CANCEL_STATUS;
+				}
 				monitor.worked(index++);
 				monitor.subTask(file.getName());
 	
@@ -97,10 +102,14 @@ public class BatchJob extends Job {
 				QueryParser parser = product.getQueryParser(sql, 1);
 				parser.parse();
 				for (Query query : parser) {
+					if (monitor.isCanceled())
+					{
+						return Status.CANCEL_STATUS;
+					}
 		            DatabaseProduct.ExecutionResults results = null;
 	            	StringBuilder errors = new StringBuilder();
 		            try {
-		            	results = product.executeQuery(connection, query, -1);
+		            	results = this.execution.executeQuery(connection, query, -1);
 		            	while (results.nextDataSet() != null) {
 		            		
 	                    	LinkedList<Message> messages = new LinkedList<Message>();
@@ -152,5 +161,12 @@ public class BatchJob extends Job {
 		}
         return new Status(IStatus.OK, getClass().getName(), IStatus.OK, Messages.getString("BatchJob.Success"), null);
 	}
+
+	@Override
+	protected void canceling() {
+		super.canceling();
+		this.execution.cancel();
+	}
+
 
 }

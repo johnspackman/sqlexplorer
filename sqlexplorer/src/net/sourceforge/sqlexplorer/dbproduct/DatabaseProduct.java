@@ -18,12 +18,15 @@
  */
 package net.sourceforge.sqlexplorer.dbproduct;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
 import net.sourceforge.sqlexplorer.dataset.DataSet;
+import net.sourceforge.sqlexplorer.parsers.NamedParameter;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
 import net.sourceforge.sqlexplorer.plugin.editors.Message;
@@ -101,16 +104,6 @@ public interface DatabaseProduct {
 	}
 	
 	/**
-	 * Executes a Query
-	 * @param connection Connection to use
-	 * @param query Query to execute
-	 * @param maxRows Maximum number of rows
-	 * @return
-	 * @throws SQLException
-	 */
-	public ExecutionResults executeQuery(SQLConnection connection, Query query, int maxRows) throws SQLException;
-	
-	/**
 	 * Called to describe a connection for the ConnectionsView; this is optional but should
 	 * return a short string containing, for example, the server process or connection IDs
 	 * @param connection
@@ -172,4 +165,24 @@ public interface DatabaseProduct {
 	 * @throws SQLException 
 	 */
 	public Collection<Message> getErrorMessages(SQLConnection connection, Query query) throws SQLException;
+	
+	/**
+	 * Configures the statement with a given parameter at a given ordinal index
+	 * @param stmt
+	 * @param param
+	 * @param columnIndex
+	 * @throws SQLException 
+	 */
+	public void configureStatement(CallableStatement stmt, NamedParameter param, int columnIndex) throws SQLException;
+
+	/**
+	 * Override this method if the underlying database supports parameters returning resultsets (ie cursors)
+	 * @param stmt 
+	 * @param param
+	 * @param columnIndex 
+	 * @return
+	 * @throws SQLException 
+	 */
+	public ResultSet getResultSet(CallableStatement stmt, NamedParameter param, int columnIndex) throws SQLException;
+	
 }

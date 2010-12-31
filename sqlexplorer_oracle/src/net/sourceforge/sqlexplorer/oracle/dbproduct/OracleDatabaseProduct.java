@@ -313,7 +313,7 @@ public class OracleDatabaseProduct extends AbstractDatabaseProduct {
 	}
 
 	@Override
-	protected void configureStatement(CallableStatement stmt, NamedParameter param, int columnIndex) throws SQLException {
+	public void configureStatement(CallableStatement stmt, NamedParameter param, int columnIndex) throws SQLException {
 		if (param.getDataType() == NamedParameter.DataType.CURSOR) {
 			stmt.registerOutParameter(columnIndex, OracleTypes.CURSOR);
 		} else

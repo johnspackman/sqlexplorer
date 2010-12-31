@@ -26,6 +26,7 @@ import net.sourceforge.sqlexplorer.IConstants;
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dataset.DataSet;
 import net.sourceforge.sqlexplorer.dbproduct.DatabaseProduct;
+import net.sourceforge.sqlexplorer.dbproduct.Execution;
 import net.sourceforge.sqlexplorer.parsers.ExecutionContext;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
@@ -69,6 +70,8 @@ public class SQLExecution extends AbstractSQLExecution {
     // The Statement being used to execute the current query
     protected Statement _stmt;
 
+    private Execution execution;
+    
 
     /**
      * Constructor
@@ -191,6 +194,8 @@ public class SQLExecution extends AbstractSQLExecution {
         	long overallUpdateCount = 0;
             long overallStartTime = System.currentTimeMillis();
         	boolean stripComments = SQLExplorerPlugin.getDefault().getPreferenceStore().getBoolean(IConstants.STRIP_COMMENTS);
+        	DatabaseProduct product = getEditor().getSession().getDatabaseProduct();
+        	this.execution = new Execution(product);
         	for (Query query : getQueryParser()) {
             	if (monitor.isCanceled())
             		break;
@@ -215,11 +220,14 @@ public class SQLExecution extends AbstractSQLExecution {
                 // Run it
 	            DatabaseProduct.ExecutionResults results = null;
 	            try {
-	            	DatabaseProduct product = getEditor().getSession().getDatabaseProduct();
 	            	try {
-		            	results = product.executeQuery(_connection, query, _maxRows);
+		            	results = this.execution.executeQuery(_connection, query, _maxRows);
 	            	}catch(RuntimeException e) {
 	            		throw new SQLException(e.getMessage());
+	            	}
+	            	if (monitor.isCanceled())
+	            	{
+	            		break;
 	            	}
 	            	DataSet dataSet;
 	            	boolean warningsChecked = false;
@@ -352,7 +360,15 @@ public class SQLExecution extends AbstractSQLExecution {
         }
     	
     }
-    /**
+	
+    @Override
+	protected void canceling() {
+		super.canceling();
+		this.execution.cancel();
+	}
+
+
+	/**
      * Cancel sql execution and close execution tab.
      */
     public void doStop() {
