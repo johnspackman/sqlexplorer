@@ -3,6 +3,7 @@
 +. informix plugin
 +. check for print statements (sybase/mssql)
 +. support for cancel query
++. use correct data type when sorting result tables
 
 3.6.1 (17.11.2010) - Heiko Hilbert
 ======================================================

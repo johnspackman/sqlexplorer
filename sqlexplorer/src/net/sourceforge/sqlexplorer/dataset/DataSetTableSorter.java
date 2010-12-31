@@ -105,13 +105,19 @@ public class DataSetTableSorter implements Comparator<DataSetRow> {
             return result;
     	}
         
-    	// Convert into a viewable, non-null string
-        String s1 = dataSet.getColumn(columnNumber).getDisplayValue(o1);
-        String s2 = dataSet.getColumn(columnNumber).getDisplayValue(o2);
-    	
-    	// sort on non-null values
-    	if (s1 != null && s2 != null)
-    		result = s1.compareToIgnoreCase(s2);
+    	if(o1 instanceof String || !(o1 instanceof Comparable))
+    	{
+    		// use ignore case string comparison
+        	// Convert into a viewable, non-null string
+            String s1 = dataSet.getColumn(columnNumber).getDisplayValue(o1);
+            String s2 = dataSet.getColumn(columnNumber).getDisplayValue(o2);
+        	
+       		result = s1.compareToIgnoreCase(s2);
+    	}
+    	else
+    	{
+    		result = ((Comparable)o1).compareTo((Comparable)o2);
+    	}
         if (result == 0)
             return compareColumnValue(m1, m2, depth + 1);
         
