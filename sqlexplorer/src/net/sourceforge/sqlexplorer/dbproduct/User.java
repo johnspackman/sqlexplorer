@@ -483,4 +483,20 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 	public boolean hasCredentials() {
 		return ! this.alias.hasNoUserName();
 	}
+	
+	public boolean equals(Object pOther)
+	{
+		if(!(pOther instanceof User))
+		{
+			return false;
+		}
+		User other = (User) pOther;
+		return getDescription().equals(other.getDescription());
+	}
+	
+	public int hashCode()
+	{
+		return getDescription().hashCode();
+	}
+
 }

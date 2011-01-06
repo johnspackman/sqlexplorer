@@ -1,9 +1,10 @@
-3.6.1.SR1 (??.??.2010) - Heiko Hilbert
+3.6.1.SR1 (??.??.2011) - Heiko Hilbert
 ======================================================
 +. informix plugin
 +. check for print statements (sybase/mssql)
 +. support for cancel query
 +. use correct data type when sorting result tables
++. add connection to unique key for SQL history
 
 3.6.1 (17.11.2010) - Heiko Hilbert
 ======================================================
