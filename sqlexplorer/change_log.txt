@@ -1,8 +1,8 @@
 3.6.1.SR1 (??.??.2011) - Heiko Hilbert
 ======================================================
-+. informix plugin
-+. check for print statements (sybase/mssql)
-+. support for cancel query
++. added informix plugin, thanks to Vladimir(vladsrynty)
++. check for print statements reworked (sybase/mssql)
++. realy try to cancel query in progress view
 +. use correct data type when sorting result tables
 +. add connection to unique key for SQL history
 
