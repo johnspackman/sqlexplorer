@@ -8,10 +8,8 @@ PLUGIN_DIR="SQL Explorer Plugin/$1"
 echo "build update site"
 rm -rf updates
 mkdir updates
-cd updates
-unzip -q ../plugin.zip
-unzip -q ../xml.zip
-cd ..
+unzip -q plugin.zip -d updates
+unzip -q xml.zip -d updates
 
 # prepare dist
 rm -rf dist
@@ -20,12 +18,7 @@ mkdir -p "dist/$PLUGIN_DIR"
 # copy plugin zip
 echo "build plugin"
 cp plugin.zip "dist/$PLUGIN_DIR/sqlexplorer_plugin-$1_$2.zip"
-cp release.txt "dist/$PLUGIN_DIR/release-$1_$2.txt"
-
-# cleanup
-echo "cleanup"
-rm -rf delta
-rm -f base.zip
+cp release.txt "dist/$PLUGIN_DIR/readme_release-$1_$2.txt"
 
 ls -AlRgGh updates
 ls -AlRgGh dist
