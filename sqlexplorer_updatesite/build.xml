@@ -51,6 +51,12 @@
 
 	<target name="p2" depends="display.properties">
 		<mkdir dir="repo"/>
+		<copy todir="." overwrite="true">
+			<fileset dir="../sqlexplorer_feature/exported">
+				<include name="features/*.jar"/>
+				<include name="plugins/*.jar"/>
+			</fileset>
+		</copy>
 		<exec executable="${eclipse}">
 			<arg line=" -application org.eclipse.equinox.p2.publisher.UpdateSitePublisher"/>
 			<arg line=" -metadataRepository file:/${basedir}/repo" />

@@ -2,25 +2,26 @@ Update Release Info:
 
 - edit sqlexplorer/change_log.txt
 - edit net.sourceforge.sqlexplorer.dialogs.AboutDlg
-- set version for sqlexporer plugin
-- edit sqlexplorer_feature/feature.xml with new version and change log informations and synchronize versions
+- edit sqlexplorer_feature/feature.xml
+	- set new version 
+	- edit change log informations 
+	- synchronize versions, force version to all plugins
+- delete all in sqlexplorer_feature/exported
+- export feature to sqlexplorer_feature/exported
 
 Build update site:
 
 - go to sqlexplorer_updatesite
-- delete all files from features and plugins directories
 - open site.xml
-- set new version for sqlexplorer feature
-- run 'Build All' from site.xml 
-- replace plugin jars for unchanged versions with latest from CVS (be careful, be aware of inherited changes form sqlexplorer plugin)
-- run build.xml p2 to update artifacts.xml and content.xml (path to eclipse 3.5 executable must be configured)
+- add new version of sqlexplorer feature
+- run build.xml p2 to copy exported feature and update artifacts.xml and content.xml (path to eclipse executable can be configured in build.properties)
 
 Prepare Deploy:
 - go to sqlexplorer_rcp
 - edit dist/release.txt
 
 SR Deploy:
-- run build_rcp.xml zip.plugin to build plugin.zip, xml.zip
+- run build_rcp.xml dist.SR to build plugin.zip, xml.zip
 - sftp plugin.zip, xml.zip ,release.txt from dist to uploads (/home/groups/e/ec/eclipsesql/uploads/)
 - login to shell
 - go to uploads
@@ -28,11 +29,12 @@ SR Deploy:
 - check dist
  
 Complete Deploy:
-- set new version in plugin.xml
 - delete all files from /dist/exported
-- set new version in sqlexplorer_rcp_feature/feature.xml and export it to dist/exported
-- run build_rcp.xml dist to build rcp zip
-- sftp all zip files/release.txt from dist to uploads (/home/groups/e/ec/eclipsesql/uploads/)
+- open product file (sqlexplorer_rcp.product
+- update feature version (Dependencies)
+- export for multiple platforms to dist/exported
+- run build_rcp.xml dist.RCP to build rcp zip
+- sftp all zip files and release.txt from dist to uploads (/home/groups/e/ec/eclipsesql/uploads/)
 - login to shell
 - go to uploads
 - run build.sh [version number]

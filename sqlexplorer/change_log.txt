@@ -1,4 +1,4 @@
-3.6.1.SR1 (??.??.2011) - Heiko Hilbert
+3.6.1.SR1 (08.01.2011) - Heiko Hilbert
 ======================================================
 +. added informix plugin, thanks to Vladimir(vladsrynty)
 +. check for print statements reworked (sybase/mssql)

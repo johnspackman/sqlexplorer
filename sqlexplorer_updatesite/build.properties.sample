@@ -4,5 +4,3 @@
 # path to eclipse executable
 eclipse=/apps/java/eclipse-3.4/eclipse.exe
 
-# path to update site directory to generate data for
-updatesite=.

@@ -3,7 +3,7 @@
 	Ant build file SQLExplorer P2 meta data
 	$Id$
 -->
-<project default="dist" name="sqlexplorer_rcp" basedir=".">
+<project default="dist.RCP" name="sqlexplorer_rcp" basedir=".">
 
 	<!-- project info -->
 	<property name="Name" value="SQLExplorer" />
@@ -16,9 +16,10 @@
 	<property file="${user.home}/build.properties" />
 
 	<!-- my defaults -->
+	<property name="feature.export.dir" value="../sqlexplorer_feature/exported" />
 	<property name="updatesite.project" value="../sqlexplorer_updatesite" />
 	<property name="se.project" value="../sqlexplorer" />
-	<property name="export.dir" value="exported" />
+	<property name="export.dir" value="dist/exported" />
 	<property name="se.version" value="3.6.1" />
 	<property name="se.rcp.dir" value="SQLExplorer" />
 		
@@ -52,17 +53,17 @@
 	<!-- dist                                                              -->
 	<!-- =============================================================== -->
 
-	<target name="dist" depends="display.properties, zip.plugin">
+	<target name="dist.RCP" depends="display.properties, dist.SR, zip.rcp"  description="build all zip's for RCP distribution">
 		<zip destfile="dist/rcp.zip">
 			<fileset dir="dist/exported">
-				<include name="**/*.sqlexplorer*"/>
+				<include name="sqlexplorer*"/>
 			</fileset>
 		</zip>
 	</target>
 	
-	<target name="zip.plugin">
-		<zip destfile="dist/plugin.zip">
-			<fileset dir="${updatesite.project}">
+	<target name="dist.SR" description="build all zip's for SR distribution" depends="display.properties">
+		<zip destfile="dist/plugin.zip" >
+			<fileset dir="${feature.export.dir}">
 				<include name="**/*.sqlexplorer*"/>
 			</fileset>
 			<fileset dir="${se.project}">
@@ -114,7 +115,7 @@
 		</tar>
 	</target>
 	
-	<target name="zip.rcp" description="zip all exported rcp packages">
+	<target name="zip.rcp">
 		<antcall target="tgz.rcp.os">
 			<param name="rcp.os" value="aix.motif.ppc"/>
 		</antcall>

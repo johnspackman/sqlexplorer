@@ -36,7 +36,7 @@
 
    <features>
       <feature id="net.sourceforge.sqlexplorer.rcp" version="3.6.1.v20101117"/>
-      <feature id="net.sourceforge.sqlexplorer" version="3.6.1.v20101117"/>
+      <feature id="net.sourceforge.sqlexplorer" version="3.6.1.v20110108_SR1"/>
    </features>
 
 
