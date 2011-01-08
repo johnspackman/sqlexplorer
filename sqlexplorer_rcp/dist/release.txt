@@ -1,4 +1,14 @@
+Release Notes SQL Explorer 3.6.1 SR1
+======================================================
+This service release contains some minor fixes and changes.In detail:
+* Added informix plugin, thanks to Vladimir(vladsrynty)
+* Check for print statements reworked (sybase/mssql), see http://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3967259
+* If you cancel a long running query in the progress view a statement.cancel is called to try to realy cancel the statement
+* Sorting in result tables now uses correct data type (for instance: numeric values sorted in numeric order)
+* If the same statement is executed on different connections it will be listed as separate lines in the SQL-History view now
+
 Release Notes SQL Explorer 3.6.1
+======================================================
 This is the new main release for SQLExplorer. It contains only minor fixes. The main reason for this release
 is to deliver RCP distributions based on Eclipse Helios 3.6.1. Nevertheless the plugin is still compatible
 with Eclipse 3.3.0.
