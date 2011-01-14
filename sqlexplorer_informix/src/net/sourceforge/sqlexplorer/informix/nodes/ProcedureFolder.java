@@ -1,7 +1,10 @@
 package net.sourceforge.sqlexplorer.informix.nodes;
 
+import org.eclipse.swt.graphics.Image;
+
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
+import net.sourceforge.sqlexplorer.util.ImageUtil;
 
 
 
@@ -11,6 +14,10 @@ public class ProcedureFolder extends AbstractSQLFolderNode {
 		super(Messages.getString("informix.dbstructure.procedures"));
 	}
 
+ 	public Image getImage() {
+		return ImageUtil.getFragmentImage("net.sourceforge.sqlexplorer.informix", Messages.getString("informix.images.proc"));
+	}	
+	
 	public String getChildType() {
 		return "procedure";
 	}
