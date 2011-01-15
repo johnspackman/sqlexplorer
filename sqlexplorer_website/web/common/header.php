@@ -17,6 +17,7 @@
 		</script>
 		<title>Eclipse SQL Explorer</title>
 		<link href="style/style.css" media="screen" type="text/css" rel="stylesheet" />
+		<link rel="shortcut icon" href="favicon.ico">
 	</head>
 
 
@@ -154,6 +155,11 @@
 						?>
 					</ul></li>
 					<?php
+						if ($page=='resources.php') { 
+							echo "<li>Resources</li>";
+						} else {
+							echo "<li><a href=\"resources.php\">Resources</a></li>";
+						}
 						if ($page=='help.php') { 
 							echo "<li>Help Wanted</li>";
 						} else {
