@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!--
+	Ant build file SQLExplorer P2 meta data
+	$Id$
+-->
+<project default="zip" name="sqlexplorer_website" basedir=".">
+
+	<!-- project info -->
+
+	<!-- first match sets the property -->
+	<property file="build.properties" />
+	<property file="../build.properties" />
+	<property file="${user.home}/build.properties" />
+
+	<!-- my defaults -->
+	<property name="website" value="${basedir}/web" />
+		
+	
+	<!-- =============================================================== -->
+	<!-- E N V I R O N M E N T                                           -->
+	<!-- =============================================================== -->
+
+	<target name="display.properties" description="Display common properties values">
+		<echo>
+			[PROJECT]
+			website          = ${website}
+		</echo>
+	</target>
+
+	<target name="usage">
+		<echo message="Run ant -projecthelp to get a list of targets to run" />
+	</target>
+
+
+	<!-- =============================================================== -->
+	<!-- zip                                                            -->
+	<!-- =============================================================== -->
+
+	<target name="zip" depends="display.properties" description="zip complete website">
+		<mkdir dir="dist"/>
+		<zip destfile="dist/web.zip" update="false">
+			<fileset dir="${website}">
+				<exclude name="**/local.inc.php"/>
+			</fileset>
+		</zip>
+	</target>
+
+</project>
