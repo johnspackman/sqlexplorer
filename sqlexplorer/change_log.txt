@@ -1,3 +1,8 @@
+3.6.1.SR2 (??.??.2011) - Heiko Hilbert, Vladimir(vladsrynty)
+======================================================
++. updated default drivers xml, added CUBRID, removed outdated drivers
++. extensions to informix plugin
+
 3.6.1.SR1 (08.01.2011) - Heiko Hilbert
 ======================================================
 +. added informix plugin, thanks to Vladimir(vladsrynty)
