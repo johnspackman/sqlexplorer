@@ -30,7 +30,7 @@ $query =
 	" GROUP BY" .
 		" date," .
 		" file" .
-	" ORDER BY 1,2";
+	" ORDER BY 1 desc,2";
 $data = $db->getAllObjectsFor($query);
 
 echo '<h1>Download Statistics</h1>';
