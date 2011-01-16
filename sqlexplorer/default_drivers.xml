@@ -17,6 +17,11 @@
     <url>jdbc:oracle:thin:@&lt;server&gt;:1521:&lt;database_name&gt;</url>
     <jars/>
   </driver>
+  <driver id="-5">
+    <name>Informix</name>
+    <url>jdbc:informix-sqli://&lt;host&gt;:&lt;port&gt;/&lt;database_name&gt;:INFORMIXSERVER=&lt;server_name&gt;</url>
+    <jars/>
+  </driver>
   <driver id="-6">
     <name>MySQL Driver</name>
     <url>jdbc:mysql://&lt;hostname&gt;[&lt;:3306&gt;]/&lt;dbname&gt;</url>
