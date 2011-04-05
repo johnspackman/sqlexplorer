@@ -125,8 +125,26 @@ public class SQLHistoryElement {
      * @return true rawSQL matches this element
      */
     public boolean equals(String rawSQL) {
-
-        return TextUtil.removeLineBreaks(rawSQL).equals(_singleLineText);
+    	int i1 = 0, i2 = 0; 
+    	while (true) {
+       		char c1 = i1 < rawSQL.length() ? rawSQL.charAt(i1) : 0;
+    		if (Character.isWhitespace(c1)) {
+    			i1++;
+    			continue;
+    		}
+       		char c2 = i1 < _singleLineText.length() ? _singleLineText.charAt(i2) : 0;
+    		if (Character.isWhitespace(c2)) {
+    			i2++;
+    			continue;
+    		}
+    		if (c1 == 0 && c2 == 0)
+    			return true;
+    		if (c1 != c2)
+    			return false;
+    		i2++;
+    	}
+    	// This was really, really slow for big histories (or even just for big scripts)
+        //return TextUtil.removeLineBreaks(rawSQL).equals(_singleLineText);
     }
 
 

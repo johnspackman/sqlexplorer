@@ -65,6 +65,10 @@ public class SQLHistory {
     private static final String SESSION_HINT_MARKER = "#SH#";
 
     private static final String TIME_HINT_MARKER = "#TH#";
+    
+    // Max size of the history - the history can get really big and a resource hog; this should probably be
+    //	a parameter
+    private static final int MAX_HISTORY_ELEMENTS = 100;
 
     private int _autoSaveAfterCount = SQLExplorerPlugin.getIntPref(IConstants.HISTORY_AUTOSAVE_AFTER);
     
@@ -178,8 +182,11 @@ public class SQLHistory {
     	if(root != null) {
 	        _history.clear();
 	        _filteredHistory.clear();
-	        for (Element elem : root.elements(SQLHistoryElement.ELEMENT))
+	        for (Element elem : root.elements(SQLHistoryElement.ELEMENT)) {
 	        	_history.add(new SQLHistoryElement(elem));
+	        	if (_history.size() >= MAX_HISTORY_ELEMENTS)
+	        		break;
+	        }
     	}
     }
 
@@ -238,6 +245,8 @@ public class SQLHistory {
                     if (query != null && query.trim().length() != 0) {
                     	Alias alias = SQLExplorerPlugin.getDefault().getAliasManager().getAlias(sessionHint);
                         _history.add(new SQLHistoryElement(query, alias.getDefaultUser(), time, executions));
+        	        	if (_history.size() >= MAX_HISTORY_ELEMENTS)
+        	        		break;
                     }
 
                 }
