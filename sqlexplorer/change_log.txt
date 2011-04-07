@@ -1,7 +1,8 @@
-3.6.1.SR2 (??.??.2011) - Heiko Hilbert, Vladimir Rüntü
-======================================================
+3.6.1.SR2 (??.??.2011) - Heiko Hilbert, Vladimir Rüntü, John Spackman
+======================================================================
 +. updated default drivers xml, added CUBRID, removed outdated drivers
 +. extensions to informix plugin
++. limit SQL history to 100 entries
 
 3.6.1.SR1 (08.01.2011) - Heiko Hilbert
 ======================================================
