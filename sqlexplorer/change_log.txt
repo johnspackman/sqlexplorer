@@ -3,6 +3,7 @@
 +. updated default drivers xml, added CUBRID, removed outdated drivers
 +. extensions to informix plugin
 +. limit SQL history to 100 entries
++. fixed User.hashCode: https://sourceforge.net/tracker/?func=detail&atid=725495&aid=3269611&group_id=132863
 
 3.6.1.SR1 (08.01.2011) - Heiko Hilbert
 ======================================================

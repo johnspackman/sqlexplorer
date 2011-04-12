@@ -491,12 +491,12 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 			return false;
 		}
 		User other = (User) pOther;
-		return getDescription().equals(other.getDescription());
+		return this.userName.equals(other.userName);
 	}
 	
 	public int hashCode()
 	{
-		return getDescription().hashCode();
+		return this.userName.hashCode();
 	}
 
 }
