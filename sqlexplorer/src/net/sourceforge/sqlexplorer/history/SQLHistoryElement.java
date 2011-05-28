@@ -132,7 +132,7 @@ public class SQLHistoryElement {
     			i1++;
     			continue;
     		}
-       		char c2 = i1 < _singleLineText.length() ? _singleLineText.charAt(i2) : 0;
+       		char c2 = i2 < _singleLineText.length() ? _singleLineText.charAt(i2) : 0;
     		if (Character.isWhitespace(c2)) {
     			i2++;
     			continue;
@@ -141,6 +141,7 @@ public class SQLHistoryElement {
     			return true;
     		if (c1 != c2)
     			return false;
+    		i1++;
     		i2++;
     	}
     	// This was really, really slow for big histories (or even just for big scripts)
