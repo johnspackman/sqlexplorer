@@ -263,7 +263,8 @@ class CreditsItem {
         final String credits =    
             "Developers (version 3.6.1):" + separator +
             " - Heiko Hilbert" + separator + 
-            " - Vladimir (vladsyntry)" + separator + 
+            " - Vladimir Rüntü" + separator + 
+            " - John Spackman" + separator + 
             separator +              
             "Developers (version 3.5.1):" + separator +
             " - Heiko Hilbert" + separator + 
