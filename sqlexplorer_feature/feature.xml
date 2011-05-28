@@ -2,24 +2,35 @@
 <feature
       id="net.sourceforge.sqlexplorer"
       label="Eclipse SQL Explorer"
-      version="3.6.1.v20110108_SR1"
+      version="3.6.1.v20110528_SR2"
       provider-name="SQL Explorer Project (eclipsesql.sourceforge.net)"
       plugin="net.sourceforge.sqlexplorer">
 
    <description url="http://eclipsesql.sourceforge.net">
       SQL Explorer is a thin SQL client for querying and exploring
 JDBC Compliant databases. 
+
 Changes in 3.6.1:
-+. fixed: result set column labels sometimes ignored alias names (select some_col as label, ...)
++. fixed: result set column labels sometimes ignored alias names
+(select some_col as label, ...)
 +. added: replace ${workspace_loc} in jdbc driver URLs
 +. fixed list drivers bug with file names containing spaces etc.
-   https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3947666
+https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3947666
+
 SR1:
 +. added informix plugin, thanks to Vladimir(vladsrynty)
 +. check for print statements reworked (sybase/mssql)
 +. realy try to cancel query in progress view
 +. use correct data type when sorting result tables
 +. add connection to unique key for SQL history
+
+SR2:
++. updated default drivers xml, added CUBRID, removed outdated drivers
++. extensions to informix plugin
++. new preference page &apos;History&apos;
++. new preference to limit SQL history entries
++. new preference to auto save SQL history after a number of statement executions
++. fixed User.hashCode: https://sourceforge.net/tracker/?func=detail&amp;atid=725495&amp;aid=3269611&amp;group_id=132863
    </description>
 
    <copyright url="http://sourceforge.net/projects/eclipsesql">
@@ -71,13 +82,13 @@ USA
          id="net.sourceforge.sqlexplorer"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110108_SR1"/>
+         version="3.6.1.v20110528_SR2"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.db2"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110108_SR1"
+         version="3.6.1.v20110528_SR2"
          fragment="true"
          unpack="false"/>
 
@@ -85,7 +96,7 @@ USA
          id="net.sourceforge.sqlexplorer.oracle"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110108_SR1"
+         version="3.6.1.v20110528_SR2"
          fragment="true"
          unpack="false"/>
 
@@ -93,7 +104,7 @@ USA
          id="net.sourceforge.sqlexplorer.mysql"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110108_SR1"
+         version="3.6.1.v20110528_SR2"
          fragment="true"
          unpack="false"/>
 
@@ -101,7 +112,7 @@ USA
          id="net.sourceforge.sqlexplorer.postgresql"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110108_SR1"
+         version="3.6.1.v20110528_SR2"
          fragment="true"
          unpack="false"/>
 
@@ -109,13 +120,13 @@ USA
          id="net.sourceforge.sqlexplorer.help"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110108_SR1"/>
+         version="3.6.1.v20110528_SR2"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.dbase"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110108_SR1"
+         version="3.6.1.v20110528_SR2"
          fragment="true"
          unpack="false"/>
 
@@ -123,7 +134,7 @@ USA
          id="net.sourceforge.sqlexplorer.mssql"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110108_SR1"
+         version="3.6.1.v20110528_SR2"
          fragment="true"
          unpack="false"/>
 
@@ -131,7 +142,7 @@ USA
          id="net.sourceforge.sqlexplorer.sybase"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110108_SR1"
+         version="3.6.1.v20110528_SR2"
          fragment="true"
          unpack="false"/>
 
@@ -139,7 +150,7 @@ USA
          id="net.sourceforge.sqlexplorer.derby"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110108_SR1"
+         version="3.6.1.v20110528_SR2"
          fragment="true"
          unpack="false"/>
 
@@ -147,7 +158,7 @@ USA
          id="net.sourceforge.sqlexplorer.informix"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110108_SR1"
+         version="3.6.1.v20110528_SR2"
          fragment="true"
          unpack="false"/>
 

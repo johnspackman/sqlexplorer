@@ -12,6 +12,9 @@
    <feature url="features/net.sourceforge.sqlexplorer_3.6.1.v20110108_SR1.jar" id="net.sourceforge.sqlexplorer" version="3.6.1.v20110108_SR1">
       <category name="SQLExplorer"/>
    </feature>
+   <feature url="features/net.sourceforge.sqlexplorer_3.6.1.v20110528_SR2.jar" id="net.sourceforge.sqlexplorer" version="3.6.1.v20110528_SR2">
+      <category name="SQLExplorer"/>
+   </feature>
    <category-def name="SQLExplorer" label="SQL Explorer">
       <description>
          SQL Explorer Plugin

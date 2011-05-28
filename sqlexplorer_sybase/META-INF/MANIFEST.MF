@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Sybase Extension to SQLExplorer
 Bundle-SymbolicName: net.sourceforge.sqlexplorer.sybase;singleton:=true
-Bundle-Version: 3.6.1.v20110108_SR1
+Bundle-Version: 3.6.1.v20110528_SR2
 Bundle-Vendor: SQL Explorer Project (eclipsesql.sourceforge.net)
 Fragment-Host: net.sourceforge.sqlexplorer;bundle-version="3.0.0.20060829"
 Bundle-Localization: plugin
