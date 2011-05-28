@@ -66,7 +66,8 @@ public interface IConstants {
     String BATCH_RESULT_APPEND_EXEC_TIME = "BatchResult.AppendExecTime";
     
     String HISTORY_AUTOSAVE_AFTER = "SQLHistory.AutoSaveAfterXXStatements";
-
+    String HISTORY_MAX_ENTRIES = "SQLHistory.MaxEntries";
+    
     String INTERACTIVE_QUERY_TIMEOUT = "InteractiveConnection.QueryTimeOutSeconds";
 
     String MAX_SQL_ROWS = "SQLEditor.MaxSQLRows";

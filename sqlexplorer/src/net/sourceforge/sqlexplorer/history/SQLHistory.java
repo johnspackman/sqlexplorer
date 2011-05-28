@@ -66,11 +66,8 @@ public class SQLHistory {
 
     private static final String TIME_HINT_MARKER = "#TH#";
     
-    // Max size of the history - the history can get really big and a resource hog; this should probably be
-    //	a parameter
-    private static final int MAX_HISTORY_ELEMENTS = 100;
-
     private int _autoSaveAfterCount = SQLExplorerPlugin.getIntPref(IConstants.HISTORY_AUTOSAVE_AFTER);
+    private int _maxEntries = SQLExplorerPlugin.getIntPref(IConstants.HISTORY_MAX_ENTRIES);
     
     private int _queriesAdded = 0;
     
@@ -125,6 +122,8 @@ public class SQLHistory {
         }
         _history.add(0, new SQLHistoryElement(rawSqlString, session.getUser()));
         
+        checkMaxEntries();
+        
         refreshHistoryView();
         
         // check if we need to save the history
@@ -146,6 +145,20 @@ public class SQLHistory {
         
     }
     
+    /**
+     * limit number of entries to configured size
+     */
+    private void checkMaxEntries() {
+                
+        if (_maxEntries > 0 ) {
+        	while(_history.size() > _maxEntries)
+        	{
+        		_history.remove(_history.size() - 1);
+        	}
+        }
+        
+        
+    }
 
     /**
      * Clear all elements from SQL History
@@ -184,7 +197,7 @@ public class SQLHistory {
 	        _filteredHistory.clear();
 	        for (Element elem : root.elements(SQLHistoryElement.ELEMENT)) {
 	        	_history.add(new SQLHistoryElement(elem));
-	        	if (_history.size() >= MAX_HISTORY_ELEMENTS)
+	        	if (_maxEntries > 0 && _history.size() >= _maxEntries)
 	        		break;
 	        }
     	}
@@ -245,7 +258,7 @@ public class SQLHistory {
                     if (query != null && query.trim().length() != 0) {
                     	Alias alias = SQLExplorerPlugin.getDefault().getAliasManager().getAlias(sessionHint);
                         _history.add(new SQLHistoryElement(query, alias.getDefaultUser(), time, executions));
-        	        	if (_history.size() >= MAX_HISTORY_ELEMENTS)
+        	        	if (_maxEntries > 0 && _history.size() >= _maxEntries)
         	        		break;
                     }
 
