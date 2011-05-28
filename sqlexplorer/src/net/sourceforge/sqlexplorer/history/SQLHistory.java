@@ -35,6 +35,8 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import org.dom4j.Element;
 import org.dom4j.tree.DefaultElement;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 
 /**
  * SQL History contains all statements that have been executed and is
@@ -79,6 +81,20 @@ public class SQLHistory {
         // load all history from file
         loadFromFile();
         _qry = null;
+        SQLExplorerPlugin.getDefault().getPreferenceStore()
+		.addPropertyChangeListener(new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				if (event.getProperty() == IConstants.HISTORY_AUTOSAVE_AFTER) {
+					_autoSaveAfterCount = SQLExplorerPlugin.getIntPref(IConstants.HISTORY_AUTOSAVE_AFTER);
+				}
+				else if (event.getProperty() == IConstants.HISTORY_MAX_ENTRIES) {
+				    _maxEntries = SQLExplorerPlugin.getIntPref(IConstants.HISTORY_MAX_ENTRIES);
+				    checkMaxEntries();
+				    refreshHistoryView();
+				}
+			}
+		});
+        
     }
 
 
