@@ -37,6 +37,9 @@ public class SQLConnection extends net.sourceforge.squirrel_sql.fw.sql.SQLConnec
 	// When the connection was established
 	private long createdTime;
 	
+	// When the connection was last used (this is not maintained automatically - see updateLastUsed() and User.getConnection)
+	private long lastUsed;
+	
 	// Optional additional description
 	private String description;
 
@@ -49,7 +52,7 @@ public class SQLConnection extends net.sourceforge.squirrel_sql.fw.sql.SQLConnec
 	public SQLConnection(User user, Connection connection, ManagedDriver driver, String description) {
 		super(connection, null, driver.new SQLDriver());
 		this.user = user;
-		createdTime = System.currentTimeMillis();
+		createdTime = lastUsed = System.currentTimeMillis();
 		this.description = description;
 	}
 
@@ -69,8 +72,27 @@ public class SQLConnection extends net.sourceforge.squirrel_sql.fw.sql.SQLConnec
 		return user.isInPool(this);
 	}
 
+	/**
+	 * Returns when this connection was created
+	 * @return
+	 */
 	public long getCreatedTime() {
 		return createdTime;
+	}
+	
+	/**
+	 * Returns when this connection was last used
+	 * @return
+	 */
+	public long getLastUsed() {
+		return lastUsed;
+	}
+	
+	/**
+	 * Updates the timestamp to say when this connection was last used
+	 */
+	public void updateLastUsed() {
+		lastUsed = System.currentTimeMillis();
 	}
 
 	/**

@@ -22,8 +22,7 @@ import net.sourceforge.squirrel_sql.fw.sql.SQLDatabaseMetaData;
  */
 public class MetaDataSession extends Session {
 	
-	// Cached meta data for this connection
-	private SQLDatabaseMetaData metaData;
+	private boolean initialised;
 	
 	private String databaseProductName;
 
@@ -41,21 +40,22 @@ public class MetaDataSession extends Session {
     
 	public MetaDataSession(User user) throws SQLException {
 		super(user);
-		setKeepConnection(true);
+		//setKeepConnection(true);
 	}
 	
 	/**
 	 * Initialises the metadata, but only if the meta data has not already been collected
 	 */
 	private synchronized void initialise() throws SQLException {
-		if (metaData != null)
+		if (initialised)
 			return;
+		initialised = true;
 		
 		
 		SQLConnection connection = null;
 		try {
 			connection = grabConnection();
-			metaData = connection.getSQLMetaData();
+			SQLDatabaseMetaData metaData = connection.getSQLMetaData();
 			if (metaData.supportsCatalogs())
 			{
 				try
@@ -94,10 +94,6 @@ public class MetaDataSession extends Session {
 	@Override
 	protected void internalSetConnection(SQLConnection newConnection) throws SQLException {
 		super.internalSetConnection(newConnection);
-		if (newConnection == null) {
-			metaData = null;
-			dictionary = null;
-		}
 	}
 
 	/* (non-Javadoc)
@@ -121,8 +117,16 @@ public class MetaDataSession extends Session {
      * @throws ExplorerException
      */
     public synchronized SQLDatabaseMetaData getMetaData() throws SQLException {
+    	if (getConnection() != null)
+    		return getConnection().getSQLMetaData();
     	initialise();
-        return metaData;
+		SQLConnection connection = null;
+		try {
+			connection = grabConnection();
+			return connection.getSQLMetaData();
+		}finally {
+			releaseConnection(connection);
+		}
     }
     
     /**

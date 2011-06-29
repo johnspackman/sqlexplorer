@@ -28,6 +28,7 @@ import net.sourceforge.sqlexplorer.connections.ConnectionsView;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dbproduct.AliasManager;
 import net.sourceforge.sqlexplorer.dbproduct.DriverManager;
+import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.history.SQLHistory;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
@@ -40,6 +41,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.PartInitException;
@@ -50,12 +53,57 @@ import org.osgi.framework.BundleContext;
  * The main plugin class to be used in the desktop.
  */
 public class SQLExplorerPlugin extends AbstractUIPlugin {
+	
+	private final class ConnectionsTimer extends Thread {
+		public boolean stop;
+		
+		public ConnectionsTimer() {
+			super("SQLExplorerPlugin.ConnectionsTimer");
+			setDaemon(true);
+		}
+		
+		@Override
+		public void run() {
+			long lastPass = 0;
+			while (!stop) {
+				try {
+					sleep(500);
+				} catch(InterruptedException e) {
+					// Nothing
+				}
+				synchronized(SQLExplorerPlugin.this) {
+					if (stop)
+						break;
+					long timeout = SQLExplorerPlugin.getIntPref(IConstants.CLOSE_UNUSED_CONNECTIONS_AFTER);
+					if (timeout < 1)
+						continue;
+					timeout = timeout * 1000l;
+					if (lastPass + timeout > System.currentTimeMillis())
+						continue;
+				}
+				
+		    	// Switch to the UI thread to execute this
+				Display.getDefault().syncExec(new Runnable() {
+					public void run() {
+						for (Alias alias : aliasManager.getAliases()) {
+							for (User user : alias.getUsers())
+								user.releasedStaleConnections();
+						}
+					}
+				});
+				
+				lastPass = System.currentTimeMillis();
+			}
+		}
+	}
 
     private AliasManager aliasManager;
 
     private int count = 0;
 
     private DriverManager driverManager;
+    
+    private ConnectionsTimer connectionsTimer;
 
     // Resource bundle.
     private ResourceBundle resourceBundle;
@@ -119,6 +167,9 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
 	        
 	        // load SQL History from previous sessions
 	        _history = new SQLHistory();
+	        
+	        connectionsTimer = new ConnectionsTimer();
+	        connectionsTimer.start();
         }catch(Exception e) {
         	error("Exception during start", e);
         	throw e;
@@ -174,6 +225,11 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
      * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext context) throws Exception {
+    	if (connectionsTimer != null) {
+    		connectionsTimer.stop = true;
+    		connectionsTimer = null;
+    	}
+    	
     	driverManager.saveDrivers();
         aliasManager.saveAliases();
         aliasManager.closeAllConnections();

@@ -145,6 +145,8 @@ public interface IConstants {
 
     // Show schema name with table name
     String SHOW_SCHEMA_ON_TABLES = "SQLEditor.ShowSchemaOnTables";
+    
+    String CLOSE_UNUSED_CONNECTIONS_AFTER = "SQLEditor.CloseUnusedConnectionsAfter";
 
     // Sort columns in db structure tree
     String SORT_COLUMNS_IN_TREE = "DbStructure.SortColumns";

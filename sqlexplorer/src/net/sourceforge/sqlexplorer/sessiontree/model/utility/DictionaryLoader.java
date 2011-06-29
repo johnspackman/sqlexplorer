@@ -20,6 +20,8 @@ package net.sourceforge.sqlexplorer.sessiontree.model.utility;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.MetaDataSession;
+import net.sourceforge.sqlexplorer.dbproduct.SQLConnection;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -60,7 +62,9 @@ public class DictionaryLoader extends Job {
         monitor.setTaskName(Messages.getString("Progress.Dictionary.Scanning"));
 
         
+        SQLConnection connection = null;
         try {
+        	connection = session.grabConnection();
         
             boolean isLoaded = dictionary.restore(session.getRoot(), monitor);
     
@@ -78,6 +82,7 @@ public class DictionaryLoader extends Job {
             return new Status(IStatus.ERROR, ID, IStatus.CANCEL, Messages.getString("Progress.Dictionary.Error"), e);
             
         } finally {
+        	session.releaseConnection(connection);
             monitor.done();
         }
         

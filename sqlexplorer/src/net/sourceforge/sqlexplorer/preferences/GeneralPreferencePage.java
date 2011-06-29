@@ -69,6 +69,9 @@ public class GeneralPreferencePage extends AbstractPreferencePage {
 		iEdit.setValidRange(100, 5000);
 		iEdit.setErrorMessage(Messages.getString("Accepted_Range_is__100_-_5000_3"));
 		addField(iEdit);
+		
+		iEdit = new IntegerFieldEditor(IConstants.CLOSE_UNUSED_CONNECTIONS_AFTER, Messages.getString("Preferences.SQLExplorer.CloseStaleConnectionsAfter"), getFieldEditorParent());
+		addField(iEdit);
 
 		BooleanFieldEditor bfe;
 		addField(bfe = new BooleanFieldEditor(IConstants.AUTO_COMMIT, Messages.getString("GeneralPreferencePage.AutoCommit_1"), getFieldEditorParent()));

@@ -285,6 +285,7 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 			connection = createNewConnection();
 			SQLExplorerPlugin.getDefault().getAliasManager().modelChanged();
 		}
+		connection.updateLastUsed();
 		allocated.add(connection);
 		return connection;
 	}
@@ -312,6 +313,7 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 	        else
 	        	connection.rollback();
         }
+		connection.updateLastUsed();
 	
 		// Keep the pool small
 		if (forPool && unused.size() < MAX_POOL_SIZE) { 
@@ -354,6 +356,20 @@ public class User implements Comparable<User>, SessionEstablishedListener {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Releases unused connections which are
+	 */
+	public void releasedStaleConnections() {
+		long timeout = SQLExplorerPlugin.getIntPref(IConstants.CLOSE_UNUSED_CONNECTIONS_AFTER);
+		if (timeout < 1)
+			return;
+		timeout = timeout * 1000l + System.currentTimeMillis();
+		SQLConnection[] list = unused.toArray(new SQLConnection[unused.size()]);
+		for (SQLConnection connection : list)
+			if (connection.getLastUsed() < timeout)
+				releaseFromPool(connection);
 	}
 	
 	/**
