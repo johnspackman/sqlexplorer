@@ -184,5 +184,16 @@ public interface DatabaseProduct {
 	 * @throws SQLException 
 	 */
 	public ResultSet getResultSet(CallableStatement stmt, NamedParameter param, int columnIndex) throws SQLException;
+
+	/**
+	 * set catalog in given connection
+	 * 
+	 * @param connection the SQLConnection to the database
+	 * @param catalogName name of catalog to set
+	 * @return
+	 * @throws SQLException 
+	 */
+	public void setCurrentCatalog(SQLConnection connection, String catalogName) throws SQLException;
+	
 	
 }

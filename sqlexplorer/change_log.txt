@@ -1,3 +1,8 @@
+3.6.1 SR3 (??.??.????) - Heiko Hilbert, John Spackman
+======================================================================
++. new configuration option: Close unused connections after X seconds
++. fixed problem with MySql connections after calling 'use database' command
+
 3.6.1.SR2 (28.05.2011) - Heiko Hilbert, Vladimir Rüntü, John Spackman
 ======================================================================
 +. updated default drivers xml, added CUBRID, removed outdated drivers

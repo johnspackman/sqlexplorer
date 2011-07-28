@@ -52,6 +52,9 @@ public class Session {
     
     // Last selected catalog
     private String lastCatalog;
+
+    // connections default catalog
+    private String defaultCatalog;
     
     // Whether the connection is currently "grabbed" by calling code
     private boolean connectionInUse;
@@ -95,10 +98,17 @@ public class Session {
     	if (newConnection != null && connection != newConnection && connection != null)
     		throw new IllegalStateException("Cannot change connection on the fly!");
     	if (connection != null)
+    	{
     		connection.setSession(null);
+    	}
     	connection = newConnection;
-		if (connection != null) {
+		if (connection != null) 
+		{
 			connection.setSession(this);
+			if (defaultCatalog == null)
+			{
+				defaultCatalog = getDatabaseProduct().getCurrentCatalog(connection.getConnection());
+			}
 			if (lastCatalog == null)
 			{
 				lastCatalog = getDatabaseProduct().getCurrentCatalog(connection.getConnection());
@@ -175,6 +185,7 @@ public class Session {
     	}
 
     	connectionInUse = false;
+    	
     	try {
     		if(lastCatalog != null)
     		{
@@ -202,12 +213,7 @@ public class Session {
     	}
     	
     	// Give it back into the pool
-    	try {
-	    	user.releaseConnection(connection);
-    		internalSetConnection(null);
-    	}catch(SQLException e) {
-    		SQLExplorerPlugin.error("Cannot release connection", e);
-    	}
+    	_releaseConnection();
 		ConnectionsView connectionsView = SQLExplorerPlugin.getDefault().getConnectionsView(false);
 		if (connectionsView != null)
 		{
@@ -239,17 +245,12 @@ public class Session {
 		if (enabling) {
 			// If there's a connection but its not in use, then release it
 			if (connection != null && !connectionInUse)
-		    	try {
-			    	user.releaseConnection(connection);
-		    		internalSetConnection(null);
-					ConnectionsView connectionsView = SQLExplorerPlugin.getDefault().getConnectionsView(false);
-					if (connectionsView != null)
-					{
-						connectionsView.refresh();
-					}
-		    	}catch(SQLException e) {
-		    		SQLExplorerPlugin.error("Cannot release connection", e);
-		    	}
+	    		_releaseConnection();
+				ConnectionsView connectionsView = SQLExplorerPlugin.getDefault().getConnectionsView(false);
+				if (connectionsView != null)
+				{
+					connectionsView.refresh();
+				}
 		}
 	}
 
@@ -308,19 +309,7 @@ public class Session {
         	}
     	}
     	
-        // Disconnection from the user
-        if (connection != null) {
-        	try {
-        		user.releaseConnection(connection);
-        	}catch(Throwable e) {
-        		SQLExplorerPlugin.error(e);
-        	}
-        	try {
-        		internalSetConnection(null);
-        	}catch(Throwable e) {
-        		SQLExplorerPlugin.error(e);
-        	}
-        }
+    	_releaseConnection();
         user.releaseSession(this);
         user = null;
     }
@@ -453,5 +442,32 @@ public class Session {
 				SQLExplorerPlugin.error("Error calling session listener", ex);
 			}
 		}
+	}
+	
+	private void _releaseConnection()
+	{
+    	if (connection != null)
+    	{
+        	try {
+        		// reset catalog in session before releasing it
+        		if(defaultCatalog != null && connection.getConnection() != null && !connection.getConnection().isClosed())
+        		{
+        			getDatabaseProduct().setCurrentCatalog(connection, defaultCatalog);
+        		}
+        	}catch(SQLException e) {
+        		SQLExplorerPlugin.error("Error in getCatalog", e);
+        	}
+        	try {
+       			user.releaseConnection(connection);
+        	}catch(SQLException e) {
+        		SQLExplorerPlugin.error("Cannot release connection", e);
+        	}
+        	try {
+        		internalSetConnection(null);
+        	}catch(SQLException e) {
+        		SQLExplorerPlugin.error("Cannot set connection", e);
+        	}
+    	}
+		
 	}
 }
