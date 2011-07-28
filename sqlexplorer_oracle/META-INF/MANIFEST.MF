@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SQLExplorer Oracle Extension
 Bundle-SymbolicName: net.sourceforge.sqlexplorer.oracle;singleton:=true
-Bundle-Version: 3.6.1.v20110528_SR2
+Bundle-Version: 3.6.1.v20110728_SR3
 Bundle-Vendor: SQL Explorer Project (eclipsesql.sourceforge.net)
 Fragment-Host: net.sourceforge.sqlexplorer;bundle-version="3.5.0"
 Bundle-Localization: plugin

@@ -1,3 +1,9 @@
+Release Notes SQL Explorer 3.6.1 SR3
+======================================================
+This service release contains some minor fixes and changes.In detail:
+* Added a new configuration option to close unused connections after X seconds
+* Fixed problem with MySql connections after calling 'use database' command. Such connections didn't switched back to original database when returned to connection pool. 
+
 Release Notes SQL Explorer 3.6.1 SR2
 ======================================================
 This service release contains some minor fixes and changes.In detail:
