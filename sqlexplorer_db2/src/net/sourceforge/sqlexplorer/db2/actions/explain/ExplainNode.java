@@ -21,199 +21,223 @@ package net.sourceforge.sqlexplorer.db2.actions.explain;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ExplainNode represents a cost node in the DB2 Explain plan Tree view. 
+ * 
+ * @modified Davy Vanherbergen
+ */
 public class ExplainNode {
 
-    public String toString() {
-        StringBuffer sb = new StringBuffer(50);
-        if (object_type != null) {
-            sb.append(object_type).append(" ");
-        }
-        if (operation != null) {
-            sb.append(operation).append(" ");
-        }
-        if (options != null) {
-            sb.append(options).append(" ");
-        }
-        if (object_owner != null && object_name != null)
-            sb.append(object_owner + "." + object_name).append(" ");
-        if (optimizer != null) {
-            sb.append("[" + optimizer + "]");
-        }
-        return sb.toString();
-    }
+	private Double columnCount;
 
-    ExplainNode parent;
+	private Double cpuCost;
 
+	private Double firstRowCost;
 
-    public ExplainNode(ExplainNode parent) {
-        this.parent = parent;
-    }
+	int id, parent_id;
 
+	private Double ioCost;
 
-    public ExplainNode getParent() {
-        return parent;
-    }
+	List<ExplainNode> ls = new ArrayList<ExplainNode>();
 
-    List<ExplainNode> ls = new ArrayList<ExplainNode>();
+	String object_type, operation, options, object_owner, object_name, optimizer;
 
+	ExplainNode parent;
 
-    public ExplainNode[] getChildren() {
-        return (ExplainNode[]) ls.toArray(new ExplainNode[ls.size()]);
-    }
+	private Double streamCount;
 
+	private Double totalCost;
 
-    public void add(ExplainNode nd) {
-        ls.add(nd);
-    }
+	public ExplainNode(ExplainNode parent) {
+		this.parent = parent;
+	}
 
-    String object_type, operation, options, object_owner, object_name, optimizer;
+	public void add(ExplainNode nd) {
+		ls.add(nd);
+	}
 
-    int cardinality, cost;
+	public ExplainNode[] getChildren() {
+		return (ExplainNode[]) ls.toArray(new ExplainNode[ls.size()]);
+	}
 
-    int id, parent_id;
+	public Double getColumnCount() {
+		return columnCount;
+	}
 
+	/**
+	 * Calculate the cost for an element in the explain plan. DB2 doesn't
+	 * provide it, so we try to calculate this based on the total cost of this
+	 * node, minus the cost of all child nodes.
+	 * 
+	 * @return estimated cost of this node.
+	 */
+	public Double getCost() {
 
-    /**
-     * @return
-     */
-    public int getCardinality() {
-        return cardinality;
-    }
+		if (getTotalCost() == null) {
+			return null;
+		}
 
+		if (getChildren().length == 0) {
+			return getTotalCost();
+		}
 
-    /**
-     * @return
-     */
-    public int getCost() {
-        return cost;
-    }
+		double childCost = 0;
 
+		for (ExplainNode child : getChildren()) {
+			if (child.getTotalCost() != null) {
+				childCost = childCost + child.getTotalCost().doubleValue();
+			}
+		}
 
-    /**
-     * @return
-     */
-    public int getId() {
-        return id;
-    }
+		double cost = new Double(getTotalCost().doubleValue() - childCost);
+		return cost > 0 ? cost : 0;
+	}
 
+	public Double getCpuCost() {
+		return cpuCost;
+	}
 
-    /**
-     * @return
-     */
-    public String getObject_name() {
-        return object_name;
-    }
+	public Double getFirstRowCost() {
+		return firstRowCost;
+	}
 
+	public int getId() {
+		return id;
+	}
 
-    /**
-     * @return
-     */
-    public String getObject_owner() {
-        return object_owner;
-    }
+	public Double getIoCost() {
+		return ioCost;
+	}
 
+	public String getObject_name() {
+		return object_name;
+	}
 
-    /**
-     * @return
-     */
-    public String getObject_type() {
-        return object_type;
-    }
+	public String getObject_owner() {
+		return object_owner;
+	}
 
+	public String getObject_type() {
+		return object_type;
+	}
 
-    /**
-     * @return
-     */
-    public String getOperation() {
-        return operation;
-    }
+	public String getOperation() {
+		return operation;
+	}
 
+	public String getOptimizer() {
+		return optimizer;
+	}
 
-    /**
-     * @return
-     */
-    public String getOptimizer() {
-        return optimizer;
-    }
+	public String getOptions() {
+		return options;
+	}
 
+	public ExplainNode getParent() {
+		return parent;
+	}
 
-    /**
-     * @return
-     */
-    public String getOptions() {
-        return options;
-    }
+	public Double getStreamCount() {
+		return streamCount;
+	}
 
+	public Double getTotalCost() {
+		return totalCost;
+	}
 
-    /**
-     * @param i
-     */
-    public void setCardinality(int i) {
-        cardinality = i;
-    }
+	/**
+	 * Checks if this entry in the explain plan is costly. Costly means that
+	 * more than 30% of the total query time is spent on this node in the
+	 * explain plan.
+	 * 
+	 * @return true when this node accounts for more than 30% of the total query
+	 *         cost.
+	 */
+	public boolean isCostly() {
 
+		ExplainNode root = this;
+		while (root.getParent() != null && root.getParent().getTotalCost() != null) {
+			root = root.getParent();
+		}
 
-    /**
-     * @param i
-     */
-    public void setCost(int i) {
-        cost = i;
-    }
+		if (root.getTotalCost() != null && getCost() != null) {
 
+			if ((getCost().doubleValue() / root.getTotalCost().doubleValue()) * 100 > 30) {
+				return true;
+			}
+		}
 
-    /**
-     * @param i
-     */
-    public void setId(int i) {
-        id = i;
-    }
+		return false;
+	}
 
+	public void setColumnCount(Double columnCount) {
+		this.columnCount = columnCount;
+	}
 
-    /**
-     * @param string
-     */
-    public void setObject_name(String string) {
-        object_name = string;
-    }
+	public void setCpuCost(Double cpuCost) {
+		this.cpuCost = cpuCost;
+	}
 
+	public void setFirstRowCost(Double firstRowCost) {
+		this.firstRowCost = firstRowCost;
+	}
 
-    /**
-     * @param string
-     */
-    public void setObject_owner(String string) {
-        object_owner = string;
-    }
+	public void setId(int i) {
+		id = i;
+	}
 
+	public void setIoCost(Double ioCost) {
+		this.ioCost = ioCost;
+	}
 
-    /**
-     * @param string
-     */
-    public void setObject_type(String string) {
-        object_type = string;
-    }
+	public void setObject_name(String string) {
+		object_name = string;
+	}
 
+	public void setObject_owner(String string) {
+		object_owner = string;
+	}
 
-    /**
-     * @param string
-     */
-    public void setOperation(String string) {
-        operation = string;
-    }
+	public void setObject_type(String string) {
+		object_type = string;
+	}
 
+	public void setOperation(String string) {
+		operation = string;
+	}
 
-    /**
-     * @param string
-     */
-    public void setOptimizer(String string) {
-        optimizer = string;
-    }
+	public void setOptimizer(String string) {
+		optimizer = string;
+	}
 
+	public void setOptions(String string) {
+		options = string;
+	}
 
-    /**
-     * @param string
-     */
-    public void setOptions(String string) {
-        options = string;
-    }
+	public void setStreamCount(Double streamCount) {
+		this.streamCount = streamCount;
+	}
 
+	public void setTotalCost(Double totalCost) {
+		this.totalCost = totalCost;
+	}
+
+	public String toString() {
+		StringBuffer sb = new StringBuffer(50);
+		if (object_type != null) {
+			sb.append(object_type).append(" ");
+		}
+		if (operation != null) {
+			sb.append(operation).append(" ");
+		}
+		if (options != null) {
+			sb.append(options).append(" ");
+		}
+		if (object_owner != null && object_name != null)
+			sb.append(object_owner.trim() + "." + object_name).append(" ");
+		if (optimizer != null) {
+			sb.append("[" + optimizer + "]");
+		}
+		return sb.toString();
+	}
 }

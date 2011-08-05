@@ -4,35 +4,36 @@ import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode;
 
 /**
- * Database Structure Node for Functions.
+ * Database Structure Node for Sequences.
  * 
- * @modified Davy Vanherbergen
+ * @author Davy Vanherbergen
  */
-public class FunctionFolder extends AbstractSQLFolderNode {
+public class SequenceFolder extends AbstractSQLFolderNode {
 
-	public FunctionFolder() {
-		super(Messages.getString("db2.dbstructure.functions"));
+	public SequenceFolder() {
+		super(Messages.getString("db2.dbstructure.sequences"));
 	}
 
 	/**
 	 * @see net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode#getChildType()
 	 */
 	public String getChildType() {
-		return "function";
+		return "sequence";
 	}
 
     /**
      * @see net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode#getSQL()
      */
 	public String getSQL() {
-		String sql = "select rtrim(routinename) from syscat.routines a where routineschema = ? and routinetype='F'";
+		String sql = "select rtrim(seqname) from syscat.sequences a where seqschema = ?";
 		return sql;
 	}
 
-    /**
-     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode#getSQLParameters()
-     */
+	/**
+	 * @see net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractSQLFolderNode#getSQLParameters()
+	 */
 	public Object[] getSQLParameters() {
 		return new Object[] {getSchemaOrCatalogName()};
 	}
+
 }

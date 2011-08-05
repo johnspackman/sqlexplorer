@@ -1,3 +1,9 @@
+3.6.2 SR4 (?.?.2011) - Davy Vanherbergen
+ ======================================================================
+ +. fixed explain plan for DB2 extension, works now for DB2 v9.1 and above
+ +. fixed procedure and trigger nodes in database node for DB2
+ +. added new sequence node in database view for DB2
+
 3.6.1 SR3 (28.07.2011) - Heiko Hilbert, John Spackman
 ======================================================================
 +. new configuration option: Close unused connections after X seconds

@@ -38,6 +38,13 @@
             parent-node="schema+catalog"
             table-type="procedure_folder"/>
       <node
+            class="net.sourceforge.sqlexplorer.db2.nodes.SequenceFolder"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.nodes.SequenceFolder"
+            name="Sequence Folder"
+            parent-node="schema+catalog"
+            table-type="sequence_folder"/>            
+      <node
             class="net.sourceforge.sqlexplorer.db2.nodes.FunctionFolder"
             database-product-name="DB2*"
             id="net.sourceforge.sqlexplorer.db2.nodes.FunctionFolder"
@@ -59,6 +66,12 @@
             id="net.sourceforge.sqlexplorer.db2.tabs.ProcedureSourceTab"
             name="Procedure Source"
             node-type="procedure"/>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.db2.tabs.SequenceInfoTab"
+            database-product-name="DB2*"
+            id="net.sourceforge.sqlexplorer.db2.tabs.SequenceInfoTab"
+            name="Sequence Info"
+            node-type="sequence"/>            
       <detailtab
             class="net.sourceforge.sqlexplorer.db2.tabs.ViewSourceTab"
             database-product-name="DB2*"
