@@ -49,6 +49,8 @@ public class TableNode extends AbstractNode {
     private List<String> _folderNames = new ArrayList<String>();
     
     private boolean isLoaded = false;
+    
+    private boolean _displaySchemaInName = false;
 
     /**
      * Create new database table node.
@@ -57,14 +59,27 @@ public class TableNode extends AbstractNode {
      * @param name of this node
      * @param sessionNode session for this node
      */
-    public TableNode(INode parent, String name, MetaDataSession sessionNode, ITableInfo tableInfo) {
+    public TableNode(INode parent, String name, MetaDataSession sessionNode, ITableInfo tableInfo, boolean displaySchemaInName) {
     	super(parent, name, sessionNode, tableInfo.getType());
         _tableInfo = tableInfo;
+        _displaySchemaInName = displaySchemaInName;
         setImageKey("Images.TableNodeIcon");
     }
 
+    /**
+     * Return the table name to display in the structure node.  
+     * @see net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode#getLabelText()
+     */
+    @Override
+	public String getLabelText() {
+    	if (_displaySchemaInName) {
+    		return getQualifiedName().replaceAll("\"", "");
+    	} else {
+    		return super.getLabelText();	
+    	}
+	}
 
-    private void addExtensionNodes() {
+	private void addExtensionNodes() {
 
         String databaseProductName = getSession().getRoot().getDatabaseProductName().toLowerCase().trim();
 

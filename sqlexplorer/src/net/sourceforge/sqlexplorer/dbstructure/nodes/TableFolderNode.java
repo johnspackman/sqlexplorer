@@ -126,12 +126,8 @@ public class TableFolderNode extends AbstractFolderNode {
             for (int i = 0; i < tables.length; i++) {
                 if (tables[i].getType().equalsIgnoreCase(_origName)) {
                 	String name = tables[i].getSimpleName();
-                	if(withSchema)
-                	{
-                		name = tables[i].getSchemaName() +'.'+name;
-                	}
                     if (!isExcludedByFilter(name)) {
-                        addChildNode(new TableNode(this, name, _session, tables[i]));
+                        addChildNode(new TableNode(this, name, _session, tables[i], withSchema));
                     }
                 }
             }
