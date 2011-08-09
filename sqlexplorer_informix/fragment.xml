@@ -112,7 +112,7 @@
             database-product-name="Informix*"
             icon="icons/explain.gif"
             id="net.sourceforge.sqlexplorer.informix.actions.explainplan"
-            name="net.sourceforge.sqlexplorer.informix.explainaction">
+            name="Query Plan">
       </action>
    </extension>
 

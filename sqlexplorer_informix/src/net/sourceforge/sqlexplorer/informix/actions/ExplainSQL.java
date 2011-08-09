@@ -11,7 +11,7 @@ import net.sourceforge.sqlexplorer.sqleditor.actions.AbstractEditorAction;
 public class ExplainSQL extends AbstractEditorAction {
 
 	public String getText() {
-		return "mingi tekst siia";
+		return "Explain current SQL.";
 	}
 	
     public String getToolTipText() {

@@ -1,20 +1,33 @@
 package net.sourceforge.sqlexplorer.informix.actions.explain;
 
 //import java.sql.ResultSet;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.sql.Blob;
+import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.Iterator;
-//import java.util.Random;
+import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
@@ -24,11 +37,17 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import com.informix.jdbc.IfxBblob;
+import com.informix.jdbc.IfxLobDescriptor;
+import com.informix.jdbc.IfxLocator;
+import com.informix.jdbc.IfxSmartBlob;
 
-//import net.sourceforge.sqlexplorer.Messages;
-import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.AbstractNode;
 import net.sourceforge.sqlexplorer.informix.actions.explain.ExplainNode;
 import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.parsers.QueryParser;
@@ -36,43 +55,51 @@ import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 
+
 public class ExplainExecution extends AbstractSQLExecution {
 
-    static class TreeLabelProvider extends LabelProvider implements ITableLabelProvider {
+    private static final Log _logger = LogFactory.getLog(AbstractNode.class);
+    private PreparedStatement _prepStmt;
+    
+	HashMap<String,IfxExplainDescriptor> descMap = new HashMap<String,IfxExplainDescriptor>();
+    
+    static class MyColumnProvider extends ColumnLabelProvider {
 
-        public Image getColumnImage(Object element, int columnIndex) {
-            return null;
-        }
-
-        public String getColumnText(Object element, int columnIndex) {
-
+    	int idx = 0;
+    	
+    	public MyColumnProvider(int colidx) {
+    		this.idx = colidx;
+    	}
+    	    	
+    	public String getToolTipText(Object element) {
             ExplainNode en = (ExplainNode) element;
-            if (columnIndex == 0)
-                return en.toString();
-            if (columnIndex == 1) {
-                int cost = en.getCost();
-                if (cost != -1)
-                    return "" + cost;
-                else
-                    return "";
-            }
+            String ttip = en.getToolTipText();
+            if (ttip.equals("")) return null; else return ttip;
+    	}
+    	
+    	public Image getImage(Object element) {
+//    		return ImageUtil.getFragmentImage("net.sourceforge.sqlexplorer.informix", Messages.getString("informix.images.chunk"));
+    		return null;
+    	}
 
-            else if (columnIndex == 2) {
-                int card = en.getCardinality();
-                if (card != -1)
-                    return "" + card;
-                else
-                    return "";
+    	public String getText(Object element) {
+            ExplainNode en = (ExplainNode) element;
+            if (idx == 0) return en.toString();
+            if (idx == 1) {
+            	int cost = en.getCost();
+            	if (cost >= 0) return Integer.toString(cost); 
             }
+            if (idx == 2) {
+            	int cost = en.getEstRows();
+            	if (cost >= 0) return Integer.toString(cost); 
+            }
+            
             return "";
-        }
+    	}
+    	
     }
+   
 	
-     private PreparedStatement _prepStmt;
-
-    private Statement _stmt;
-    
-    
     public ExplainExecution(SQLEditor editor, QueryParser queryParser) {
     	super(editor, queryParser);
         
@@ -83,16 +110,14 @@ public class ExplainExecution extends AbstractSQLExecution {
     private void displayResults(final ExplainNode node, final Query query) {
         
     	getEditor().getSite().getShell().getDisplay().asyncExec(new Runnable() {
-
             public void run() {
 
             	CTabItem tabItem = allocateResultsTab(query);
-            	if (tabItem == null)
-            		return;
+            	if (tabItem == null) return;
 
             	Composite composite = null;
                 try {
-                    composite = new Composite(tabItem.getParent(), SWT.NONE);
+                    composite = new Composite(tabItem.getParent(), SWT.NONE); //SWT.FULL_SELECTION
                     tabItem.setControl(composite);
 
                     GridLayout gLayout = new GridLayout();
@@ -107,69 +132,63 @@ public class ExplainExecution extends AbstractSQLExecution {
                     Composite pp = new Composite(composite, SWT.NULL);
                     pp.setLayout(new FillLayout());
                     pp.setLayoutData(new GridData(GridData.FILL_BOTH));
-                    TreeViewer tv = new TreeViewer(pp, SWT.BORDER | SWT.FULL_SELECTION);
-                    Tree table = tv.getTree();
-                    table.setLinesVisible(true);
-                    table.setHeaderVisible(true);
-                    TreeColumn tc = new TreeColumn(table, SWT.NULL);
-                    tc.setText("");
-                    tc = new TreeColumn(table, SWT.NULL);
-                    tc.setText("Cost");
-                    tc = new TreeColumn(table, SWT.NULL);
-                    tc.setText("Cardinality");
-                    TableLayout tableLayout = new TableLayout();
-                    tableLayout.addColumnData(new ColumnWeightData(6, 150, true));
-                    tableLayout.addColumnData(new ColumnWeightData(1, 50, true));
-                    tableLayout.addColumnData(new ColumnWeightData(1, 50, true));
-                    table.setLayout(tableLayout);
+                    TreeViewer tv = new TreeViewer(pp, SWT.MULTI);
+                    tv.getTree().setLinesVisible(true);
+                    tv.getTree().setHeaderVisible(true);
 
                     tv.setContentProvider(new ITreeContentProvider() {
-
-                        public void dispose() {
-
-                        }
+                        public void dispose() {}
 
                         public Object[] getChildren(Object parentElement) {
-
-                            return ((ExplainNode) parentElement).getChildren();
+                        	ExplainNode nd = (ExplainNode)parentElement;
+                        	ExplainNode[] nda = nd.getChildren();
+                        	
+                    		_logger.debug("Children of "+nd.getObject_name());
+                        	for (int i = 0; i < nda.length; i++) {
+                        		_logger.debug("--"+nda[i].getObject_name());
+                        	}
+                        	//                            return ((ExplainNode) parentElement).getChildren();
+                        	return nda;
                         }
 
-
                         public Object[] getElements(Object inputElement) {
-
                             ExplainNode nd = ((ExplainNode) inputElement);
-
                             return nd.getChildren();
                         }
 
-
                         public Object getParent(Object element) {
-
                             return ((ExplainNode) element).getParent();
                         }
 
-
                         public boolean hasChildren(Object element) {
-
-                            if (((ExplainNode) element).getChildren().length > 0)
-                                return true;
+                            if (((ExplainNode) element).getChildren().length > 0) return true;
                             return false;
                         }
 
-
-                        public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-
-                        }
+                        public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
                     });
-                    tv.setLabelProvider(new TreeLabelProvider() {
-                    });
+                    
+                    ColumnViewerToolTipSupport.enableFor(tv);
+        		    String[] colids = new String[3];
+        		    for (int i = 0; i < 3 ; i++){
+        		    	TreeViewerColumn column = new TreeViewerColumn(tv, SWT.NONE);
+        		    	column.setLabelProvider(new MyColumnProvider(i));
+        		    	TreeColumn col  = column.getColumn();
+        		    	if (i == 1) col.setText("Est. Cost");
+        		    	if (i == 2) col.setText("Est. # of rows");
+        		    	col.setResizable(true);
+        				col.setWidth(150);
+        		    	colids[i] = Integer.toString(i);
+        		    }
+        		    tv.setColumnProperties(colids);
+                    
                     tv.setInput(node);
                     tv.refresh();
                     tv.expandAll();
 
                     // make columns full size
-                    for (int i = 0; i < table.getColumnCount(); i++) {
-                        table.getColumn(i).pack();
+                    for (int i = 0; i < tv.getTree().getColumnCount(); i++) {
+                        tv.getTree().getColumn(i).pack();
                     }
                     
                     composite.layout();
@@ -190,158 +209,265 @@ public class ExplainExecution extends AbstractSQLExecution {
     
     }
     
+    protected void setQueryData(ExplainNode eNode, String dataID) {
+
+    	String ttip = "";
+    	HashMap<String,IfxExplainDescriptorData> tmpMap = descMap.get(dataID).getDataMap();
+		for (Map.Entry<String,IfxExplainDescriptorData> f : tmpMap.entrySet()) {
+			if (f.getValue().getName().equals("Estimated Cost")) { 
+				eNode.setCost(Integer.parseInt(f.getValue().getVal()));
+			} else
+			if (f.getValue().getName().equals("Estimated Output Rows")) { 
+				eNode.setEstRows(Integer.parseInt(f.getValue().getVal()));
+			} else
+			if (f.getValue().getName().equals("Query Stmt")) { 
+				eNode.setObject_name(f.getValue().getVal());
+			} 
+			else ttip += f.getValue().getName()+": "+f.getValue().getVal()+"\n"; 
+		}
+		eNode.setToolTip(ttip);
+    }
+
+    protected void setJoinData(ExplainNode eNode, String dataID) {
+
+    	String ttip = "";
+    	String name = "";
+    	
+    	HashMap<String,IfxExplainDescriptorData> tmpMap = descMap.get(dataID).getDataMap();
+		for (Map.Entry<String,IfxExplainDescriptorData> f : tmpMap.entrySet()) {
+			if (f.getValue().getName().equals("Estimated Cost")) { 
+				eNode.setCost(Integer.parseInt(f.getValue().getVal()));
+			} else
+			if (f.getValue().getName().equals("Estimated Output Rows")) { 
+				eNode.setEstRows(Integer.parseInt(f.getValue().getVal()));
+			} else
+			if (f.getValue().getName().equals("On Filters")) { 
+				name += " ("+f.getValue().getVal()+")";
+			} 
+			else ttip += f.getValue().getName()+": "+f.getValue().getVal()+"\n"; 
+		}
+		eNode.setToolTip(ttip);
+		eNode.setObject_name("Result Join"+name);
+    }
+    
+    protected void setIdxData(ExplainNode eNode, String dataID) {
+
+    	String ttip = "";
+    	String name = "";
+    	
+    	HashMap<String,IfxExplainDescriptorData> tmpMap = descMap.get(dataID).getDataMap();
+		for (Map.Entry<String,IfxExplainDescriptorData> f : tmpMap.entrySet()) {
+			if (f.getValue().getName().equals("Estimated Cost")) { 
+				eNode.setCost(Integer.parseInt(f.getValue().getVal()));
+			} else
+			if (f.getValue().getName().equals("Estimated Output Rows")) { 
+				eNode.setEstRows(Integer.parseInt(f.getValue().getVal()));
+			} else
+			if (f.getValue().getName().equals("Filters")) { 
+				name += " ("+f.getValue().getVal()+")";
+			} 
+			else ttip += f.getValue().getName()+": "+f.getValue().getVal()+"\n"; 
+		}
+		eNode.setToolTip(ttip);
+		eNode.setObject_name("Index Scan"+name);
+    }    
+    
+    protected void setOtherData(ExplainNode eNode, String dataID) {
+
+    	String ttip = "";
+    	
+    	HashMap<String,IfxExplainDescriptorData> tmpMap = descMap.get(dataID).getDataMap();
+		for (Map.Entry<String,IfxExplainDescriptorData> f : tmpMap.entrySet()) {
+			if (f.getValue().getName().equals("Estimated Cost")) { 
+				eNode.setCost(Integer.parseInt(f.getValue().getVal()));
+			} else
+			if (f.getValue().getName().equals("Estimated Output Rows")) { 
+				eNode.setEstRows(Integer.parseInt(f.getValue().getVal()));
+			} 
+			else ttip += f.getValue().getName()+": "+f.getValue().getVal()+"\n"; 
+		}
+		eNode.setToolTip(ttip);
+		eNode.setObject_name(descMap.get(dataID).getName());
+    }    
+    
+    protected ExplainNode createNodes(ExplainNode parentNode, NodeList nd) {
+
+		ExplainNode eNode = null;
+    	for (int i = 0; i < nd.getLength(); i++) {
+			Node cNode = nd.item(i);
+			if (cNode.getNodeName().equals("node")) {
+					
+				eNode = new ExplainNode(parentNode);
+				
+    			String typeID = cNode.getAttributes().getNamedItem("type").getNodeValue();
+				String dataID = cNode.getFirstChild().getNextSibling().getAttributes().getNamedItem("descriptorid").getNodeValue();
+				
+				
+				if (typeID.equals("0616002a")) this.setQueryData(eNode, dataID);
+					else if (typeID.equals("01160027")) this.setJoinData(eNode, dataID);
+						else if (typeID.equals("0108001e")) this.setIdxData(eNode, dataID);
+							else this.setOtherData(eNode, dataID);
+
+    			if (parentNode != null) parentNode.add(eNode);
+    			
+				this.createNodes(eNode, nd.item(i).getChildNodes());
+
+			}
+    	}
+		return eNode;
+    }
     
 	@Override
 	protected void doExecution(IProgressMonitor monitor) throws Exception {
 
-		try {
+        Connection conn = null;
+        ResultSet rs = null;
+		String queryStr = ""; 
+        
+        try {
+            setProgressMessage("Executing explain");
 
-            setProgressMessage("mingi veel");
-
+			conn = _connection.getConnection();
+			CallableStatement cstmt2 = conn.prepareCall("{call informix.explain_sql(?, ?, ?, ?, ?, ?, ?)}");
+            
             Query query = null;
         	for (Iterator<Query> iter = getQueryParser().iterator(); iter.hasNext(); ) {
         		query = iter.next();
     			if (monitor.isCanceled())
     				break;
 
-    			/*	
-	            int id_ = new Random().nextInt(1000);
-	            _prepStmt = _connection.prepareStatement("delete from SYSTOOLS.explain_statement where queryno = ? ");
-	            _prepStmt.setInt(1, id_);
-	            _prepStmt.executeUpdate();
-	            _prepStmt.close();
-	            _prepStmt = null;
-*/	
-//	            if (monitor.isCanceled()) {
-//	                return;
-//	            }
-/*	            
-	            _stmt = _connection.createStatement();
-	            _stmt.execute("EXPLAIN PLAN SET queryno = " + id_ + " FOR " + query.getQuerySql());
-	            _stmt.close();
-	            _stmt = null;
-*/	
-//	            if (monitor.isCanceled()) {
-//	                return;
-//	            }
-/*	            
-	            _prepStmt = _connection.prepareStatement(
-	                    "SELECT O.Operator_ID as id, S2.Target_ID as parent_id, O.Operator_Type, "
-	                            + "S.OBJECT_SCHEMA, EOB.OBJECT_TYPE, S.Object_Name, O.CPU_COST,  "
-	                            + "CAST(O.Total_Cost AS INTEGER) Cost FROM SYSTOOLS.EXPLAIN_OPERATOR O "
-	                            + "LEFT OUTER JOIN SYSTOOLS.EXPLAIN_STREAM S2 ON O.Operator_ID=S2.Source_ID "
-	                            + "LEFT OUTER JOIN SYSTOOLS.EXPLAIN_STREAM S  ON O.Operator_ID = S.Target_ID "
-	                            + "AND O.Explain_Time = S.Explain_Time AND S.Object_Name IS NOT NULL "
-	                            + "LEFT OUTER JOIN SYSTOOLS.explain_object EOB ON O.Explain_Time = EOB.Explain_Time     "
-	                            + "AND S.OBJECT_NAME = EOB.OBJECT_NAME "
-	                            + "where o.explain_time =  (select max(explain_time) from SYSTOOLS.explain_statement where queryno = ?) "
-	                            + "ORDER BY O.Operator_ID ASC, S2.TARGET_ID ASC ");
-	            _prepStmt.setInt(1, id_);
-	            ResultSet rs = _prepStmt.executeQuery();
-*/	
-//	            if (monitor.isCanceled()) {
-//	                return;
-//	            }
-	            
-	            HashMap<Integer,ExplainNode> mp = new HashMap<Integer, ExplainNode>();
-	            ExplainNode baseNode = new ExplainNode(null);
-	            mp.put(new Integer(-1), baseNode);
+            	try {
 
-                ExplainNode nd_parent = (ExplainNode) mp.get(new Integer(-1));
-                ExplainNode nd = new ExplainNode(nd_parent);
-                mp.put(new Integer(1), nd);
+            		if (query.getQueryType() == Query.QueryType.SELECT) {
+	            		queryStr = query.getQuerySql().toString();
+            		}
+            		else {
+                		_logger.debug("Can explain only select query!");
+            			continue;
+            		}
+		    		String sqlIn = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><plist version=\"1.0\"><dict><key>MAJOR_VERSION</key><integer>1</integer><key>MINOR_VERSION</key><integer>0</integer><key>REQUESTED_LOCALE</key><string>en_us.8859-1</string><key>RETAIN</key><string>N</string><key>TRACE</key><string>N</string><key>SQL_TEXT</key><string>"+queryStr+"</string></dict></plist>";
+            		
+//            		_logger.debug("Explaining: \""+query.getQuerySql()+"\"");
 
-                nd_parent.add(nd);
-                nd.setId(1);
-                nd.setCardinality(3);
-                nd.setCost(5);
-                nd.setObject_name("test");
-                nd.setObject_owner("informix");
-                nd.setObject_type("join");
-                nd.setOperation("join");
-                nd.setOptimizer("+useindex");
-                nd.setOptions(null);
-	            
-                nd_parent = (ExplainNode) mp.get(new Integer(1));
-                ExplainNode nd2 = new ExplainNode(nd);
-                mp.put(new Integer(2), nd2);
+		    		cstmt2.registerOutParameter( 1, Types.INTEGER );
+		    		cstmt2.registerOutParameter( 2, Types.INTEGER );
+		    		cstmt2.setString(3,null);
+		    		cstmt2.setNull( 5, Types.BLOB );              // Filter
+		    		cstmt2.registerOutParameter( 6, Types.BLOB ); // XML_OUTPUT
+		    		cstmt2.registerOutParameter( 7, Types.BLOB ); // XML_MESSAGE
+		
+		    		byte[] buffer = new byte[8000];
+		    		buffer = sqlIn.getBytes();
+	
+		    		IfxLobDescriptor loDesc = new IfxLobDescriptor(conn);
+		    		IfxLocator loPtr = new IfxLocator();
+		    		IfxSmartBlob smb = new IfxSmartBlob(conn);
+		    		int loFd = smb.IfxLoCreate(loDesc, IfxSmartBlob.LO_RDWR, loPtr);
+		
+		    		int n = buffer.length;
+		    		if (n > 0) n = smb.IfxLoWrite(loFd, buffer);
+		    	  
+		    		smb.IfxLoClose(loFd);
+		    		Blob blb = new IfxBblob(loPtr);
+		    		cstmt2.setBlob(4, blb); // set the blob column
+		    		rs = cstmt2.executeQuery();
 
-                nd_parent.add(nd2);
-                nd2.setId(2);
-                nd2.setCardinality(3);
-                nd2.setCost(5);
-                nd2.setObject_name("test2");
-                nd2.setObject_owner("informix2");
-                nd2.setObject_type("join2");
-                nd2.setOperation("join2");
-                nd2.setOptimizer("+useindex2");
-                nd2.setOptions(null);
-	            
-	            /*	
-	            int lastId = -1;
-	            while (rs.next()) {
-	                String object_type = rs.getString("object_type");
-	                String operation = rs.getString("operator_type");
-	                String options = null;
-	                String object_owner = rs.getString("object_schema");
-	                String object_name = rs.getString("object_name");
-	                String optimizer = null;
-	                int cardinality = rs.getInt("cpu_cost");
-	                if (rs.wasNull()) {
-	                    cardinality = -1;
-	                }
+		    		if (monitor.isCanceled()) return;
+		    		
+	    			byte[] buf = new byte[80000];
+	    			int size = 0;
+		    		while (rs.next()) {
+		    			IfxBblob b = (IfxBblob) rs.getBlob(1);
 	
-	                int cost = rs.getInt("cost");
-	                if (rs.wasNull())
-	                    cost = -1;
-	                int parentID = rs.getInt("parent_id");
-	                if (rs.wasNull()) {
-	                    parentID = -1;
-	                }
-	                int id = rs.getInt("id");
-	
-	                if (id != lastId) {
-	
-	                    lastId = id;
-	                    ExplainNode nd_parent = (ExplainNode) mp.get(new Integer(parentID));
-	                    ExplainNode nd = new ExplainNode(nd_parent);
-	                    mp.put(new Integer(id), nd);
-	
-	                    nd_parent.add(nd);
-	                    nd.setId(id);
-	                    nd.setCardinality(cardinality);
-	                    nd.setCost(cost);
-	                    nd.setObject_name(object_name);
-	                    nd.setObject_owner(object_owner);
-	                    nd.setObject_type(object_type);
-	                    nd.setOperation(operation);
-	                    nd.setOptimizer(optimizer);
-	                    nd.setOptions(options);
-	                }
-	            }
-	            rs.close();
-	            _prepStmt.close();
-	            _prepStmt = null;
-	
-	            if (monitor.isCanceled()) {
-	                return;
-	            }
-*/	            
-	            
-	            displayResults(baseNode, query);
+		    			if (b != null) {
+			    			IfxLocator loptr = b.getLocator();
+			    			IfxSmartBlob smbl = new IfxSmartBlob(conn);
+			    			int lofd = smbl.IfxLoOpen(loptr, IfxSmartBlob.LO_RDONLY);
+//			    			long size = smbl.IfxLoSize(lofd); 
+			    			// func returns long, but we can read only Integer.MAX into byte array,
+			    			// and to parse xml with DOM/Xpath it cannot be bigger than buf[(int)]
+			    			size = smbl.IfxLoRead(lofd, buf, buf.length);
+			    			smbl.IfxLoClose(lofd);
+			    			smbl.IfxLoRelease(loptr);
+		    			} else _logger.debug("b==null");
+	    			}
+
+//	                _logger.debug(new String(buf));
+	    			
+		    		if (size > 0) {
+		    			
+			    		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+			    		DocumentBuilder builder = domFactory.newDocumentBuilder();
+			    		InputStream reader = new ByteArrayInputStream(buf, 0, size);
+			    		Document doc = builder.parse(reader);
+		    			reader.close();
+		    			
+			    		XPath xpath = XPathFactory.newInstance().newXPath();
+			    		XPathExpression expr = xpath.compile("/explain/plans/descriptor");
+			    		
+			    		Object xpres = expr.evaluate(doc, XPathConstants.NODESET);
+			    		NodeList xpnodes = (NodeList) xpres;
+			    		descMap = new HashMap<String,IfxExplainDescriptor>();
+			    		
+			    		// Read once node names and data
+			    		for (int i = 0; i < xpnodes.getLength(); i++) {
+			    			NamedNodeMap attrs = xpnodes.item(i).getAttributes();
+			    			String descID      = attrs.getNamedItem("id").getNodeValue(); 
+			    			String descName    = attrs.getNamedItem("name").getNodeValue();
+			    			IfxExplainDescriptor descriptor = new IfxExplainDescriptor(descID, descName, "");
+
+			    			NodeList childNodes = xpnodes.item(i).getChildNodes();
+				    		for (int j = 0; j < childNodes.getLength(); j++) {
+				    			Node cNode = childNodes.item(j);
+				    			if (cNode.getNodeType() == Node.ELEMENT_NODE) {
+				    				if (cNode.getNodeName().equals("data")) {
+				    					
+						    			attrs = cNode.getAttributes();
+						    			String dataNodeID   = attrs.getNamedItem("id").getNodeValue();
+						    			String dataNodeName = attrs.getNamedItem("name").getNodeValue();
+						    			String dataNodeGrp  = attrs.getNamedItem("group").getNodeValue();
+				    					
+				    					descriptor.addData(dataNodeID, dataNodeName, dataNodeGrp, cNode.getFirstChild().getNodeValue());
+				    				}
+				    			}
+				    		}
+			    			descMap.put(descID, descriptor);
+				    		
+			    		}
+			    		
+			    		expr   = xpath.compile("/explain/plans/diagram/node");
+			    		xpres  = expr.evaluate(doc, XPathConstants.NODESET);
+			    		xpnodes = (NodeList) xpres;
+			    		
+			    		ExplainNode baseNode = this.createNodes(null, xpnodes);
+			            this.displayResults(baseNode, query);
+		    		} else _logger.debug("Explain size 0, probably error");
+		    		
+	    		
+		    		IfxBblob outmsg_b = (IfxBblob)cstmt2.getBlob(7);
+		    		if (outmsg_b == null) {
+		    			_logger.debug("outmsg_b is null");
+		    		}
+		    		else {
+		    			byte[] buf2 = new byte[80000];
+		    			
+		    			IfxLocator xml_msg_loptr = outmsg_b.getLocator();
+	    				IfxSmartBlob xml_msg_smbl = new IfxSmartBlob(conn);
+	    				int msg_out_lofd = xml_msg_smbl.IfxLoOpen(xml_msg_loptr, IfxSmartBlob.LO_RDONLY);
+//	    				int xml_msg_size = xml_msg_smbl.IfxLoRead(msg_out_lofd, buf2, 80000);
+	    				xml_msg_smbl.IfxLoClose(msg_out_lofd);          
+	    				xml_msg_smbl.IfxLoRelease(xml_msg_loptr);
+		                _logger.debug(new String(buf2));
+	    		   }			
+		           _prepStmt.close();
+		    		
+            	} catch (Exception sqlex) {_logger.debug("Exception: "+sqlex.getMessage()); }
+	    		
         	} 
 
         } catch (Exception e) {
-            if (_stmt != null) {
 
-                try {
-                    _stmt.close();
-                    _stmt = null;
-                } catch (Exception e1) {
-                    SQLExplorerPlugin.error("Error closing statement.", e);
-                }
-            }
-
+        	_logger.debug("Exception: "+e.getMessage());
             if (_prepStmt != null) {
                 try {
                     _prepStmt.close();
@@ -357,22 +483,6 @@ public class ExplainExecution extends AbstractSQLExecution {
 	@Override
 	protected void doStop() throws Exception {
 		Exception t = null;
-
-        if (_stmt != null) {
-
-            try {
-                _stmt.cancel();
-            } catch (Exception e) {
-                t = e;
-                SQLExplorerPlugin.error("Error cancelling statement.", e);
-            }
-            try {
-                _stmt.close();
-                _stmt = null;
-            } catch (Exception e) {
-                SQLExplorerPlugin.error("Error closing statement.", e);
-            }
-        }
 
         if (_prepStmt != null) {
 

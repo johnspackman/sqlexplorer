@@ -5,61 +5,68 @@ import java.util.List;
 
 public class ExplainNode {
 
+    protected List<ExplainNode> ls = new ArrayList<ExplainNode>();
+    ExplainNode parent;
+    String object_name, tooltip;
+    int cost = -1;
+    int est_rows = -1;
+    int id, parent_id;
+    String dataID;
+    String nodeType;
+
     public String toString() {
         StringBuffer sb = new StringBuffer(50);
-        if (object_type != null) {
-            sb.append(object_type).append(" ");
-        }
-        if (operation != null) {
-            sb.append(operation).append(" ");
-        }
-        if (options != null) {
-            sb.append(options).append(" ");
-        }
-        if (object_owner != null && object_name != null)
-            sb.append(object_owner + "." + object_name).append(" ");
-        if (optimizer != null) {
-            sb.append("[" + optimizer + "]");
-        }
+
+        if (object_name != null)
+            sb.append(object_name).append(" ");
+
         return sb.toString();
     }
 
-    ExplainNode parent;
 
-
+    
     public ExplainNode(ExplainNode parent) {
         this.parent = parent;
     }
 
+    public void setDataId(String dataID) {
+    	this.dataID = dataID;
+    }
+    
+    public void setType(String typeStr) {
+    	this.nodeType = typeStr;
+    }
+
+    public String getType() {
+    	return this.nodeType;
+    }
+
+
+    public String getDataId() {
+    	return this.dataID;
+    }
+
+    public String getToolTipText() {
+        return tooltip;
+    }
 
     public ExplainNode getParent() {
         return parent;
     }
 
-    List<ExplainNode> ls = new ArrayList<ExplainNode>();
-
-
     public ExplainNode[] getChildren() {
         return (ExplainNode[]) ls.toArray(new ExplainNode[ls.size()]);
     }
-
 
     public void add(ExplainNode nd) {
         ls.add(nd);
     }
 
-    String object_type, operation, options, object_owner, object_name, optimizer;
-
-    int cardinality, cost;
-
-    int id, parent_id;
-
-
     /**
      * @return
      */
-    public int getCardinality() {
-        return cardinality;
+    public int getEstRows() {
+        return est_rows;
     }
 
 
@@ -86,54 +93,16 @@ public class ExplainNode {
         return object_name;
     }
 
-
-    /**
-     * @return
-     */
-    public String getObject_owner() {
-        return object_owner;
+    public void setToolTip(String s) {
+        tooltip = s;
     }
-
-
-    /**
-     * @return
-     */
-    public String getObject_type() {
-        return object_type;
-    }
-
-
-    /**
-     * @return
-     */
-    public String getOperation() {
-        return operation;
-    }
-
-
-    /**
-     * @return
-     */
-    public String getOptimizer() {
-        return optimizer;
-    }
-
-
-    /**
-     * @return
-     */
-    public String getOptions() {
-        return options;
-    }
-
 
     /**
      * @param i
      */
-    public void setCardinality(int i) {
-        cardinality = i;
+    public void setEstRows(int i) {
+        est_rows = i;
     }
-
 
     /**
      * @param i
@@ -142,7 +111,6 @@ public class ExplainNode {
         cost = i;
     }
 
-
     /**
      * @param i
      */
@@ -150,52 +118,11 @@ public class ExplainNode {
         id = i;
     }
 
-
     /**
      * @param string
      */
     public void setObject_name(String string) {
         object_name = string;
-    }
-
-
-    /**
-     * @param string
-     */
-    public void setObject_owner(String string) {
-        object_owner = string;
-    }
-
-
-    /**
-     * @param string
-     */
-    public void setObject_type(String string) {
-        object_type = string;
-    }
-
-
-    /**
-     * @param string
-     */
-    public void setOperation(String string) {
-        operation = string;
-    }
-
-
-    /**
-     * @param string
-     */
-    public void setOptimizer(String string) {
-        optimizer = string;
-    }
-
-
-    /**
-     * @param string
-     */
-    public void setOptions(String string) {
-        options = string;
     }
 	
 }
