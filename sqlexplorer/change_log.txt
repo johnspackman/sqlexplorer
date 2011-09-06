@@ -1,4 +1,4 @@
-3.6.2 SR4 (?.?.2011) - Davy Vanherbergen, Vladimir Rüntü
+3.6.1 SR4 (06.09.2011) - Davy Vanherbergen, Vladimir Rüntü
  ======================================================================
  +. fixed explain plan for DB2 extension, works now for DB2 v9.1 and above
  +. fixed procedure and trigger nodes in database node for DB2

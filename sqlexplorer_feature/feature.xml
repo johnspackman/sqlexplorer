@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.sqlexplorer"
       label="Eclipse SQL Explorer"
-      version="3.6.1.v20110728_SR3"
+      version="3.6.1.v20110906_SR4"
       provider-name="SQL Explorer Project (eclipsesql.sourceforge.net)"
       plugin="net.sourceforge.sqlexplorer">
 
@@ -34,8 +34,16 @@ statement executions
 +. fixed User.hashCode: https://sourceforge.net/tracker/?func=detail&amp;atid=725495&amp;aid=3269611&amp;group_id=132863
 
 SR3:
-+. new configuration option: Close unused connections after X seconds
-+. fixed problem with MySql connections after calling &apos;use database&apos; command
++. new configuration option: Close unused connections after X
+seconds
++. fixed problem with MySql connections after calling &apos;use database&apos;
+command
+
+SR4:
++. fixed explain plan for DB2 extension, works now for DB2 v9.1 and above
+ +. fixed procedure and trigger nodes in database node for DB2
+ +. added new sequence node in database view for DB2
+ +. added explain plan for informix
    </description>
 
    <copyright url="http://sourceforge.net/projects/eclipsesql">
@@ -87,13 +95,13 @@ USA
          id="net.sourceforge.sqlexplorer"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110728_SR3"/>
+         version="3.6.1.v20110906_SR4"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.db2"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110728_SR3"
+         version="3.6.1.v20110906_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -101,7 +109,7 @@ USA
          id="net.sourceforge.sqlexplorer.oracle"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110728_SR3"
+         version="3.6.1.v20110906_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -109,7 +117,7 @@ USA
          id="net.sourceforge.sqlexplorer.mysql"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110728_SR3"
+         version="3.6.1.v20110906_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -117,7 +125,7 @@ USA
          id="net.sourceforge.sqlexplorer.postgresql"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110728_SR3"
+         version="3.6.1.v20110906_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -125,13 +133,13 @@ USA
          id="net.sourceforge.sqlexplorer.help"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110728_SR3"/>
+         version="3.6.1.v20110906_SR4"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.dbase"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110728_SR3"
+         version="3.6.1.v20110906_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -139,7 +147,7 @@ USA
          id="net.sourceforge.sqlexplorer.mssql"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110728_SR3"
+         version="3.6.1.v20110906_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -147,7 +155,7 @@ USA
          id="net.sourceforge.sqlexplorer.sybase"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110728_SR3"
+         version="3.6.1.v20110906_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -155,7 +163,7 @@ USA
          id="net.sourceforge.sqlexplorer.derby"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110728_SR3"
+         version="3.6.1.v20110906_SR4"
          fragment="true"
          unpack="false"/>
 
@@ -163,7 +171,7 @@ USA
          id="net.sourceforge.sqlexplorer.informix"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20110728_SR3"
+         version="3.6.1.v20110906_SR4"
          fragment="true"
          unpack="false"/>
 

@@ -1,3 +1,9 @@
+Release Notes SQL Explorer 3.6.1 SR4
+======================================================
+This service release contains some minor fixes and changes. In detail:
+* DB2: Added sequence node, fixed procedures, triggers and explain plan (works now for DB2 v9.1 and above)
+* Added explain plan for informix 
+
 Release Notes SQL Explorer 3.6.1 SR3
 ======================================================
 This service release contains some minor fixes and changes.In detail:

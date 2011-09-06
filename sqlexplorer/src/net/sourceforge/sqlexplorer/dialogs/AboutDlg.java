@@ -265,6 +265,7 @@ class CreditsItem {
             " - Heiko Hilbert" + separator + 
             " - Vladimir Rüntü" + separator + 
             " - John Spackman" + separator + 
+            " - Davy Vanherbergen" + separator + 
             separator +              
             "Developers (version 3.5.1):" + separator +
             " - Heiko Hilbert" + separator + 
