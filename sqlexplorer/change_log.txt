@@ -4,6 +4,7 @@
  +. fixed procedure and trigger nodes in database node for DB2
  +. added new sequence node in database view for DB2
  +. added explain plan for informix
+ +. fixed 3028298: Added Tooltip text to filter action
 
 3.6.1 SR3 (28.07.2011) - Heiko Hilbert, John Spackman
 ======================================================================

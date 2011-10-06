@@ -97,4 +97,9 @@ public class FilterStructureAction extends Action {
 		}
 	}
 
+	@Override
+	public String getToolTipText() {
+		return "Filter Database Structure";
+	}
+
 }
