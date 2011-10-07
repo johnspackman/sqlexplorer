@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="net.sourceforge.sqlexplorer.patch"
+      label="Eclipse SQL Explorer"
+      version="3.6.1.v20111007_SR4_P1"
+      provider-name="SQL Explorer Project (eclipsesql.sourceforge.net)">
+
+   <description url="http://www.example.com/description">
+      SQL Explorer is a thin SQL client for querying and exploring
+JDBC Compliant databases. 
+Changes in 3.6.1:
++. fixed: result set column labels sometimes ignored alias names
+(select some_col as label, ...)
++. added: replace ${workspace_loc} in jdbc driver URLs
++. fixed list drivers bug with file names containing spaces etc.
+https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3947666
+
+SR1:
++. added informix plugin, thanks to Vladimir(vladsrynty)
++. check for print statements reworked (sybase/mssql)
++. realy try to cancel query in progress view
++. use correct data type when sorting result tables
++. add connection to unique key for SQL history
+
+SR2:
++. updated default drivers xml, added CUBRID, removed outdated
+drivers
++. extensions to informix plugin
++. new preference page &apos;History&apos;
++. new preference to limit SQL history entries
++. new preference to auto save SQL history after a number of
+statement executions
++. fixed User.hashCode: https://sourceforge.net/tracker/?func=detail&amp;atid=725495&amp;aid=3269611&amp;group_id=132863
+
+SR3:
++. new configuration option: Close unused connections after X
+seconds
++. fixed problem with MySql connections after calling &apos;use database&apos;
+command
+
+SR4:
++. fixed explain plan for DB2 extension, works now for DB2 v9.1
+and above
++. fixed procedure and trigger nodes in database node for DB2
++. added new sequence node in database view for DB2
++. added explain plan for informix
+
+SR4 P1:
++. fixed Add Tooltip text to filter action (https://sourceforge.net/tracker/?func=detail&amp;aid=3028298&amp;group_id=132863&amp;atid=725495)
++. sort items in filter dialog
++. use catalog/schema node to get folder list items in filter
+dialog
++. fixed bad table sorting (https://sourceforge.net/tracker/index.php?func=detail&amp;aid=3418589&amp;group_id=132863&amp;atid=725495)
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      Copyright (C) 2006 SQL Explorer Development Team
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+USA
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+USA
+   </license>
+
+   <url>
+      <update label="SQL Explorer SourceForge Site" url="http://eclipsesql.sourceforge.net/"/>
+   </url>
+
+   <requires>
+      <import feature="net.sourceforge.sqlexplorer" version="3.6.1.v20110906_SR4" patch="true"/>
+   </requires>
+
+   <plugin
+         id="net.sourceforge.sqlexplorer"
+         download-size="0"
+         install-size="0"
+         version="3.6.1.v20111007_SR4_P1"/>
+
+</feature>
