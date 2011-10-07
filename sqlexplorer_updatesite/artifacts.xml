@@ -2,7 +2,7 @@
 <?artifactRepository version='1.1.0'?>
 <repository name='SQLExplorer Updates' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1'>
   <properties size='2'>
-    <property name='p2.timestamp' value='1315326226583'/>
+    <property name='p2.timestamp' value='1318006004049'/>
     <property name='p2.compressed' value='false'/>
   </properties>
   <mappings size='3'>
@@ -10,7 +10,7 @@
     <rule filter='(&amp; (classifier=binary))' output='${repoUrl}/binary/${id}_${version}'/>
     <rule filter='(&amp; (classifier=org.eclipse.update.feature))' output='${repoUrl}/features/${id}_${version}.jar'/>
   </mappings>
-  <artifacts size='70'>
+  <artifacts size='72'>
     <artifact classifier='osgi.bundle' id='net.sourceforge.sqlexplorer.informix' version='3.6.1.v20110528_SR2'>
       <properties size='3'>
         <property name='artifact.size' value='804515'/>
@@ -66,6 +66,13 @@
         <property name='artifact.size' value='2246246'/>
         <property name='download.size' value='2246246'/>
         <property name='download.md5' value='59eaca49d64c3d4e745d8e9dac702496'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='net.sourceforge.sqlexplorer' version='3.6.1.v20111007_SR4_P1'>
+      <properties size='3'>
+        <property name='artifact.size' value='5536793'/>
+        <property name='download.size' value='5536793'/>
+        <property name='download.md5' value='261941f7fca4b694f4dbb493845a56ca'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='net.sourceforge.sqlexplorer.mysql' version='3.6.1.v20110108_SR1'>
@@ -165,6 +172,14 @@
         <property name='artifact.size' value='5528828'/>
         <property name='download.size' value='5528828'/>
         <property name='download.md5' value='3fce730925ebef45afa178fd3c0211d4'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.sqlexplorer.patch' version='3.6.1.v20111007_SR4_P1'>
+      <properties size='4'>
+        <property name='artifact.size' value='1771'/>
+        <property name='download.size' value='1771'/>
+        <property name='download.md5' value='0f5b7ef28a4514ba7bccaaadcf424094'/>
+        <property name='download.contentType' value='application/zip'/>
       </properties>
     </artifact>
     <artifact classifier='osgi.bundle' id='net.sourceforge.sqlexplorer.mssql' version='3.6.1.v20110108_SR1'>

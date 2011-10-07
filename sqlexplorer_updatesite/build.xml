@@ -57,6 +57,11 @@
 				<include name="plugins/*.jar"/>
 			</fileset>
 		</copy>
+		<antcall target="p2_build"></antcall>
+	</target>
+
+	<target name="p2_build">
+		<mkdir dir="repo"/>
 		<exec executable="${eclipse}">
 			<arg line=" -application org.eclipse.equinox.p2.publisher.UpdateSitePublisher"/>
 			<arg line=" -metadataRepository file:/${basedir}/repo" />
