@@ -58,6 +58,7 @@
    </extension>
    <extension
          point="net.sourceforge.sqlexplorer.node">
+      <!-- hide node local temporary tables -->  
       <node
             class="net.sourceforge.sqlexplorer.mysql.nodes.DummyNode"
             database-product-name="MySQL*"
@@ -65,6 +66,7 @@
             name="Hidden"
             parent-node="schema+catalog"
             table-type="local temporary"/>
+            
       <node
             class="net.sourceforge.sqlexplorer.mysql.nodes.ProcedureFolder"
             database-product-name="MySQL*"
