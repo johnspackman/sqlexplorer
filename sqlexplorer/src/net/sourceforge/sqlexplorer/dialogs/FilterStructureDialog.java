@@ -21,10 +21,12 @@ package net.sourceforge.sqlexplorer.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.CatalogNode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.DatabaseNode;
+import net.sourceforge.sqlexplorer.dbstructure.nodes.INode;
 import net.sourceforge.sqlexplorer.dbstructure.nodes.SchemaNode;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 
@@ -63,20 +65,32 @@ public class FilterStructureDialog extends Dialog {
         public Object[] getElements(Object input) {
 
             if (input instanceof DatabaseNode) {
-                return ((DatabaseNode) input).getChildNames();
+                return sort(((DatabaseNode) input).getChildNames());
             }
 
             if (input instanceof SchemaNode) {
-                return ((SchemaNode) input).getChildNames();
+                return sort(((SchemaNode) input).getChildNames());
             }
 
             if (input instanceof CatalogNode) {
-                return ((CatalogNode) input).getChildNames();
+                return sort(((CatalogNode) input).getChildNames());
             }
 
             return new Object[0];
         }
 
+        private Object[] sort(String[] names)
+        {
+        	TreeSet<Object> checked = new TreeSet<Object>();
+        	for(String name : names)
+        	{
+        		if(name.length() > 0)
+        		{
+        			checked.add(name);
+        		}
+        	}
+        	return checked.toArray(new Object[checked.size()]);
+        }
 
         public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 
@@ -285,7 +299,20 @@ public class FilterStructureDialog extends Dialog {
             folderTable.getControl().setLayoutData(tableGridData);
             folderTable.setContentProvider(new TableContentProvider());
             if (_db.getChildNodes() != null && _db.getChildNodes().length != 0) {
-                folderTable.setInput(_db.getChildNodes()[0]);
+            	INode firstCatalog = null;
+            	for(INode node : _db.getChildNodes())
+            	{
+            		if("catalog".equals(node.getType()) || "schema".equals(node.getType()))
+            		{
+            			firstCatalog = node;
+            			break;
+            		}
+            	}
+            	if(firstCatalog == null)
+            	{
+            		firstCatalog = _db.getChildNodes()[0];
+            	}
+                folderTable.setInput(firstCatalog);
             }
 
             // select correct values
