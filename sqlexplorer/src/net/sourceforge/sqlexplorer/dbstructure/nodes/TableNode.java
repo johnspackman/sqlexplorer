@@ -73,7 +73,7 @@ public class TableNode extends AbstractNode {
     @Override
 	public String getLabelText() {
     	if (_displaySchemaInName) {
-    		return getQualifiedName().replaceAll("\"", "");
+    		return _tableInfo.getSchemaName()+'.'+super.getLabelText();
     	} else {
     		return super.getLabelText();	
     	}

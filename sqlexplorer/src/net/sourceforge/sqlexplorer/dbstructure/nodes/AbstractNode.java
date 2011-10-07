@@ -139,8 +139,8 @@ public abstract class AbstractNode implements INode {
                 if (arg0 == null || arg1 == null) {
                     return 0;
                 }
-                String name0 = arg0.getName();
-                String name1 = arg1.getName();
+                String name0 = arg0.getLabelText();
+                String name1 = arg1.getLabelText();
 
                 if (name0 == null || name1 == null) {
                     return 0;
