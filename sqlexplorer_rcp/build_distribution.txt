@@ -59,3 +59,23 @@ Rebuild RCP for new eclipse version:
 - cleanup/create sqlexplorer_rcp/exported
 - export product for 'all' platforms to directory sqlexplorer_rcp/exported, Root Directory: SQLExplorer
 - use build_rcp.xml/zip.rcp to build distribution zip/tgz
+
+Deploy Patch in update site
+- set patch version in changed plugins
+- go to sqlexplorer feature patch
+- delete all files from /exported
+- edit feature.xml
+	- dependent feature version
+	- define changed plugins
+	- edit description
+- export feature to exported
+- copy exported/features and exported/plugins to sqlexplorer_updatesite
+- go to sqlexplorer_updatesite
+- open site.xml
+- add new version of sqlexplorer feature patch
+- run build.xml p2_buiuld to update artifacts.xml and content.xml (path to eclipse executable can be configured in build.properties)
+- go back to feature patch project and run build_site.xml dist
+- sftp plugin.zip, xml.zip  from dist to uploads (/home/groups/e/ec/eclipsesql/uploads/)
+- login to shell
+- go to uploads
+- run dist_patch.sh
