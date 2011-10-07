@@ -18,6 +18,7 @@
  */
 package net.sourceforge.sqlexplorer.dbstructure.actions;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dbproduct.Session;
 import net.sourceforge.sqlexplorer.dialogs.FilterStructureDialog;
@@ -31,6 +32,12 @@ import org.eclipse.jface.window.Window;
 
 public class FilterStructureAction extends Action {
 
+	public FilterStructureAction()
+	{
+		super();
+		setToolTipText(Messages.getString("DatabaseStructureView.Actions.Filter"));
+	}
+	
 	public ImageDescriptor getImageDescriptor() {
 		return ImageUtil.getDescriptor("Images.FilterIcon");
 	}
@@ -95,11 +102,6 @@ public class FilterStructureAction extends Action {
 		} catch (Exception e) {
 			SQLExplorerPlugin.error("Error creating dialog", e);
 		}
-	}
-
-	@Override
-	public String getToolTipText() {
-		return "Filter Database Structure";
 	}
 
 }
