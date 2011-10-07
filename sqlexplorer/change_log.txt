@@ -1,10 +1,16 @@
+3.6.1 SR4_P1 (07.10.2011) - Davy Vanherbergen, Heiko Hilbert
+======================================================================
++. fixed Add Tooltip text to filter action (https://sourceforge.net/tracker/?func=detail&aid=3028298&group_id=132863&atid=725495)
++. sort items in filter dialog
++. use catalog/schema node to get folder list items in filter dialog
++. fixed bad table sorting (https://sourceforge.net/tracker/index.php?func=detail&aid=3418589&group_id=132863&atid=725495)
+
 3.6.1 SR4 (06.09.2011) - Davy Vanherbergen, Vladimir Rüntü
- ======================================================================
- +. fixed explain plan for DB2 extension, works now for DB2 v9.1 and above
- +. fixed procedure and trigger nodes in database node for DB2
- +. added new sequence node in database view for DB2
- +. added explain plan for informix
- +. fixed 3028298: Added Tooltip text to filter action
+======================================================================
++. fixed explain plan for DB2 extension, works now for DB2 v9.1 and above
++. fixed procedure and trigger nodes in database node for DB2
++. added new sequence node in database view for DB2
++. added explain plan for informix
 
 3.6.1 SR3 (28.07.2011) - Heiko Hilbert, John Spackman
 ======================================================================
