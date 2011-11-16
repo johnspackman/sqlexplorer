@@ -1,3 +1,7 @@
+3.6.1 SR5 (??.??.2011) - Davy Vanherbergen, Heiko Hilbert
+======================================================================
++. try to fix session close with hanging connection
+
 3.6.1 SR4_P1 (07.10.2011) - Davy Vanherbergen, Heiko Hilbert
 ======================================================================
 +. fixed Add Tooltip text to filter action (https://sourceforge.net/tracker/?func=detail&aid=3028298&group_id=132863&atid=725495)

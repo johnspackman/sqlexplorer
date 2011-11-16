@@ -180,7 +180,7 @@ public class Session {
 	    		QueuedTask task = queuedTasks.removeFirst();
 	    		task.run();
 	    	}
-    	}catch(SQLException e) {
+    	}catch(Exception e) {
     		SQLExplorerPlugin.error("Failed running queued task", e);
     	}
 
@@ -196,7 +196,7 @@ public class Session {
     				triggerSessionChanged(SessionListener.CATALOG_CHANGED);
     			}
     		}
-    	}catch(SQLException e) {
+    	}catch(Exception e) {
     		SQLExplorerPlugin.error("Error in getCatalog", e);
     	}
     	
@@ -208,7 +208,7 @@ public class Session {
         	// If it's not auto-commit, then we have to keep the connection
         	if (!autoCommit || keepConnection)
         		return;
-    	}catch(SQLException e) {
+    	}catch(Exception e) {
     		SQLExplorerPlugin.error("Cannot commit", e);
     	}
     	
@@ -454,12 +454,12 @@ public class Session {
         		{
         			getDatabaseProduct().setCurrentCatalog(connection, defaultCatalog);
         		}
-        	}catch(SQLException e) {
+        	}catch(Exception e) {
         		SQLExplorerPlugin.error("Error in getCatalog", e);
         	}
         	try {
        			user.releaseConnection(connection);
-        	}catch(SQLException e) {
+        	}catch(Exception e) {
         		SQLExplorerPlugin.error("Cannot release connection", e);
         	}
         	try {
