@@ -241,6 +241,10 @@ public class ExportDlg extends TitleAreaDialog {
 	protected void okPressed() {
 		this.options.characterSet = uiCharset != null ? uiCharset.getText() : null;
 		this.options.columnSeparator = uiDelim != null ? uiDelim.getText() : null;
+		if(this.options.columnSeparator.startsWith("\\t"))
+		{
+			this.options.columnSeparator = "\t";
+		}
 		this.options.includeColumnNames = uiIncHeaders != null && uiIncHeaders.getSelection();
 		this.options.quote = uiQuoteText != null && uiQuoteText.getSelection();
 		this.options.rtrim = uiRtrim != null && uiRtrim.getSelection();
