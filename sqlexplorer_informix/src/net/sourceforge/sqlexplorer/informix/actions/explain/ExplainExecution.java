@@ -3,11 +3,14 @@ package net.sourceforge.sqlexplorer.informix.actions.explain;
 //import java.sql.ResultSet;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -59,7 +62,8 @@ import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 public class ExplainExecution extends AbstractSQLExecution {
 
     private static final Log _logger = LogFactory.getLog(AbstractNode.class);
-    private PreparedStatement _prepStmt;
+    private CallableStatement cstmt2;
+    //    private PreparedStatement _prepStmt;
     
 	HashMap<String,IfxExplainDescriptor> descMap = new HashMap<String,IfxExplainDescriptor>();
     
@@ -317,6 +321,33 @@ public class ExplainExecution extends AbstractSQLExecution {
 		return eNode;
     }
     
+    private String escapeXML(String str) {
+    	
+    	StringBuffer buf = new StringBuffer(str.length() * 2);
+        int i;
+        for (i = 0; i < str.length(); ++i) {
+            char ch = str.charAt(i);
+
+            if (ch > 0x7F){
+                int intValue = ch;
+                buf.append("&#");
+                buf.append(intValue);
+                buf.append(';');
+            }
+            else {
+            	switch (ch) {
+            		case 34: buf.append("&quot;"); break;
+            		case 38: buf.append("&amp;"); break;
+            		case 39: buf.append("&apos;"); break;
+            		case 60: buf.append("&lt;"); break;
+            		case 62: buf.append("&gt;"); break;
+            		default: buf.append(ch); break;
+            	}
+            }
+        }
+        return buf.toString();
+    }  
+    
 	@Override
 	protected void doExecution(IProgressMonitor monitor) throws Exception {
 
@@ -328,8 +359,19 @@ public class ExplainExecution extends AbstractSQLExecution {
             setProgressMessage("Executing explain");
 
 			conn = _connection.getConnection();
-			CallableStatement cstmt2 = conn.prepareCall("{call informix.explain_sql(?, ?, ?, ?, ?, ?, ?)}");
+			cstmt2 = conn.prepareCall("{call informix.explain_sql(?, ?, ?, ?, ?, ?, ?)}");
             
+			String reqLocale = "en_us.8859-1";
+/*			
+			String[] urlParams = conn.getMetaData().getURL().split(";");
+			for (int i = 0; i < urlParams.length; i++) {
+				if (urlParams[i].startsWith("CLIENT_LOCALE=") && urlParams[i].length() > 14) {
+					reqLocale = urlParams[i].substring(14);
+				}
+			}
+			
+    		_logger.debug("REQLOCALE: "+reqLocale);
+*/			
             Query query = null;
         	for (Iterator<Query> iter = getQueryParser().iterator(); iter.hasNext(); ) {
         		query = iter.next();
@@ -345,7 +387,7 @@ public class ExplainExecution extends AbstractSQLExecution {
                 		_logger.debug("Can explain only select query!");
             			continue;
             		}
-		    		String sqlIn = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><plist version=\"1.0\"><dict><key>MAJOR_VERSION</key><integer>1</integer><key>MINOR_VERSION</key><integer>0</integer><key>REQUESTED_LOCALE</key><string>en_us.8859-1</string><key>RETAIN</key><string>N</string><key>TRACE</key><string>N</string><key>SQL_TEXT</key><string>"+queryStr+"</string></dict></plist>";
+		    		String sqlIn = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><plist version=\"1.0\"><dict><key>MAJOR_VERSION</key><integer>1</integer><key>MINOR_VERSION</key><integer>0</integer><key>REQUESTED_LOCALE</key><string>"+reqLocale+"</string><key>RETAIN</key><string>N</string><key>TRACE</key><string>N</string><key>SQL_TEXT</key><string>"+escapeXML(queryStr)+"</string></dict></plist>";
             		
 //            		_logger.debug("Explaining: \""+query.getQuerySql()+"\"");
 
@@ -392,8 +434,6 @@ public class ExplainExecution extends AbstractSQLExecution {
 		    			} else _logger.debug("b==null");
 	    			}
 
-//	                _logger.debug(new String(buf));
-	    			
 		    		if (size > 0) {
 		    			
 			    		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
@@ -426,8 +466,12 @@ public class ExplainExecution extends AbstractSQLExecution {
 						    			String dataNodeID   = attrs.getNamedItem("id").getNodeValue();
 						    			String dataNodeName = attrs.getNamedItem("name").getNodeValue();
 						    			String dataNodeGrp  = attrs.getNamedItem("group").getNodeValue();
-				    					
-				    					descriptor.addData(dataNodeID, dataNodeName, dataNodeGrp, cNode.getFirstChild().getNodeValue());
+				    					String dataNodeVal = "";
+				    					if (cNode.getFirstChild() != null) {
+				    						dataNodeVal = cNode.getFirstChild().getNodeValue();
+				    					}
+
+						    			descriptor.addData(dataNodeID, dataNodeName, dataNodeGrp, dataNodeVal);
 				    				}
 				    			}
 				    		}
@@ -449,7 +493,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 		    			_logger.debug("outmsg_b is null");
 		    		}
 		    		else {
-		    			byte[] buf2 = new byte[80000];
+//		    			byte[] buf2 = new byte[80000];
 		    			
 		    			IfxLocator xml_msg_loptr = outmsg_b.getLocator();
 	    				IfxSmartBlob xml_msg_smbl = new IfxSmartBlob(conn);
@@ -457,21 +501,28 @@ public class ExplainExecution extends AbstractSQLExecution {
 //	    				int xml_msg_size = xml_msg_smbl.IfxLoRead(msg_out_lofd, buf2, 80000);
 	    				xml_msg_smbl.IfxLoClose(msg_out_lofd);          
 	    				xml_msg_smbl.IfxLoRelease(xml_msg_loptr);
-		                _logger.debug(new String(buf2));
+//		                _logger.debug("ERR: "+new String(buf2));
 	    		   }			
-		           _prepStmt.close();
+		           cstmt2.close();
 		    		
-            	} catch (Exception sqlex) {_logger.debug("Exception: "+sqlex.getMessage()); }
+            	} catch (SQLException sqlex) {
+            		_logger.debug("SQLException: ");
+            		_logger.debug(sqlex);
+            	}
 	    		
         	} 
 
         } catch (Exception e) {
 
-        	_logger.debug("Exception: "+e.getMessage());
-            if (_prepStmt != null) {
+        	StringWriter sw = new StringWriter();
+        	e.printStackTrace(new PrintWriter(sw));
+        	String exceptionAsStrting = sw.toString();        	
+        	
+        	_logger.debug("Exception: "+exceptionAsStrting);
+            if (cstmt2 != null) {
                 try {
-                    _prepStmt.close();
-                    _prepStmt = null;
+                	cstmt2.close();
+                	cstmt2 = null;
                 } catch (Exception e1) {
                     SQLExplorerPlugin.error("Error closing statement.", e);
                 }
@@ -484,17 +535,17 @@ public class ExplainExecution extends AbstractSQLExecution {
 	protected void doStop() throws Exception {
 		Exception t = null;
 
-        if (_prepStmt != null) {
+        if (cstmt2 != null) {
 
             try {
-                _prepStmt.cancel();
+            	cstmt2.cancel();
             } catch (Exception e) {
                 t = e;
                 SQLExplorerPlugin.error("Error cancelling statement.", e);
             }
             try {
-                _prepStmt.close();
-                _prepStmt = null;
+            	cstmt2.close();
+            	cstmt2 = null;
             } catch (Exception e) {
                 SQLExplorerPlugin.error("Error closing statement.", e);
             }
