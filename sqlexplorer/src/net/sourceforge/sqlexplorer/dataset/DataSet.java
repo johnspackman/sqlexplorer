@@ -43,6 +43,7 @@ import net.sourceforge.sqlexplorer.parsers.Query;
 import net.sourceforge.sqlexplorer.plugin.PluginPreferences;
 import net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin;
 import net.sourceforge.sqlexplorer.sqleditor.results.ResultProvider;
+import net.sourceforge.sqlexplorer.sqlpanel.AbstractSQLExecution;
 
 /**
  * Generic DataSet to hold values for TableViewer.
@@ -470,22 +471,35 @@ public class DataSet implements ResultProvider {
 	            return new Double(resultSet.getDouble(columnIndex));
 
 	        case Types.DATE:
-	        	try
-	        	{
-	        		// DATE sometimes includes time info, DB-specific (EG on Oracle it does)
-	        		return resultSet.getTimestamp(columnIndex); 
-	        	}
-	        	catch(Throwable e)
-	        	{
-	        		// teradata does not support getTimestamp on DATE values
-	        		return resultSet.getDate(columnIndex);
-	        	}
-	            
 	        case Types.TIMESTAMP:                    
-	            return resultSet.getTimestamp(columnIndex);
-	            
 	        case Types.TIME:
-	            return resultSet.getTime(columnIndex);
+	        	try {
+	        		switch(dataType) {
+	    	        case Types.DATE:
+	    	        	try
+	    	        	{
+	    	        		// DATE sometimes includes time info, DB-specific (EG on Oracle it does)
+	    	        		return resultSet.getTimestamp(columnIndex); 
+	    	        	}
+	    	        	catch(Throwable e)
+	    	        	{
+	    	        		// teradata does not support getTimestamp on DATE values
+	    	        		return resultSet.getDate(columnIndex);
+	    	        	}
+	    	            
+	    	        case Types.TIMESTAMP:                    
+	    	            return resultSet.getTimestamp(columnIndex);
+	    	            
+	    	        case Types.TIME:
+	    	            return resultSet.getTime(columnIndex);
+	        		}
+	        	} catch(SQLException e) {
+	        		// Not all database dates can be represented in Java, EG in Mysql the date "0000-00-00" can be
+	        		//	stored and this will raise an exception; you can add ?zeroDateTimeBehavior=convertToNull
+	        		//	to the mysql db url, which makes the dates null, this does it automatically
+	        		AbstractSQLExecution.debugLogQuery(query, e);
+	        	}
+	        	return null;
 	            
 	        case Types.LONGVARBINARY:
 	        	InputStream is = resultSet.getBinaryStream(columnIndex);
