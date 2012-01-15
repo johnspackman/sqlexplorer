@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.PrintStream;
 
 import net.sourceforge.sqlexplorer.Messages;
+import net.sourceforge.sqlexplorer.sqleditor.results.CellRange.Column;
 import net.sourceforge.sqlexplorer.sqleditor.results.CellRangeRow;
 import net.sourceforge.sqlexplorer.sqleditor.results.ResultProvider;
 import net.sourceforge.sqlexplorer.util.TextUtil;
@@ -62,8 +63,9 @@ public class ExporterCSV implements Exporter {
                                
             for (int j = 0; j < columnCount; j++) 
             {
+            	Column column = data.getColumn(j);
             	Object o = row.getCellValue(j);
-            	String t = o == null ? nullValue : o.toString();
+            	String t = o == null ? nullValue : column.getDisplayValue(o);
             	if (rtrim)
             	{
             		t = TextUtil.rtrim(t);
