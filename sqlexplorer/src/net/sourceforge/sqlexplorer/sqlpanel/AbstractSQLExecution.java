@@ -328,7 +328,7 @@ public abstract class AbstractSQLExecution extends Job {
 	 * @param query
 	 * @param e
 	 */
-	protected void debugLogQuery(Query query, SQLException sqlException) {
+	public static void debugLogQuery(Query query, SQLException sqlException) {
 		// Get the logging level
 		String level = SQLExplorerPlugin.getDefault().getPreferenceStore().getString(IConstants.QUERY_DEBUG_LOG_LEVEL);
 		if (level == null || level.equals(IConstants.QUERY_DEBUG_OFF))
@@ -354,12 +354,14 @@ public abstract class AbstractSQLExecution extends Job {
 			writer = new PrintWriter(fw);
 			try {
 				writer.write("==============================================\r\n");
-				StringBuffer sb = new StringBuffer(query.toString());
-				for (int i = 0; i < sb.length(); i++)
-					if (sb.charAt(i) == '\n')
-						sb.insert(i++, '\r');
-				sb.append("\r\n");
-				writer.write(sb.toString());
+				if (query != null) {
+					StringBuffer sb = new StringBuffer(query.toString());
+					for (int i = 0; i < sb.length(); i++)
+						if (sb.charAt(i) == '\n')
+							sb.insert(i++, '\r');
+					sb.append("\r\n");
+					writer.write(sb.toString());
+				}
 				if (sqlException != null)
 					writer.write("FAILED: " + sqlException.getMessage() + "\r\n");
 			} finally {
