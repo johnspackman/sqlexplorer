@@ -26,8 +26,6 @@ package net.sourceforge.sqlexplorer.parsers;
  */
 public class BasicQuery extends AbstractQuery {
 
-	private CharSequence querySql;
-	private int lineNo;
 	private QueryType queryType;
 	
 	public BasicQuery(CharSequence querySql, int lineNo) {
@@ -44,13 +42,5 @@ public class BasicQuery extends AbstractQuery {
 	 */
 	public QueryType getQueryType() {
 		return queryType;
-	}
-
-	/* (non-JavaDoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return Integer.toString(lineNo) + ": " + querySql.toString();
 	}
 }
