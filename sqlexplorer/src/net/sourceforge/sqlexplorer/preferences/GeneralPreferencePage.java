@@ -70,11 +70,6 @@ public class GeneralPreferencePage extends AbstractPreferencePage {
 		iEdit.setErrorMessage(Messages.getString("Accepted_Range_is__100_-_5000_3"));
 		addField(iEdit);
 		
-		iEdit = new IntegerFieldEditor(IConstants.MAX_LENGTH_OF_LONG_DATA, Messages.getString("Preferences.SQLExplorer.MaxLengthLongData"), getFieldEditorParent());
-		iEdit.setValidRange(0, 1000000);
-		iEdit.setErrorMessage(Messages.getString("Accepted_Range_is_0_-_1000000"));
-		addField(iEdit);
-		
 		iEdit = new IntegerFieldEditor(IConstants.CLOSE_UNUSED_CONNECTIONS_AFTER, Messages.getString("Preferences.SQLExplorer.CloseStaleConnectionsAfter"), getFieldEditorParent());
 		addField(iEdit);
 

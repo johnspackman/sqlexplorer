@@ -1,7 +1,11 @@
-3.6.1 SR5 (??.??.2011) - Heiko Hilbert
+3.6.1 SR5 (??.??.2012) - Heiko Hilbert, John Spackman, Vladimir Rüntü
 ======================================================================
 +. try to fix session close with hanging connection
-+. fixed tab delimiter in CSV export: http://sourceforge.net/tracker/?func=detail&atid=725495&aid=3462633&group_id=132863
++. fixed tab delimiter in CSV export (http://sourceforge.net/tracker/?func=detail&atid=725495&aid=3462633&group_id=132863)
++. fixed informix execution plan
++. fixed NPE in query debug log
++. CSV export: added support for date formatting according to preferences page during export to csv
++. Fixed truncation of CLOB data caused by getString(), and added user-configurable max length property (default is 10,000 chars) (https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/5183470)
 
 3.6.1 SR4_P1 (07.10.2011) - Davy Vanherbergen, Heiko Hilbert
 ======================================================================

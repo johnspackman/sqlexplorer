@@ -502,6 +502,7 @@ public class DataSet implements ResultProvider {
 	        	}
 	        	return null;
 	            
+	        case Types.BLOB:
 	        case Types.LONGVARBINARY:
 	        	InputStream is = resultSet.getBinaryStream(columnIndex);
 	        	if(is == null)
