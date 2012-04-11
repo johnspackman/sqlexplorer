@@ -123,7 +123,7 @@ public abstract class AbstractSQLExecution extends Job {
 
 		} catch (final RuntimeException e) {
 			errorDialog(Messages.getString("SQLResultsView.Error.Title"), e.getClass().getName() + ":" + e.getMessage());
-			
+			SQLExplorerPlugin.error("Error executing.", e);
 		} catch (final Exception e) {
 			// only log non-sql errors
 			if (!(e instanceof java.sql.SQLException || e instanceof InterruptedException))
