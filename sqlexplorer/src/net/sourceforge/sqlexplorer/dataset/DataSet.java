@@ -21,6 +21,7 @@ package net.sourceforge.sqlexplorer.dataset;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -508,6 +509,7 @@ public class DataSet implements ResultProvider {
 	        		return null;
 	        	}
 	        	int current;
+        		int maxLength = PluginPreferences.getCurrent().getInt(IConstants.MAX_LENGTH_OF_LONG_DATA);
 
 	        	if(PluginPreferences.getCurrent().getBoolean(IConstants.RETRIEVE_BLOB_AS_HEX))
 	        	{
@@ -516,6 +518,8 @@ public class DataSet implements ResultProvider {
 		        	{
 						while((current = is.read()) != -1)
 						{
+							if (maxLength > 0 && maxLength >= data.length())
+								break;
 							String converted = Integer.toHexString(current).toUpperCase();
 							if(converted.length() < 2)
 							{
@@ -535,6 +539,8 @@ public class DataSet implements ResultProvider {
 	        	{
 					while((current = is.read()) != -1)
 					{
+						if (maxLength > 0 && maxLength >= data.size())
+							break;
 						data.write(current);
 					}
 				} 
@@ -543,6 +549,33 @@ public class DataSet implements ResultProvider {
 					throw new SQLException(e.getMessage());
 				}
 	        	return data.toString();
+	        	
+	        case Types.CLOB:
+	        case Types.LONGVARCHAR:
+	        case Types.LONGNVARCHAR:
+        		maxLength = PluginPreferences.getCurrent().getInt(IConstants.MAX_LENGTH_OF_LONG_DATA);
+	        	Reader r = resultSet.getCharacterStream(columnIndex);
+	        	StringBuilder sb = new StringBuilder();
+	        	char[] buffer = new char[32 * 1024];
+	        	int len;
+	        	try {
+		        	while ((len = r.read(buffer)) > -1) {
+						if (maxLength > 0) {
+							if (sb.length() + len < maxLength)
+				        		sb.append(buffer, 0, len);
+							else
+				        		sb.append(buffer, 0, maxLength - sb.length());
+							if (maxLength >= sb.length())
+								break;
+						} else
+							sb.append(buffer, 0, len);
+		        	}
+	        	}catch(IOException e) {
+	        		return e.getMessage();
+	        	}
+	        	buffer = null;
+	        	return sb.toString();
+	        	
 	        default:
 	            return resultSet.getString(columnIndex);
 	    }

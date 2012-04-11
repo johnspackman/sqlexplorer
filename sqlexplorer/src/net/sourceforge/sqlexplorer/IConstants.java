@@ -72,6 +72,8 @@ public interface IConstants {
 
     String MAX_SQL_ROWS = "SQLEditor.MaxSQLRows";
 
+    String MAX_LENGTH_OF_LONG_DATA = "SQLEditor.MaxLengthLongData";
+    
     String PRE_ROW_COUNT = "SQLEditor.PreRowCount";
 
     String SQL_ASSIST = "SQLEditor.Assist";
