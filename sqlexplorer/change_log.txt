@@ -6,6 +6,8 @@
 +. fixed NPE in query debug log
 +. CSV export: added support for date formatting according to preferences page during export to csv
 +. Fixed truncation of CLOB data caused by getString(), and added user-configurable max length property (default is 10,000 chars) (https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/5183470)
++. added charset preferences for blob data as string display
++. added logging of all exceptions to detect suspicious NPE on query execution (https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/5093141)
 
 3.6.1 SR4_P1 (07.10.2011) - Davy Vanherbergen, Heiko Hilbert
 ======================================================================
