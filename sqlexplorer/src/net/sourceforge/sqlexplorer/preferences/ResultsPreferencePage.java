@@ -17,6 +17,7 @@ public class ResultsPreferencePage extends AbstractPreferencePage{
 		addField(new BooleanFieldEditor(IConstants.CLEAR_RESULTS_ON_EXECUTE, Messages.getString("Preferences.SQLExplorer.ClearResultsOnExecute"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.USE_LONG_CAPTIONS_ON_RESULTS, Messages.getString("Preferences.SQLExplorer.UseLongCaptionsOnResults"), getFieldEditorParent()));
 		addField(new BooleanFieldEditor(IConstants.RETRIEVE_BLOB_AS_HEX, Messages.getString("Preferences.SQLExplorer.RetrieveBinaryAsHex"), getFieldEditorParent()));
+		addField(new StringFieldEditor(IConstants.BLOB_AS_STRING_CHARSET, Messages.getString("Preferences.SQLExplorer.BlobAsStringCharset"), getFieldEditorParent()));
 
 		IntegerFieldEditor iEdit = new IntegerFieldEditor(IConstants.MAX_LENGTH_OF_LONG_DATA, Messages.getString("Preferences.SQLExplorer.MaxLengthLongData"), getFieldEditorParent());
 		iEdit.setValidRange(0, 1000000);

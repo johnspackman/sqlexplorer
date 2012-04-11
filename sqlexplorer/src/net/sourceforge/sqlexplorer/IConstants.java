@@ -130,6 +130,9 @@ public interface IConstants {
     // retrieve binary data as hex converted string
     String RETRIEVE_BLOB_AS_HEX = "DataSetResult.RetrieveBlobAsHex";
     
+    // convert binary data using char set
+    String BLOB_AS_STRING_CHARSET = "DataSetResult.BlobAsStringCharSet";
+
     // Whether unsaved editors should prompt to be saved when they are closed 
     String REQUIRE_SAVE_ON_CLOSE_EDITOR = "SQLEditor.RequireSaveOnClose";
     

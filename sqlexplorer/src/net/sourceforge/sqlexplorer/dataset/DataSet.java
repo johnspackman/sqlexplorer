@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -519,7 +520,7 @@ public class DataSet implements ResultProvider {
 		        	{
 						while((current = is.read()) != -1)
 						{
-							if (maxLength > 0 && maxLength >= data.length())
+							if (maxLength > 0 && data.length() >= maxLength)
 								break;
 							String converted = Integer.toHexString(current).toUpperCase();
 							if(converted.length() < 2)
@@ -540,7 +541,7 @@ public class DataSet implements ResultProvider {
 	        	{
 					while((current = is.read()) != -1)
 					{
-						if (maxLength > 0 && maxLength >= data.size())
+						if (maxLength > 0 && data.size() >= maxLength)
 							break;
 						data.write(current);
 					}
@@ -549,7 +550,16 @@ public class DataSet implements ResultProvider {
 				{
 					throw new SQLException(e.getMessage());
 				}
-	        	return data.toString();
+				String charSet = PluginPreferences.getCurrent().getString(IConstants.BLOB_AS_STRING_CHARSET);
+				if(charSet != null && charSet.length() > 0)
+				{
+					try {
+						return data.toString(charSet);
+					} catch (UnsupportedEncodingException ignored) {
+						// fall back to plain toString method
+					}
+				}
+				return data.toString();
 	        	
 	        case Types.CLOB:
 	        case Types.LONGVARCHAR:
