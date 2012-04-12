@@ -1,4 +1,4 @@
-3.6.1 SR5 (??.??.2012) - Heiko Hilbert, John Spackman, Vladimir Rüntü
+3.6.1 SR5 (12.04.2012) - Heiko Hilbert, John Spackman, Vladimir Rüntü
 ======================================================================
 +. try to fix session close with hanging connection
 +. fixed tab delimiter in CSV export (http://sourceforge.net/tracker/?func=detail&atid=725495&aid=3462633&group_id=132863)

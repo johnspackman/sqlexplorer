@@ -1,3 +1,21 @@
+Release Notes SQL Explorer 3.6.1 SR5
+======================================================
+This service release contains some minor fixes and changes. In detail:
+* Fixed tab delimiter in CSV export (http://sourceforge.net/tracker/?func=detail&atid=725495&aid=3462633&group_id=132863)
+* CSV export: added support for date formatting according to preferences page during export to csv
+* Fixed truncation of CLOB data caused by getString()
+* Added new Results preference to define max length of CLOB data to read, default is 10,000 characters (https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/5183470)
+* Added new Results preference to define character set to use for displaying BLOB data, default is using system character set
+* Added logging of all exceptions to detect suspicious NPE on query execution (https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/5093141)
+
+Release Notes SQL Explorer 3.6.1 SR4 P1
+======================================================
+This patch contains some minor fixes and changes. In detail:
+* Added tooltip text to filter action (https://sourceforge.net/tracker/?func=detail&aid=3028298&group_id=132863&atid=725495)
+* Addded sorting for items in filter dialog
+* use catalog/schema node to get folder list items in filter dialog
+* Corrected table sorting (https://sourceforge.net/tracker/index.php?func=detail&aid=3418589&group_id=132863&atid=725495)
+
 Release Notes SQL Explorer 3.6.1 SR4
 ======================================================
 This service release contains some minor fixes and changes. In detail:
