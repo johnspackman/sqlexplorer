@@ -2,14 +2,14 @@
 <?metadataRepository version='1.1.0'?>
 <repository name='SQLExplorer Updates' type='org.eclipse.equinox.internal.p2.metadata.repository.LocalMetadataRepository' version='1'>
   <properties size='2'>
-    <property name='p2.timestamp' value='1334168082587'/>
+    <property name='p2.timestamp' value='1334310857165'/>
     <property name='p2.compressed' value='false'/>
   </properties>
   <references size='2'>
     <repository uri='http://eclipsesql.sourceforge.net/' url='http://eclipsesql.sourceforge.net/' type='0' options='0'/>
     <repository uri='http://eclipsesql.sourceforge.net/' url='http://eclipsesql.sourceforge.net/' type='1' options='0'/>
   </references>
-  <units size='93'>
+  <units size='96'>
     <unit id='net.sourceforge.sqlexplorer.oracle' version='3.5.1.v20100730_SR4'>
       <update id='net.sourceforge.sqlexplorer.oracle' range='[0.0.0,3.5.1.v20100730_SR4)' severity='0'/>
       <properties size='3'>
@@ -539,6 +539,41 @@
         Copyright (C) 2006 SQL Explorer Development Team&#xA;This program is free software; you can redistribute it and/or&#xA;modify it under the terms of the GNU Lesser General Public&#xA;License as published by the Free Software Foundation; either&#xA;version 2.1 of the License, or (at your option) any later version.&#xA;This library is distributed in the hope that it will be useful,&#xA;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA;GNU Lesser General Public License for more details.&#xA;You should have received a copy of the GNU Lesser General Public&#xA;License along with this library; if not, write to the Free Software&#xA;Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307&#xA;USA
       </copyright>
     </unit>
+    <unit id='net.sourceforge.sqlexplorer.patch.feature.jar' version='3.6.1.v20120413_SR5_P1'>
+      <properties size='4'>
+        <property name='org.eclipse.equinox.p2.name' value='Eclipse SQL Explorer'/>
+        <property name='org.eclipse.equinox.p2.description' value='SQL Explorer is a thin SQL client for querying and exploring&#xA;JDBC Compliant databases. &#xA;Changes in 3.6.1:&#xA;+. fixed: result set column labels sometimes ignored alias names&#xA;(select some_col as label, ...)&#xA;+. added: replace ${workspace_loc} in jdbc driver URLs&#xA;+. fixed list drivers bug with file names containing spaces etc.&#xA;https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3947666&#xA;&#xA;SR5_P1:&#xA;+. fixed NPE on null values in CLOB data'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='SQL Explorer Project (eclipsesql.sourceforge.net)'/>
+      </properties>
+      <provides size='3'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.patch.feature.jar' version='3.6.1.v20120413_SR5_P1'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='feature' version='1.0.0'/>
+        <provided namespace='org.eclipse.update.feature' name='net.sourceforge.sqlexplorer.patch' version='3.6.1.v20120413_SR5_P1'/>
+      </provides>
+      <filter>
+        (org.eclipse.update.install.features=true)
+      </filter>
+      <artifacts size='1'>
+        <artifact classifier='org.eclipse.update.feature' id='net.sourceforge.sqlexplorer.patch' version='3.6.1.v20120413_SR5_P1'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='1'>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+      <licenses size='1'>
+        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
+          This program is free software; you can redistribute it and/or&#xA;modify it under the terms of the GNU Lesser General Public&#xA;License as published by the Free Software Foundation; either&#xA;version 2.1 of the License, or (at your option) any later version.&#xA;This library is distributed in the hope that it will be useful,&#xA;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA;GNU Lesser General Public License for more details.&#xA;You should have received a copy of the GNU Lesser General Public&#xA;License along with this library; if not, write to the Free Software&#xA;Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307&#xA;USA
+        </license>
+      </licenses>
+      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
+        Copyright (C) 2006 SQL Explorer Development Team&#xA;This program is free software; you can redistribute it and/or&#xA;modify it under the terms of the GNU Lesser General Public&#xA;License as published by the Free Software Foundation; either&#xA;version 2.1 of the License, or (at your option) any later version.&#xA;This library is distributed in the hope that it will be useful,&#xA;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA;GNU Lesser General Public License for more details.&#xA;You should have received a copy of the GNU Lesser General Public&#xA;License along with this library; if not, write to the Free Software&#xA;Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307&#xA;USA
+      </copyright>
+    </unit>
     <unit id='net.sourceforge.sqlexplorer.dbase' version='3.6.1.v20110728_SR3'>
       <update id='net.sourceforge.sqlexplorer.dbase' range='[0.0.0,3.6.1.v20110728_SR3)' severity='0'/>
       <properties size='3'>
@@ -689,26 +724,55 @@
         </instructions>
       </touchpointData>
     </unit>
-    <unit id='net.sourceforge.sqlexplorer.category.SQLExplorer' version='1.0.0.7l8S7EcNMlvEED-z0UkiZXnxgmT8Ms5'>
-      <properties size='3'>
-        <property name='org.eclipse.equinox.p2.name' value='SQL Explorer'/>
-        <property name='org.eclipse.equinox.p2.description' value='SQL Explorer Plugin'/>
-        <property name='org.eclipse.equinox.p2.type.category' value='true'/>
+    <unit id='net.sourceforge.sqlexplorer.patch.feature.group' version='3.6.1.v20120413_SR5_P1' singleton='false'>
+      <patchScope>
+        <scope>
+          <requires size='1'>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.6.1.v20120412_SR5,3.6.1.v20120412_SR5]'/>
+          </requires>
+        </scope>
+      </patchScope>
+      <changes>
+        <change>
+          <from>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer' range='0.0.0'/>
+          </from>
+          <to>
+            <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer' range='[3.6.1.v20120413_SR5_P1,3.6.1.v20120413_SR5_P1]'/>
+          </to>
+        </change>
+      </changes>
+      <lifeCycle>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.6.1.v20120412_SR5,3.6.1.v20120412_SR5]' greedy='false'/>
+      </lifeCycle>
+      <update id='net.sourceforge.sqlexplorer.patch.feature.group' range='[0.0.0,3.6.1.v20120413_SR5_P1)' severity='0'/>
+      <properties size='6'>
+        <property name='org.eclipse.equinox.p2.type.patch' value='true'/>
+        <property name='org.eclipse.equinox.p2.name' value='Eclipse SQL Explorer'/>
+        <property name='org.eclipse.equinox.p2.description' value='SQL Explorer is a thin SQL client for querying and exploring&#xA;JDBC Compliant databases. &#xA;Changes in 3.6.1:&#xA;+. fixed: result set column labels sometimes ignored alias names&#xA;(select some_col as label, ...)&#xA;+. added: replace ${workspace_loc} in jdbc driver URLs&#xA;+. fixed list drivers bug with file names containing spaces etc.&#xA;https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/3947666&#xA;&#xA;SR5_P1:&#xA;+. fixed NPE on null values in CLOB data'/>
+        <property name='org.eclipse.equinox.p2.description.url' value='http://www.example.com/description'/>
+        <property name='org.eclipse.equinox.p2.provider' value='SQL Explorer Project (eclipsesql.sourceforge.net)'/>
+        <property name='org.eclipse.equinox.p2.type.group' value='true'/>
       </properties>
       <provides size='1'>
-        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.category.SQLExplorer' version='1.0.0.7l8S7EcNMlvEED-z0UkiZXnxgmT8Ms5'/>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.patch.feature.group' version='3.6.1.v20120413_SR5_P1'/>
       </provides>
-      <requires size='8'>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.6.1.v20110728_SR3,3.6.1.v20110728_SR3]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.6.1.v20120412_SR5,3.6.1.v20120412_SR5]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.6.1.v20110108_SR1,3.6.1.v20110108_SR1]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.patch.feature.group' range='[3.6.1.v20111007_SR4_P1,3.6.1.v20111007_SR4_P1]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.5.1.v20100730_SR4,3.5.1.v20100730_SR4]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.6.1.v20110906_SR4,3.6.1.v20110906_SR4]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.6.1.v20101117,3.6.1.v20101117]'/>
-        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.6.1.v20110528_SR2,3.6.1.v20110528_SR2]'/>
+      <requires size='1'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.patch.feature.jar' range='[3.6.1.v20120413_SR5_P1,3.6.1.v20120413_SR5_P1]'>
+          <filter>
+            (org.eclipse.update.install.features=true)
+          </filter>
+        </required>
       </requires>
       <touchpoint id='null' version='0.0.0'/>
+      <licenses size='1'>
+        <license uri='http://www.example.com/license' url='http://www.example.com/license'>
+          This program is free software; you can redistribute it and/or&#xA;modify it under the terms of the GNU Lesser General Public&#xA;License as published by the Free Software Foundation; either&#xA;version 2.1 of the License, or (at your option) any later version.&#xA;This library is distributed in the hope that it will be useful,&#xA;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA;GNU Lesser General Public License for more details.&#xA;You should have received a copy of the GNU Lesser General Public&#xA;License along with this library; if not, write to the Free Software&#xA;Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307&#xA;USA
+        </license>
+      </licenses>
+      <copyright uri='http://www.example.com/copyright' url='http://www.example.com/copyright'>
+        Copyright (C) 2006 SQL Explorer Development Team&#xA;This program is free software; you can redistribute it and/or&#xA;modify it under the terms of the GNU Lesser General Public&#xA;License as published by the Free Software Foundation; either&#xA;version 2.1 of the License, or (at your option) any later version.&#xA;This library is distributed in the hope that it will be useful,&#xA;but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA;GNU Lesser General Public License for more details.&#xA;You should have received a copy of the GNU Lesser General Public&#xA;License along with this library; if not, write to the Free Software&#xA;Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307&#xA;USA
+      </copyright>
     </unit>
     <unit id='net.sourceforge.sqlexplorer.patch.feature.group' version='3.6.1.v20111007_SR4_P1' singleton='false'>
       <patchScope>
@@ -2857,6 +2921,97 @@
         </instructions>
       </touchpointData>
     </unit>
+    <unit id='net.sourceforge.sqlexplorer' version='3.6.1.v20120413_SR5_P1'>
+      <update id='net.sourceforge.sqlexplorer' range='[0.0.0,3.6.1.v20120413_SR5_P1)' severity='0'/>
+      <properties size='3'>
+        <property name='org.eclipse.equinox.p2.name' value='SQLExplorer Plugin'/>
+        <property name='org.eclipse.equinox.p2.provider' value='SQL Explorer Project (eclipsesql.sourceforge.net)'/>
+        <property name='org.eclipse.equinox.p2.bundle.localization' value='plugin'/>
+      </properties>
+      <provides size='57'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer' version='3.6.1.v20120413_SR5_P1'/>
+        <provided namespace='osgi.bundle' name='net.sourceforge.sqlexplorer' version='3.6.1.v20120413_SR5_P1'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.connections' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.connections.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dataset' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dbdetail' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dbdetail.tab' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dbproduct' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dbstructure' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dbstructure.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dbstructure.nodes' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.dialogs' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.history' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.history.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.parsers' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.parsers.scp' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.plugin' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.plugin.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.plugin.editors' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.plugin.perspectives' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.plugin.views' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.plugin.wizards' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.preferences' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.preview' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.sessiontree.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.sessiontree.model.utility' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.sqleditor' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.sqleditor.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.sqleditor.results.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.sqlpanel' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.sqlpanel.actions' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.sqlexplorer.util' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.codereformat' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.completion' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.completion.util' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.datasetviewer' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.datasetviewer.cellcomponent' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.dialects' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.gui' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.gui.action' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.gui.image' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.id' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.persist' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.preferences' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.resources' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.resources.images.eclipse' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.resources.images.gnome' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.sql' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.sql.dbobj' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.sql.dbobj.adapter' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.util' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.util.beanwrapper' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.util.log' version='0.0.0'/>
+        <provided namespace='java.package' name='net.sourceforge.squirrel_sql.fw.xml' version='0.0.0'/>
+        <provided namespace='java.package' name='org.eclipse.jface.preference' version='0.0.0'/>
+        <provided namespace='org.eclipse.equinox.p2.eclipse.type' name='bundle' version='1.0.0'/>
+      </provides>
+      <requires size='8'>
+        <required namespace='osgi.bundle' name='org.eclipse.ui' range='3.3.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.runtime' range='3.3.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.resources' range='3.3.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.ide' range='3.3.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.workbench.texteditor' range='3.3.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.jface.text' range='3.3.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.ui.editors' range='3.3.0'/>
+        <required namespace='osgi.bundle' name='org.eclipse.core.expressions' range='0.0.0'/>
+      </requires>
+      <artifacts size='1'>
+        <artifact classifier='osgi.bundle' id='net.sourceforge.sqlexplorer' version='3.6.1.v20120413_SR5_P1'/>
+      </artifacts>
+      <touchpoint id='org.eclipse.equinox.p2.osgi' version='1.0.0'/>
+      <touchpointData size='1'>
+        <instructions size='2'>
+          <instruction key='manifest'>
+            Bundle-Name: SQLExplorer Plugin&#xA;Bundle-ClassPath: sqlexplorer.jar,lib/log4j.jar,lib/rowset.jar,lib/dom4j.jar,lib/fw.jar,lib/hibernate3.2.4.sp1.jar,lib/poi-3.5-FINAL-20090928.jar,lib/commons-logging.jar&#xA;Bundle-Version: 3.6.1.v20120413_SR5_P1&#xA;Eclipse-LazyStart: true&#xA;Bundle-Activator: net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin&#xA;Bundle-Vendor: SQL Explorer Project (eclipsesql.sourceforge.net)&#xA;Require-Bundle: org.eclipse.ui;bundle-version=&quot;3.3.0&quot;,org.eclipse.core.runtime;bundle-version=&quot;3.3.0&quot;,org.eclipse.core.resources;bundle-version=&quot;3.3.0&quot;,org.eclipse.ui.ide;bundle-version=&quot;3.3.0&quot;,org.eclipse.ui.workbench.texteditor;bundle-version=&quot;3.3.0&quot;,org.eclipse.jface.text;bundle-version=&quot;3.3.0&quot;,org.eclipse.ui.editors;bundle-version=&quot;3.3.0&quot;,org.eclipse.core.expressions&#xA;Export-Package: net.sourceforge.sqlexplorer,net.sourceforge.sqlexplorer.connections,net.sourceforge.sqlexplorer.connections.actions,net.sourceforge.sqlexplorer.dataset,net.sourceforge.sqlexplorer.dbdetail,net.sourceforge.sqlexplorer.dbdetail.tab,net.sourceforge.sqlexplorer.dbproduct,net.sourceforge.sqlexplorer.dbstructure,net.sourceforge.sqlexplorer.dbstructure.actions,net.sourceforge.sqlexplorer.dbstructure.nodes,net.sourceforge.sqlexplorer.dialogs,net.sourceforge.sqlexplorer.history,net.sourceforge.sqlexplorer.history.actions,net.sourceforge.sqlexplorer.parsers,net.sourceforge.sqlexplorer.parsers.scp,net.sourceforge.sqlexplorer.plugin,net.sourceforge.sqlexplorer.plugin.actions,net.sourceforge.sqlexplorer.plugin.editors,net.sourceforge.sqlexplorer.plugin.perspectives,net.sourceforge.sqlexplorer.plugin.views,net.sourceforge.sqlexplorer.plugin.wizards,net.sourceforge.sqlexplorer.preferences,net.sourceforge.sqlexplorer.preview,net.sourceforge.sqlexplorer.sessiontree.actions,net.sourceforge.sqlexplorer.sessiontree.model.utility,net.sourceforge.sqlexplorer.sqleditor,net.sourceforge.sqlexplorer.sqleditor.actions,net.sourceforge.sqlexplorer.sqleditor.results.actions,net.sourceforge.sqlexplorer.sqlpanel,net.sourceforge.sqlexplorer.sqlpanel.actions,net.sourceforge.sqlexplorer.util,net.sourceforge.squirrel_sql.fw.codereformat,net.sourceforge.squirrel_sql.fw.completion,net.sourceforge.squirrel_sql.fw.completion.util,net.sourceforge.squirrel_sql.fw.datasetviewer,net.sourceforge.squirrel_sql.fw.datasetviewer.cellcomponent,net.sourceforge.squirrel_sql.fw.dialects,net.sourceforge.squirrel_sql.fw.gui,net.sourceforge.squirrel_sql.fw.gui.action,net.sourceforge.squirrel_sql.fw.gui.image,net.sourceforge.squirrel_sql.fw.id,net.sourceforge.squirrel_sql.fw.persist,net.sourceforge.squirrel_sql.fw.preferences,net.sourceforge.squirrel_sql.fw.resources,net.sourceforge.squirrel_sql.fw.resources.images.eclipse,net.sourceforge.squirrel_sql.fw.resources.images.gnome,net.sourceforge.squirrel_sql.fw.sql,net.sourceforge.squirrel_sql.fw.sql.dbobj,net.sourceforge.squirrel_sql.fw.sql.dbobj.adapter,net.sourceforge.squirrel_sql.fw.util,net.sourceforge.squirrel_sql.fw.util.beanwrapper,net.sourceforge.squirrel_sql.fw.util.log,net.sourceforge.squirrel_sql.fw.xml,org.eclipse.jface.preference&#xA;Bundle-SymbolicName: net.sourceforge.sqlexplorer; singleton:=true&#xA;Manifest-Version: 1.0&#xA;Bundle-ActivationPolicy: lazy&#xA;Bundle-ManifestVersion: 2&#xA;Bundle-RequiredExecutionEnvironment: J2SE-1.5&#xA;Bundle-Localization: plugin&#xA;
+          </instruction>
+          <instruction key='zipped'>
+            true
+          </instruction>
+        </instructions>
+      </touchpointData>
+    </unit>
     <unit id='net.sourceforge.sqlexplorer.sybase' version='3.6.1.v20110528_SR2'>
       <update id='net.sourceforge.sqlexplorer.sybase' range='[0.0.0,3.6.1.v20110528_SR2)' severity='0'/>
       <properties size='3'>
@@ -2912,6 +3067,28 @@
           </instruction>
         </instructions>
       </touchpointData>
+    </unit>
+    <unit id='net.sourceforge.sqlexplorer.category.SQLExplorer' version='1.0.0.7r8e7GcNMlvEEEt6Yqqdju63kOLljA'>
+      <properties size='3'>
+        <property name='org.eclipse.equinox.p2.name' value='SQL Explorer'/>
+        <property name='org.eclipse.equinox.p2.description' value='SQL Explorer Plugin'/>
+        <property name='org.eclipse.equinox.p2.type.category' value='true'/>
+      </properties>
+      <provides size='1'>
+        <provided namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.category.SQLExplorer' version='1.0.0.7r8e7GcNMlvEEEt6Yqqdju63kOLljA'/>
+      </provides>
+      <requires size='9'>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.6.1.v20110728_SR3,3.6.1.v20110728_SR3]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.6.1.v20120412_SR5,3.6.1.v20120412_SR5]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.6.1.v20110108_SR1,3.6.1.v20110108_SR1]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.patch.feature.group' range='[3.6.1.v20120413_SR5_P1,3.6.1.v20120413_SR5_P1]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.patch.feature.group' range='[3.6.1.v20111007_SR4_P1,3.6.1.v20111007_SR4_P1]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.5.1.v20100730_SR4,3.5.1.v20100730_SR4]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.6.1.v20110906_SR4,3.6.1.v20110906_SR4]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.6.1.v20101117,3.6.1.v20101117]'/>
+        <required namespace='org.eclipse.equinox.p2.iu' name='net.sourceforge.sqlexplorer.feature.group' range='[3.6.1.v20110528_SR2,3.6.1.v20110528_SR2]'/>
+      </requires>
+      <touchpoint id='null' version='0.0.0'/>
     </unit>
     <unit id='net.sourceforge.sqlexplorer.sybase' version='3.6.1.v20110906_SR4'>
       <update id='net.sourceforge.sqlexplorer.sybase' range='[0.0.0,3.6.1.v20110906_SR4)' severity='0'/>

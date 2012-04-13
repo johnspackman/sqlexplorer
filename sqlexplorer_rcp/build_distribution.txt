@@ -73,7 +73,7 @@ Deploy Patch in update site
 - go to sqlexplorer_updatesite
 - open site.xml
 - add new version of sqlexplorer feature patch
-- run build.xml p2_buiuld to update artifacts.xml and content.xml (path to eclipse executable can be configured in build.properties)
+- run build.xml p2_build to update artifacts.xml and content.xml (path to eclipse executable can be configured in build.properties)
 - go back to feature patch project and run build_site.xml dist
 - sftp plugin.zip, xml.zip  from dist to uploads (/home/groups/e/ec/eclipsesql/uploads/)
 - login to shell
