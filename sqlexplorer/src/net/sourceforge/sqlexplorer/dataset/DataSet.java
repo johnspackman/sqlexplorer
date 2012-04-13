@@ -564,8 +564,12 @@ public class DataSet implements ResultProvider {
 	        case Types.CLOB:
 	        case Types.LONGVARCHAR:
 	        case Types.LONGNVARCHAR:
-        		maxLength = PluginPreferences.getCurrent().getInt(IConstants.MAX_LENGTH_OF_LONG_DATA);
 	        	Reader r = resultSet.getCharacterStream(columnIndex);
+	        	if(r == null)
+	        	{
+	        		return null;
+	        	}
+        		maxLength = PluginPreferences.getCurrent().getInt(IConstants.MAX_LENGTH_OF_LONG_DATA);
 	        	StringBuilder sb = new StringBuilder();
 	        	char[] buffer = new char[32 * 1024];
 	        	int len;
