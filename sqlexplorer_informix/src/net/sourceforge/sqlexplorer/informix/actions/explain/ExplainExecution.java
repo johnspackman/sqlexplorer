@@ -415,7 +415,7 @@ public class ExplainExecution extends AbstractSQLExecution {
 
 		    		if (monitor.isCanceled()) return;
 		    		
-	    			byte[] buf = new byte[80000];
+	    			byte[] buf = new byte[1000000];
 	    			int size = 0;
 		    		while (rs.next()) {
 		    			IfxBblob b = (IfxBblob) rs.getBlob(1);
@@ -428,13 +428,13 @@ public class ExplainExecution extends AbstractSQLExecution {
 			    			// func returns long, but we can read only Integer.MAX into byte array,
 			    			// and to parse xml with DOM/Xpath it cannot be bigger than buf[(int)]
 			    			size = smbl.IfxLoRead(lofd, buf, buf.length);
+			    			_logger.debug("size="+size);		    			
 			    			smbl.IfxLoClose(lofd);
 			    			smbl.IfxLoRelease(loptr);
 		    			} else _logger.debug("b==null");
 	    			}
 
 		    		if (size > 0) {
-		    			
 			    		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
 			    		DocumentBuilder builder = domFactory.newDocumentBuilder();
 			    		InputStream reader = new ByteArrayInputStream(buf, 0, size);

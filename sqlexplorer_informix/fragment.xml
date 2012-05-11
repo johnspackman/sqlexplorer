@@ -66,6 +66,27 @@
             name="Logs Folder Information"
             node-type="logs_folder">
       </detailtab>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.informix.tabs.OnlineLogTab"
+            database-product-name="informix*"
+            id="net.sourceforge.sqlexplorer.informix.onlineLogTab"
+            name="Online Log"
+            node-type="database">
+      </detailtab>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.informix.tabs.ConfigTab"
+            database-product-name="informix*"
+            id="net.sourceforge.sqlexplorer.informix.configTab"
+            name="Configuration"
+            node-type="database">
+      </detailtab>
+      <detailtab
+            class="net.sourceforge.sqlexplorer.informix.tabs.DBDetailTab"
+            database-product-name="Informix*"
+            id="net.sourceforge.sqlexplorer.informix.dbDetailTab"
+            name="Database Information"
+            node-type="catalog">
+      </detailtab>
    </extension>
    <extension
          point="net.sourceforge.sqlexplorer.node">
