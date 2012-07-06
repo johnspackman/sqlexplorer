@@ -1,6 +1,7 @@
-3.6.1 SR6 (??.??.2012) - Heiko Hilbert, Vladimir Rüntü
+3.6.1 SR6 (??.??.2012) - Heiko Hilbert, Thomas Meyer, Vladimir Rüntü
 ======================================================================
 +. new detail tabs for informix (Online Log, Configuration, Database Information)
++. fixed NPE in export to XLS
 
 3.6.1 SR5_P1 (13.04.2012) - Heiko Hilbert
 ======================================================================
