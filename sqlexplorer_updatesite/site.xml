@@ -30,6 +30,9 @@
    <feature url="features/net.sourceforge.sqlexplorer.patch_3.6.1.v20120413_SR5_P1.jar" id="net.sourceforge.sqlexplorer.patch" version="3.6.1.v20120413_SR5_P1" patch="true">
       <category name="SQLExplorer"/>
    </feature>
+   <feature url="features/net.sourceforge.sqlexplorer_3.6.1.v20120708_SR6.jar" id="net.sourceforge.sqlexplorer" version="3.6.1.v20120708_SR6">
+      <category name="SQLExplorer"/>
+   </feature>
    <category-def name="SQLExplorer" label="SQL Explorer">
       <description>
          SQL Explorer Plugin

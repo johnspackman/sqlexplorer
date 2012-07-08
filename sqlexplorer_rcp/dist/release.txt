@@ -1,3 +1,9 @@
+Release Notes SQL Explorer 3.6.1 SR6
+======================================================
+This service release contains some minor fixes and changes. In detail:
+* Added new detail tabs for informix (Online Log, Configuration, Database Information)
+* Fixed NPE in export to XLS
+
 Release Notes SQL Explorer 3.6.1 SR5
 ======================================================
 This service release contains some minor fixes and changes. In detail:

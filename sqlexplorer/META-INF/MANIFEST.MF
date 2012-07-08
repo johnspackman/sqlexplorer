@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SQLExplorer Plugin
 Bundle-SymbolicName: net.sourceforge.sqlexplorer; singleton:=true
-Bundle-Version: 3.6.1.v20120413_SR5_P1
+Bundle-Version: 3.6.1.v20120708_SR6
 Bundle-Activator: net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin
 Bundle-Vendor: SQL Explorer Project (eclipsesql.sourceforge.net)
 Bundle-Localization: plugin

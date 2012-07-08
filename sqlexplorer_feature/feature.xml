@@ -2,7 +2,7 @@
 <feature
       id="net.sourceforge.sqlexplorer"
       label="Eclipse SQL Explorer"
-      version="3.6.1.v20120412_SR5"
+      version="3.6.1.v20120708_SR6"
       provider-name="SQL Explorer Project (eclipsesql.sourceforge.net)"
       plugin="net.sourceforge.sqlexplorer">
 
@@ -44,17 +44,25 @@ and above
 SR4_P1:
 +. fixed Add Tooltip text to filter action (https://sourceforge.net/tracker/?func=detail&amp;aid=3028298&amp;group_id=132863&amp;atid=725495)
 +. sort items in filter dialog
-+. use catalog/schema node to get folder list items in filter dialog
++. use catalog/schema node to get folder list items in filter
+dialog
 +. fixed bad table sorting (https://sourceforge.net/tracker/index.php?func=detail&amp;aid=3418589&amp;group_id=132863&amp;atid=725495)
 SR5:
 +. try to fix session close with hanging connection
 +. fixed tab delimiter in CSV export (http://sourceforge.net/tracker/?func=detail&amp;atid=725495&amp;aid=3462633&amp;group_id=132863)
 +. fixed informix execution plan
 +. fixed NPE in query debug log
-+. CSV export: added support for date formatting according to preferences page during export to csv
-+. Fixed truncation of CLOB data caused by getString(), and added user-configurable max length property (default is 10,000 chars) (https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/5183470)
++. CSV export: added support for date formatting according to
+preferences page during export to csv
++. Fixed truncation of CLOB data caused by getString(), and added
+user-configurable max length property (default is 10,000 chars)
+(https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/5183470)
 +. added charset preferences for blob data as string display
-+. added logging of all exceptions to detect suspicious NPE on query execution (https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/5093141)
++. added logging of all exceptions to detect suspicious NPE on
+query execution (https://sourceforge.net/projects/eclipsesql/forums/forum/450662/topic/5093141)
+SR6:
++. new detail tabs for informix (Online Log, Configuration, Database Information)
++. fixed NPE in export to XLS
    </description>
 
    <copyright url="http://sourceforge.net/projects/eclipsesql">
@@ -106,13 +114,13 @@ USA
          id="net.sourceforge.sqlexplorer"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20120412_SR5"/>
+         version="3.6.1.v20120708_SR6"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.db2"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20120412_SR5"
+         version="3.6.1.v20120708_SR6"
          fragment="true"
          unpack="false"/>
 
@@ -120,7 +128,7 @@ USA
          id="net.sourceforge.sqlexplorer.oracle"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20120412_SR5"
+         version="3.6.1.v20120708_SR6"
          fragment="true"
          unpack="false"/>
 
@@ -128,7 +136,7 @@ USA
          id="net.sourceforge.sqlexplorer.mysql"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20120412_SR5"
+         version="3.6.1.v20120708_SR6"
          fragment="true"
          unpack="false"/>
 
@@ -136,7 +144,7 @@ USA
          id="net.sourceforge.sqlexplorer.postgresql"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20120412_SR5"
+         version="3.6.1.v20120708_SR6"
          fragment="true"
          unpack="false"/>
 
@@ -144,13 +152,13 @@ USA
          id="net.sourceforge.sqlexplorer.help"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20120412_SR5"/>
+         version="3.6.1.v20120708_SR6"/>
 
    <plugin
          id="net.sourceforge.sqlexplorer.dbase"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20120412_SR5"
+         version="3.6.1.v20120708_SR6"
          fragment="true"
          unpack="false"/>
 
@@ -158,7 +166,7 @@ USA
          id="net.sourceforge.sqlexplorer.mssql"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20120412_SR5"
+         version="3.6.1.v20120708_SR6"
          fragment="true"
          unpack="false"/>
 
@@ -166,7 +174,7 @@ USA
          id="net.sourceforge.sqlexplorer.sybase"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20120412_SR5"
+         version="3.6.1.v20120708_SR6"
          fragment="true"
          unpack="false"/>
 
@@ -174,7 +182,7 @@ USA
          id="net.sourceforge.sqlexplorer.derby"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20120412_SR5"
+         version="3.6.1.v20120708_SR6"
          fragment="true"
          unpack="false"/>
 
@@ -182,7 +190,7 @@ USA
          id="net.sourceforge.sqlexplorer.informix"
          download-size="0"
          install-size="0"
-         version="3.6.1.v20120412_SR5"
+         version="3.6.1.v20120708_SR6"
          fragment="true"
          unpack="false"/>
 
