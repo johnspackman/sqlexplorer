@@ -119,12 +119,29 @@ public class SQLHistoryElement {
 
 
     /**
-     * Check if the current element matches a given sql string
+     * Check if the current element matches a given sql string and user.
+     * 
+     * @param rawSQL original sql statement to compare too.
+     * @param user sql user who issued the command
+     * @return true rawSQL matches this element
+     */
+    public boolean equals(String rawSQL, User user) 
+    {
+    	return
+    		this.hasSql(rawSQL)
+    		&&
+    		user.getUserName().equals(this.userName)
+    		&& 
+    		user.getAlias().getName().equals(this.aliasName);	
+    }
+    
+    /**
+     * Check if the current element matches a given sql string and user.
      * 
      * @param rawSQL original sql statement to compare too.
      * @return true rawSQL matches this element
      */
-    public boolean equals(String rawSQL) {
+    private boolean hasSql(String rawSQL) {
     	int i1 = 0, i2 = 0; 
     	while (true) {
        		char c1 = i1 < rawSQL.length() ? rawSQL.charAt(i1) : 0;

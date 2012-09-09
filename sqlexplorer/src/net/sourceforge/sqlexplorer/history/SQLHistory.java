@@ -127,7 +127,7 @@ public class SQLHistory {
 
         for (int i = 0; i < _history.size(); i++) {
             SQLHistoryElement el = (SQLHistoryElement) _history.get(i);
-            if (el.equals(rawSqlString) && el.getUser().equals(session.getUser())) {
+            if (el.equals(rawSqlString, session.getUser())) {
                 _history.remove(i);
                 el.setUser(session.getUser());
                 el.increaseExecutionCount();
