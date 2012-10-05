@@ -1,3 +1,7 @@
+3.6.1 SR7 (??.??.2012) - Heiko Hilbert
+======================================================================
++. fixed NPE in SQL history on connection rename/delete
+
 3.6.1 SR6 (08.07.2012) - Heiko Hilbert, Thomas Meyer, Vladimir Rüntü
 ======================================================================
 +. new detail tabs for informix (Online Log, Configuration, Database Information)
