@@ -19,6 +19,7 @@
 package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -45,16 +46,21 @@ public class NewDatabaseStructureViewAction extends AbstractConnectionTreeAction
 	@Override
 	public void run() {
 		DatabaseStructureView view = SQLExplorerPlugin.getDefault().showDatabaseStructureView();
-		if (view == null)
+		
+		if (view == null) {
 			return;
+		}
 
 		Collection<User> users = getView().getSelectedUsers(true);
-		for (User user : users)
+		
+		for (User user : users) {
 			try {
 				view.addUser(user);
-			}catch(SQLCannotConnectException e) {
+			}
+			catch(SQLCannotConnectException e) {
 	        	MessageDialog.openError(Display.getDefault().getActiveShell(), "Cannot connect", e.getMessage());
 			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -62,8 +68,8 @@ public class NewDatabaseStructureViewAction extends AbstractConnectionTreeAction
 	 */
 	@Override
 	public boolean isAvailable() {
-		Collection<User> users = getView().getSelectedUsers(true);
-		return !users.isEmpty();
+		Set<User> users = getView().getSelectedUsers(true);
+		return (users != null && users.size() > 0);
 	}
 
 }
