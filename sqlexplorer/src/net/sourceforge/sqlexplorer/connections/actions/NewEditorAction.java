@@ -20,8 +20,11 @@ package net.sourceforge.sqlexplorer.connections.actions;
 
 import java.util.Set;
 
+import net.sourceforge.sqlexplorer.Messages;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.util.ImageUtil;
+
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IViewActionDelegate;
 
 /**
@@ -37,8 +40,19 @@ public class NewEditorAction extends AbstractConnectionTreeAction implements IVi
     
     public void run() {
     	Set<User> users = getView().getSelectedUsers(true);
-    	for (User user : users)
+    	
+    	if (users == null || users.size() == 0) {
+    		MessageDialog.openError(
+    					getView().getViewSite().getShell(), 
+    					Messages.getString("ConnectionsView.Actions.NewSQLEditor.Failure.NoUserDefined.Title"), 
+    					Messages.getString("ConnectionsView.Actions.NewSQLEditor.Failure.NoUserDefined.Message")
+    				);
+    	}
+    	
+    	for (User user : users) {
     		getView().openNewEditor(user);
+    	}
+    	
         getView().refresh();
     }
 
@@ -48,8 +62,10 @@ public class NewEditorAction extends AbstractConnectionTreeAction implements IVi
      * @see net.sourceforge.sqlexplorer.connections.actions.AbstractConnectionTreeAction#isAvailable()
      */
     public boolean isAvailable() {
-    	if (getView() == null)
+    	if (getView() == null) {
     		return false;
-    	return getView().getSelectedUsers(true) != null;
+    	}
+    	Set<User> users = getView().getSelectedUsers(true);
+    	return (users != null && users.size() > 0);
     }
 }
