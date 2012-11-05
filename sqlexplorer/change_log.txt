@@ -1,6 +1,7 @@
-3.6.1 SR7 (??.??.2012) - Heiko Hilbert
+3.6.1 SR7 (??.??.2012) - Heiko Hilbert, Mario (xenji) Müller
 ======================================================================
 +. fixed NPE in SQL history on connection rename/delete
++. changed the New SQL Editor and the Database Structure Actions to use the correct conditions.
 
 3.6.1 SR6 (08.07.2012) - Heiko Hilbert, Thomas Meyer, Vladimir Rüntü
 ======================================================================
