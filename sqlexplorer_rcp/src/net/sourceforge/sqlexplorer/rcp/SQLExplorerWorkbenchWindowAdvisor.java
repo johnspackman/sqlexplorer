@@ -37,6 +37,7 @@ public class SQLExplorerWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         windowConfigurer.setShowCoolBar(false);
         windowConfigurer.setShowPerspectiveBar(false);
         windowConfigurer.setShowProgressIndicator(true);
+        windowConfigurer.setShowStatusLine(true);
         
     }
 

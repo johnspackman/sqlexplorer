@@ -72,7 +72,7 @@ public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor
         MenuManager editMenu = new MenuManager("&Edit", IWorkbenchActionConstants.M_EDIT);
         MenuManager navigateMenu = new MenuManager("&Navigate", IWorkbenchActionConstants.M_NAVIGATE);
         MenuManager viewMenu = new MenuManager("&View", "sqlexplorer.View");        
-        MenuManager helpMenu = new MenuManager("&Help", "help");
+        MenuManager helpMenu = new MenuManager("&Help", IWorkbenchActionConstants.M_HELP);
                
         // create file menu
         menuBar.add(fileMenu);
@@ -119,6 +119,7 @@ public class SQLExplorerActionBarAdvisor extends ActionBarAdvisor
 		helpMenu.add(new Separator(IWorkbenchActionConstants.HELP_START));
 		helpMenu.add(getAction(ActionFactory.HELP_CONTENTS.getId()));
 		helpMenu.add(new Separator(IWorkbenchActionConstants.HELP_END));
+		helpMenu.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
 
 		// create invisible window menu
         MenuManager winMenu = new MenuManager("&Window", IWorkbenchActionConstants.M_WINDOW);
