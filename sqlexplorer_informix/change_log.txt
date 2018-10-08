@@ -1,4 +1,0 @@
-09.08.2011
-- Added query explain.
-16.01.2011
-- Added changelog

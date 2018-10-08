@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="src" path="driver-src"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/poi-3.5-FINAL-20090928.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/dom4j.jar" sourcepath="C:/os/src/dom4j/dom4j-1.6.1/src/java"/>
@@ -10,5 +11,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry exported="true" kind="lib" path="lib/hibernate3.2.4.sp1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/Users/john/os/apache-tomcat-7.0.52/lib/ojdbc14.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
