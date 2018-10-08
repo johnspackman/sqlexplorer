@@ -21,6 +21,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.CoolBar;
 
@@ -69,10 +70,6 @@ public class SQLEditorToolBar {
 
         _coolBar = new CoolBar(parent, SWT.FLAT);
         _coolBarMgr = new CoolBarManager(_coolBar);
-
-        GridData gid = new GridData();
-        gid.horizontalAlignment = GridData.FILL;
-        _coolBar.setLayoutData(gid);
 
         // initialize default actions
         _defaultToolBarMgr = new ToolBarManager(SWT.FLAT);

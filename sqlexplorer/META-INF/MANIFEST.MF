@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SQLExplorer Plugin
 Bundle-SymbolicName: net.sourceforge.sqlexplorer; singleton:=true
-Bundle-Version: 3.6.1.v20120708_SR6
+Bundle-Version: 3.7.0.v20181008
 Bundle-Activator: net.sourceforge.sqlexplorer.plugin.SQLExplorerPlugin
 Bundle-Vendor: SQL Explorer Project (eclipsesql.sourceforge.net)
 Bundle-Localization: plugin
@@ -78,4 +78,4 @@ Export-Package: net.sourceforge.sqlexplorer,
  net.sourceforge.squirrel_sql.fw.util.log,
  net.sourceforge.squirrel_sql.fw.xml,
  org.eclipse.jface.preference
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
