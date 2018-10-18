@@ -27,9 +27,11 @@ import net.sourceforge.sqlexplorer.IConstants.Confirm;
 import net.sourceforge.sqlexplorer.connections.ConnectionsView;
 import net.sourceforge.sqlexplorer.dbproduct.Alias;
 import net.sourceforge.sqlexplorer.dbproduct.AliasManager;
+import net.sourceforge.sqlexplorer.dbproduct.DatabaseProductFactory;
 import net.sourceforge.sqlexplorer.dbproduct.DriverManager;
 import net.sourceforge.sqlexplorer.dbproduct.User;
 import net.sourceforge.sqlexplorer.history.SQLHistory;
+import net.sourceforge.sqlexplorer.oracle.dbproduct.OracleDatabaseProduct;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditor;
 import net.sourceforge.sqlexplorer.plugin.editors.SQLEditorInput;
 import net.sourceforge.sqlexplorer.plugin.views.DatabaseStructureView;
@@ -140,6 +142,7 @@ public class SQLExplorerPlugin extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         
+        DatabaseProductFactory.registerProduct("oracle.*", new OracleDatabaseProduct());
         PluginPreferences.setCurrent(getPreferenceStore());
         try {
         	getLog().addLogListener(new ILogListener() {

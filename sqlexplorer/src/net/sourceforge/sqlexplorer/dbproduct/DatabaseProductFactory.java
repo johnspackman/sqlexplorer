@@ -47,7 +47,11 @@ public final class DatabaseProductFactory {
 	//	provide if none has been implemented for the given database platform
 	private static DefaultDatabaseProduct s_defaultProduct = new DefaultDatabaseProduct();
 	
-	private static HashMap<String, DatabaseProduct> instances = new HashMap<String, DatabaseProduct>();
+	// Known instances of DatabaseProduct per URL
+    private static HashMap<String, DatabaseProduct> instances = new HashMap<String, DatabaseProduct>();
+    
+    // Preregistered DatabaseProduct for built in drivers
+    private static HashMap<String, DatabaseProduct> products = new HashMap<String, DatabaseProduct>();
 	
 	
 	
@@ -63,16 +67,41 @@ public final class DatabaseProductFactory {
 			return product;
         return s_defaultProduct;
 	}
+	
+	/**
+	 * Preregisters a built in DatabaseProduct for a driver
+	 * 
+	 * @param databaseName
+	 * @param product
+	 */
+	public static void registerProduct(String pDatabaseProductName, DatabaseProduct product) {
+	    products.put(pDatabaseProductName, product);
+	}
 
-	public static DatabaseProduct registerProduct(String pUrl, String pDatabaseProductName) {
+	/**
+	 * Locates a DatabaseProduct instance for a specific product name and associates it with a URL 
+	 * 
+	 * @param pUrl
+	 * @param pDatabaseProductName
+	 * @return
+	 */
+	public static DatabaseProduct selectProduct(String pUrl, String pDatabaseProductName) {
 		DatabaseProduct result = instances.get(pUrl);
-		if(result != null)
-		{
+		if(result != null) {
 			return result;
 		}
+		
         // load extension nodes
         String databaseProductName = pDatabaseProductName.toLowerCase().trim();
 
+		for (String key : products.keySet()) {
+            if (databaseProductName.matches(key)) {
+                DatabaseProduct product = products.get(key);
+                instances.put(pUrl, product);
+                return product;
+            }
+		}
+		
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint point = registry.getExtensionPoint("net.sourceforge.sqlexplorer", "databaseProduct");
         IExtension[] extensions = point.getExtensions();

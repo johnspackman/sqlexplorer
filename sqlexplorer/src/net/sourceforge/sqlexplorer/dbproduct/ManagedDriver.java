@@ -225,7 +225,7 @@ public class ManagedDriver implements Comparable<ManagedDriver> {
 		}
 		if (jdbcConn == null)
 			throw new SQLCannotConnectException(user);
-		DatabaseProduct product = DatabaseProductFactory.registerProduct(user.getAlias().getUrl(), jdbcConn.getMetaData().getDatabaseProductName());
+		DatabaseProduct product = DatabaseProductFactory.selectProduct(user.getAlias().getUrl(), jdbcConn.getMetaData().getDatabaseProductName());
 		return new SQLConnection(user, jdbcConn, this, product.describeConnection(jdbcConn));
 	}
 
