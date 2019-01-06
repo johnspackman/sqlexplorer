@@ -5,7 +5,7 @@
 ## Code changes
 
 This version of SQL Explorer has been migrated from [Sourceforge](https://sourceforge.net/projects/eclipsesql/) in 
-October 2018; as well as fixng a few bugs, the code has been refactored to simplify development and deployment - 
+October 2018; as well as fixing a few bugs, the code has been refactored to simplify development and deployment - 
 where previously each database driver was implemented in a separate plugin and the plugins were combined for 
 deployment via a feature, these have been removed and the drivers integrated into the one plugin.  
 
